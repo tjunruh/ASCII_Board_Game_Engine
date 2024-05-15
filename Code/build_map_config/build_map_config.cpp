@@ -1,0 +1,221 @@
+#include "build_map_config.h"
+#include <fstream>
+#include <iostream>
+
+int build_map_config::write_file(std::string file_path, std::string content)
+{
+	int status = 1;
+	std::ofstream file(file_path);
+	if (file.is_open()) {
+		file << content << std::endl;
+		status = 0;
+	}
+	else {
+		status = 1;
+	}
+	return status;
+}
+
+int build_map_config::read_file(std::string file_path, std::string& extracted_content)
+{
+	std::ifstream file(file_path);
+	extracted_content = "";
+	int status = 1;
+
+	if (file.is_open()) {
+		char letter[1];
+		while (!file.eof()) {
+			file.read(letter, 1);
+			extracted_content = extracted_content + letter[0];
+		}
+		extracted_content.erase((extracted_content.length() - 1), 1);
+		file.close();
+		status = 0;
+	}
+	else {
+		extracted_content = "";
+		status = 1;
+	}
+	return status;
+}
+
+int build_map_config::get_rows(std::string board)
+{
+	int rows = 0;
+	for (unsigned int i = 0; i < board.length(); i++)
+	{
+		if (board[i] == '\n')
+		{
+			rows++;
+		}
+	}
+	return rows;
+}
+
+int build_map_config::get_columns(std::string board)
+{
+	int max_columns = 0;
+	int columns = 0;
+	for (unsigned int i = 0; i < board.length(); i++)
+	{
+		if (board[i] == '\n')
+		{
+			if (columns > max_columns)
+			{
+				max_columns = columns;
+			}
+			columns = 0;
+		}
+		else
+		{
+			columns++;
+		}
+	}
+	return max_columns;
+}
+
+int build_map_config::get_digits(int number)
+{
+	int digits = 0;
+	if (number == 0)
+	{
+		digits = 1;
+	}
+	else
+	{
+		while (number != 0)
+		{
+			number = number / 10;
+			digits++;
+		}
+	}
+	
+	return digits;
+}
+
+std::string build_map_config::get_digit(int number, int digit)
+{
+	std::string text_number = std::to_string(number);
+	std::string return_digit = " ";
+	if ((digit < (int)text_number.length()) && (digit >= 0))
+	{
+		return_digit = text_number[digit];
+	}
+	return return_digit;
+}
+
+std::string build_map_config::get_line(std::string content, int line_number)
+{
+	std::string line = "";
+	int current_line_number = 0;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		if (current_line_number == line_number)
+		{
+			line = line + content[i];
+		}
+
+		if (content[i] == '\n')
+		{
+			current_line_number++;
+			if (current_line_number > line_number)
+			{
+				break;
+			}
+		}
+	}
+	return line;
+}
+
+std::string build_map_config::modify_content(std::string content)
+{
+	int rows = get_rows(content);
+	int columns = get_columns(content);
+	int horizontal_index_space = get_digits(rows);
+	int vertical_index_space = get_digits(columns);
+	int horizontal_margin_length = horizontal_index_space + 1;
+	int vertical_margin_length = vertical_index_space;
+
+	int total_rows_with_margin = rows + vertical_margin_length;
+	std::string horizontal_margin = "";
+	for (int i = 0; i < horizontal_margin_length; i++)
+	{
+		horizontal_margin = horizontal_margin + " ";
+	}
+
+	std::string modified_content = "";
+
+	for (int i = 0; i <= total_rows_with_margin; i++)
+	{
+		if (i < vertical_margin_length)
+		{
+			modified_content = modified_content + horizontal_margin;
+			for (int j = 0; j < columns; j++)
+			{
+				modified_content = modified_content + get_digit(j, (i + get_digits(j) - vertical_index_space));
+			}
+			modified_content = modified_content + "\n";
+		}
+		else
+		{
+			for (int j = 0; j < horizontal_margin_length; j++)
+			{
+				modified_content = modified_content + get_digit((i - vertical_margin_length), (j + get_digits(i - vertical_margin_length) - horizontal_index_space));
+			}
+			modified_content = modified_content + get_line(content, i - vertical_margin_length);
+		}
+	}
+
+	modified_content = modified_content + "\n";
+	modified_content = modified_content + map_array_dimension_field;
+	modified_content = modified_content + map_action_tile_field;
+
+	return modified_content;
+}
+
+std::string build_map_config::extract_path(std::string path_with_file)
+{
+	std::string path = "";
+	bool path_seperator_encountered = false;
+	for (int i = (path_with_file.length() - 1); i >= 0; i--)
+	{
+		if (path_with_file[i] == path_seperator)
+		{
+			path_seperator_encountered = true;
+		}
+
+		if (path_seperator_encountered)
+		{
+			path.insert(0, std::string(1, path_with_file[i]));
+		}
+	}
+	return path;
+}
+
+std::string build_map_config::extract_file(std::string path_with_file)
+{
+	std::string file = "";
+	for (int i = (path_with_file.length() - 1); i >= 0; i--)
+	{
+		if (path_with_file[i] == path_seperator)
+		{
+			break;
+		}
+		file.insert(0, std::string(1, path_with_file[i]));
+	}
+	return file;
+}
+
+std::string build_map_config::remove_extension(std::string path_with_extension)
+{
+	std::string file = "";
+	for (unsigned int i = 0; i < path_with_extension.length(); i++)
+	{
+		if (path_with_extension[i] == '.')
+		{
+			break;
+		}
+		file = file + path_with_extension[i];
+	}
+	return file;
+}
