@@ -1,43 +1,5 @@
 #include "build_map_config.h"
-#include <fstream>
-#include <iostream>
-
-int build_map_config::write_file(std::string file_path, std::string content)
-{
-	int status = 1;
-	std::ofstream file(file_path);
-	if (file.is_open()) {
-		file << content << std::endl;
-		status = 0;
-	}
-	else {
-		status = 1;
-	}
-	return status;
-}
-
-int build_map_config::read_file(std::string file_path, std::string& extracted_content)
-{
-	std::ifstream file(file_path);
-	extracted_content = "";
-	int status = 1;
-
-	if (file.is_open()) {
-		char letter[1];
-		while (!file.eof()) {
-			file.read(letter, 1);
-			extracted_content = extracted_content + letter[0];
-		}
-		extracted_content.erase((extracted_content.length() - 1), 1);
-		file.close();
-		status = 0;
-	}
-	else {
-		extracted_content = "";
-		status = 1;
-	}
-	return status;
-}
+#include "../build_map_field_titles/build_map_field_titles.h"
 
 int build_map_config::get_rows(std::string board)
 {
@@ -144,6 +106,7 @@ std::string build_map_config::modify_content(std::string content)
 	}
 
 	std::string modified_content = "";
+	modified_content = modified_content + build_map_field_titles::map_begin;
 
 	for (int i = 0; i <= total_rows_with_margin; i++)
 	{
@@ -167,55 +130,15 @@ std::string build_map_config::modify_content(std::string content)
 	}
 
 	modified_content = modified_content + "\n";
-	modified_content = modified_content + map_array_dimension_field;
-	modified_content = modified_content + map_action_tile_field;
+	modified_content = modified_content + build_map_field_titles::map_end;
+	modified_content = modified_content + build_map_field_titles::map_array_dimensions_field;
+	modified_content = modified_content + build_map_field_titles::array_dimensions_begin;
+	modified_content = modified_content + build_map_field_titles::map_array_dimensions_initialization;
+	modified_content = modified_content + build_map_field_titles::array_dimensions_end;
+	modified_content = modified_content + build_map_field_titles::map_action_tile_field;
+	modified_content = modified_content + build_map_field_titles::action_tiles_begin;
+	modified_content = modified_content + build_map_field_titles::map_action_tile_initialization;
+	modified_content = modified_content + build_map_field_titles::action_tiles_end;
 
 	return modified_content;
-}
-
-std::string build_map_config::extract_path(std::string path_with_file)
-{
-	std::string path = "";
-	bool path_seperator_encountered = false;
-	for (int i = (path_with_file.length() - 1); i >= 0; i--)
-	{
-		if (path_with_file[i] == path_seperator)
-		{
-			path_seperator_encountered = true;
-		}
-
-		if (path_seperator_encountered)
-		{
-			path.insert(0, std::string(1, path_with_file[i]));
-		}
-	}
-	return path;
-}
-
-std::string build_map_config::extract_file(std::string path_with_file)
-{
-	std::string file = "";
-	for (int i = (path_with_file.length() - 1); i >= 0; i--)
-	{
-		if (path_with_file[i] == path_seperator)
-		{
-			break;
-		}
-		file.insert(0, std::string(1, path_with_file[i]));
-	}
-	return file;
-}
-
-std::string build_map_config::remove_extension(std::string path_with_extension)
-{
-	std::string file = "";
-	for (unsigned int i = 0; i < path_with_extension.length(); i++)
-	{
-		if (path_with_extension[i] == '.')
-		{
-			break;
-		}
-		file = file + path_with_extension[i];
-	}
-	return file;
 }
