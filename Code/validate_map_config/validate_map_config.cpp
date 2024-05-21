@@ -616,3 +616,125 @@ int validate_map_config::get_columns(std::string board)
 	}
 	return max_columns;
 }
+
+int validate_map_config::validate(std::string content, bool debug)
+{
+	std::string map = "";
+	std::string dimension_field = "";
+	std::string action_tiles_field = "";
+	map = get_map(content);
+	dimension_field = get_map_dimension_field(content);
+	action_tiles_field = get_map_action_tiles_field(content);
+	dimension_field = remove_spaces(dimension_field);
+	action_tiles_field = remove_spaces(action_tiles_field);
+
+	if ((validate_parenthesis(dimension_field) == 1) && debug)
+	{
+		std::cout << "Failed: Parenthesis mismatch in dimension field." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Parenthesis validation in dimension field." << std::endl;
+	}
+
+	if ((validate_parenthesis(action_tiles_field) == 1) && debug)
+	{
+		std::cout << "Failed: Parenthesis mismatch in action tiles field." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Parenthesis validation in action tiles field." << std::endl;
+	}
+
+	if ((validate_number_of_parameters(dimension_field, 2) == 1) && debug)
+	{
+		std::cout << "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected)." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Correct number of parameters in dimension field parenthesis." << std::endl;
+	}
+
+	if ((validate_number_of_parameters(action_tiles_field, 4) == 1) && debug)
+	{
+		std::cout << "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected)." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Correct number of parameters in action tiles field parenthesis." << std::endl;
+	}
+
+	if ((validate_parameters(dimension_field, false) == 1) && debug)
+	{
+		std::cout << "Failed: Invalid parameter in dimension field." << std::endl;
+		return 1;
+	}
+	else if(debug)
+	{
+		std::cout << "Passed: Valid parameters in dimension filed." << std::endl;
+	}
+
+	if ((validate_parameters(action_tiles_field, true) == 1) && debug)
+	{
+		std::cout << "Failed: Invalid parameter in action tiles field." << std::endl;
+		return 1;
+	}
+	else if(debug)
+	{
+		std::cout << "Passed: Valid parameters in action tiles field." << std::endl;
+	}
+
+	if ((validate_hyphen_range(action_tiles_field) == 1) && debug)
+	{
+		std::cout << "Failed: Invalid range using hyphen in action tiles field." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Valid range using hyphen in action tiles field." << std::endl;
+	}
+
+	int row = 0;
+	int column = 0;
+
+	get_array_dimensions(dimension_field, row, column);
+
+	if (((row == -1) || (column == -1)) && debug)
+	{
+		std::cout << "Error reading array dimensions." << std::endl;
+		return 1;
+	}
+
+	if ((validate_array_index(action_tiles_field, row, column) == 1) && debug)
+	{
+		std::cout << "Failed: Array dimension invalid in action tiles field." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Array dimensions valid." << std::endl;
+	}
+
+	get_map_dimensions(map, row, column);
+
+	if ((validate_map_index(action_tiles_field, row, column) == 1) && debug)
+	{
+		std::cout << "Failed: Map dimension out of bounds in action tiles field." << std::endl;
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Map dimensions valid." << std::endl;
+	}
+
+	if (debug)
+	{
+		std::cout << "All validations passed." << std::endl;
+	}
+
+	return 0;
+}
