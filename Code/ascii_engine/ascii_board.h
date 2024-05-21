@@ -42,6 +42,8 @@ public:
 	int add_configuration(board_configuration configuration);
 	int activate_configuration(int row, int column, std::string name_id);
 	int activate_configuration(std::string name_id);
+	int deactivate_configuration(int row, int column, std::string name_id);
+	int deactivate_configuration(std::string name_id);
 	int get_number_of_columns();
 	int get_number_of_rows();
 
@@ -79,8 +81,8 @@ private:
 	int get_action_tile_index(int row, int column);
 	int get_board_config_index(std::string name_id);
 	int get_tile_config_index(std::string name_id, int row, int column);
-	int set_tile(tile_configuration configuration);
-	int set_row(tile_configuration configuration);
-	int set_column(tile_configuration configuration);
-	int set_all(tile_configuration configuration);
+	int set_tile(tile_configuration configuration, bool activate);
+	int set_row(tile_configuration configuration, bool activate);
+	int set_column(tile_configuration configuration, bool activate);
+	int set_all(tile_configuration configuration, bool activate);
 };

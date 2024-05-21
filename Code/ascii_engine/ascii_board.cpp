@@ -64,32 +64,34 @@ void ascii_board::clear_tiles()
 
 int ascii_board::set_tile(int row, int column, std::string value, char ignore_character)
 {
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	int status = UNDEFINED;
+	int action_tile_index = get_action_tile_index(row, column);
+	if (action_tile_index != -1)
 	{
-		if ((action_tiles[i].array_row == row) && (action_tiles[i].array_column == column))
+		if (value.length() == get_value_length(action_tiles[action_tile_index]))
 		{
-			if (value.length() == get_value_length(action_tiles[i]))
+			for (int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
 			{
-				for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+				if (((value[i] != ignore_character) && (ignore_character == '\0')))
 				{
-					if (((value[j] != ignore_character) && (ignore_character == '\0')))
-					{
-						(action_tiles[i].value)[j] = value[j];
-					}
+					(action_tiles[action_tile_index].value)[i] = value[i];
 				}
-				status = SUCCESS;
 			}
-			else
-			{
-				status = INVALID_INDEX;
-			}
+			status = SUCCESS;
 		}
+		else
+		{
+			status = INVALID_INDEX;
+		}
+	}
+	else
+	{
+		status = ELEMENT_NOT_FOUND;
 	}
 	return status;
 }
 
-int ascii_board::set_tile(tile_configuration configuration)
+int ascii_board::set_tile(tile_configuration configuration, bool activate)
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(configuration.row, configuration.column);
@@ -102,7 +104,14 @@ int ascii_board::set_tile(tile_configuration configuration)
 			{
 				if (((configuration.value[i] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
 				{
-					(action_tiles[action_tile_index].value)[i] = (configuration.value)[i];
+					if (activate)
+					{
+						(action_tiles[action_tile_index].value)[i] = (configuration.value)[i];
+					}
+					else
+					{
+						(action_tiles[action_tile_index].value)[i] = (action_tiles[action_tile_index].default_value)[i];
+					}
 				}
 			}
 		}
@@ -145,7 +154,7 @@ int ascii_board::set_row(int row, std::string value, char ignore_character)
 	return status;
 }
 
-int ascii_board::set_row(tile_configuration configuration)
+int ascii_board::set_row(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -158,7 +167,14 @@ int ascii_board::set_row(tile_configuration configuration)
 				{
 					if (((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
 					{
-						(action_tiles[i].value)[j] = configuration.value[j];
+						if (activate)
+						{
+							(action_tiles[i].value)[j] = configuration.value[j];
+						}
+						else
+						{
+							(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
+						}
 					}
 				}
 			}
@@ -199,7 +215,7 @@ int ascii_board::set_column(int column, std::string value, char ignore_character
 	return status;
 }
 
-int ascii_board::set_column(tile_configuration configuration)
+int ascii_board::set_column(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -212,7 +228,14 @@ int ascii_board::set_column(tile_configuration configuration)
 				{
 					if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
 					{
-						(action_tiles[i].value)[j] = configuration.value[j];
+						if (activate)
+						{
+							(action_tiles[i].value)[j] = configuration.value[j];
+						}
+						else
+						{
+							(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
+						}
 					}
 				}
 			}
@@ -250,7 +273,7 @@ int ascii_board::set_all(std::string value, char ignore_character)
 	return status;
 }
 
-int ascii_board::set_all(tile_configuration configuration)
+int ascii_board::set_all(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -261,7 +284,14 @@ int ascii_board::set_all(tile_configuration configuration)
 			{
 				if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
 				{
-					(action_tiles[i].value)[j] = configuration.value[j];
+					if (activate)
+					{
+						(action_tiles[i].value)[j] = configuration.value[j];
+					}
+					else
+					{
+						(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
+					}
 				}
 			}
 		}
@@ -359,7 +389,7 @@ int ascii_board::activate_configuration(int row, int column, std::string name_id
 
 	if ((config_index != -1) && (config_tile_index != -1))
 	{
-		status = set_tile(board_configurations[config_index].tile_configurations[config_tile_index]);
+		status = set_tile(board_configurations[config_index].tile_configurations[config_tile_index], true);
 	}
 	else
 	{
@@ -379,21 +409,80 @@ int ascii_board::activate_configuration(std::string name_id)
 		{
 			if ((board_configurations[config_index].tile_configurations[i].row != -1) && (board_configurations[config_index].tile_configurations[i].column != -1))
 			{
-				status = set_tile(board_configurations[config_index].tile_configurations[i]);
+				status = set_tile(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if ((board_configurations[config_index].tile_configurations[i].row == -1) && (board_configurations[config_index].tile_configurations[i].column == -1))
 			{
-				status = set_all(board_configurations[config_index].tile_configurations[i]);
+				status = set_all(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].column == -1)
 			{
-				status = set_row(board_configurations[config_index].tile_configurations[i]);
+				status = set_row(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].row == -1)
 			{
-				status = set_column(board_configurations[config_index].tile_configurations[i]);
+				status = set_column(board_configurations[config_index].tile_configurations[i], true);
 			}
 			
+			if (status != SUCCESS)
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		status = ELEMENT_NOT_FOUND;
+	}
+	return status;
+}
+
+int ascii_board::deactivate_configuration(int row, int column, std::string name_id)
+{
+	int status = UNDEFINED;
+	int config_index = -1;
+	int config_tile_index = -1;
+	int action_tile_index = -1;
+	config_index = get_board_config_index(name_id);
+	config_tile_index = get_tile_config_index(name_id, row, column);
+
+	if ((config_index != -1) && (config_tile_index != -1))
+	{
+		status = set_tile(board_configurations[config_index].tile_configurations[config_tile_index], false);
+	}
+	else
+	{
+		status = ELEMENT_NOT_FOUND;
+	}
+	return status;
+}
+
+int ascii_board::deactivate_configuration(std::string name_id)
+{
+	int status = UNDEFINED;
+	int config_index = -1;
+	config_index = get_board_config_index(name_id);
+	if (config_index != -1)
+	{
+		for (unsigned int i = 0; i < board_configurations[config_index].tile_configurations.size(); i++)
+		{
+			if ((board_configurations[config_index].tile_configurations[i].row != -1) && (board_configurations[config_index].tile_configurations[i].column != -1))
+			{
+				status = set_tile(board_configurations[config_index].tile_configurations[i], false);
+			}
+			else if ((board_configurations[config_index].tile_configurations[i].row == -1) && (board_configurations[config_index].tile_configurations[i].column == -1))
+			{
+				status = set_all(board_configurations[config_index].tile_configurations[i], false);
+			}
+			else if (board_configurations[config_index].tile_configurations[i].column == -1)
+			{
+				status = set_row(board_configurations[config_index].tile_configurations[i], false);
+			}
+			else if (board_configurations[config_index].tile_configurations[i].row == -1)
+			{
+				status = set_column(board_configurations[config_index].tile_configurations[i], false);
+			}
+
 			if (status != SUCCESS)
 			{
 				break;
