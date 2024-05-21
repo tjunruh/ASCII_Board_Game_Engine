@@ -67,6 +67,7 @@ private:
 	void set_tile_range(int array_row, int array_column, int board_start_row, int board_stop_row, int board_start_column, int board_stop_column);
 	void initialize_tiles(int rows, int columns);
 	void set_tile_ranges(std::string content);
+	void remove_inactive_tiles();
 	void set_tile_default_values();
 	std::string get_board_section(int start_row, int stop_row, int start_column, int stop_column);
 	void update_board();

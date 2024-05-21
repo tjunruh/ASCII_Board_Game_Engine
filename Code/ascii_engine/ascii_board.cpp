@@ -33,6 +33,7 @@ ascii_board::ascii_board(std::string path, int& status)
 
 	initialize_tiles(max_rows, max_columns);
 	set_tile_ranges(action_tiles_field);
+	remove_inactive_tiles();
 	set_tile_default_values();
 
 	status = SUCCESS;
@@ -512,6 +513,19 @@ void ascii_board::set_tile_ranges(std::string content)
 			{
 				array_column = array_column + content[i];
 			}
+		}
+	}
+}
+
+void ascii_board::remove_inactive_tiles()
+{
+	int elements = action_tiles.size() - 1;
+
+	for (int i = elements; i >= 0; i--)
+	{
+		if ((action_tiles[i].board_start_row == -1) || (action_tiles[i].board_stop_row == -1) || (action_tiles[i].board_start_column == -1) || (action_tiles[i].board_stop_column == -1))
+		{
+			action_tiles.erase(action_tiles.begin() + i);
 		}
 	}
 }
