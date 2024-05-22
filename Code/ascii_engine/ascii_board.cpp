@@ -1,6 +1,7 @@
 #include "ascii_board.h"
 #include "../file_manager/file_manager.h"
 #include "../validate_board_config/validate_board_config.h"
+#include "../board_config_field_parser/board_config_field_parser.h"
 #include <iostream>
 
 ascii_board::ascii_board(std::string path, int& status)
@@ -24,12 +25,12 @@ ascii_board::ascii_board(std::string path, int& status)
 
 	std::string array_dimension_field = "";
 	std::string action_tiles_field = "";
+	board_config_field_parser parser;
+	board = parser.get_board(board_config);
+	array_dimension_field = parser.get_dimension_field(board_config);
+	action_tiles_field = parser.get_action_tiles_field(board_config);
 
-	board = validator.get_board(board_config);
-	array_dimension_field = validator.get_dimension_field(board_config);
-	action_tiles_field = validator.get_action_tiles_field(board_config);
-
-	validator.get_array_dimensions(array_dimension_field, max_rows, max_columns);
+	parser.get_array_dimensions(array_dimension_field, max_rows, max_columns);
 
 	initialize_tiles(max_rows, max_columns);
 	set_tile_ranges(action_tiles_field);
