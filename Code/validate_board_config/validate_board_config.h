@@ -14,6 +14,12 @@ private:
 		std::string row;
 		std::string column;
 	};
+	int validate_board_begin(std::string content);
+	int validate_board_end(std::string content);
+	int validate_array_dimensions_begin(std::string content);
+	int validate_array_dimensions_end(std::string content);
+	int validate_action_tiles_begin(std::string content);
+	int validate_action_tiles_end(std::string content);
 	int validate_parenthesis(std::string content);
 	int validate_parameters(std::string content, bool action_tile_field);
 	int validate_number_of_parameters(std::string content, int number_of_parameters);

@@ -3,6 +3,66 @@
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include <iostream>
 
+int validate_board_config::validate_board_begin(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::board_begin) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_board_end(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::board_end) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_array_dimensions_begin(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::array_dimensions_begin) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_array_dimensions_end(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::array_dimensions_end) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_action_tiles_begin(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::action_tiles_begin) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_action_tiles_end(std::string content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::action_tiles_end) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
 int validate_board_config::validate_parenthesis(std::string content)
 {
 	char previous_parenthesis = ' ';
@@ -385,6 +445,84 @@ int validate_board_config::get_columns(std::string board)
 
 int validate_board_config::validate(std::string content, bool debug)
 {
+	if (validate_board_begin(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Board begin tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Board begin tag found." << std::endl;
+	}
+
+	if (validate_board_end(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Board end tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Board end tag found." << std::endl;
+	}
+
+	if (validate_array_dimensions_begin(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Array dimenion begin tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Array dimensions begin tag found." << std::endl;
+	}
+
+	if (validate_array_dimensions_end(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Array dimensions end tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Array dimensions end tag found." << std::endl;
+	}
+
+	if (validate_action_tiles_begin(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Action tiles begin tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Action tiles begin tag found." << std::endl;
+	}
+
+	if (validate_action_tiles_end(content) == 1)
+	{
+		if (debug)
+		{
+			std::cout << "Failed: Action tiles end tag is missing or malformed." << std::endl;
+		}
+		return 1;
+	}
+	else if (debug)
+	{
+		std::cout << "Passed: Action tiles end tag found." << std::endl;
+	}
+
 	std::string board = "";
 	std::string dimension_field = "";
 	std::string action_tiles_field = "";
@@ -395,9 +533,12 @@ int validate_board_config::validate(std::string content, bool debug)
 	dimension_field = parser.remove_spaces(dimension_field);
 	action_tiles_field = parser.remove_spaces(action_tiles_field);
 
-	if ((validate_parenthesis(dimension_field) == 1) && debug)
+	if (validate_parenthesis(dimension_field) == 1)
 	{
-		std::cout << "Failed: Parenthesis mismatch in dimension field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Parenthesis mismatch in dimension field." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -405,9 +546,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Parenthesis validation in dimension field." << std::endl;
 	}
 
-	if ((validate_parenthesis(action_tiles_field) == 1) && debug)
+	if (validate_parenthesis(action_tiles_field) == 1)
 	{
-		std::cout << "Failed: Parenthesis mismatch in action tiles field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Parenthesis mismatch in action tiles field." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -415,9 +559,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Parenthesis validation in action tiles field." << std::endl;
 	}
 
-	if ((validate_number_of_parameters(dimension_field, 2) == 1) && debug)
+	if (validate_number_of_parameters(dimension_field, 2) == 1)
 	{
-		std::cout << "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected)." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected)." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -425,9 +572,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Correct number of parameters in dimension field parenthesis." << std::endl;
 	}
 
-	if ((validate_number_of_parameters(action_tiles_field, 4) == 1) && debug)
+	if (validate_number_of_parameters(action_tiles_field, 4) == 1)
 	{
-		std::cout << "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected)." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected)." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -435,9 +585,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Correct number of parameters in action tiles field parenthesis." << std::endl;
 	}
 
-	if ((validate_parameters(dimension_field, false) == 1) && debug)
+	if (validate_parameters(dimension_field, false) == 1)
 	{
-		std::cout << "Failed: Invalid parameter in dimension field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Invalid parameter in dimension field." << std::endl;
+		}
 		return 1;
 	}
 	else if(debug)
@@ -445,9 +598,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Valid parameters in dimension filed." << std::endl;
 	}
 
-	if ((validate_parameters(action_tiles_field, true) == 1) && debug)
+	if (validate_parameters(action_tiles_field, true) == 1)
 	{
-		std::cout << "Failed: Invalid parameter in action tiles field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Invalid parameter in action tiles field." << std::endl;
+		}
 		return 1;
 	}
 	else if(debug)
@@ -455,9 +611,12 @@ int validate_board_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Valid parameters in action tiles field." << std::endl;
 	}
 
-	if ((validate_hyphen_range(action_tiles_field) == 1) && debug)
+	if (validate_hyphen_range(action_tiles_field) == 1)
 	{
-		std::cout << "Failed: Invalid range using hyphen in action tiles field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Invalid range using hyphen in action tiles field." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -470,15 +629,21 @@ int validate_board_config::validate(std::string content, bool debug)
 
 	parser.get_array_dimensions(dimension_field, row, column);
 
-	if (((row == -1) || (column == -1)) && debug)
+	if ((row == -1) || (column == -1))
 	{
-		std::cout << "Error reading array dimensions." << std::endl;
+		if (debug)
+		{
+			std::cout << "Error reading array dimensions." << std::endl;
+		}
 		return 1;
 	}
 
-	if ((validate_array_index(action_tiles_field, row, column) == 1) && debug)
+	if (validate_array_index(action_tiles_field, row, column) == 1)
 	{
-		std::cout << "Failed: Array dimension invalid in action tiles field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Array dimension invalid in action tiles field." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
@@ -488,9 +653,12 @@ int validate_board_config::validate(std::string content, bool debug)
 
 	get_board_dimensions(board, row, column);
 
-	if ((validate_board_index(action_tiles_field, row, column) == 1) && debug)
+	if (validate_board_index(action_tiles_field, row, column) == 1)
 	{
-		std::cout << "Failed: Board dimension out of bounds in action tiles field." << std::endl;
+		if (debug)
+		{
+			std::cout << "Failed: Board dimension out of bounds in action tiles field." << std::endl;
+		}
 		return 1;
 	}
 	else if (debug)
