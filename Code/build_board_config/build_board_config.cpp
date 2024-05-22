@@ -106,7 +106,7 @@ std::string build_board_config::modify_content(std::string content)
 	}
 
 	std::string modified_content = "";
-	modified_content = modified_content + board_config_field_titles::board_begin;
+	modified_content = modified_content + board_config_field_titles::board_begin + "\n";
 
 	for (int i = 0; i <= total_rows_with_margin; i++)
 	{
@@ -130,15 +130,15 @@ std::string build_board_config::modify_content(std::string content)
 	}
 
 	modified_content = modified_content + "\n";
-	modified_content = modified_content + board_config_field_titles::board_end;
+	modified_content = modified_content + board_config_field_titles::board_end + "\n\n\n";
 	modified_content = modified_content + board_config_field_titles::array_dimensions_field;
-	modified_content = modified_content + board_config_field_titles::array_dimensions_begin;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_begin + "\n";
 	modified_content = modified_content + board_config_field_titles::array_dimensions_initialization;
-	modified_content = modified_content + board_config_field_titles::array_dimensions_end;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_end + "\n\n\n";
 	modified_content = modified_content + board_config_field_titles::action_tile_field;
-	modified_content = modified_content + board_config_field_titles::action_tiles_begin;
+	modified_content = modified_content + board_config_field_titles::action_tiles_begin + "\n";
 	modified_content = modified_content + board_config_field_titles::action_tile_initialization;
-	modified_content = modified_content + board_config_field_titles::action_tiles_end;
+	modified_content = modified_content + board_config_field_titles::action_tiles_end + "\n\n\n";
 
 	return modified_content;
 }
