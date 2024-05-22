@@ -2,7 +2,7 @@
 
 #include <string>
 
-class build_map_config 
+class build_board_config 
 {
 public:
 	std::string modify_content(std::string content);

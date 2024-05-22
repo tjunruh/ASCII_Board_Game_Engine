@@ -1,4 +1,4 @@
-#include "validate_map_config.h"
+#include "validate_board_config.h"
 #include "../file_manager/file_manager.h"
 #include <iostream>
 
@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	validate_map_config map_validator;
+	validate_board_config map_validator;
 	std::string path = argv[1];
 	std::string content = "";
 	if (file_manager::read_file(path, content) == 1)

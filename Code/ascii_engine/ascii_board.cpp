@@ -1,11 +1,11 @@
 #include "ascii_board.h"
 #include "../file_manager/file_manager.h"
-#include "../validate_map_config/validate_map_config.h"
+#include "../validate_board_config/validate_board_config.h"
 #include <iostream>
 
 ascii_board::ascii_board(std::string path, int& status)
 {
-	validate_map_config validator;
+	validate_board_config validator;
 	status = UNDEFINED;
 	std::string board_config = "";
 	int file_status = file_manager::read_file(path, board_config);
@@ -25,9 +25,9 @@ ascii_board::ascii_board(std::string path, int& status)
 	std::string array_dimension_field = "";
 	std::string action_tiles_field = "";
 
-	board = validator.get_map(board_config);
-	array_dimension_field = validator.get_map_dimension_field(board_config);
-	action_tiles_field = validator.get_map_action_tiles_field(board_config);
+	board = validator.get_board(board_config);
+	array_dimension_field = validator.get_dimension_field(board_config);
+	action_tiles_field = validator.get_action_tiles_field(board_config);
 
 	validator.get_array_dimensions(array_dimension_field, max_rows, max_columns);
 

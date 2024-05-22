@@ -1,7 +1,7 @@
-#include "build_map_config.h"
-#include "../build_map_field_titles/build_map_field_titles.h"
+#include "build_board_config.h"
+#include "../board_config_field_titles/board_config_field_titles.h"
 
-int build_map_config::get_rows(std::string board)
+int build_board_config::get_rows(std::string board)
 {
 	int rows = 0;
 	for (unsigned int i = 0; i < board.length(); i++)
@@ -14,7 +14,7 @@ int build_map_config::get_rows(std::string board)
 	return rows;
 }
 
-int build_map_config::get_columns(std::string board)
+int build_board_config::get_columns(std::string board)
 {
 	int max_columns = 0;
 	int columns = 0;
@@ -36,7 +36,7 @@ int build_map_config::get_columns(std::string board)
 	return max_columns;
 }
 
-int build_map_config::get_digits(int number)
+int build_board_config::get_digits(int number)
 {
 	int digits = 0;
 	if (number == 0)
@@ -55,7 +55,7 @@ int build_map_config::get_digits(int number)
 	return digits;
 }
 
-std::string build_map_config::get_digit(int number, int digit)
+std::string build_board_config::get_digit(int number, int digit)
 {
 	std::string text_number = std::to_string(number);
 	std::string return_digit = " ";
@@ -66,7 +66,7 @@ std::string build_map_config::get_digit(int number, int digit)
 	return return_digit;
 }
 
-std::string build_map_config::get_line(std::string content, int line_number)
+std::string build_board_config::get_line(std::string content, int line_number)
 {
 	std::string line = "";
 	int current_line_number = 0;
@@ -89,7 +89,7 @@ std::string build_map_config::get_line(std::string content, int line_number)
 	return line;
 }
 
-std::string build_map_config::modify_content(std::string content)
+std::string build_board_config::modify_content(std::string content)
 {
 	int rows = get_rows(content);
 	int columns = get_columns(content);
@@ -106,7 +106,7 @@ std::string build_map_config::modify_content(std::string content)
 	}
 
 	std::string modified_content = "";
-	modified_content = modified_content + build_map_field_titles::map_begin;
+	modified_content = modified_content + board_config_field_titles::board_begin;
 
 	for (int i = 0; i <= total_rows_with_margin; i++)
 	{
@@ -130,15 +130,15 @@ std::string build_map_config::modify_content(std::string content)
 	}
 
 	modified_content = modified_content + "\n";
-	modified_content = modified_content + build_map_field_titles::map_end;
-	modified_content = modified_content + build_map_field_titles::map_array_dimensions_field;
-	modified_content = modified_content + build_map_field_titles::array_dimensions_begin;
-	modified_content = modified_content + build_map_field_titles::map_array_dimensions_initialization;
-	modified_content = modified_content + build_map_field_titles::array_dimensions_end;
-	modified_content = modified_content + build_map_field_titles::map_action_tile_field;
-	modified_content = modified_content + build_map_field_titles::action_tiles_begin;
-	modified_content = modified_content + build_map_field_titles::map_action_tile_initialization;
-	modified_content = modified_content + build_map_field_titles::action_tiles_end;
+	modified_content = modified_content + board_config_field_titles::board_end;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_field;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_begin;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_initialization;
+	modified_content = modified_content + board_config_field_titles::array_dimensions_end;
+	modified_content = modified_content + board_config_field_titles::action_tile_field;
+	modified_content = modified_content + board_config_field_titles::action_tiles_begin;
+	modified_content = modified_content + board_config_field_titles::action_tile_initialization;
+	modified_content = modified_content + board_config_field_titles::action_tiles_end;
 
 	return modified_content;
 }

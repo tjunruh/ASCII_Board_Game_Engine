@@ -1,8 +1,8 @@
-#include "validate_map_config.h"
-#include "../build_map_field_titles/build_map_field_titles.h"
+#include "validate_board_config.h"
+#include "../board_config_field_titles/board_config_field_titles.h"
 #include <iostream>
 
-int validate_map_config::validate_parenthesis(std::string content)
+int validate_board_config::validate_parenthesis(std::string content)
 {
 	char previous_parenthesis = ' ';
 	char parenthesis = ' ';
@@ -46,7 +46,7 @@ int validate_map_config::validate_parenthesis(std::string content)
 	return validity;
 }
 
-int validate_map_config::validate_parameters(std::string content, bool action_tile_field)
+int validate_board_config::validate_parameters(std::string content, bool action_tile_field)
 {
 	char parenthesis = ' ';
 	int validity = 0;
@@ -78,7 +78,7 @@ int validate_map_config::validate_parameters(std::string content, bool action_ti
 	return validity;
 }
 
-int validate_map_config::validate_number_of_parameters(std::string content, int number_of_parameters)
+int validate_board_config::validate_number_of_parameters(std::string content, int number_of_parameters)
 {
 	char parenthesis = ' ';
 	int validity = 0;
@@ -116,7 +116,7 @@ int validate_map_config::validate_number_of_parameters(std::string content, int 
 	return validity;
 }
 
-int validate_map_config::validate_array_index(std::string content, int max_row, int max_column)
+int validate_board_config::validate_array_index(std::string content, int max_row, int max_column)
 {
 	std::vector<row_column> two_dimensional_spaces;
 	row_column two_dimensional_space;
@@ -163,7 +163,7 @@ int validate_map_config::validate_array_index(std::string content, int max_row, 
 	return 0;
 }
 
-int validate_map_config::validate_map_index(std::string content, int max_row, int max_column)
+int validate_board_config::validate_board_index(std::string content, int max_row, int max_column)
 {
 	std::vector<std::string> rows;
 	std::vector<std::string> columns;
@@ -237,7 +237,7 @@ int validate_map_config::validate_map_index(std::string content, int max_row, in
 	return validity;
 }
 
-int validate_map_config::validate_number_of_entries(std::string content, int number_of_entries)
+int validate_board_config::validate_number_of_entries(std::string content, int number_of_entries)
 {
 	int entries = 0;
 	int validity = 0;
@@ -257,7 +257,7 @@ int validate_map_config::validate_number_of_entries(std::string content, int num
 	return validity;
 }
 
-int validate_map_config::validate_hyphen_range(std::string content)
+int validate_board_config::validate_hyphen_range(std::string content)
 {
 	std::string number = "";
 	std::string previous_number = "";
@@ -299,10 +299,10 @@ int validate_map_config::validate_hyphen_range(std::string content)
 	return validity;
 }
 
-std::string validate_map_config::get_map_dimension_field(std::string content)
+std::string validate_board_config::get_dimension_field(std::string content)
 {
-	size_t start_position = content.find(build_map_field_titles::array_dimensions_begin) + build_map_field_titles::array_dimensions_begin.length();
-	size_t stop_position = content.find(build_map_field_titles::array_dimensions_end);
+	size_t start_position = content.find(board_config_field_titles::array_dimensions_begin) + board_config_field_titles::array_dimensions_begin.length();
+	size_t stop_position = content.find(board_config_field_titles::array_dimensions_end);
 	std::string dimension_field = "";
 	for (unsigned int i = start_position; i < stop_position; i++)
 	{
@@ -311,10 +311,10 @@ std::string validate_map_config::get_map_dimension_field(std::string content)
 	return dimension_field;
 }
 
-std::string validate_map_config::get_map_action_tiles_field(std::string content)
+std::string validate_board_config::get_action_tiles_field(std::string content)
 {
-	size_t start_position = content.find(build_map_field_titles::action_tiles_begin) + build_map_field_titles::action_tiles_begin.length();
-	size_t stop_position = content.find(build_map_field_titles::action_tiles_end);
+	size_t start_position = content.find(board_config_field_titles::action_tiles_begin) + board_config_field_titles::action_tiles_begin.length();
+	size_t stop_position = content.find(board_config_field_titles::action_tiles_end);
 	std::string action_tiles_field = "";
 	for (unsigned int i = start_position; i < stop_position; i++)
 	{
@@ -323,19 +323,19 @@ std::string validate_map_config::get_map_action_tiles_field(std::string content)
 	return action_tiles_field;
 }
 
-std::string validate_map_config::get_map(std::string content)
+std::string validate_board_config::get_board(std::string content)
 {
-	int start_row = get_map_boundary_row(content);
-	int start_column = get_map_boundary_column(content);
-	int stop_index = get_map_end_index(content);
+	int start_row = get_board_boundary_row(content);
+	int start_column = get_board_boundary_column(content);
+	int stop_index = get_board_end_index(content);
 	int row = 0;
 	int column = 0;
-	std::string map = "";
+	std::string board = "";
 	for (int i = 0; i < stop_index; i++)
 	{
 		if ((column > start_column) && (row > start_row))
 		{
-			map = map + content[i];
+			board = board + content[i];
 		}
 
 		if (content[i] == '\n')
@@ -349,10 +349,10 @@ std::string validate_map_config::get_map(std::string content)
 		}
 	}
 
-	return map;
+	return board;
 }
 
-std::string validate_map_config::remove_spaces(std::string content)
+std::string validate_board_config::remove_spaces(std::string content)
 {
 	std::string updated_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
@@ -365,7 +365,7 @@ std::string validate_map_config::remove_spaces(std::string content)
 	return updated_content;
 }
 
-int validate_map_config::get_map_boundary_row(std::string content)
+int validate_board_config::get_board_boundary_row(std::string content)
 {
 	int row = -1;
 	char previous_character = ' ';
@@ -412,9 +412,9 @@ int validate_map_config::get_map_boundary_row(std::string content)
 	return row;
 }
 
-int validate_map_config::get_map_boundary_column(std::string content)
+int validate_board_config::get_board_boundary_column(std::string content)
 {
-	size_t stop_position = content.find(build_map_field_titles::map_end);
+	size_t stop_position = content.find(board_config_field_titles::board_end);
 	int column = -1;
 	int row = -1;
 	std::vector<int> valid_columns;
@@ -462,14 +462,14 @@ int validate_map_config::get_map_boundary_column(std::string content)
 }
 
 
-int validate_map_config::get_map_end_index(std::string content)
+int validate_board_config::get_board_end_index(std::string content)
 {
 	int index = -1;
-	index = content.find(build_map_field_titles::map_end);
+	index = content.find(board_config_field_titles::board_end);
 	return index;
 }
 
-void validate_map_config::get_array_dimensions(std::string content, int& row, int& column)
+void validate_board_config::get_array_dimensions(std::string content, int& row, int& column)
 {
 	int parameter = -1;
 	std::string parsed_row = "";
@@ -515,18 +515,18 @@ void validate_map_config::get_array_dimensions(std::string content, int& row, in
 	
 }
 
-void validate_map_config::get_map_dimensions(std::string content, int& row, int& column)
+void validate_board_config::get_board_dimensions(std::string content, int& row, int& column)
 {
 	row = get_rows(content);
 	column = get_columns(content);
 }
 
-int validate_map_config::char_to_int(char character)
+int validate_board_config::char_to_int(char character)
 {
 	return (int(character) - 48);
 }
 
-int validate_map_config::find_element(std::vector<int> storage, int element)
+int validate_board_config::find_element(std::vector<int> storage, int element)
 {
 	int index = -1;
 	for (unsigned int i = 0; i < storage.size(); i++)
@@ -540,7 +540,7 @@ int validate_map_config::find_element(std::vector<int> storage, int element)
 	return index;
 }
 
-bool validate_map_config::multiple(std::vector<row_column> storage, row_column element)
+bool validate_board_config::multiple(std::vector<row_column> storage, row_column element)
 {
 	int occurances = 0;
 	bool multiple_elements = false;
@@ -560,7 +560,7 @@ bool validate_map_config::multiple(std::vector<row_column> storage, row_column e
 	return multiple_elements;
 }
 
-bool validate_map_config::is_number(std::string number_string)
+bool validate_board_config::is_number(std::string number_string)
 {
 	bool number = true;
 	if (number_string.length() == 0)
@@ -582,7 +582,7 @@ bool validate_map_config::is_number(std::string number_string)
 	return number;
 }
 
-int validate_map_config::get_rows(std::string board)
+int validate_board_config::get_rows(std::string board)
 {
 	int rows = 0;
 	for (unsigned int i = 0; i < board.length(); i++)
@@ -595,7 +595,7 @@ int validate_map_config::get_rows(std::string board)
 	return rows;
 }
 
-int validate_map_config::get_columns(std::string board)
+int validate_board_config::get_columns(std::string board)
 {
 	int max_columns = 0;
 	int columns = 0;
@@ -617,14 +617,14 @@ int validate_map_config::get_columns(std::string board)
 	return max_columns;
 }
 
-int validate_map_config::validate(std::string content, bool debug)
+int validate_board_config::validate(std::string content, bool debug)
 {
-	std::string map = "";
+	std::string board = "";
 	std::string dimension_field = "";
 	std::string action_tiles_field = "";
-	map = get_map(content);
-	dimension_field = get_map_dimension_field(content);
-	action_tiles_field = get_map_action_tiles_field(content);
+	board = get_board(content);
+	dimension_field = get_dimension_field(content);
+	action_tiles_field = get_action_tiles_field(content);
 	dimension_field = remove_spaces(dimension_field);
 	action_tiles_field = remove_spaces(action_tiles_field);
 
@@ -719,16 +719,16 @@ int validate_map_config::validate(std::string content, bool debug)
 		std::cout << "Passed: Array dimensions valid." << std::endl;
 	}
 
-	get_map_dimensions(map, row, column);
+	get_board_dimensions(board, row, column);
 
-	if ((validate_map_index(action_tiles_field, row, column) == 1) && debug)
+	if ((validate_board_index(action_tiles_field, row, column) == 1) && debug)
 	{
-		std::cout << "Failed: Map dimension out of bounds in action tiles field." << std::endl;
+		std::cout << "Failed: Board dimension out of bounds in action tiles field." << std::endl;
 		return 1;
 	}
 	else if (debug)
 	{
-		std::cout << "Passed: Map dimensions valid." << std::endl;
+		std::cout << "Passed: Board dimensions valid." << std::endl;
 	}
 
 	if (debug)
