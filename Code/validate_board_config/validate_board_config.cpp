@@ -3,7 +3,7 @@
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include <iostream>
 
-int validate_board_config::validate_board_begin(std::string content)
+int validate_board_config::validate_board_begin(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::board_begin) == std::string::npos)
@@ -13,7 +13,7 @@ int validate_board_config::validate_board_begin(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_board_end(std::string content)
+int validate_board_config::validate_board_end(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::board_end) == std::string::npos)
@@ -23,7 +23,7 @@ int validate_board_config::validate_board_end(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_array_dimensions_begin(std::string content)
+int validate_board_config::validate_array_dimensions_begin(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::array_dimensions_begin) == std::string::npos)
@@ -33,7 +33,7 @@ int validate_board_config::validate_array_dimensions_begin(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_array_dimensions_end(std::string content)
+int validate_board_config::validate_array_dimensions_end(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::array_dimensions_end) == std::string::npos)
@@ -43,7 +43,7 @@ int validate_board_config::validate_array_dimensions_end(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_action_tiles_begin(std::string content)
+int validate_board_config::validate_action_tiles_begin(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::action_tiles_begin) == std::string::npos)
@@ -53,7 +53,7 @@ int validate_board_config::validate_action_tiles_begin(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_action_tiles_end(std::string content)
+int validate_board_config::validate_action_tiles_end(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::action_tiles_end) == std::string::npos)
@@ -63,7 +63,7 @@ int validate_board_config::validate_action_tiles_end(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_parenthesis(std::string content)
+int validate_board_config::validate_parenthesis(const std::string &content)
 {
 	char previous_parenthesis = ' ';
 	char parenthesis = ' ';
@@ -107,7 +107,7 @@ int validate_board_config::validate_parenthesis(std::string content)
 	return validity;
 }
 
-int validate_board_config::validate_parameters(std::string content, bool action_tile_field)
+int validate_board_config::validate_parameters(const std::string &content, bool action_tile_field)
 {
 	char parenthesis = ' ';
 	int validity = 0;
@@ -139,7 +139,7 @@ int validate_board_config::validate_parameters(std::string content, bool action_
 	return validity;
 }
 
-int validate_board_config::validate_number_of_parameters(std::string content, int number_of_parameters)
+int validate_board_config::validate_number_of_parameters(const std::string &content, int number_of_parameters)
 {
 	char parenthesis = ' ';
 	int validity = 0;
@@ -177,7 +177,7 @@ int validate_board_config::validate_number_of_parameters(std::string content, in
 	return validity;
 }
 
-int validate_board_config::validate_array_index(std::string content, int max_row, int max_column)
+int validate_board_config::validate_array_index(const std::string &content, int max_row, int max_column)
 {
 	std::vector<row_column> two_dimensional_spaces;
 	row_column two_dimensional_space;
@@ -224,7 +224,7 @@ int validate_board_config::validate_array_index(std::string content, int max_row
 	return 0;
 }
 
-int validate_board_config::validate_board_index(std::string content, int max_row, int max_column)
+int validate_board_config::validate_board_index(const std::string &content, int max_row, int max_column)
 {
 	std::vector<std::string> rows;
 	std::vector<std::string> columns;
@@ -298,7 +298,7 @@ int validate_board_config::validate_board_index(std::string content, int max_row
 	return validity;
 }
 
-int validate_board_config::validate_number_of_entries(std::string content, int number_of_entries)
+int validate_board_config::validate_number_of_entries(const std::string &content, int number_of_entries)
 {
 	int entries = 0;
 	int validity = 0;
@@ -318,7 +318,7 @@ int validate_board_config::validate_number_of_entries(std::string content, int n
 	return validity;
 }
 
-int validate_board_config::validate_hyphen_range(std::string content)
+int validate_board_config::validate_hyphen_range(const std::string &content)
 {
 	std::string number = "";
 	std::string previous_number = "";
@@ -360,7 +360,7 @@ int validate_board_config::validate_hyphen_range(std::string content)
 	return validity;
 }
 
-void validate_board_config::get_board_dimensions(std::string content, int& row, int& column)
+void validate_board_config::get_board_dimensions(const std::string &content, int& row, int& column)
 {
 	row = get_rows(content);
 	column = get_columns(content);
@@ -386,7 +386,7 @@ bool validate_board_config::multiple(std::vector<row_column> storage, row_column
 	return multiple_elements;
 }
 
-bool validate_board_config::is_number(std::string number_string)
+bool validate_board_config::is_number(const std::string &number_string)
 {
 	bool number = true;
 	if (number_string.length() == 0)
@@ -408,7 +408,7 @@ bool validate_board_config::is_number(std::string number_string)
 	return number;
 }
 
-int validate_board_config::get_rows(std::string board)
+int validate_board_config::get_rows(const std::string &board)
 {
 	int rows = 0;
 	for (unsigned int i = 0; i < board.length(); i++)
@@ -421,7 +421,7 @@ int validate_board_config::get_rows(std::string board)
 	return rows;
 }
 
-int validate_board_config::get_columns(std::string board)
+int validate_board_config::get_columns(const std::string &board)
 {
 	int max_columns = 0;
 	int columns = 0;
@@ -443,7 +443,7 @@ int validate_board_config::get_columns(std::string board)
 	return max_columns;
 }
 
-int validate_board_config::validate(std::string content, bool debug)
+int validate_board_config::validate(const std::string &content, bool debug)
 {
 	if (validate_board_begin(content) == 1)
 	{

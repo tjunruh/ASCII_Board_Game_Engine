@@ -1,7 +1,7 @@
 #include "board_config_field_parser.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 
-std::string board_config_field_parser::get_dimension_field(std::string content)
+std::string board_config_field_parser::get_dimension_field(const std::string &content)
 {
 	size_t start_position = content.find(board_config_field_titles::array_dimensions_begin) + board_config_field_titles::array_dimensions_begin.length();
 	size_t stop_position = content.find(board_config_field_titles::array_dimensions_end);
@@ -13,7 +13,7 @@ std::string board_config_field_parser::get_dimension_field(std::string content)
 	return dimension_field;
 }
 
-std::string board_config_field_parser::get_action_tiles_field(std::string content)
+std::string board_config_field_parser::get_action_tiles_field(const std::string &content)
 {
 	size_t start_position = content.find(board_config_field_titles::action_tiles_begin) + board_config_field_titles::action_tiles_begin.length();
 	size_t stop_position = content.find(board_config_field_titles::action_tiles_end);
@@ -25,7 +25,7 @@ std::string board_config_field_parser::get_action_tiles_field(std::string conten
 	return action_tiles_field;
 }
 
-std::string board_config_field_parser::get_board(std::string content)
+std::string board_config_field_parser::get_board(const std::string &content)
 {
 	int start_row = get_board_boundary_row(content);
 	int start_column = get_board_boundary_column(content);
@@ -54,7 +54,7 @@ std::string board_config_field_parser::get_board(std::string content)
 	return board;
 }
 
-std::string board_config_field_parser::remove_spaces(std::string content)
+std::string board_config_field_parser::remove_spaces(const std::string &content)
 {
 	std::string updated_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
@@ -67,7 +67,7 @@ std::string board_config_field_parser::remove_spaces(std::string content)
 	return updated_content;
 }
 
-void board_config_field_parser::get_array_dimensions(std::string content, int& row, int& column)
+void board_config_field_parser::get_array_dimensions(const std::string &content, int& row, int& column)
 {
 	int parameter = -1;
 	std::string parsed_row = "";
@@ -112,7 +112,7 @@ void board_config_field_parser::get_array_dimensions(std::string content, int& r
 	}
 }
 
-int board_config_field_parser::get_board_boundary_row(std::string content)
+int board_config_field_parser::get_board_boundary_row(const std::string &content)
 {
 	int row = -1;
 	char previous_character = ' ';
@@ -159,7 +159,7 @@ int board_config_field_parser::get_board_boundary_row(std::string content)
 	return row;
 }
 
-int board_config_field_parser::get_board_boundary_column(std::string content)
+int board_config_field_parser::get_board_boundary_column(const std::string &content)
 {
 	size_t stop_position = content.find(board_config_field_titles::board_end);
 	int column = -1;
@@ -208,7 +208,7 @@ int board_config_field_parser::get_board_boundary_column(std::string content)
 	return valid_column;
 }
 
-int board_config_field_parser::get_board_end_index(std::string content)
+int board_config_field_parser::get_board_end_index(const std::string &content)
 {
 	int index = -1;
 	index = content.find(board_config_field_titles::board_end);
@@ -220,7 +220,7 @@ int board_config_field_parser::char_to_int(char character)
 	return (int(character) - 48);
 }
 
-bool board_config_field_parser::is_number(std::string number_string)
+bool board_config_field_parser::is_number(const std::string &number_string)
 {
 	bool number = true;
 	if (number_string.length() == 0)

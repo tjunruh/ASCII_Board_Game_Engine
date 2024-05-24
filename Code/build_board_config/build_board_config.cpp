@@ -1,7 +1,7 @@
 #include "build_board_config.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 
-int build_board_config::get_rows(std::string board)
+int build_board_config::get_rows(const std::string &board)
 {
 	int rows = 0;
 	for (unsigned int i = 0; i < board.length(); i++)
@@ -14,7 +14,7 @@ int build_board_config::get_rows(std::string board)
 	return rows;
 }
 
-int build_board_config::get_columns(std::string board)
+int build_board_config::get_columns(const std::string &board)
 {
 	int max_columns = 0;
 	int columns = 0;
@@ -66,7 +66,7 @@ std::string build_board_config::get_digit(int number, int digit)
 	return return_digit;
 }
 
-std::string build_board_config::get_line(std::string content, int line_number)
+std::string build_board_config::get_line(const std::string &content, int line_number)
 {
 	std::string line = "";
 	int current_line_number = 0;
@@ -89,7 +89,7 @@ std::string build_board_config::get_line(std::string content, int line_number)
 	return line;
 }
 
-std::string build_board_config::modify_content(std::string content)
+std::string build_board_config::modify_content(const std::string &content)
 {
 	int rows = get_rows(content);
 	int columns = get_columns(content);
