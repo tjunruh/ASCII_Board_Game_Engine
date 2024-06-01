@@ -363,7 +363,7 @@ std::string frame::get_spacing(unsigned int length)
 
 std::string frame::fill_line(std::string input, unsigned int length, std::string allignment)
 {
-	if (allignment == right_allignment_keyword)
+	if (allignment == left_allignment_keyword)
 	{
 		while (input.length() < length)
 		{
@@ -387,7 +387,7 @@ std::string frame::fill_line(std::string input, unsigned int length, std::string
 			}
 		}
 	}
-	else if (allignment == left_allignment_keyword)
+	else if (allignment == right_allignment_keyword)
 	{
 		while (input.length() < length)
 		{

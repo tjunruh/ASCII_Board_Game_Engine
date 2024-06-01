@@ -21,7 +21,7 @@ private:
 		std::string output;
 		int row = 0;
 		int column = 0;
-		std::string allignment = "right";
+		std::string allignment = "left";
 		int top_spacing = 0;
 		int bottom_spacing = 0;
 		int right_spacing = 0;
