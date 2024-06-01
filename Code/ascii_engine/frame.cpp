@@ -255,9 +255,15 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	{
 		width = raw_width;
 	}
+	std::string active_spacing = get_spacing(width);
 	std::vector<std::string> widget_lines;
 	std::vector<std::string> user_lines = split_string(item.output, '\n');
 	std::string line = "";
+	for (int i = 0; i < item.top_spacing; i++)
+	{
+		widget_lines.push_back(active_spacing);
+	}
+
 	for (unsigned int i = 0; i < user_lines.size(); i++)
 	{
 		if (user_lines[i] == "\n")
@@ -300,6 +306,11 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		line = fill_line(line, width, item.allignment);
 		widget_lines.push_back(line);
 		line = "";
+	}
+
+	for (int i = 0; i < item.bottom_spacing; i++)
+	{
+		widget_lines.push_back(active_spacing);
 	}
 
 	for (unsigned int i = 0; i < widget_lines.size(); i++)
