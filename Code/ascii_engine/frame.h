@@ -51,6 +51,7 @@ private:
 	std::string fill_line(std::string input, unsigned int length, std::string allignment);
 	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	std::string fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content);
+	void cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section);
 	void update();
 
 	struct lane

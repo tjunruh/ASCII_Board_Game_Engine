@@ -57,7 +57,7 @@ int frame::set_column_size(unsigned int column, unsigned int spacing)
 void frame::display()
 {
 	update();
-	//ascii_io::clear();
+	ascii_io::clear();
 	ascii_io::print(frame_output);
 }
 
@@ -255,24 +255,36 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	{
 		width = raw_width;
 	}
-	std::string active_spacing = get_spacing(width);
 	std::vector<std::string> widget_lines;
 	std::vector<std::string> user_lines = split_string(item.output, '\n');
 	std::string line = "";
 	for (unsigned int i = 0; i < user_lines.size(); i++)
 	{
-		std::vector<std::string> words = split_string(user_lines[i], ' ');
 		if (user_lines[i] == "\n")
 		{
-			widget_lines.push_back(active_spacing);
+			line = fill_line(line, width, item.allignment);
+			widget_lines.push_back(line);
+			line = "";
 		}
 		else
 		{
+			std::vector<std::string> words = split_string(user_lines[i], ' ');
 			for (unsigned int j = 0; j < words.size(); j++)
 			{
 				if ((((line + words[j]).length())) < width)
 				{
 					line = line + words[j];
+				}
+				else if (words[j].length() > width)
+				{
+					std::string first_section = "";
+					std::string second_section = "";
+					cut_word(words[j], width - line.length(), first_section, second_section);
+					line = line + first_section;
+					widget_lines.push_back(line);
+					line = "";
+					second_section.insert(0, "-");
+					words.insert(words.begin() + (j + 1), second_section);
 				}
 				else
 				{
@@ -281,12 +293,13 @@ std::vector<std::string> frame::get_widget_lines(int id)
 					line = words[j];
 				}
 			}
-			if (line != "")
-			{
-				line = fill_line(line, width, item.allignment);
-				widget_lines.push_back(line);
-			}
 		}
+	}
+	if (line != "")
+	{
+		line = fill_line(line, width, item.allignment);
+		widget_lines.push_back(line);
+		line = "";
 	}
 
 	for (unsigned int i = 0; i < widget_lines.size(); i++)
@@ -304,10 +317,13 @@ std::vector<std::string> frame::split_string(std::string str, char split_charact
 	std::vector<std::string> sections;
 	for (unsigned int i = 0; i < str.length(); i++)
 	{
-		if ((str[i] == split_character) && (section != ""))
+		if (str[i] == split_character)
 		{
 			sections.push_back(section);
-			sections.push_back(std::string(1, split_character));
+			if (section != std::string(1, split_character))
+			{
+				sections.push_back(std::string(1, split_character));
+			}
 			section = "";
 		}
 		else
@@ -406,6 +422,26 @@ std::string frame::fuse_columns_into_row(std::vector<std::vector<std::string>> c
 		row = row + "\n";
 	}
 	return row;
+}
+
+void frame::cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section)
+{
+	first_section = "";
+	second_section = "";
+	if (length > word.length())
+	{
+		length = word.length();
+	}
+
+	for (unsigned int i = 0; i < length; i++)
+	{
+		first_section = first_section + word[i];
+	}
+
+	for (unsigned int i = length; i < word.length(); i++)
+	{
+		second_section = second_section + word[i];
+	}
 }
 
 void frame::update()
