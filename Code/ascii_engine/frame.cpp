@@ -14,18 +14,19 @@ void frame::set_columns(unsigned int number_of_columns)
 	int y = 0;
 	ascii_io::get_terminal_size(x, y);
 	int column_size = int(x / float(number_of_columns));
-	for (int i = 0; i < number_of_columns; i++)
+	for (unsigned int i = 0; i < number_of_columns; i++)
 	{
 		lane column;
 		column.index = i;
 		column.size = column_size;
+		columns.push_back(column);
 	}
 }
 
 
 unsigned int frame::get_column_size(unsigned int column)
 {
-	unsigned int size = -1;
+	unsigned int size = 0;
 	for (unsigned int i = 0; i < columns.size(); i++)
 	{
 		if (columns[i].index == column)
@@ -53,9 +54,20 @@ int frame::set_column_size(unsigned int column, unsigned int spacing)
 	return status;
 }
 
+void frame::display()
+{
+	update();
+	//ascii_io::clear();
+	ascii_io::print(frame_output);
+}
+
 int frame::add_widget()
 {
-	return generate_widget_id();
+	int id = generate_widget_id();
+	widget_info new_widget;
+	new_widget.id = id;
+	widgets.push_back(new_widget);
+	return id;
 }
 
 int frame::set_position(int id, int row, int column)
@@ -101,7 +113,7 @@ int frame::set_allignment(int id, std::string allignment)
 		{
 			if (widgets[i].id == id)
 			{
-				widgets[i].allignment == allignment;
+				widgets[i].allignment = allignment;
 				status = 0;
 				break;
 			}
@@ -146,18 +158,6 @@ int frame::generate_widget_id()
 {
 	int id = widgets.size();
 	return id;
-}
-
-std::string frame::format_row(int row)
-{
-	std::string formated_row = "";
-	std::vector<int> ids = get_row_ids(row);
-	ids = sort_row_ids(ids);
-	for (unsigned int i = 0; i < ids.size(); i++)
-	{
-		
-	}
-
 }
 
 std::vector<int> frame::get_row_ids(int row)
@@ -228,7 +228,7 @@ std::string frame::get_output(int id)
 	return output;
 }
 
-int frame::get_widget(int id, widget& return_value)
+int frame::get_widget(int id, widget_info& return_value)
 {
 	int status = 1;
 	for (unsigned int i = 0; i < widgets.size(); i++)
@@ -245,11 +245,16 @@ int frame::get_widget(int id, widget& return_value)
 
 std::vector<std::string> frame::get_widget_lines(int id)
 {
-	widget item;
+	widget_info item;
 	get_widget(id, item);
 	std::string left_spacing = get_spacing(item.left_spacing);
 	std::string right_spacing = get_spacing(item.right_spacing);
-	int width = get_column_size(item.column) - item.left_spacing - item.right_spacing;
+	int raw_width = get_column_size(item.column) - item.left_spacing - item.right_spacing;
+	unsigned int width = 0;
+	if (raw_width >= 0)
+	{
+		width = raw_width;
+	}
 	std::string active_spacing = get_spacing(width);
 	std::vector<std::string> widget_lines;
 	std::vector<std::string> user_lines = split_string(item.output, '\n');
@@ -411,12 +416,13 @@ void frame::update()
 	{
 		std::vector<int> row_ids = get_row_ids(i);
 		row_ids = sort_row_ids(row_ids);
-		for (int j = 0; j < row_ids.size(); j++)
+		for (unsigned int j = 0; j < row_ids.size(); j++)
 		{
 			std::vector<std::string> widget_lines;
 			widget_lines = get_widget_lines(row_ids[j]);
 			columns_output.push_back(widget_lines);
 		}
 		frame_output = frame_output + fuse_columns_into_row(columns_output);
+		columns_output.clear();
 	}
 }
