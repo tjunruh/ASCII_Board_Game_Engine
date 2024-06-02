@@ -68,3 +68,15 @@ std::string ascii_io::getline() {
 #endif
 	return input;
 }
+
+void ascii_io::get_terminal_size(int &x, int &y)
+{
+#ifdef _WIN32
+	CONSOLE_SCREEN_BUFFER_INFO size_info;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &size_info);
+	x = size_info.dwSize.X;
+	y = size_info.dwSize.Y;
+#elif __linux__
+	getmaxyx(stdscr, x, y);
+#endif
+}
