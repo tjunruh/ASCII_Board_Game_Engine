@@ -279,7 +279,10 @@ std::vector<std::string> frame::get_widget_lines(int id)
 			{
 				if ((((line + words[j]).length())) < width)
 				{
-					line = line + words[j];
+					if ((line != "") || (words[j] != " "))
+					{
+						line = line + words[j];
+					}
 				}
 				else if (words[j].length() > width)
 				{
@@ -296,7 +299,15 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				{
 					line = fill_line(line, width, item.allignment);
 					widget_lines.push_back(line);
-					line = words[j];
+					if (words[j] != " ")
+					{
+						line = words[j];
+					}
+					else
+					{
+						line = "";
+					}
+					
 				}
 			}
 		}
