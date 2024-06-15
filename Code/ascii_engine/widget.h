@@ -3,6 +3,8 @@
 #include <vector>
 #include "frame.h"
 
+class menu;
+
 class widget
 {
 public:
@@ -11,6 +13,9 @@ public:
 	int set_position(int row, int column);
 	int set_output(const std::string& text);
 	int set_spacing(int top, int bottom, int right, int left);
+	int set_widget_type(int type);
+	void refresh();
+	operator int() { return widget_id; }
 private:
 	frame *parent_frame;
 	int widget_id;

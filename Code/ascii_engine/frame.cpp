@@ -61,6 +61,69 @@ void frame::display()
 	ascii_io::print(frame_output);
 }
 
+void frame::set_controls(int select, int quit, int up, int down, int right, int left)
+{
+	_select = select;
+	_quit = quit;
+	_up = up;
+	_down = down;
+	_right = right;
+	_left = left;
+}
+
+int frame::get_selection()
+{
+	int input = 0;
+	int selected_row = 0;
+	int selected_column = 0;
+	int selected_id = -1;
+	do
+	{
+		display();
+		input = ascii_io::getchar();
+		if (input == _select)
+		{
+			widget_info item;
+			get_widget(selected_row, selected_column, item);
+			if (item.widget_type == MENU)
+			{
+				selected_id = item.id;
+				break;
+			}
+			
+		}
+		else if (input == _up)
+		{
+			if ((selected_row - 1) >= 0)
+			{
+				selected_row--;
+			}
+		}
+		else if (input == _down)
+		{
+			if ((selected_row + 1) < total_rows)
+			{
+				selected_row++;
+			}
+		}
+		else if (input == _right)
+		{
+			if ((selected_column + 1) < total_columns)
+			{
+				selected_column++;
+			}
+		}
+		else if (input == _left)
+		{
+			if ((selected_column - 1) >= 0)
+			{
+				selected_column--;
+			}
+		}
+	} while (input != _quit);
+	return selected_id;
+}
+
 int frame::add_widget()
 {
 	int id = generate_widget_id();
@@ -133,6 +196,21 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].bottom_spacing = bottom;
 			widgets[i].right_spacing = right;
 			widgets[i].left_spacing = left;
+			status = 0;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_widget_type(int id, int type)
+{
+	int status = 1;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].widget_type = type;
 			status = 0;
 			break;
 		}
@@ -243,6 +321,21 @@ int frame::get_widget(int id, widget_info& return_value)
 	return status;
 }
 
+int frame::get_widget(int row, int column, widget_info& return_value)
+{
+	int status = 1;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row) == row && (widgets[i].column == column))
+		{
+			return_value = widgets[i];
+			status = 0;
+			break;
+		}
+	}
+	return status;
+}
+
 std::vector<std::string> frame::get_widget_lines(int id)
 {
 	widget_info item;
@@ -279,10 +372,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 			{
 				if ((((line + words[j]).length())) < width)
 				{
-					if ((line != "") || (words[j] != " "))
-					{
-						line = line + words[j];
-					}
+					line = line + words[j];
 				}
 				else if (words[j].length() > width)
 				{
@@ -299,7 +389,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				{
 					line = fill_line(line, width, item.allignment);
 					widget_lines.push_back(line);
-					if (words[j] != " ")
+					if ((words[j] != " ") && item.widget_type == TEXTBOX)
 					{
 						line = words[j];
 					}

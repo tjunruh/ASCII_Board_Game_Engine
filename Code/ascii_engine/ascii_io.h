@@ -106,4 +106,18 @@ namespace ascii_io
 	const int end_curly_bracket = 125;
 	const int tilde = 126;
 	const int DEL = 127;
+
+#ifdef _WIN32
+	const int enter = 13;
+	const int right = 77;
+	const int left = 75;
+	const int up = 72;
+	const int down = 80;
+#elif __linux__
+	const int enter = 10;
+	const int right = 67;
+	const int left = 68;
+	const int up = 65;
+	const int down = 66;
+#endif
 }

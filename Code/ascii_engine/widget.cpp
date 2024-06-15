@@ -29,3 +29,14 @@ int widget::set_spacing(int top, int bottom, int right, int left)
 	int status = parent_frame->set_spacing(widget_id, top, bottom, right, left);
 	return status;
 }
+
+int widget::set_widget_type(int type)
+{
+	int status = parent_frame->set_widget_type(widget_id, type);
+	return status;
+}
+
+void widget::refresh()
+{
+	parent_frame->display();
+}

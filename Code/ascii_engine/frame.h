@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 #include "ascii_io.h"
+#include "widget_types.h"
+
+class widget;
+class menu;
 
 class frame
 {
@@ -13,7 +17,8 @@ public:
 	unsigned int get_column_size(unsigned int column);
 	int set_column_size(unsigned int column, unsigned int spacing);
 	void display();
-
+	void set_controls(int select, int quit, int up, int down, int right, int left);
+	int get_selection();
 private:
 	struct widget_info
 	{
@@ -26,17 +31,19 @@ private:
 		int bottom_spacing = 0;
 		int right_spacing = 0;
 		int left_spacing = 0;
+		int widget_type = WIDGET;
 	};
 
 	const std::string right_allignment_keyword = "right";
 	const std::string left_allignment_keyword = "left";
 	const std::string center_allignment_keyword = "center";
-
+	void (*test)(void);
 	int add_widget();
 	int set_position(int id, int row, int column);
 	int set_output(int id, const std::string& output);
 	int set_allignment(int id, std::string allignment);
 	int set_spacing(int id, int top, int bottom, int right, int left);
+	int set_widget_type(int id, int type);
 	bool widget_exists(int id);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
@@ -45,6 +52,7 @@ private:
 	bool in_range(int value, int begin, int end);
 	std::string get_output(int id);
 	int get_widget(int id, widget_info& return_value);
+	int get_widget(int row, int column, widget_info& return_value);
 	std::vector<std::string> get_widget_lines(int id);
 	std::vector<std::string> split_string(std::string str, char split_character);
 	std::string get_spacing(unsigned int length);
@@ -66,4 +74,10 @@ private:
 
 	std::vector<widget_info> widgets;
 	std::vector<lane> columns;
+	int _select = ascii_io::enter;
+	int _up = ascii_io::up;
+	int _down = ascii_io::down;
+	int _right = ascii_io::right;
+	int _left = ascii_io::left;
+	int _quit = ascii_io::q;
 };
