@@ -1,10 +1,15 @@
 #include "widget.h"
+#include "error_codes.h"
 
 widget::widget(frame* parent, int row, int column)
 {
 	parent_frame = parent;
 	widget_id = parent->add_widget();
-	parent_frame->set_position(widget_id, row, column);
+	int status = parent_frame->set_position(widget_id, row, column);
+	if (status == INVALID_INDEX)
+	{
+		throw std::string("invalid index");
+	}
 }
 
 int widget::set_allignment(std::string allignment)
