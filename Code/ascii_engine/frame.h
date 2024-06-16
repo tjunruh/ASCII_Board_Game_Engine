@@ -1,19 +1,15 @@
 #pragma once
-#include "console.h"
 #include <string>
 #include <vector>
 #include "ascii_io.h"
 #include "widget_types.h"
-
-class widget;
-class menu;
+#include "console.h"
 
 class frame
 {
 public:
 	friend class widget;
-	void set_rows(unsigned int number_of_rows);
-	void set_columns(unsigned int number_of_columns);
+	frame(console* parent, int number_of_rows, int number_of_columns);
 	unsigned int get_column_size(unsigned int column);
 	int set_column_size(unsigned int column, unsigned int spacing);
 	void display();
@@ -37,7 +33,6 @@ private:
 	const std::string right_allignment_keyword = "right";
 	const std::string left_allignment_keyword = "left";
 	const std::string center_allignment_keyword = "center";
-	void (*test)(void);
 	int add_widget();
 	int set_position(int id, int row, int column);
 	int set_output(int id, const std::string& output);
@@ -80,4 +75,6 @@ private:
 	int _right = ascii_io::right;
 	int _left = ascii_io::left;
 	int _quit = ascii_io::q;
+	int frame_id;
+	console* parent_console;
 };

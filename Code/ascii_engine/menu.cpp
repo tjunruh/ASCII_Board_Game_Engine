@@ -1,7 +1,7 @@
 #include "menu.h"
 #include "widget_types.h"
 
-menu::menu(frame* parent) : widget(parent)
+menu::menu(frame* parent, int row, int column) : widget(parent, row, column)
 {
 	set_widget_type(MENU);
 }

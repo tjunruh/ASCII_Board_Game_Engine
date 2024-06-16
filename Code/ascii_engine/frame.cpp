@@ -1,14 +1,12 @@
 #include "frame.h"
-#include "ascii_io.h"
 
-void frame::set_rows(unsigned int number_of_rows)
+frame::frame(console* parent, int number_of_rows, int number_of_columns)
 {
+	parent_console = parent;
+	frame_id = parent_console->add_frame();
+
 	total_rows = number_of_rows;
-}
 
-void frame::set_columns(unsigned int number_of_columns)
-{
-	columns.clear();
 	total_columns = number_of_columns;
 	int x = 0;
 	int y = 0;
@@ -23,7 +21,6 @@ void frame::set_columns(unsigned int number_of_columns)
 	}
 }
 
-
 unsigned int frame::get_column_size(unsigned int column)
 {
 	unsigned int size = 0;
@@ -37,7 +34,6 @@ unsigned int frame::get_column_size(unsigned int column)
 	}
 	return size;
 }
-
 
 int frame::set_column_size(unsigned int column, unsigned int spacing)
 {
@@ -56,9 +52,7 @@ int frame::set_column_size(unsigned int column, unsigned int spacing)
 
 void frame::display()
 {
-	update();
-	ascii_io::clear();
-	ascii_io::print(frame_output);
+	parent_console->display();
 }
 
 void frame::set_controls(int select, int quit, int up, int down, int right, int left)
@@ -160,7 +154,9 @@ int frame::set_output(int id, const std::string& output)
 		if (widgets[i].id == id)
 		{
 			widgets[i].output = output;
-			status = 1;
+			update();
+			parent_console->set_output(frame_id, frame_output);
+			status = 0;
 			break;
 		}
 	}
@@ -177,6 +173,8 @@ int frame::set_allignment(int id, std::string allignment)
 			if (widgets[i].id == id)
 			{
 				widgets[i].allignment = allignment;
+				update();
+				parent_console->set_output(frame_id, frame_output);
 				status = 0;
 				break;
 			}
@@ -196,6 +194,8 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].bottom_spacing = bottom;
 			widgets[i].right_spacing = right;
 			widgets[i].left_spacing = left;
+			update();
+			parent_console->set_output(frame_id, frame_output);
 			status = 0;
 			break;
 		}

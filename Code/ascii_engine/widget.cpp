@@ -1,20 +1,15 @@
 #include "widget.h"
 
-widget::widget(frame* parent)
+widget::widget(frame* parent, int row, int column)
 {
 	parent_frame = parent;
 	widget_id = parent->add_widget();
+	parent_frame->set_position(widget_id, row, column);
 }
 
 int widget::set_allignment(std::string allignment)
 {
 	int status = parent_frame->set_allignment(widget_id, allignment);
-	return status;
-}
-
-int widget::set_position(int row, int column)
-{
-	int status = parent_frame->set_position(widget_id, row, column);
 	return status;
 }
 

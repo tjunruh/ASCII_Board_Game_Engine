@@ -6,6 +6,6 @@
 class text_box : public widget
 {
 public:
-	text_box(frame* parent);
+	text_box(frame* parent, int row, int column);
 };
 
