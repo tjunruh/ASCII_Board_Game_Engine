@@ -1,4 +1,5 @@
 #include "frame.h"
+#include "error_codes.h"
 
 frame::frame(console* parent, int number_of_rows, int number_of_columns)
 {
@@ -37,13 +38,13 @@ unsigned int frame::get_column_size(unsigned int column)
 
 int frame::set_column_size(unsigned int column, unsigned int spacing)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < columns.size(); i++)
 	{
 		if (columns[i].index == column)
 		{
 			columns[i].size = spacing;
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
@@ -129,7 +130,7 @@ int frame::add_widget()
 
 int frame::set_position(int id, int row, int column)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	if ((row < total_rows) && (row >= 0) && (column < total_columns) && (column >= 0))
 	{
 		for (unsigned int i = 0; i < widgets.size(); i++)
@@ -138,17 +139,21 @@ int frame::set_position(int id, int row, int column)
 			{
 				widgets[i].row = row;
 				widgets[i].column = column;
-				status = 0;
+				status = SUCCESS;
 				break;
 			}
 		}
+	}
+	else
+	{
+		status = INVALID_INDEX;
 	}
 	return status;
 }
 
 int frame::set_output(int id, const std::string& output)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
@@ -156,7 +161,7 @@ int frame::set_output(int id, const std::string& output)
 			widgets[i].output = output;
 			update();
 			parent_console->set_output(frame_id, frame_output);
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
@@ -165,7 +170,7 @@ int frame::set_output(int id, const std::string& output)
 
 int frame::set_allignment(int id, std::string allignment)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	if ((allignment == right_allignment_keyword) || (allignment == left_allignment_keyword) || (allignment == center_allignment_keyword))
 	{
 		for (unsigned int i = 0; i < widgets.size(); i++)
@@ -175,7 +180,7 @@ int frame::set_allignment(int id, std::string allignment)
 				widgets[i].allignment = allignment;
 				update();
 				parent_console->set_output(frame_id, frame_output);
-				status = 0;
+				status = SUCCESS;
 				break;
 			}
 		}
@@ -185,7 +190,7 @@ int frame::set_allignment(int id, std::string allignment)
 
 int frame::set_spacing(int id, int top, int bottom, int right, int left)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
@@ -196,7 +201,7 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].left_spacing = left;
 			update();
 			parent_console->set_output(frame_id, frame_output);
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
@@ -205,13 +210,13 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 
 int frame::set_widget_type(int id, int type)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
 			widgets[i].widget_type = type;
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
@@ -308,13 +313,13 @@ std::string frame::get_output(int id)
 
 int frame::get_widget(int id, widget_info& return_value)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
 			return_value = widgets[i];
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
@@ -323,13 +328,13 @@ int frame::get_widget(int id, widget_info& return_value)
 
 int frame::get_widget(int row, int column, widget_info& return_value)
 {
-	int status = 1;
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if ((widgets[i].row) == row && (widgets[i].column == column))
 		{
 			return_value = widgets[i];
-			status = 0;
+			status = SUCCESS;
 			break;
 		}
 	}
