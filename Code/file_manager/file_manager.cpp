@@ -43,7 +43,7 @@ std::string file_manager::extract_path(std::string path_with_file)
 #ifdef WIN32
 	char path_seperator = '\\';
 #elif __linux__
-	char path_sperator = '/';
+	char path_seperator = '/';
 #endif
 	std::string path = "";
 	bool path_seperator_encountered = false;
@@ -67,7 +67,7 @@ std::string file_manager::extract_file(std::string path_with_file)
 #ifdef WIN32
 	char path_seperator = '\\';
 #elif __linux__
-	char path_sperator = '/';
+	char path_seperator = '/';
 #endif
 	std::string file = "";
 	for (int i = (path_with_file.length() - 1); i >= 0; i--)
