@@ -10,6 +10,7 @@ namespace ascii_io
 	std::string getline();
 	void get_terminal_size(int& x, int& y);
 	
+	const int undefined = -1;
 	const int space = 32;
 	const int exclamation = 33;
 	const int double_quoatation = 34;
