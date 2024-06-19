@@ -36,6 +36,30 @@ int widget::set_widget_type(int type)
 	return status;
 }
 
+int widget::set_vertical_border(char border)
+{
+	int status = parent_frame->set_vertical_border(widget_id, border);
+	return status;
+}
+
+int widget::set_horizontal_border(char border)
+{
+	int status = parent_frame->set_horizontal_border(widget_id, border);
+	return status;
+}
+
+int widget::set_corner_border(char border)
+{
+	int status = parent_frame->set_corner_border(widget_id, border);
+	return status;
+}
+
+int widget::add_border()
+{
+	int status = parent_frame->add_border(widget_id);
+	return status;
+}
+
 void widget::refresh()
 {
 	parent_frame->display();

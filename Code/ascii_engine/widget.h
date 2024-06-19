@@ -13,6 +13,10 @@ public:
 	int set_output(const std::string& text);
 	int set_spacing(int top, int bottom, int right, int left);
 	int set_widget_type(int type);
+	int set_vertical_border(char border);
+	int set_horizontal_border(char border);
+	int set_corner_border(char border);
+	int add_border();
 	void refresh();
 	operator int() { return widget_id; }
 private:

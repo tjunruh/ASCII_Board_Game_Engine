@@ -223,6 +223,66 @@ int frame::set_widget_type(int id, int type)
 	return status;
 }
 
+int frame::set_vertical_border(int id, char border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].vertical_border = border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_horizontal_border(int id, char border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].horizontal_border = border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_corner_border(int id, char border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].corner_border = border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::add_border(int id)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].add_border = true;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 bool frame::widget_exists(int id)
 {
 	bool exists = false;
@@ -341,19 +401,29 @@ int frame::get_widget(int row, int column, widget_info& return_value)
 	return status;
 }
 
-std::vector<std::string> frame::get_widget_lines(int id)
+unsigned int frame::get_widget_width(const widget_info& item)
 {
-	widget_info item;
-	get_widget(id, item);
-	std::string left_spacing = get_spacing(item.left_spacing);
-	std::string right_spacing = get_spacing(item.right_spacing);
 	int raw_width = get_column_size(item.column) - item.left_spacing - item.right_spacing;
+	if (item.add_border)
+	{
+		raw_width = raw_width - 4;
+	}
 	unsigned int width = 0;
 	if (raw_width >= 0)
 	{
 		width = raw_width;
 	}
-	std::string active_spacing = get_spacing(width);
+	return width;
+}
+
+std::vector<std::string> frame::get_widget_lines(int id)
+{
+	widget_info item;
+	get_widget(id, item);
+	std::string left_spacing = get_spacing(item.left_spacing, ' ');
+	std::string right_spacing = get_spacing(item.right_spacing, ' ');
+	unsigned int width = get_widget_width(item);
+	std::string active_spacing = get_spacing(width, ' ');
 	std::vector<std::string> widget_lines;
 	std::vector<std::string> user_lines = split_string(item.output, '\n');
 	std::string line = "";
@@ -457,12 +527,12 @@ std::vector<std::string> frame::split_string(std::string str, char split_charact
 	return sections;
 }
 
-std::string frame::get_spacing(unsigned int length)
+std::string frame::get_spacing(unsigned int length, char space_char)
 {
 	std::string spacing = "";
 	for (unsigned int i = 0; i < length; i++)
 	{
-		spacing = spacing + " ";
+		spacing = spacing + space_char;
 	}
 	return spacing;
 }
@@ -505,7 +575,7 @@ std::string frame::fill_line(std::string input, unsigned int length, std::string
 
 std::vector<std::string> frame::add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length)
 {
-	std::string line = get_spacing(line_length);
+	std::string line = get_spacing(line_length, ' ');
 	for (unsigned int i = 0; i < number_of_added_lines; i++)
 	{
 		lines.push_back(line);
@@ -573,6 +643,18 @@ void frame::update()
 		{
 			std::vector<std::string> widget_lines;
 			widget_lines = get_widget_lines(row_ids[j]);
+			widget_info item;
+			get_widget(row_ids[j], item);
+			if (item.add_border)
+			{
+				widget_lines.insert(widget_lines.begin(), get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
+				for (unsigned int k = 1; k < widget_lines.size(); k++)
+				{
+					widget_lines[k].insert(item.left_spacing, std::string(1, item.vertical_border) + " ");
+					widget_lines[k].insert(widget_lines[k].length() - item.right_spacing, " " + std::string(1, item.vertical_border));
+				}
+				widget_lines.push_back(get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
+			}
 			columns_output.push_back(widget_lines);
 		}
 		frame_output = frame_output + fuse_columns_into_row(columns_output);
