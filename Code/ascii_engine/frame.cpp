@@ -13,7 +13,7 @@ frame::frame(console* parent, int number_of_rows, int number_of_columns)
 	int y = 0;
 	ascii_io::get_terminal_size(x, y);
 	int column_size = int(x / float(number_of_columns));
-	for (unsigned int i = 0; i < number_of_columns; i++)
+	for (int i = 0; i < number_of_columns; i++)
 	{
 		lane column;
 		column.index = i;
@@ -74,6 +74,7 @@ int frame::get_selection()
 	int selected_id = -1;
 	do
 	{
+		highlight(selected_row, selected_column);
 		display();
 		input = ascii_io::getchar();
 		if (input == _select)
@@ -159,8 +160,7 @@ int frame::set_output(int id, const std::string& output)
 		if (widgets[i].id == id)
 		{
 			widgets[i].output = output;
-			update();
-			parent_console->set_output(frame_id, frame_output);
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
@@ -178,8 +178,7 @@ int frame::set_allignment(int id, std::string allignment)
 			if (widgets[i].id == id)
 			{
 				widgets[i].allignment = allignment;
-				update();
-				parent_console->set_output(frame_id, frame_output);
+				parent_console->set_output(frame_id, get_frame_output());
 				status = SUCCESS;
 				break;
 			}
@@ -199,8 +198,7 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].bottom_spacing = bottom;
 			widgets[i].right_spacing = right;
 			widgets[i].left_spacing = left;
-			update();
-			parent_console->set_output(frame_id, frame_output);
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
@@ -231,6 +229,7 @@ int frame::set_vertical_border(int id, char border)
 		if (widgets[i].id == id)
 		{
 			widgets[i].vertical_border = border;
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
@@ -246,6 +245,7 @@ int frame::set_horizontal_border(int id, char border)
 		if (widgets[i].id == id)
 		{
 			widgets[i].horizontal_border = border;
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
@@ -261,6 +261,23 @@ int frame::set_corner_border(int id, char border)
 		if (widgets[i].id == id)
 		{
 			widgets[i].corner_border = border;
+			parent_console->set_output(frame_id, get_frame_output());
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_highlight_character(int id, char character)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].highlight_character = character;
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
@@ -276,10 +293,30 @@ int frame::add_border(int id)
 		if (widgets[i].id == id)
 		{
 			widgets[i].add_border = true;
+			parent_console->set_output(frame_id, get_frame_output());
 			status = SUCCESS;
 			break;
 		}
 	}
+	return status;
+}
+
+int frame::highlight(int row, int column)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column))
+		{
+			widgets[i].highlight = true;
+			status = SUCCESS;
+		}
+		else if(widgets[i].highlight)
+		{
+			widgets[i].highlight = false;
+		}
+	}
+	parent_console->set_output(frame_id, get_frame_output());
 	return status;
 }
 
@@ -631,9 +668,9 @@ void frame::cut_word(const std::string& word, unsigned int length, std::string& 
 	}
 }
 
-void frame::update()
+std::string frame::get_frame_output()
 {
-	frame_output = "";
+	std::string frame_output = "";
 	std::vector<std::vector<std::string>> columns_output;
 	for (int i = 0; i < total_rows; i++)
 	{
@@ -655,9 +692,19 @@ void frame::update()
 				}
 				widget_lines.push_back(get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
 			}
+
+			if (item.highlight)
+			{
+				(widget_lines[0])[item.left_spacing] = item.highlight_character;
+				(widget_lines[0])[widget_lines[0].length() - 1 - item.right_spacing] = item.highlight_character;
+				(widget_lines[widget_lines.size() - 1])[item.left_spacing] = item.highlight_character;
+				(widget_lines[widget_lines.size() - 1])[widget_lines[widget_lines.size() - 1].length() - 1 - item.right_spacing] = item.highlight_character;
+			}
+
 			columns_output.push_back(widget_lines);
 		}
 		frame_output = frame_output + fuse_columns_into_row(columns_output);
 		columns_output.clear();
 	}
+	return frame_output;
 }

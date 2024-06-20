@@ -28,6 +28,8 @@ private:
 		int right_spacing = 0;
 		int left_spacing = 0;
 		bool add_border = false;
+		bool highlight = false;
+		char highlight_character = '#';
 		char vertical_border = '|';
 		char horizontal_border = '-';
 		char corner_border = '.';
@@ -46,7 +48,9 @@ private:
 	int set_vertical_border(int id, char border);
 	int set_horizontal_border(int id, char border);
 	int set_corner_border(int id, char border);
+	int set_highlight_character(int id, char character);
 	int add_border(int id);
+	int highlight(int row, int column);
 	bool widget_exists(int id);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
@@ -64,7 +68,7 @@ private:
 	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	std::string fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content);
 	void cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section);
-	void update();
+	std::string get_frame_output();
 
 	struct lane
 	{
@@ -74,7 +78,6 @@ private:
 
 	int total_rows = 0;
 	int total_columns = 0;
-	std::string frame_output;
 
 	std::vector<widget_info> widgets;
 	std::vector<lane> columns;
