@@ -19,7 +19,7 @@ DEBUG := -g
 
 LIBS := -lncurses
 
-CXXFLAGS := -Wall -O2 $(DEBUG) -fPIC
+CXXFLAGS := -Wall -O2 $(DEBUG) -fPIC -Iexternal_libraries
 
 .PHONY: all clean engine
 
@@ -64,7 +64,7 @@ all: $(EXECUTABLES) $(LIBRARIES)
 engine: $(LIBRARIES)
 
 clean:
-	rm -rv $(BLD_DIR)
+	-rm -rv $(BLD_DIR)
 
 $(BLD_DIR):
 	mkdir -p $(BLD_DIR)
