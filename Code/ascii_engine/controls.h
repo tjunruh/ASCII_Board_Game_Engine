@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include "ascii_io.h"
 #include "error_codes.h"
 
@@ -57,5 +57,5 @@ public:
 	int save_controls(std::string file_path);
 
 private:
-	std::map<std::string, const int> control_mapping;
+	std::unordered_map<std::string, const int> control_mapping;
 };
