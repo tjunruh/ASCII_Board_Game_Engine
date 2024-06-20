@@ -16,21 +16,21 @@ public:
 	* 
 	* return either SUCCESS or DUPLICATE_ELEMENT from error_codes.h
 	*/
-	int bind(std::string control_name, const int key);
+	int bind(const std::string& control_name, const int key);
 
 	/*
 	* Control name can be any name of developers choosing. Search
 	* control map for control name. If found, delete it and return
 	* SUCCESS. Otherwise, return ELEMENT_NOT_FOUND
 	*/
-	int unbind(std::string control_name);
+	int unbind(const std::string& control_name);
 
 	/*
 	* control_name can be any name of developers choosing. Search
 	* control map for control name. Return the value to the key
 	* in control_mapping. If not found, return ascii_io::undefined
 	*/
-	const int get_key(std::string control_name);
+	const int get_key(const std::string& control_name);
 
 	/*
 	* Load a file containing controls and populate control_mapping.
@@ -43,7 +43,7 @@ public:
 	* return SUCCESS if successful load, INVALID_PATH if file not 
 	* found, or INVALID_CONFIG if parsing error.
 	*/
-	int load_controls(std::string file_path);
+	int load_controls(const std::string& file_path);
 
 	/*
 	* Save information from control_mapping to file at file_path
@@ -54,7 +54,10 @@ public:
 	* 
 	* return SUCCESS if saved or INVALID_PATH if failure.
 	*/
-	int save_controls(std::string file_path);
+	int save_controls(const std::string& file_path);
+
+   controls(){}
+   ~controls(){}
 
 private:
 	std::unordered_map<std::string, const int> control_mapping;

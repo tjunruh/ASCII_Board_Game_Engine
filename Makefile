@@ -21,7 +21,7 @@ LIBS := -lncurses
 
 CXXFLAGS := -Wall -O2 $(DEBUG) -fPIC
 
-.PHONY: all clean
+.PHONY: all clean engine
 
 EXECUTABLES := \
 	build_board_config.out \
@@ -60,6 +60,8 @@ ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/ascii_engine/, $(ASCII_ENGINE_OBJS))
 
 
 all: $(EXECUTABLES) $(LIBRARIES)
+
+engine: $(LIBRARIES)
 
 clean:
 	rm -rv $(BLD_DIR)
