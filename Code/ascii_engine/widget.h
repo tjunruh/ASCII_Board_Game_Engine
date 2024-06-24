@@ -8,7 +8,7 @@ class menu;
 class widget
 {
 public:
-	widget(frame* parent, int row, int column);
+	widget(frame* parent, std::string special_operation="none");
 	int set_allignment(std::string allignment);
 	int set_output(const std::string& text);
 	int set_spacing(int top, int bottom, int right, int left);
