@@ -8,8 +8,28 @@ frame::frame()
 
 void frame::display()
 {
+	std::string output = get_frame_output();
+#ifdef WIN32
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	if ((x != previous_x) || (y != previous_y))
+	{
+		ascii_io::clear();
+	}
+	else
+	{
+		ascii_io::reset();
+		mask_output(output, previous_output);
+	}
+	ascii_io::print(output);
+	previous_output = output;
+	previous_x = x;
+	previous_y = y;
+#elif __linux__
 	ascii_io::clear();
-	ascii_io::print(get_frame_output());
+	ascii_io::print(output);
+#endif
 }
 
 void frame::set_controls(int select, int quit, int up, int down, int right, int left)
@@ -78,6 +98,10 @@ int frame::get_selection()
 			if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
 			{
 				selected_column++;
+				if (selected_level >= get_levels(selected_row, selected_column))
+				{
+					selected_level = get_levels(selected_row, selected_column) - 1;
+				}
 			}
 		}
 		else if (input == _left)
@@ -85,6 +109,10 @@ int frame::get_selection()
 			if ((selected_column - 1) >= 0)
 			{
 				selected_column--;
+				if (selected_level >= get_levels(selected_row, selected_column))
+				{
+					selected_level = get_levels(selected_row, selected_column) - 1;
+				}
 			}
 		}
 	} while (input != _quit);
@@ -835,4 +863,90 @@ std::string frame::get_frame_output()
 		columns_output.clear();
 	}
 	return frame_output;
+}
+
+std::vector<std::string> frame::get_lines(const std::string& output_string)
+{
+	std::vector<std::string> output_lines;
+	std::string line = "";
+	for (unsigned int i = 0; i < output_string.length(); i++)
+	{
+		line = line + output_string[i];
+		if (output_string[i] == '\n')
+		{
+			output_lines.push_back(line);
+			line = "";
+		}
+	}
+	if (line != "")
+	{
+		output_lines.push_back(line);
+	}
+	return output_lines;
+}
+
+std::vector<std::string> frame::remove_trailing_whitespace(const std::vector<std::string>& lines)
+{
+	std::vector<std::string> updated_lines;
+	std::string line = "";
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		for (unsigned int j = 0; j < lines[i].length(); j++)
+		{
+			line = line + (lines[i])[j];
+		}
+
+		unsigned int line_length = line.length() - 1;
+		for (int j = line_length; j >= 0; j--)
+		{
+			if (line[j] == ' ')
+			{
+				line.erase(j);
+			}
+			else if (line[j] != '\n')
+			{
+				break;
+			}
+		}
+		if ((line != "\n") && (line != ""))
+		{
+			updated_lines.push_back(line);
+		}
+		line = "";
+	}
+	return updated_lines;
+}
+
+void frame::mask_output(std::string& output, const std::string& old_output)
+{
+	std::vector<std::string> new_output_lines = get_lines(output);
+	std::vector<std::string> old_output_lines = remove_trailing_whitespace(get_lines(old_output));
+	for (unsigned int i = 0; i < old_output_lines.size(); i++)
+	{
+		if (i < new_output_lines.size())
+		{
+			if (old_output_lines[i].length() > new_output_lines[i].length())
+			{
+				while ((old_output_lines[i].length() - new_output_lines[i].length()) != 0)
+				{
+					new_output_lines[i].insert(new_output_lines[i].length() - 2, " ");
+				}
+			}
+		}
+		else
+		{
+			std::string spacer = "";
+			for (unsigned int j = 0; j < old_output_lines[i].length(); j++)
+			{
+				spacer = spacer + " ";
+			}
+			new_output_lines.push_back(spacer);
+		}
+	}
+
+	output = "";
+	for (unsigned int i = 0; i < new_output_lines.size(); i++)
+	{
+		output = output + new_output_lines[i];
+	}
 }

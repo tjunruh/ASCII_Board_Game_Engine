@@ -77,6 +77,9 @@ private:
 	unsigned int get_total_rows();
 	unsigned int get_columns_in_row(int row);
 	std::string get_frame_output();
+	std::vector<std::string> get_lines(const std::string& output_string);
+	std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
+	void mask_output(std::string& output, const std::string& old_output);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
@@ -89,4 +92,9 @@ private:
 	int append_row = 0;
 	int append_column = -1;
 	int append_level = 0;
+#ifdef WIN32
+	std::string previous_output = "";
+	int previous_x = 0;
+	int previous_y = 0;
+#endif
 };

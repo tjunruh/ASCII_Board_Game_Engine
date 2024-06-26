@@ -41,14 +41,7 @@ void ascii_io::clear() {
 
 void ascii_io::reset() {
 #ifdef _WIN32
-	HANDLE hOut;
-	COORD Position;
-
-	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	Position.X = 0;
-	Position.Y = 0;
-	SetConsoleCursorPosition(hOut, Position);
+	print("\x1b[1;1H");
 #elif __linux__
 	erase();
 #endif
@@ -79,4 +72,9 @@ void ascii_io::get_terminal_size(int &x, int &y)
 #elif __linux__
 	getmaxyx(stdscr, x, y);
 #endif
+}
+
+void ascii_io::hide_curser()
+{
+	print("\x1b[?25l");
 }
