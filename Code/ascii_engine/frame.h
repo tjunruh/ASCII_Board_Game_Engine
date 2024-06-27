@@ -92,6 +92,7 @@ private:
 	int append_row = 0;
 	int append_column = -1;
 	int append_level = 0;
+	const std::vector<int> selectable_widgets = { MENU, BOARD };
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;

@@ -1,14 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-
-#define UNDEFINED -1
-#define SUCCESS 0
-#define INVALID_PATH 1
-#define INVALID_CONFIG 2
-#define ELEMENT_NOT_FOUND 3
-#define INVALID_INDEX 4
-#define DUPLICATE_ELEMENT 5
+#include "widget.h"
+#include "frame.h"
 
 struct tile_configuration
 {
@@ -24,11 +18,11 @@ struct board_configuration
 	std::vector<tile_configuration> tile_configurations;
 };
 
-class ascii_board
+class ascii_board : public widget
 {
 public:
 
-	ascii_board(std::string path, int& status);
+	ascii_board(frame* parent, std::string path, int& status, std::string special_operation = "none");
 	int clear_tile(int row, int column);
 	void clear_tiles();
 	int set_tile(int row, int column, std::string value, char ignore_character);

@@ -3,8 +3,9 @@
 #include "../validate_board_config/validate_board_config.h"
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include <iostream>
+#include "error_codes.h"
 
-ascii_board::ascii_board(std::string path, int& status)
+ascii_board::ascii_board(frame* parent, std::string path, int& status, std::string special_operation) : widget(parent, special_operation)
 {
 	validate_board_config validator;
 	status = UNDEFINED;
@@ -36,7 +37,7 @@ ascii_board::ascii_board(std::string path, int& status)
 	set_tile_ranges(action_tiles_field);
 	remove_inactive_tiles();
 	set_tile_default_values();
-
+	set_widget_type(BOARD);
 	status = SUCCESS;
 }
 

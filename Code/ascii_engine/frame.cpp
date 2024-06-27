@@ -63,7 +63,7 @@ int frame::get_selection()
 		{
 			widget_info item;
 			get_widget(selected_row, selected_column, selected_level, item);
-			if (item.widget_type == MENU)
+			if (std::count(selectable_widgets.begin(), selectable_widgets.end(), item.widget_type) != 0)
 			{
 				selected_id = item.id;
 				break;
