@@ -20,7 +20,7 @@ void frame::display()
 	else
 	{
 		ascii_io::reset();
-		mask_output(output, previous_output);
+		format_tools::mask_string(output, previous_output);
 	}
 	ascii_io::print(output);
 	previous_output = output;
@@ -188,16 +188,16 @@ int frame::set_output(int id, const std::string& output)
 	return status;
 }
 
-int frame::set_allignment(int id, std::string allignment)
+int frame::set_alignment(int id, std::string alignment)
 {
 	int status = ELEMENT_NOT_FOUND;
-	if ((allignment == right_allignment_keyword) || (allignment == left_allignment_keyword) || (allignment == center_allignment_keyword))
+	if ((alignment == format_tools::right_alignment_keyword) || (alignment == format_tools::left_alignment_keyword) || (alignment == format_tools::center_alignment_keyword))
 	{
 		for (unsigned int i = 0; i < widgets.size(); i++)
 		{
 			if (widgets[i].id == id)
 			{
-				widgets[i].allignment = allignment;
+				widgets[i].alignment = alignment;
 				status = SUCCESS;
 				break;
 			}
@@ -299,6 +299,36 @@ int frame::set_highlight_character(int id, char character)
 	return status;
 }
 
+int frame::set_x_origin(int id, int x_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].x_origin = x_origin;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_y_origin(int id, int y_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].y_origin = y_origin;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::add_border(int id)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -371,6 +401,95 @@ int frame::get_levels(int row, int column)
 		}
 	}
 	return count;
+}
+
+int frame::get_lines_count(int id, int& lines_count)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			lines_count = widgets[i].lines_count;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_x_origin(int id, int& x_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].x_origin == -1)
+			{
+				status = UNDEFINED;
+			}
+			else
+			{
+				x_origin = widgets[i].x_origin;
+				status = SUCCESS;
+			}
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_y_origin(int id, int& y_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].y_origin == -1)
+			{
+				status = UNDEFINED;
+			}
+			else
+			{
+				y_origin = widgets[i].y_origin;
+				status = SUCCESS;
+			}
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_alignment(int id, std::string& alignment)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			alignment = widgets[i].alignment;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_lines_count(int id, int lines_count)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].lines_count = lines_count;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
 }
 
 int frame::generate_widget_id()
@@ -497,17 +616,19 @@ bool frame::in_range(int value, int begin, int end)
 	return in;
 }
 
-std::string frame::get_output(int id)
+int frame::get_output(int id, std::string& output)
 {
-	std::string output = "";
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
 			output = widgets[i].output;
+			status = SUCCESS;
+			break;
 		}
 	}
-	return output;
+	return status;
 }
 
 int frame::get_widget(int id, widget_info& return_value)
@@ -562,16 +683,64 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	return width;
 }
 
+int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
+{
+	int status = ELEMENT_NOT_FOUND;
+	widget_info item;
+	status = get_widget(id, item);
+	if (status == SUCCESS)
+	{
+		width = get_widget_width(item, include_spacing);
+	}
+	return status;
+}
+
+unsigned int frame::get_widget_height(const widget_info& item, bool include_spacing)
+{
+	int raw_height = 0;
+	if (!include_spacing)
+	{
+		raw_height = item.lines_count - item.top_spacing - item.bottom_spacing;
+		if (item.add_border)
+		{
+			raw_height = raw_height - 2;
+		}
+	}
+	else
+	{
+		raw_height = item.lines_count;
+	}
+
+	unsigned int height = 0;
+	if (raw_height >= 0)
+	{
+		height = (unsigned int)raw_height;
+	}
+	return height;
+}
+
+int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
+{
+	int status = ELEMENT_NOT_FOUND;
+	widget_info item;
+	status = get_widget(id, item);
+	if (status == SUCCESS)
+	{
+		height = get_widget_height(item, include_spacing);
+	}
+	return status;
+}
+
 std::vector<std::string> frame::get_widget_lines(int id)
 {
 	widget_info item;
 	get_widget(id, item);
-	std::string left_spacing = get_spacing(item.left_spacing, ' ');
-	std::string right_spacing = get_spacing(item.right_spacing, ' ');
+	std::string left_spacing = format_tools::get_spacing(item.left_spacing, ' ');
+	std::string right_spacing = format_tools::get_spacing(item.right_spacing, ' ');
 	unsigned int width = get_widget_width(item, false);
-	std::string active_spacing = get_spacing(width, ' ');
+	std::string active_spacing = format_tools::get_spacing(width, ' ');
 	std::vector<std::string> widget_lines;
-	std::vector<std::string> user_lines = split_string(item.output, '\n');
+	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
 	std::string line = "";
 	for (int i = 0; i < item.top_spacing; i++)
 	{
@@ -582,13 +751,13 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	{
 		if (user_lines[i] == "\n")
 		{
-			line = fill_line(line, width, item.allignment);
+			line = format_tools::fill_line(line, width, item.alignment);
 			widget_lines.push_back(line);
 			line = "";
 		}
 		else
 		{
-			std::vector<std::string> words = split_string(user_lines[i], ' ');
+			std::vector<std::string> words = format_tools::split_string(user_lines[i], ' ');
 			for (unsigned int j = 0; j < words.size(); j++)
 			{
 				if ((((line + words[j]).length())) < width)
@@ -599,7 +768,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				{
 					std::string first_section = "";
 					std::string second_section = "";
-					cut_word(words[j], width - line.length(), first_section, second_section);
+					format_tools::cut_word(words[j], width - line.length(), first_section, second_section);
 					line = line + first_section;
 					widget_lines.push_back(line);
 					line = "";
@@ -608,7 +777,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				}
 				else
 				{
-					line = fill_line(line, width, item.allignment);
+					line = format_tools::fill_line(line, width, item.alignment);
 					widget_lines.push_back(line);
 					if ((words[j] != " ") && item.widget_type == TEXTBOX)
 					{
@@ -625,7 +794,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	}
 	if (line != "")
 	{
-		line = fill_line(line, width, item.allignment);
+		line = format_tools::fill_line(line, width, item.alignment);
 		widget_lines.push_back(line);
 		line = "";
 	}
@@ -640,141 +809,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		widget_lines[i].insert(0, left_spacing);
 		widget_lines[i] = widget_lines[i] + right_spacing;
 	}
-
 	return widget_lines;
-}
-
-std::vector<std::string> frame::split_string(std::string str, char split_character)
-{
-	std::string section = "";
-	std::vector<std::string> sections;
-	for (unsigned int i = 0; i < str.length(); i++)
-	{
-		if (str[i] == split_character)
-		{
-			sections.push_back(section);
-			if (section != std::string(1, split_character))
-			{
-				sections.push_back(std::string(1, split_character));
-			}
-			section = "";
-		}
-		else
-		{
-			section = section + str[i];
-		}
-	}
-
-	if (section != "")
-	{
-		sections.push_back(section);
-	}
-
-	return sections;
-}
-
-std::string frame::get_spacing(unsigned int length, char space_char)
-{
-	std::string spacing = "";
-	for (unsigned int i = 0; i < length; i++)
-	{
-		spacing = spacing + space_char;
-	}
-	return spacing;
-}
-
-std::string frame::fill_line(std::string input, unsigned int length, std::string allignment)
-{
-	if (allignment == left_allignment_keyword)
-	{
-		while (input.length() < length)
-		{
-			input = input + " ";
-		}
-	}
-	else if (allignment == center_allignment_keyword)
-	{
-		bool begin = true;
-		while (input.length() < length)
-		{
-			if (begin)
-			{
-				input.insert(0, " ");
-				begin = false;
-			}
-			else
-			{
-				input = input + " ";
-				begin = true;
-			}
-		}
-	}
-	else if (allignment == right_allignment_keyword)
-	{
-		while (input.length() < length)
-		{
-			input.insert(0, " ");
-		}
-	}
-	return input;
-}
-
-std::vector<std::string> frame::add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length)
-{
-	std::string line = get_spacing(line_length, ' ');
-	for (unsigned int i = 0; i < number_of_added_lines; i++)
-	{
-		lines.push_back(line);
-	}
-	return lines;
-}
-
-std::string frame::fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content, unsigned int widget_width_with_spacing)
-{
-	std::string row = "";
-	unsigned int max_length = 0;
-	for (unsigned int column = 0; column < columns_content.size(); column++)
-	{
-		if (columns_content[column].size() > max_length)
-		{
-			max_length = columns_content[column].size();
-		}
-	}
-
-	for (unsigned int column = 0; column < columns_content.size(); column++)
-	{
-		columns_content[column] = add_lines(columns_content[column], max_length - columns_content[column].size(), widget_width_with_spacing);
-	}
-
-	for (unsigned int line = 0; line < max_length; line++)
-	{
-		for (unsigned int column = 0; column < columns_content.size(); column++)
-		{
-			row = row + (columns_content[column])[line];
-		}
-		row = row + "\n";
-	}
-	return row;
-}
-
-void frame::cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section)
-{
-	first_section = "";
-	second_section = "";
-	if (length > word.length())
-	{
-		length = word.length();
-	}
-
-	for (unsigned int i = 0; i < length; i++)
-	{
-		first_section = first_section + word[i];
-	}
-
-	for (unsigned int i = length; i < word.length(); i++)
-	{
-		second_section = second_section + word[i];
-	}
 }
 
 bool frame::element_exists(const std::vector<int>& storage, int element)
@@ -825,6 +860,7 @@ std::string frame::get_frame_output()
 	std::string frame_output = "";
 	std::vector<std::vector<std::string>> columns_output;
 	int total_rows = get_total_rows();
+	row_heights.clear();
 	for (int i = 0; i < total_rows; i++)
 	{
 		std::vector<std::vector<int>> row_ids = sort_row_ids(get_row_ids(i));
@@ -839,13 +875,13 @@ std::string frame::get_frame_output()
 				get_widget((row_ids[j])[m], item);
 				if (item.add_border)
 				{
-					widget_lines.insert(widget_lines.begin(), get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
+					widget_lines.insert(widget_lines.begin(), format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
 					for (unsigned int k = 1; k < widget_lines.size(); k++)
 					{
 						widget_lines[k].insert(item.left_spacing, std::string(1, item.vertical_border) + " ");
 						widget_lines[k].insert(widget_lines[k].length() - item.right_spacing, " " + std::string(1, item.vertical_border));
 					}
-					widget_lines.push_back(get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
+					widget_lines.push_back(format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
 				}
 
 				if (item.highlight)
@@ -855,98 +891,57 @@ std::string frame::get_frame_output()
 					(widget_lines[widget_lines.size() - 1])[item.left_spacing] = item.highlight_character;
 					(widget_lines[widget_lines.size() - 1])[widget_lines[widget_lines.size() - 1].length() - 1 - item.right_spacing] = item.highlight_character;
 				}
+				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			columns_output.push_back(accumulated_widget_lines);
+			row_heights.push_back(columns_output.size());
 		}
-		frame_output = frame_output + fuse_columns_into_row(columns_output, get_widget_width(item, true));
+		frame_output = frame_output + format_tools::fuse_columns_into_row(columns_output, get_widget_width(item, true));
 		columns_output.clear();
 	}
+	set_widget_origins();
 	return frame_output;
 }
 
-std::vector<std::string> frame::get_lines(const std::string& output_string)
+void frame::set_widget_origins()
 {
-	std::vector<std::string> output_lines;
-	std::string line = "";
-	for (unsigned int i = 0; i < output_string.length(); i++)
+	int column = 0;
+	int level = 0;
+	int status = UNDEFINED;
+	unsigned int x = 0;
+	unsigned int y = 0;
+	widget_info item;
+	for(unsigned int row = 0; row < row_heights.size(); row++)
 	{
-		line = line + output_string[i];
-		if (output_string[i] == '\n')
+		x = 0;
+		column = 0;
+		while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND)
 		{
-			output_lines.push_back(line);
-			line = "";
-		}
-	}
-	if (line != "")
-	{
-		output_lines.push_back(line);
-	}
-	return output_lines;
-}
-
-std::vector<std::string> frame::remove_trailing_whitespace(const std::vector<std::string>& lines)
-{
-	std::vector<std::string> updated_lines;
-	std::string line = "";
-	for (unsigned int i = 0; i < lines.size(); i++)
-	{
-		for (unsigned int j = 0; j < lines[i].length(); j++)
-		{
-			line = line + (lines[i])[j];
-		}
-
-		unsigned int line_length = line.length() - 1;
-		for (int j = line_length; j >= 0; j--)
-		{
-			if (line[j] == ' ')
+			unsigned int y_origin = y;
+			do
 			{
-				line.erase(j);
-			}
-			else if (line[j] != '\n')
-			{
-				break;
-			}
-		}
-		if ((line != "\n") && (line != ""))
-		{
-			updated_lines.push_back(line);
-		}
-		line = "";
-	}
-	return updated_lines;
-}
-
-void frame::mask_output(std::string& output, const std::string& old_output)
-{
-	std::vector<std::string> new_output_lines = get_lines(output);
-	std::vector<std::string> old_output_lines = remove_trailing_whitespace(get_lines(old_output));
-	for (unsigned int i = 0; i < old_output_lines.size(); i++)
-	{
-		if (i < new_output_lines.size())
-		{
-			if (old_output_lines[i].length() > new_output_lines[i].length())
-			{
-				while ((old_output_lines[i].length() - new_output_lines[i].length()) != 0)
+				unsigned int x_origin = x + item.left_spacing;
+				y_origin = y_origin + item.top_spacing;
+				if (item.add_border)
 				{
-					new_output_lines[i].insert(new_output_lines[i].length() - 2, " ");
+					x_origin = x_origin + 2;
+					y_origin = y_origin + 1;
 				}
-			}
+				set_x_origin(item.id, x_origin);
+				set_y_origin(item.id, y_origin);
+				if (item.add_border)
+				{
+					y_origin = y_origin - 1;
+				}
+				y_origin = y_origin - item.top_spacing;
+				y_origin = y_origin + get_widget_height(item, true);
+				level++;
+			} while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND);
+			level = 0;
+			column++;
+			x = x + get_widget_width(item, true);
 		}
-		else
-		{
-			std::string spacer = "";
-			for (unsigned int j = 0; j < old_output_lines[i].length(); j++)
-			{
-				spacer = spacer + " ";
-			}
-			new_output_lines.push_back(spacer);
-		}
-	}
-
-	output = "";
-	for (unsigned int i = 0; i < new_output_lines.size(); i++)
-	{
-		output = output + new_output_lines[i];
+		y = y + row_heights[row];
 	}
 }

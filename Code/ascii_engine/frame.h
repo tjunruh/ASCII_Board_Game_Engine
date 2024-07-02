@@ -3,6 +3,7 @@
 #include <vector>
 #include "ascii_io.h"
 #include "widget_types.h"
+#include "format_tools.h"
 
 class frame
 {
@@ -19,7 +20,7 @@ private:
 		std::string output;
 		int row = 0;
 		int column = 0;
-		std::string allignment = "left";
+		std::string alignment = "left";
 		int top_spacing = 0;
 		int bottom_spacing = 0;
 		int right_spacing = 0;
@@ -31,12 +32,12 @@ private:
 		char horizontal_border = '-';
 		char corner_border = '.';
 		int widget_type = WIDGET;
+		int x_origin = -1;
+		int y_origin = -1;
+		int lines_count = 0;
 		int level = 0;
 	};
 
-	const std::string right_allignment_keyword = "right";
-	const std::string left_allignment_keyword = "left";
-	const std::string center_allignment_keyword = "center";
 	const std::string special_operation_new_line = "new line";
 	const std::string special_operation_merge = "merge";
 	const std::string special_operation_none = "none";
@@ -44,42 +45,44 @@ private:
 	int set_position(int id, int row, int column, int level);
 	int append(int id, std::string special_operation="none");
 	int set_output(int id, const std::string& output);
-	int set_allignment(int id, std::string allignment);
+	int set_alignment(int id, std::string alignment);
 	int set_spacing(int id, int top, int bottom, int right, int left);
 	int set_widget_type(int id, int type);
 	int set_vertical_border(int id, char border);
 	int set_horizontal_border(int id, char border);
 	int set_corner_border(int id, char border);
 	int set_highlight_character(int id, char character);
+	int set_x_origin(int id, int x_origin);
+	int set_y_origin(int id, int y_origin);
+	int set_lines_count(int id, int lines_count);
 	int add_border(int id);
 	int highlight(int row, int column, int level);
 	bool widget_exists(int id);
 	bool widget_exists(int row, int column);
 	int get_levels(int row, int column);
+	int get_lines_count(int id, int& lines_count);
+	int get_x_origin(int id, int& x_origin);
+	int get_y_origin(int id, int& y_origin);
+	int get_alignment(int id, std::string& allignment);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
 	int get_min_column_index(const std::vector<widget_info>& widget_vec);
 	int get_min_level_index(const std::vector<widget_info>& widget_vec);
 	bool in_range(int value, int begin, int end);
-	std::string get_output(int id);
+	int get_output(int id, std::string& output);
 	int get_widget(int id, widget_info& return_value);
 	int get_widget(int row, int column, int level, widget_info& return_value);
 	unsigned int get_widget_width(const widget_info& item, bool include_spacing);
+	int get_widget_width(int id, unsigned int& width, bool include_spacing);
+	unsigned int get_widget_height(const widget_info& item, bool include_spacing);
+	int get_widget_height(int id, unsigned int& width, bool include_spacing);
 	std::vector<std::string> get_widget_lines(int id);
-	std::vector<std::string> split_string(std::string str, char split_character);
-	std::string get_spacing(unsigned int length, char space_char);
-	std::string fill_line(std::string input, unsigned int length, std::string allignment);
-	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
-	std::string fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content, unsigned int widget_width_with_spacing);
-	void cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section);
 	bool element_exists(const std::vector<int>& storage, int element);
 	unsigned int get_total_rows();
 	unsigned int get_columns_in_row(int row);
 	std::string get_frame_output();
-	std::vector<std::string> get_lines(const std::string& output_string);
-	std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
-	void mask_output(std::string& output, const std::string& old_output);
+	void set_widget_origins();
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
@@ -92,7 +95,8 @@ private:
 	int append_row = 0;
 	int append_column = -1;
 	int append_level = 0;
-	const std::vector<int> selectable_widgets = { MENU, BOARD };
+	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
+	std::vector<unsigned int> row_heights;
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;
