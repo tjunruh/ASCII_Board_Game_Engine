@@ -6,6 +6,6 @@
 class text_box : public widget
 {
 public:
-	text_box(frame* parent, int row, int column);
+	text_box(frame* parent, std::string special_operation="none");
 };
 

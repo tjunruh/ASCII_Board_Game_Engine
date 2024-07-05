@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <windows.h>
+#include <vector>
 
 namespace ascii_io
 {
@@ -9,6 +11,7 @@ namespace ascii_io
 	void reset();
 	std::string getline();
 	void get_terminal_size(int& x, int& y);
+	void hide_curser();
 	
 	const int undefined = -1;
 	const int space = 32;

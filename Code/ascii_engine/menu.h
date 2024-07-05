@@ -7,7 +7,7 @@
 class menu : public widget
 {
 public:
-	menu(frame* parent, int row, int column);
+	menu(frame* parent, std::string special_operation="none");
 	int append_item(std::string item);
 	void set_curser(char curser);
 	void set_controls(int select, int up, int down, int quit);

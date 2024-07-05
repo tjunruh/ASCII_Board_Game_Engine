@@ -1,59 +1,35 @@
 #include "frame.h"
 #include "error_codes.h"
 
-frame::frame(console* parent, int number_of_rows, int number_of_columns)
+frame::frame()
 {
-	parent_console = parent;
-	frame_id = parent_console->add_frame();
-
-	total_rows = number_of_rows;
-
-	total_columns = number_of_columns;
-	int x = 0;
-	int y = 0;
-	ascii_io::get_terminal_size(x, y);
-	int column_size = int(x / float(number_of_columns));
-	for (unsigned int i = 0; i < number_of_columns; i++)
-	{
-		lane column;
-		column.index = i;
-		column.size = column_size;
-		columns.push_back(column);
-	}
-}
-
-unsigned int frame::get_column_size(unsigned int column)
-{
-	unsigned int size = 0;
-	for (unsigned int i = 0; i < columns.size(); i++)
-	{
-		if (columns[i].index == column)
-		{
-			size = columns[i].size;
-			break;
-		}
-	}
-	return size;
-}
-
-int frame::set_column_size(unsigned int column, unsigned int spacing)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < columns.size(); i++)
-	{
-		if (columns[i].index == column)
-		{
-			columns[i].size = spacing;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
+	
 }
 
 void frame::display()
 {
-	parent_console->display();
+	std::string output = get_frame_output();
+#ifdef WIN32
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	if ((x != previous_x) || (y != previous_y))
+	{
+		ascii_io::clear();
+	}
+	else
+	{
+		ascii_io::reset();
+		format_tools::mask_string(output, previous_output);
+	}
+	ascii_io::print(output);
+	previous_output = output;
+	previous_x = x;
+	previous_y = y;
+#elif __linux__
+	ascii_io::clear();
+	ascii_io::print(output);
+#endif
 }
 
 void frame::set_controls(int select, int quit, int up, int down, int right, int left)
@@ -71,41 +47,61 @@ int frame::get_selection()
 	int input = 0;
 	int selected_row = 0;
 	int selected_column = 0;
+	int selected_level = 0;
 	int selected_id = -1;
 	do
 	{
+		if (selected_column >= (int)get_columns_in_row(selected_row))
+		{
+			selected_column = (int)get_columns_in_row(selected_row) - 1;
+		}
+
+		highlight(selected_row, selected_column, selected_level);
 		display();
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
 			widget_info item;
-			get_widget(selected_row, selected_column, item);
-			if (item.widget_type == MENU)
+			get_widget(selected_row, selected_column, selected_level, item);
+			if (std::count(selectable_widgets.begin(), selectable_widgets.end(), item.widget_type) != 0)
 			{
 				selected_id = item.id;
 				break;
 			}
-			
 		}
 		else if (input == _up)
 		{
-			if ((selected_row - 1) >= 0)
+			if (((selected_level - 1) >= 0) && (get_levels(selected_row, selected_column) > 1))
+			{
+				selected_level--;
+			}
+			else if ((selected_row - 1) >= 0)
 			{
 				selected_row--;
+				selected_level = get_levels(selected_row, selected_column) - 1;
 			}
 		}
 		else if (input == _down)
 		{
-			if ((selected_row + 1) < total_rows)
+			if (((selected_level + 1) < get_levels(selected_row, selected_column)) && (get_levels(selected_row, selected_column) > 1))
+			{
+				selected_level++;
+			}
+			else if ((selected_row + 1) < (int)get_total_rows())
 			{
 				selected_row++;
+				selected_level = 0;
 			}
 		}
 		else if (input == _right)
 		{
-			if ((selected_column + 1) < total_columns)
+			if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
 			{
 				selected_column++;
+				if (selected_level >= get_levels(selected_row, selected_column))
+				{
+					selected_level = get_levels(selected_row, selected_column) - 1;
+				}
 			}
 		}
 		else if (input == _left)
@@ -113,6 +109,10 @@ int frame::get_selection()
 			if ((selected_column - 1) >= 0)
 			{
 				selected_column--;
+				if (selected_level >= get_levels(selected_row, selected_column))
+				{
+					selected_level = get_levels(selected_row, selected_column) - 1;
+				}
 			}
 		}
 	} while (input != _quit);
@@ -128,25 +128,47 @@ int frame::add_widget()
 	return id;
 }
 
-int frame::set_position(int id, int row, int column)
+int frame::append(int id, std::string special_operation)
+{
+	if (special_operation == special_operation_new_line)
+	{
+		append_row++;
+		append_column = 0;
+		append_level = 0;
+	}
+	else if (special_operation == special_operation_none)
+	{
+		append_column++;
+		append_level = 0;
+	}
+	else if (special_operation != special_operation_merge)
+	{
+		throw std::string("Unrecognized operation");
+	}
+
+	if (append_column < 0)
+	{
+		append_column = 0;
+	}
+
+	int status = set_position(id, append_row, append_column, append_level);
+	append_level++;
+	return status;
+}
+
+int frame::set_position(int id, int row, int column, int level)
 {
 	int status = ELEMENT_NOT_FOUND;
-	if ((row < total_rows) && (row >= 0) && (column < total_columns) && (column >= 0))
+	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		for (unsigned int i = 0; i < widgets.size(); i++)
+		if (widgets[i].id == id)
 		{
-			if (widgets[i].id == id)
-			{
-				widgets[i].row = row;
-				widgets[i].column = column;
-				status = SUCCESS;
-				break;
-			}
+			widgets[i].row = row;
+			widgets[i].column = column;
+			widgets[i].level = level;
+			status = SUCCESS;
+			break;
 		}
-	}
-	else
-	{
-		status = INVALID_INDEX;
 	}
 	return status;
 }
@@ -159,8 +181,6 @@ int frame::set_output(int id, const std::string& output)
 		if (widgets[i].id == id)
 		{
 			widgets[i].output = output;
-			update();
-			parent_console->set_output(frame_id, frame_output);
 			status = SUCCESS;
 			break;
 		}
@@ -168,18 +188,16 @@ int frame::set_output(int id, const std::string& output)
 	return status;
 }
 
-int frame::set_allignment(int id, std::string allignment)
+int frame::set_alignment(int id, std::string alignment)
 {
 	int status = ELEMENT_NOT_FOUND;
-	if ((allignment == right_allignment_keyword) || (allignment == left_allignment_keyword) || (allignment == center_allignment_keyword))
+	if ((alignment == format_tools::right_alignment_keyword) || (alignment == format_tools::left_alignment_keyword) || (alignment == format_tools::center_alignment_keyword))
 	{
 		for (unsigned int i = 0; i < widgets.size(); i++)
 		{
 			if (widgets[i].id == id)
 			{
-				widgets[i].allignment = allignment;
-				update();
-				parent_console->set_output(frame_id, frame_output);
+				widgets[i].alignment = alignment;
 				status = SUCCESS;
 				break;
 			}
@@ -199,8 +217,6 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].bottom_spacing = bottom;
 			widgets[i].right_spacing = right;
 			widgets[i].left_spacing = left;
-			update();
-			parent_console->set_output(frame_id, frame_output);
 			status = SUCCESS;
 			break;
 		}
@@ -268,6 +284,51 @@ int frame::set_corner_border(int id, char border)
 	return status;
 }
 
+int frame::set_highlight_character(int id, char character)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].highlight_character = character;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_x_origin(int id, int x_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].x_origin = x_origin;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_y_origin(int id, int y_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].y_origin = y_origin;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::add_border(int id)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -278,6 +339,24 @@ int frame::add_border(int id)
 			widgets[i].add_border = true;
 			status = SUCCESS;
 			break;
+		}
+	}
+	return status;
+}
+
+int frame::highlight(int row, int column, int level)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		{
+			widgets[i].highlight = true;
+			status = SUCCESS;
+		}
+		else if(widgets[i].highlight)
+		{
+			widgets[i].highlight = false;
 		}
 	}
 	return status;
@@ -295,6 +374,122 @@ bool frame::widget_exists(int id)
 		}
 	}
 	return exists;
+}
+
+bool frame::widget_exists(int row, int column)
+{
+	bool exists = false;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column))
+		{
+			exists = true;
+			break;
+		}
+	}
+	return exists;
+}
+
+int frame::get_levels(int row, int column)
+{
+	int count = 0;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column))
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
+int frame::get_lines_count(int id, int& lines_count)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			lines_count = widgets[i].lines_count;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_x_origin(int id, int& x_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].x_origin == -1)
+			{
+				status = UNDEFINED;
+			}
+			else
+			{
+				x_origin = widgets[i].x_origin;
+				status = SUCCESS;
+			}
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_y_origin(int id, int& y_origin)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].y_origin == -1)
+			{
+				status = UNDEFINED;
+			}
+			else
+			{
+				y_origin = widgets[i].y_origin;
+				status = SUCCESS;
+			}
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_alignment(int id, std::string& alignment)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			alignment = widgets[i].alignment;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_lines_count(int id, int lines_count)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].lines_count = lines_count;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
 }
 
 int frame::generate_widget_id()
@@ -316,32 +511,95 @@ std::vector<int> frame::get_row_ids(int row)
 	return ids;
 }
 
-std::vector<int> frame::sort_row_ids(std::vector<int> ids)
+std::vector<std::vector<int>> frame::sort_row_ids(std::vector<int> ids)
 {
-	std::vector<int> sorted_ids;
-	unsigned int length = ids.size();
-	for (unsigned int i = 0; i <length; i++)
+	std::vector<widget_info> widgets_vec;
+	for (unsigned int i = 0; i < ids.size(); i++)
 	{
-		int index = get_min_id_index(ids);
-		sorted_ids.push_back(ids[index]);
-		ids.erase(ids.begin() + index);
+		widget_info item;
+		get_widget(ids[i], item);
+		widgets_vec.push_back(item);
+	}
+
+	unsigned int widgets_vec_length = widgets_vec.size();
+	std::vector<widget_info> sorted_widgets;
+	for (unsigned int i = 0; i < widgets_vec_length; i++)
+	{
+		int index = get_min_column_index(widgets_vec);
+		sorted_widgets.push_back(widgets_vec[index]);
+		widgets_vec.erase(widgets_vec.begin() + index);
+	}
+	
+	std::vector<std::vector<int>> sorted_ids;
+	while(sorted_widgets.size() > 0)
+	{
+		std::vector<widget_info> level_group;
+		level_group.push_back(sorted_widgets[0]);
+		sorted_widgets.erase(sorted_widgets.begin());
+		for (unsigned int i = 0; i < sorted_widgets.size(); i++)
+		{
+			if ((level_group[0].row == sorted_widgets[i].row) && (level_group[0].column == sorted_widgets[i].column))
+			{
+				level_group.push_back(sorted_widgets[i]);
+				sorted_widgets.erase(sorted_widgets.begin() + i);
+				i--;
+			}
+		}
+
+		std::vector<int> sorted_id_group;
+		if (level_group.size() > 1)
+		{
+			unsigned int id_group_length = level_group.size();
+			for (unsigned int k = 0; k < id_group_length; k++)
+			{
+				int index = get_min_level_index(level_group);
+				sorted_id_group.push_back(level_group[index].id);
+				level_group.erase(level_group.begin() + index);
+			}
+		}
+		else
+		{
+			sorted_id_group.push_back(level_group[0].id);
+		}
+		sorted_ids.push_back(sorted_id_group);
 	}
 	return sorted_ids;
 }
 
-int frame::get_min_id_index(std::vector<int> ids)
+int frame::get_min_column_index(const std::vector<widget_info>& widget_vec)
 {
 	int min_index = 0;
-	if (ids.size() > 0)
+	int min_column = 0;
+	if (widget_vec.size() > 0)
 	{
 		min_index = 0;
-		int min_id = ids[0];
-		for (unsigned int i = 1; i < ids.size(); i++)
+		min_column = widget_vec[min_index].column;
+		for (unsigned int i = 1; i < widget_vec.size(); i++)
 		{
-			if (ids[i] < min_id)
+			if (widget_vec[i].column < min_column)
 			{
 				min_index = i;
-				min_id = ids[i];
+				min_column = widget_vec[min_index].column;
+			}
+		}
+	}
+	return min_index;
+}
+
+int frame::get_min_level_index(const std::vector<widget_info>& widget_vec)
+{
+	int min_index = 0;
+	int min_level = 0;
+	if (widget_vec.size() > 0)
+	{
+		min_index = 0;
+		min_level = widget_vec[min_index].level;
+		for (unsigned int i = 1; i < widget_vec.size(); i++)
+		{
+			if (widget_vec[i].level < min_level)
+			{
+				min_index = i;
+				min_level = widget_vec[min_index].level;
 			}
 		}
 	}
@@ -358,17 +616,19 @@ bool frame::in_range(int value, int begin, int end)
 	return in;
 }
 
-std::string frame::get_output(int id)
+int frame::get_output(int id, std::string& output)
 {
-	std::string output = "";
+	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
 			output = widgets[i].output;
+			status = SUCCESS;
+			break;
 		}
 	}
-	return output;
+	return status;
 }
 
 int frame::get_widget(int id, widget_info& return_value)
@@ -386,12 +646,12 @@ int frame::get_widget(int id, widget_info& return_value)
 	return status;
 }
 
-int frame::get_widget(int row, int column, widget_info& return_value)
+int frame::get_widget(int row, int column, int level, widget_info& return_value)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row) == row && (widgets[i].column == column))
+		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
 		{
 			return_value = widgets[i];
 			status = SUCCESS;
@@ -401,31 +661,86 @@ int frame::get_widget(int row, int column, widget_info& return_value)
 	return status;
 }
 
-unsigned int frame::get_widget_width(const widget_info& item)
+unsigned int frame::get_widget_width(const widget_info& item, bool include_spacing)
 {
-	int raw_width = get_column_size(item.column) - item.left_spacing - item.right_spacing;
-	if (item.add_border)
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	int raw_width = (x / (int)get_columns_in_row(item.row));
+	if(!include_spacing)
 	{
-		raw_width = raw_width - 4;
+		raw_width = raw_width - item.left_spacing - item.right_spacing;
+		if (item.add_border)
+		{
+			raw_width = raw_width - 4;
+		}
 	}
 	unsigned int width = 0;
 	if (raw_width >= 0)
 	{
-		width = raw_width;
+		width = (unsigned int)raw_width;
 	}
 	return width;
+}
+
+int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
+{
+	int status = ELEMENT_NOT_FOUND;
+	widget_info item;
+	status = get_widget(id, item);
+	if (status == SUCCESS)
+	{
+		width = get_widget_width(item, include_spacing);
+	}
+	return status;
+}
+
+unsigned int frame::get_widget_height(const widget_info& item, bool include_spacing)
+{
+	int raw_height = 0;
+	if (!include_spacing)
+	{
+		raw_height = item.lines_count - item.top_spacing - item.bottom_spacing;
+		if (item.add_border)
+		{
+			raw_height = raw_height - 2;
+		}
+	}
+	else
+	{
+		raw_height = item.lines_count;
+	}
+
+	unsigned int height = 0;
+	if (raw_height >= 0)
+	{
+		height = (unsigned int)raw_height;
+	}
+	return height;
+}
+
+int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
+{
+	int status = ELEMENT_NOT_FOUND;
+	widget_info item;
+	status = get_widget(id, item);
+	if (status == SUCCESS)
+	{
+		height = get_widget_height(item, include_spacing);
+	}
+	return status;
 }
 
 std::vector<std::string> frame::get_widget_lines(int id)
 {
 	widget_info item;
 	get_widget(id, item);
-	std::string left_spacing = get_spacing(item.left_spacing, ' ');
-	std::string right_spacing = get_spacing(item.right_spacing, ' ');
-	unsigned int width = get_widget_width(item);
-	std::string active_spacing = get_spacing(width, ' ');
+	std::string left_spacing = format_tools::get_spacing(item.left_spacing, ' ');
+	std::string right_spacing = format_tools::get_spacing(item.right_spacing, ' ');
+	unsigned int width = get_widget_width(item, false);
+	std::string active_spacing = format_tools::get_spacing(width, ' ');
 	std::vector<std::string> widget_lines;
-	std::vector<std::string> user_lines = split_string(item.output, '\n');
+	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
 	std::string line = "";
 	for (int i = 0; i < item.top_spacing; i++)
 	{
@@ -436,13 +751,13 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	{
 		if (user_lines[i] == "\n")
 		{
-			line = fill_line(line, width, item.allignment);
+			line = format_tools::fill_line(line, width, item.alignment);
 			widget_lines.push_back(line);
 			line = "";
 		}
 		else
 		{
-			std::vector<std::string> words = split_string(user_lines[i], ' ');
+			std::vector<std::string> words = format_tools::split_string(user_lines[i], ' ');
 			for (unsigned int j = 0; j < words.size(); j++)
 			{
 				if ((((line + words[j]).length())) < width)
@@ -453,7 +768,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				{
 					std::string first_section = "";
 					std::string second_section = "";
-					cut_word(words[j], width - line.length(), first_section, second_section);
+					format_tools::cut_word(words[j], width - line.length(), first_section, second_section);
 					line = line + first_section;
 					widget_lines.push_back(line);
 					line = "";
@@ -462,7 +777,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				}
 				else
 				{
-					line = fill_line(line, width, item.allignment);
+					line = format_tools::fill_line(line, width, item.alignment);
 					widget_lines.push_back(line);
 					if ((words[j] != " ") && item.widget_type == TEXTBOX)
 					{
@@ -479,7 +794,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	}
 	if (line != "")
 	{
-		line = fill_line(line, width, item.allignment);
+		line = format_tools::fill_line(line, width, item.alignment);
 		widget_lines.push_back(line);
 		line = "";
 	}
@@ -494,170 +809,139 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		widget_lines[i].insert(0, left_spacing);
 		widget_lines[i] = widget_lines[i] + right_spacing;
 	}
-
 	return widget_lines;
 }
 
-std::vector<std::string> frame::split_string(std::string str, char split_character)
+bool frame::element_exists(const std::vector<int>& storage, int element)
 {
-	std::string section = "";
-	std::vector<std::string> sections;
-	for (unsigned int i = 0; i < str.length(); i++)
+	bool exists = false;
+	for (unsigned int i = 0; i < storage.size(); i++)
 	{
-		if (str[i] == split_character)
+		if (storage[i] == element)
 		{
-			sections.push_back(section);
-			if (section != std::string(1, split_character))
-			{
-				sections.push_back(std::string(1, split_character));
-			}
-			section = "";
-		}
-		else
-		{
-			section = section + str[i];
+			exists = true;
+			break;
 		}
 	}
-
-	if (section != "")
-	{
-		sections.push_back(section);
-	}
-
-	return sections;
+	return exists;
 }
 
-std::string frame::get_spacing(unsigned int length, char space_char)
+unsigned int frame::get_total_rows()
 {
-	std::string spacing = "";
-	for (unsigned int i = 0; i < length; i++)
+	std::vector<int> rows;
+	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		spacing = spacing + space_char;
-	}
-	return spacing;
-}
-
-std::string frame::fill_line(std::string input, unsigned int length, std::string allignment)
-{
-	if (allignment == left_allignment_keyword)
-	{
-		while (input.length() < length)
+		if (!element_exists(rows, widgets[i].row))
 		{
-			input = input + " ";
+			rows.push_back(widgets[i].row);
 		}
 	}
-	else if (allignment == center_allignment_keyword)
-	{
-		bool begin = true;
-		while (input.length() < length)
-		{
-			if (begin)
-			{
-				input.insert(0, " ");
-				begin = false;
-			}
-			else
-			{
-				input = input + " ";
-				begin = true;
-			}
-		}
-	}
-	else if (allignment == right_allignment_keyword)
-	{
-		while (input.length() < length)
-		{
-			input.insert(0, " ");
-		}
-	}
-	return input;
+	return rows.size();
 }
 
-std::vector<std::string> frame::add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length)
+unsigned int frame::get_columns_in_row(int row)
 {
-	std::string line = get_spacing(line_length, ' ');
-	for (unsigned int i = 0; i < number_of_added_lines; i++)
+	std::vector<int> row_ids = get_row_ids(row);
+	std::vector<int> columns;
+	for (unsigned int i = 0; i < row_ids.size(); i++)
 	{
-		lines.push_back(line);
-	}
-	return lines;
-}
-
-std::string frame::fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content)
-{
-	std::string row = "";
-	unsigned int max_length = 0;
-	for (unsigned int column = 0; column < columns_content.size(); column++)
-	{
-		if (columns_content[column].size() > max_length)
+		widget_info item;
+		get_widget(row_ids[i], item);
+		if (!element_exists(columns, item.column))
 		{
-			max_length = columns_content[column].size();
+			columns.push_back(item.column);
 		}
 	}
-
-	for (unsigned int column = 0; column < columns_content.size(); column++)
-	{
-		columns_content[column] = add_lines(columns_content[column], max_length - columns_content[column].size(), get_column_size(1));
-	}
-
-	for (unsigned int line = 0; line < max_length; line++)
-	{
-		for (unsigned int column = 0; column < columns_content.size(); column++)
-		{
-			row = row + (columns_content[column])[line];
-		}
-		row = row + "\n";
-	}
-	return row;
+	return columns.size();
 }
 
-void frame::cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section)
+std::string frame::get_frame_output()
 {
-	first_section = "";
-	second_section = "";
-	if (length > word.length())
-	{
-		length = word.length();
-	}
-
-	for (unsigned int i = 0; i < length; i++)
-	{
-		first_section = first_section + word[i];
-	}
-
-	for (unsigned int i = length; i < word.length(); i++)
-	{
-		second_section = second_section + word[i];
-	}
-}
-
-void frame::update()
-{
-	frame_output = "";
+	std::string frame_output = "";
 	std::vector<std::vector<std::string>> columns_output;
+	int total_rows = get_total_rows();
+	row_heights.clear();
 	for (int i = 0; i < total_rows; i++)
 	{
-		std::vector<int> row_ids = get_row_ids(i);
-		row_ids = sort_row_ids(row_ids);
+		std::vector<std::vector<int>> row_ids = sort_row_ids(get_row_ids(i));
+		widget_info item;
 		for (unsigned int j = 0; j < row_ids.size(); j++)
 		{
-			std::vector<std::string> widget_lines;
-			widget_lines = get_widget_lines(row_ids[j]);
-			widget_info item;
-			get_widget(row_ids[j], item);
-			if (item.add_border)
+			std::vector<std::string> accumulated_widget_lines;
+			for (unsigned int m = 0; m < row_ids[j].size(); m++)
 			{
-				widget_lines.insert(widget_lines.begin(), get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
-				for (unsigned int k = 1; k < widget_lines.size(); k++)
+				std::vector<std::string> widget_lines;
+				widget_lines = get_widget_lines((row_ids[j])[m]);
+				get_widget((row_ids[j])[m], item);
+				if (item.add_border)
 				{
-					widget_lines[k].insert(item.left_spacing, std::string(1, item.vertical_border) + " ");
-					widget_lines[k].insert(widget_lines[k].length() - item.right_spacing, " " + std::string(1, item.vertical_border));
+					widget_lines.insert(widget_lines.begin(), format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
+					for (unsigned int k = 1; k < widget_lines.size(); k++)
+					{
+						widget_lines[k].insert(item.left_spacing, std::string(1, item.vertical_border) + " ");
+						widget_lines[k].insert(widget_lines[k].length() - item.right_spacing, " " + std::string(1, item.vertical_border));
+					}
+					widget_lines.push_back(format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
 				}
-				widget_lines.push_back(get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + get_spacing(get_widget_width(item) + 2, item.horizontal_border) + std::string(1, item.corner_border) + get_spacing(item.right_spacing, ' '));
+
+				if (item.highlight)
+				{
+					(widget_lines[0])[item.left_spacing] = item.highlight_character;
+					(widget_lines[0])[widget_lines[0].length() - 1 - item.right_spacing] = item.highlight_character;
+					(widget_lines[widget_lines.size() - 1])[item.left_spacing] = item.highlight_character;
+					(widget_lines[widget_lines.size() - 1])[widget_lines[widget_lines.size() - 1].length() - 1 - item.right_spacing] = item.highlight_character;
+				}
+				set_lines_count(item.id, widget_lines.size());
+				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
-			columns_output.push_back(widget_lines);
+			columns_output.push_back(accumulated_widget_lines);
+			row_heights.push_back(columns_output.size());
 		}
-		frame_output = frame_output + fuse_columns_into_row(columns_output);
+		frame_output = frame_output + format_tools::fuse_columns_into_row(columns_output, get_widget_width(item, true));
 		columns_output.clear();
+	}
+	set_widget_origins();
+	return frame_output;
+}
+
+void frame::set_widget_origins()
+{
+	int column = 0;
+	int level = 0;
+	int status = UNDEFINED;
+	unsigned int x = 0;
+	unsigned int y = 0;
+	widget_info item;
+	for(unsigned int row = 0; row < row_heights.size(); row++)
+	{
+		x = 0;
+		column = 0;
+		while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND)
+		{
+			unsigned int y_origin = y;
+			do
+			{
+				unsigned int x_origin = x + item.left_spacing;
+				y_origin = y_origin + item.top_spacing;
+				if (item.add_border)
+				{
+					x_origin = x_origin + 2;
+					y_origin = y_origin + 1;
+				}
+				set_x_origin(item.id, x_origin);
+				set_y_origin(item.id, y_origin);
+				if (item.add_border)
+				{
+					y_origin = y_origin - 1;
+				}
+				y_origin = y_origin - item.top_spacing;
+				y_origin = y_origin + get_widget_height(item, true);
+				level++;
+			} while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND);
+			level = 0;
+			column++;
+			x = x + get_widget_width(item, true);
+		}
+		y = y + row_heights[row];
 	}
 }
