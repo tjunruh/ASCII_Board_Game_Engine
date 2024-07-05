@@ -1,6 +1,10 @@
 #pragma once
 #include <string>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
 #include <vector>
 
 namespace ascii_io

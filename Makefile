@@ -50,7 +50,7 @@ VALIDATE_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/, $(VALIDATE_BOARD_CONFIG_O
 ASCII_ENGINE_OBJS := \
 	ascii_board.o \
 	ascii_io.o \
-	console.o \
+	format_tools.o \
 	controls.o \
 	frame.o \
 	menu.o \

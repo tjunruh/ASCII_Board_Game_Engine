@@ -1,6 +1,10 @@
 #include "frame.h"
 #include "error_codes.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 frame::frame()
 {
 	
