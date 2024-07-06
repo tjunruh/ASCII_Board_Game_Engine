@@ -17,7 +17,7 @@ ascii_board::ascii_board(frame* parent, std::string path, int& status, std::stri
 		return;
 	}
 
-	int validation_status = validator.validate(board_config, true);
+	int validation_status = validator.validate(board_config, false);
 	if (validation_status == 1)
 	{
 		status = INVALID_CONFIG;
@@ -500,6 +500,11 @@ int ascii_board::get_number_of_columns()
 int ascii_board::get_number_of_rows()
 {
 	return max_rows;
+}
+
+void ascii_board::set_output(const std::string& output)
+{
+	set_output_to_frame(output);
 }
 
 void ascii_board::initialize_tiles(int rows, int columns)

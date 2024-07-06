@@ -21,7 +21,6 @@ struct board_configuration
 class ascii_board : public widget
 {
 public:
-
 	ascii_board(frame* parent, std::string path, int& status, std::string special_operation = "none");
 	int clear_tile(int row, int column);
 	void clear_tiles();
@@ -40,6 +39,7 @@ public:
 	int deactivate_configuration(std::string name_id);
 	int get_number_of_columns();
 	int get_number_of_rows();
+	void set_output(const std::string& output);
 
 private:
 	std::string board = "";

@@ -13,7 +13,7 @@ int menu::append_item(std::string item)
 	{
 		menu_items.push_back(item);
 		status = 0;
-		set_output(build_output());
+		set_output_to_frame(build_output());
 	}
 	return status;
 }
@@ -80,7 +80,7 @@ std::string menu::get_selection()
 	std::string selected_item = "";
 	do
 	{
-		set_output(build_output());
+		set_output_to_frame(build_output());
 		refresh();
 		input = ascii_io::getchar();
 		if (input == _select)
