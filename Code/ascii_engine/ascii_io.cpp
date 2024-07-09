@@ -20,9 +20,14 @@ int ascii_io::getchar() {
 	int input = 0;
 #ifdef _WIN32
 	input = _getch();
+	if (input == 224)
+	{
+		input = input + _getch();
+	}
 #elif __linux__
 	input = getch();
-	if (input == 27) {
+	if (input == 27) 
+	{
 		input = getch();
 		input = getch();
 	}
@@ -41,7 +46,7 @@ void ascii_io::clear() {
 
 void ascii_io::reset() {
 #ifdef _WIN32
-	print("\x1b[1;1H");
+	move_curser_to_position(0, 0);
 #elif __linux__
 	erase();
 #endif
@@ -74,7 +79,63 @@ void ascii_io::get_terminal_size(int &x, int &y)
 #endif
 }
 
+void ascii_io::get_curser_position(int& x, int& y)
+{
+#ifdef _WIN32
+	CONSOLE_SCREEN_BUFFER_INFO position_info;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &position_info);
+	x = position_info.dwCursorPosition.X;
+	y = position_info.dwCursorPosition.Y;
+#endif
+}
+
 void ascii_io::hide_curser()
 {
+#ifdef _WIN32
 	print("\x1b[?25l");
+#endif
+}
+
+void ascii_io::show_curser()
+{
+#ifdef _WIN32
+	print("\x1b[?25h");
+#endif
+}
+
+void ascii_io::move_curser_up(unsigned int amount)
+{
+#ifdef _WIN32
+	print("\x1b[" + std::to_string(amount) + "A");
+#endif
+}
+
+void ascii_io::move_curser_down(unsigned int amount)
+{
+#ifdef _WIN32
+	print("\x1b[" + std::to_string(amount) + "B");
+#endif
+}
+
+void ascii_io::move_curser_right(unsigned int amount)
+{
+#ifdef _WIN32
+	print("\x1b[" + std::to_string(amount) + "C");
+#endif
+}
+
+void ascii_io::move_curser_left(unsigned int amount)
+{
+#ifdef _WIN32
+	print("\x1b[" + std::to_string(amount) + "D");
+#endif
+}
+
+void ascii_io::move_curser_to_position(unsigned int x, unsigned int y)
+{
+#ifdef _WIN32
+	x = x + 1;
+	y = y + 1;
+	print("\x1b[" + std::to_string(y) + ";" + std::to_string(x) + "H");
+#endif
 }

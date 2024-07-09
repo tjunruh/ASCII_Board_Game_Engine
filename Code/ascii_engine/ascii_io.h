@@ -11,9 +11,17 @@ namespace ascii_io
 	void reset();
 	std::string getline();
 	void get_terminal_size(int& x, int& y);
+	void get_curser_position(int& x, int& y);
 	void hide_curser();
+	void show_curser();
+	void move_curser_up(unsigned int amount=1);
+	void move_curser_down(unsigned int amount=1);
+	void move_curser_right(unsigned int amount=1);
+	void move_curser_left(unsigned int amount=1);
+	void move_curser_to_position(unsigned int x, unsigned int y);
 	
 	const int undefined = -1;
+	const int backspace = 8;
 	const int space = 32;
 	const int exclamation = 33;
 	const int double_quoatation = 34;
@@ -113,10 +121,10 @@ namespace ascii_io
 
 #ifdef _WIN32
 	const int enter = 13;
-	const int right = 77;
-	const int left = 75;
-	const int up = 72;
-	const int down = 80;
+	const int right = 301;
+	const int left = 299;
+	const int up = 296;
+	const int down = 304;
 #elif __linux__
 	const int enter = 10;
 	const int right = 67;
