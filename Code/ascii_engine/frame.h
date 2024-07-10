@@ -25,6 +25,10 @@ private:
 		int bottom_spacing = 0;
 		int right_spacing = 0;
 		int left_spacing = 0;
+		int top_border_spacing = 0;
+		int bottom_border_spacing = 0;
+		int right_border_spacing = 0;
+		int left_border_spacing = 0;
 		bool add_border = false;
 		bool highlight = false;
 		char highlight_character = '#';
@@ -47,6 +51,7 @@ private:
 	int set_output(int id, const std::string& output);
 	int set_alignment(int id, std::string alignment);
 	int set_spacing(int id, int top, int bottom, int right, int left);
+	int set_border_spacing(int id, int top, int bottom, int right, int left);
 	int set_widget_type(int id, int type);
 	int set_vertical_border(int id, char border);
 	int set_horizontal_border(int id, char border);

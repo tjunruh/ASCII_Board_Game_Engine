@@ -212,6 +212,11 @@ int frame::set_alignment(int id, std::string alignment)
 
 int frame::set_spacing(int id, int top, int bottom, int right, int left)
 {
+	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
+	{
+		return INVALID_VALUE;
+	}
+
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
@@ -222,6 +227,36 @@ int frame::set_spacing(int id, int top, int bottom, int right, int left)
 			widgets[i].right_spacing = right;
 			widgets[i].left_spacing = left;
 			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_border_spacing(int id, int top, int bottom, int right, int left)
+{
+	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
+	{
+		return INVALID_VALUE;
+	}
+
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if ((widgets[i].top_spacing >= top) && (widgets[i].bottom_spacing >= bottom) && (widgets[i].right_spacing >= right) && (widgets[i].left_spacing >= left))
+			{
+				widgets[i].top_border_spacing = top;
+				widgets[i].bottom_border_spacing = bottom;
+				widgets[i].right_border_spacing = right;
+				widgets[i].left_border_spacing = left;
+				status = SUCCESS;
+			}
+			else
+			{
+				status = INVALID_VALUE;
+			}
 			break;
 		}
 	}
@@ -877,23 +912,28 @@ std::string frame::get_frame_output()
 				std::vector<std::string> widget_lines;
 				widget_lines = get_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
+				int top_spacing = item.top_spacing - item.top_border_spacing;
+				int left_spacing = item.left_spacing - item.left_border_spacing;
+				int middle_spacing = get_widget_width(item, false) + 2 + item.left_border_spacing + item.right_border_spacing;
+				int right_spacing = item.right_spacing - item.right_border_spacing;
+				int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
 				if (item.add_border)
 				{
-					widget_lines.insert(widget_lines.begin(), format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
-					for (unsigned int k = 1; k < widget_lines.size(); k++)
+					widget_lines.insert(widget_lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
+					for (unsigned int k = top_spacing + 1; k < widget_lines.size() - bottom_spacing; k++)
 					{
-						widget_lines[k].insert(item.left_spacing, std::string(1, item.vertical_border) + " ");
-						widget_lines[k].insert(widget_lines[k].length() - item.right_spacing, " " + std::string(1, item.vertical_border));
+						widget_lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
+						widget_lines[k].insert(widget_lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
 					}
-					widget_lines.push_back(format_tools::get_spacing(item.left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(get_widget_width(item, false) + 2, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(item.right_spacing, ' '));
+					widget_lines.insert(widget_lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 				}
 
 				if (item.highlight)
 				{
-					(widget_lines[0])[item.left_spacing] = item.highlight_character;
-					(widget_lines[0])[widget_lines[0].length() - 1 - item.right_spacing] = item.highlight_character;
-					(widget_lines[widget_lines.size() - 1])[item.left_spacing] = item.highlight_character;
-					(widget_lines[widget_lines.size() - 1])[widget_lines[widget_lines.size() - 1].length() - 1 - item.right_spacing] = item.highlight_character;
+					(widget_lines[top_spacing])[left_spacing] = item.highlight_character;
+					(widget_lines[top_spacing])[widget_lines[top_spacing].length() - 1 - right_spacing] = item.highlight_character;
+					(widget_lines[widget_lines.size() - 1 - bottom_spacing])[left_spacing] = item.highlight_character;
+					(widget_lines[widget_lines.size() - 1 - bottom_spacing])[widget_lines[widget_lines.size() - 1 - bottom_spacing].length() - 1 - right_spacing] = item.highlight_character;
 				}
 				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
