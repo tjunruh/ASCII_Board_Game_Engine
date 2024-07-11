@@ -50,18 +50,35 @@ int frame::get_selection()
 {
 	int input = 0;
 	int selected_row = 0;
+	int last_selected_row = 0;
 	int selected_column = 0;
+	int last_selected_column = 0;
 	int selected_level = 0;
+	int last_selected_level = 0;
 	int selected_id = -1;
+	int x = 0;
+	int y = 0;
+	int last_x = 0;
+	int last_y = 0;
 	do
 	{
 		if (selected_column >= (int)get_columns_in_row(selected_row))
 		{
 			selected_column = (int)get_columns_in_row(selected_row) - 1;
 		}
-
+		
+		ascii_io::get_terminal_size(x, y);
+		if (x != last_x || y != last_y)
+		{
+			display();
+		}
+		last_x = x;
+		last_y = y;
+		unhighlight(last_selected_row, last_selected_column, last_selected_level);
 		highlight(selected_row, selected_column, selected_level);
-		display();
+		last_selected_row = selected_row;
+		last_selected_column = selected_column;
+		last_selected_level = selected_level;
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
@@ -390,12 +407,79 @@ int frame::highlight(int row, int column, int level)
 	{
 		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
 		{
-			widgets[i].highlight = true;
+			int x_origin = 0;
+			int y_origin = 0;
+			get_x_origin(widgets[i].id, x_origin);
+			get_y_origin(widgets[i].id, y_origin);
+			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int height = get_widget_height(widgets[i], false);
+			
+			int x = x_origin - 2 - widgets[i].left_border_spacing;
+			int y = y_origin - 1 - widgets[i].top_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, widgets[i].highlight_character));
+
+			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
+			y = y_origin - 1 - widgets[i].top_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, widgets[i].highlight_character));
+
+			x = x_origin - 2 - widgets[i].left_border_spacing;
+			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, widgets[i].highlight_character));
+
+			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
+			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, widgets[i].highlight_character));
 			status = SUCCESS;
+			break;
 		}
-		else if(widgets[i].highlight)
+	}
+	return status;
+}
+
+int frame::unhighlight(int row, int column, int level)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
 		{
-			widgets[i].highlight = false;
+			char corner_character = ' ';
+			if (widgets[i].add_border)
+			{
+				corner_character = widgets[i].corner_border;
+			}
+			int x_origin = 0;
+			int y_origin = 0;
+			get_x_origin(widgets[i].id, x_origin);
+			get_y_origin(widgets[i].id, y_origin);
+			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int height = get_widget_height(widgets[i], false);
+
+			int x = x_origin - 2 - widgets[i].left_border_spacing;
+			int y = y_origin - 1 - widgets[i].top_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, corner_character));
+
+			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
+			y = y_origin - 1 - widgets[i].top_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, corner_character));
+
+			x = x_origin - 2 - widgets[i].left_border_spacing;
+			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, corner_character));
+
+			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
+			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			ascii_io::move_curser_to_position(x, y);
+			ascii_io::print(std::string(1, corner_character));
+			status = SUCCESS;
+			break;
 		}
 	}
 	return status;
@@ -927,21 +1011,14 @@ std::string frame::get_frame_output()
 					}
 					widget_lines.insert(widget_lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 				}
-
-				if (item.highlight)
-				{
-					(widget_lines[top_spacing])[left_spacing] = item.highlight_character;
-					(widget_lines[top_spacing])[widget_lines[top_spacing].length() - 1 - right_spacing] = item.highlight_character;
-					(widget_lines[widget_lines.size() - 1 - bottom_spacing])[left_spacing] = item.highlight_character;
-					(widget_lines[widget_lines.size() - 1 - bottom_spacing])[widget_lines[widget_lines.size() - 1 - bottom_spacing].length() - 1 - right_spacing] = item.highlight_character;
-				}
 				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			columns_output.push_back(accumulated_widget_lines);
-			row_heights.push_back(columns_output.size());
 		}
-		frame_output = frame_output + format_tools::fuse_columns_into_row(columns_output, get_widget_width(item, true));
+		unsigned int row_lines = 0;
+		frame_output = frame_output + format_tools::fuse_columns_into_row(columns_output, get_widget_width(item, true), row_lines);
+		row_heights.push_back(row_lines);
 		columns_output.clear();
 	}
 	set_widget_origins();

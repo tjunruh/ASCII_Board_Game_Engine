@@ -30,7 +30,6 @@ private:
 		int right_border_spacing = 0;
 		int left_border_spacing = 0;
 		bool add_border = false;
-		bool highlight = false;
 		char highlight_character = '#';
 		char vertical_border = '|';
 		char horizontal_border = '-';
@@ -62,6 +61,7 @@ private:
 	int set_lines_count(int id, int lines_count);
 	int add_border(int id);
 	int highlight(int row, int column, int level);
+	int unhighlight(int row, int column, int level);
 	bool widget_exists(int id);
 	bool widget_exists(int row, int column);
 	int get_levels(int row, int column);

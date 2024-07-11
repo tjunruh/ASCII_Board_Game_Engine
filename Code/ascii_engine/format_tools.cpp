@@ -105,7 +105,7 @@ std::vector<std::string> format_tools::add_lines(std::vector<std::string> lines,
 	return lines;
 }
 
-std::string format_tools::fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content, unsigned int widget_width_with_spacing)
+std::string format_tools::fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content, unsigned int widget_width_with_spacing, unsigned int& lines)
 {
 	std::string row = "";
 	unsigned int max_length = 0;
@@ -116,6 +116,7 @@ std::string format_tools::fuse_columns_into_row(std::vector<std::vector<std::str
 			max_length = columns_content[column].size();
 		}
 	}
+	lines = max_length;
 
 	for (unsigned int column = 0; column < columns_content.size(); column++)
 	{
