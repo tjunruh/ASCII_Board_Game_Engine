@@ -18,7 +18,11 @@ namespace ascii_io
 	void move_curser_right(unsigned int amount=1);
 	void move_curser_left(unsigned int amount=1);
 	void move_curser_to_position(unsigned int x, unsigned int y);
-	
+#ifdef __linux__
+   void ncurses_init();
+   void ncurses_end();
+#endif
+
 	const int undefined = -1;
 	const int backspace = 8;
 	const int ESC = 27;

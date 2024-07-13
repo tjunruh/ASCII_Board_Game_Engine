@@ -220,3 +220,18 @@ void ascii_io::move_curser_to_position(unsigned int x, unsigned int y)
    refresh();
 #endif
 }
+
+#ifdef __linux__
+void ascii_io::ncurses_init()
+{
+   initscr();
+   raw();
+   noecho();
+   cbreak();
+}
+
+void ascii_io::ncurses_end()
+{
+   endwin();
+}
+#endif
