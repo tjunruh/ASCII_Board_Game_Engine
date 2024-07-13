@@ -883,11 +883,11 @@ std::vector<std::string> frame::get_widget_lines(int id)
 			std::vector<std::string> words = format_tools::split_string(user_lines[i], ' ');
 			for (unsigned int j = 0; j < words.size(); j++)
 			{
-				if ((((line + words[j]).length())) < width)
+				if ((((line + words[j]).length())) <= width)
 				{
 					line = line + words[j];
 				}
-				else if (words[j].length() > width)
+				else if (words[j].length() >= width)
 				{
 					std::string first_section = "";
 					std::string second_section = "";
@@ -895,7 +895,10 @@ std::vector<std::string> frame::get_widget_lines(int id)
 					line = line + first_section;
 					widget_lines.push_back(line);
 					line = "";
-					second_section.insert(0, "-");
+					if (item.widget_type == LABEL)
+					{
+						second_section.insert(0, "-");
+					}
 					words.insert(words.begin() + (j + 1), second_section);
 				}
 				else
