@@ -22,7 +22,7 @@ LIBS := -lncurses
 
 CXXFLAGS := -Wall -O2 $(DEBUG) -fPIC -Iexternal_libraries -I$(BLD_DIR)/headers
 
-.PHONY: all clean engine test
+.PHONY: all clean engine test test-headless
 
 EXECUTABLES := \
 	build_board_config.out \
@@ -95,6 +95,9 @@ engine: $(LIBRARIES)
 
 test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
 	env LD_LIBRARY_PATH="./build" $<
+
+test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
+	env LD_LIBRARY_PATH="./build" $< --gtest_filter=-ascii_io.*
 
 clean:
 	-rm -rv $(BLD_DIR)
