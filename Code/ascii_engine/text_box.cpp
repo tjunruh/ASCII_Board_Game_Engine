@@ -14,13 +14,20 @@ text_box::text_box(frame* parent, std::string special_operation, unsigned int li
 	set_output_to_frame(lines);
 }
 
-void text_box::write()
+unsigned int text_box::write()
 {
 	x_origin = get_x_origin();
 	y_origin = get_y_origin();
 	width = get_width();
 	height = get_height();
-	ascii_io::move_curser_to_position(x_origin, y_origin);
+	if ((saved_curser_x > 0) && (saved_curser_y > 0))
+	{
+		ascii_io::move_curser_to_position(saved_curser_x, saved_curser_y);
+	}
+	else
+	{
+		ascii_io::move_curser_to_position(x_origin, y_origin);
+	}
 	ascii_io::show_curser();
 	int input = ascii_io::undefined;
 	do
@@ -34,13 +41,14 @@ void text_box::write()
 				{
 					top_line--;
 					display();
+					fit_curser_to_line();
 				}
 			}
 			else
 			{
 				ascii_io::move_curser_up();
+				fit_curser_to_line();
 			}
-			fit_curser_to_line();
 		}
 		else if (input == ascii_io::down)
 		{
@@ -50,13 +58,14 @@ void text_box::write()
 				{
 					top_line++;
 					display();
+					fit_curser_to_line();
 				}
 			}
-			else
+			else if((get_curser_line() + 1) < editable_lines.size())
 			{
 				ascii_io::move_curser_down();
+				fit_curser_to_line();
 			}
-			fit_curser_to_line();
 		}
 		else if (input == ascii_io::right)
 		{
@@ -97,7 +106,19 @@ void text_box::write()
 			move_curser_to_linear_position(position - 1);
 			display();
 		}
-		else if (input != ascii_io::backspace)
+		else if (input == ascii_io::enter)
+		{
+			break;
+		}
+		else if (input == ascii_io::DEL)
+		{
+			break;
+		}
+		else if (input == ascii_io::ESC)
+		{
+			break;
+		}
+		else if ((input != ascii_io::backspace) && ((max_characters < 0) || (editable_content.length() < max_characters)))
 		{
 			unsigned int position = get_linear_curser_position();
 			editable_content.insert(get_linear_curser_position(), std::string(1, (char)input));
@@ -111,8 +132,29 @@ void text_box::write()
 			display();
 		}
 
-	} while (input != ascii_io::enter);
+	} while (true);
 	
+	set_output();
+	ascii_io::get_curser_position(saved_curser_x, saved_curser_y);
+	return input;
+}
+
+void text_box::set_max_characters(int characters)
+{
+	max_characters = characters;
+}
+
+void text_box::clear()
+{
+	top_line = 0;
+	editable_content = "";
+	editable_lines.clear();
+	set_output();
+}
+
+std::string text_box::get_text()
+{
+	return editable_content;
 }
 
 bool text_box::curser_on_top_border()
@@ -335,4 +377,35 @@ void text_box::fit_curser_to_line()
 		x = editable_lines[line].length();
 		ascii_io::move_curser_to_position(x + x_origin, y + y_origin);
 	}
+}
+
+void text_box::set_output()
+{
+	unsigned int stop_line = 0;
+	std::string output = "";
+	if (editable_lines.size() < (displayed_lines + top_line))
+	{
+		stop_line = editable_lines.size();
+	}
+	else
+	{
+		stop_line = displayed_lines + top_line;
+	}
+
+	for (unsigned int i = top_line; i < stop_line; i++)
+	{
+		output = output + editable_lines[i];
+	}
+
+	if (output != "")
+	{
+		output = output + "\n";
+	}
+	
+	for (unsigned int i = (stop_line - top_line); i < displayed_lines; i++)
+	{
+		output = output + "\n";
+	}
+
+	set_output_to_frame(output);
 }

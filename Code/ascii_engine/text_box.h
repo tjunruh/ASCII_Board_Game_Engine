@@ -9,7 +9,10 @@ class text_box : public widget
 {
 public:
 	text_box(frame* parent, std::string special_operation="none", unsigned int lines_count=1);
-	void write();
+	unsigned int write();
+	void set_max_characters(int characters);
+	void clear();
+	std::string get_text();
 private:
 	bool curser_on_top_border();
 	bool curser_on_bottom_border();
@@ -22,13 +25,17 @@ private:
 	unsigned int get_line_of_position(unsigned int position);
 	void move_curser_to_linear_position(unsigned int position);
 	void fit_curser_to_line();
+	void set_output();
 	unsigned int top_line = 0;
 	unsigned int displayed_lines = 0;
 	std::string editable_content = "";
 	std::vector<std::string> editable_lines;
 	int x_origin = 0;
 	int y_origin = 0;
+	int saved_curser_x = -1;
+	int saved_curser_y = -1;
 	int width = 0;
 	int height = 0;
+	int max_characters = -1;
 };
 

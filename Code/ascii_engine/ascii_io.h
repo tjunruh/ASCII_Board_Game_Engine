@@ -1,10 +1,5 @@
 #pragma once
 #include <string>
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #include <vector>
 
 namespace ascii_io
@@ -26,6 +21,7 @@ namespace ascii_io
 	
 	const int undefined = -1;
 	const int backspace = 8;
+	const int ESC = 27;
 	const int space = 32;
 	const int exclamation = 33;
 	const int double_quoatation = 34;
