@@ -83,7 +83,8 @@ ASCII_ENGINE_OBJS_EXTERNAL := $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_OBJS_EXTER
 TEST_ASCII_ENGINE := test_ascii_engine.out
 TEST_ASCII_ENGINE_OBJS := \
 	main.o \
-	ascii_io.o
+	ascii_io.o \
+	controls.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 
 INCLUDE_ASCII_ENGINE_HEADERS := -I$(BLD_DIR)/headers
