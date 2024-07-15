@@ -118,7 +118,7 @@ unsigned int text_box::write()
 		{
 			break;
 		}
-		else if ((input != ascii_io::backspace) && ((max_characters < 0) || (editable_content.length() < max_characters)))
+		else if ((input != ascii_io::backspace) && ((max_characters < 0) || (int(editable_content.length()) < max_characters)))
 		{
 			unsigned int position = get_linear_curser_position();
 			editable_content.insert(get_linear_curser_position(), std::string(1, (char)input));
@@ -372,7 +372,7 @@ void text_box::fit_curser_to_line()
 	x = x - x_origin;
 	y = y - y_origin;
 	unsigned int line = get_curser_line();
-	if (x > editable_lines[line].length())
+	if (x > int(editable_lines[line].length()))
 	{
 		x = editable_lines[line].length();
 		ascii_io::move_curser_to_position(x + x_origin, y + y_origin);

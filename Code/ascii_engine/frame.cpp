@@ -837,7 +837,6 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 {
 	int x = 0;
 	int y = 0;
-	float width_weight = get_width_weight(item);
 	ascii_io::get_terminal_size(x, y);
 	float row_multiplier = 1.0;
 	auto updated_row_multiplier = row_width_weights.find(item.row);
@@ -845,7 +844,7 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	{
 		row_multiplier = updated_row_multiplier->second;
 	}
-	int raw_width = floor(x * get_width_weight(item) * row_multiplier);
+	int raw_width = int(x * get_width_weight(item) * row_multiplier);
 	if(!include_spacing)
 	{
 		raw_width = raw_width - item.left_spacing - item.right_spacing;
@@ -1090,7 +1089,6 @@ void frame::set_widget_origins()
 {
 	int column = 0;
 	int level = 0;
-	int status = UNDEFINED;
 	unsigned int x = 0;
 	unsigned int y = 0;
 	widget_info item;
