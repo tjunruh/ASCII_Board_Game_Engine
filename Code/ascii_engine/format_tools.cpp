@@ -105,29 +105,29 @@ std::vector<std::string> format_tools::add_lines(std::vector<std::string> lines,
 	return lines;
 }
 
-std::string format_tools::fuse_columns_into_row(std::vector<std::vector<std::string>> columns_content, unsigned int widget_width_with_spacing, unsigned int& lines)
+std::string format_tools::fuse_columns_into_row(text_column data, unsigned int& lines)
 {
 	std::string row = "";
 	unsigned int max_length = 0;
-	for (unsigned int column = 0; column < columns_content.size(); column++)
+	for (unsigned int column = 0; column < data.text.size(); column++)
 	{
-		if (columns_content[column].size() > max_length)
+		if (data.text[column].size() > max_length)
 		{
-			max_length = columns_content[column].size();
+			max_length = data.text[column].size();
 		}
 	}
 	lines = max_length;
 
-	for (unsigned int column = 0; column < columns_content.size(); column++)
+	for (unsigned int column = 0; column < data.text.size(); column++)
 	{
-		columns_content[column] = format_tools::add_lines(columns_content[column], max_length - columns_content[column].size(), widget_width_with_spacing);
+		data.text[column] = format_tools::add_lines(data.text[column], max_length - data.text[column].size(), data.width[column]);
 	}
 
 	for (unsigned int line = 0; line < max_length; line++)
 	{
-		for (unsigned int column = 0; column < columns_content.size(); column++)
+		for (unsigned int column = 0; column < data.text.size(); column++)
 		{
-			row = row + (columns_content[column])[line];
+			row = row + (data.text[column])[line];
 		}
 		row = row + "\n";
 	}

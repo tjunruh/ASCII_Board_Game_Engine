@@ -4,6 +4,7 @@
 #include "ascii_io.h"
 #include "widget_types.h"
 #include "format_tools.h"
+#include <unordered_map>
 
 class frame
 {
@@ -13,11 +14,13 @@ public:
 	void display();
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();
+	int set_row_width_weight(float weight, unsigned int row);
+	int set_coordinate_width_multiplier(float multiplier, int row, int column);
 private:
 	struct widget_info
 	{
 		int id = -1;
-		std::string output;
+		std::string output = "";
 		int row = 0;
 		int column = 0;
 		std::string alignment = "left";
@@ -39,6 +42,7 @@ private:
 		int y_origin = -1;
 		int lines_count = 0;
 		int level = 0;
+		float width_multiplier = 1.0;
 	};
 
 	const std::string special_operation_new_line = "new line";
@@ -69,6 +73,7 @@ private:
 	int get_x_origin(int id, int& x_origin);
 	int get_y_origin(int id, int& y_origin);
 	int get_alignment(int id, std::string& allignment);
+	float get_width_weight(widget_info item);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
@@ -102,6 +107,7 @@ private:
 	int append_level = 0;
 	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
+	std::unordered_map<unsigned int, float>row_width_weights;
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;
