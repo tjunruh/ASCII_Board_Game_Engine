@@ -1061,12 +1061,20 @@ std::string frame::get_frame_output()
 				int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
 				if (item.add_border)
 				{
-					widget_lines.insert(widget_lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
-					for (unsigned int k = top_spacing + 1; k < widget_lines.size() - bottom_spacing; k++)
+					for (unsigned int k = 0; k < widget_lines.size(); k++)
 					{
-						widget_lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
-						widget_lines[k].insert(widget_lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
+						if (k < (top_spacing) || (k > (widget_lines.size() - bottom_spacing - 1)))
+						{
+							widget_lines[k].insert(left_spacing, "  ");
+							widget_lines[k].insert(widget_lines[k].length() - right_spacing, "  ");
+						}
+						else
+						{
+							widget_lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
+							widget_lines[k].insert(widget_lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
+						}
 					}
+					widget_lines.insert(widget_lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 					widget_lines.insert(widget_lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 				}
 				set_lines_count(item.id, widget_lines.size());
