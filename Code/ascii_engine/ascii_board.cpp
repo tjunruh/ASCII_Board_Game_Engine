@@ -542,9 +542,27 @@ int ascii_board::get_number_of_rows()
 	return max_rows;
 }
 
-void ascii_board::set_output(const std::string& output)
+void ascii_board::display()
 {
-	set_output_to_frame(output);
+	int x_origin = get_x_origin();
+	int y_origin = get_y_origin();
+	int curser_x = 0;
+	int curser_y = 0;
+	ascii_io::get_curser_position(curser_x, curser_y);
+	update_board();
+	std::vector<std::string> lines = format_tools::get_lines(board);
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		ascii_io::move_curser_to_position(x_origin, y_origin + i);
+		ascii_io::print(lines[i]);
+	}
+	ascii_io::move_curser_to_position(curser_x, curser_y);
+}
+
+void ascii_board::sync()
+{
+	update_board();
+	set_output_to_frame(board);
 }
 
 void ascii_board::initialize_tiles(int rows, int columns)

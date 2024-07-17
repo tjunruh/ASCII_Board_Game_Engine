@@ -42,7 +42,8 @@ public:
 	int load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
 	int get_number_of_columns();
 	int get_number_of_rows();
-	void set_output(const std::string& output);
+	void display();
+	void sync();
 
 private:
 	std::string board = "";
