@@ -160,17 +160,14 @@ std::vector<std::string> format_tools::remove_trailing_whitespace(const std::vec
 	std::string line = "";
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{
-		for (unsigned int j = 0; j < lines[i].length(); j++)
-		{
-			line = line + (lines[i])[j];
-		}
+		line = lines[i];
 
 		unsigned int line_length = line.length() - 1;
 		for (int j = line_length; j >= 0; j--)
 		{
 			if (line[j] == ' ')
 			{
-				line.erase(j);
+				line.erase(j, 1);
 			}
 			else if (line[j] != '\n')
 			{
@@ -181,7 +178,6 @@ std::vector<std::string> format_tools::remove_trailing_whitespace(const std::vec
 		{
 			updated_lines.push_back(line);
 		}
-		line = "";
 	}
 	return updated_lines;
 }
@@ -217,5 +213,17 @@ void format_tools::mask_string(std::string& output, const std::string& old_outpu
 	for (unsigned int i = 0; i < new_output_lines.size(); i++)
 	{
 		output = output + new_output_lines[i];
+	}
+}
+
+void format_tools::remove_newline_characters(std::string& text)
+{
+	int text_length = (int)(text.length() - 1);
+	for (int i = text_length; i >= 0; i--)
+	{
+		if (text[i] == '\n')
+		{
+			text.erase(i, 1);
+		}
 	}
 }

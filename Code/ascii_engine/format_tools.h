@@ -21,4 +21,5 @@ namespace format_tools
 	std::vector<std::string> get_lines(const std::string& output_string);
 	std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
 	void mask_string(std::string& new_string, const std::string& old_string);
+	void remove_newline_characters(std::string& text);
 }
