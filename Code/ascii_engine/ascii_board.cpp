@@ -4,6 +4,7 @@
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include <iostream>
 #include "error_codes.h"
+#include "format_tools.h"
 
 ascii_board::ascii_board(frame* parent, std::string path, int& status, std::string special_operation) : widget(parent, special_operation)
 {
@@ -381,6 +382,19 @@ int ascii_board::add_configuration(board_configuration configuration)
 	return status;
 }
 
+int ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character)
+{
+	board_configuration board_config;
+	tile_configuration tile_config;
+	board_config.name_id = name_id;
+	tile_config.row = row;
+	tile_config.column = column;
+	tile_config.value = value;
+	tile_config.ignore_character = ignore_character;
+	board_config.tile_configurations.push_back(tile_config);
+	return add_configuration(board_config);
+}
+
 int ascii_board::activate_configuration(int row, int column, std::string name_id)
 {
 	int status = UNDEFINED;
@@ -489,6 +503,32 @@ int ascii_board::deactivate_configuration(std::string name_id)
 	{
 		status = ELEMENT_NOT_FOUND;
 	}
+	return status;
+}
+
+std::string ascii_board::load_configuration(std::string path, int& status)
+{
+	std::string value = "";
+	int file_status = file_manager::read_file(path, value);
+	if (file_status == 1)
+	{
+		status = INVALID_PATH;
+		return "";
+	}
+	status = SUCCESS;
+	format_tools::remove_newline_characters(value);
+	return value;
+}
+
+int ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character)
+{
+	int status = UNDEFINED;
+	std::string value = load_configuration(path, status);
+	if (status == 1)
+	{
+		return INVALID_PATH;
+	}
+	status = add_configuration(name_id, row, column, value, ignore_character);
 	return status;
 }
 

@@ -33,10 +33,13 @@ public:
 	char get_tile_character(int row, int column, int character_index);
 	std::string get_board();
 	int add_configuration(board_configuration configuration);
+	int add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
 	int activate_configuration(int row, int column, std::string name_id);
 	int activate_configuration(std::string name_id);
 	int deactivate_configuration(int row, int column, std::string name_id);
 	int deactivate_configuration(std::string name_id);
+	std::string load_configuration(std::string path, int& status);
+	int load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
 	int get_number_of_columns();
 	int get_number_of_rows();
 	void set_output(const std::string& output);
