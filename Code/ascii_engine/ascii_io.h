@@ -137,5 +137,6 @@ namespace ascii_io
 	const int left = 68;
 	const int up = 65;
 	const int down = 66;
+	const int DEL = 0; // Add true value for linux
 #endif
 }
