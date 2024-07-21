@@ -28,9 +28,9 @@ public:
 	int set_row(int row, std::string value, char ignore_character);
 	int set_column(int column, std::string value, char ignore_character);
 	int set_all(std::string value, char ignore_character);
-	int set_tile_character(int row, int column, char character, int character_index);
+	int set_tile_character(int row, int column, char character, unsigned int character_index);
 	std::string get_tile(int row, int column);
-	char get_tile_character(int row, int column, int character_index);
+	char get_tile_character(int row, int column, unsigned int character_index);
 	std::string get_board();
 	int add_configuration(board_configuration configuration);
 	int add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
@@ -71,7 +71,7 @@ private:
 	void set_tile_default_values();
 	std::string get_board_section(int start_row, int stop_row, int start_column, int stop_column);
 	void update_board();
-	int get_value_length(action_tile tile);
+	unsigned int get_value_length(action_tile tile);
 	bool configuration_present(std::string name_id);
 	board_configuration get_configuration(std::string name_id);
 	bool duplicate_point_present(board_configuration configuration);

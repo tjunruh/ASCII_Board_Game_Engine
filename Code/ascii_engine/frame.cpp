@@ -1095,7 +1095,7 @@ std::string frame::get_frame_output()
 					int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
 					for (unsigned int k = 0; k < widget_lines.size(); k++)
 					{
-						if (k < (top_spacing) || (k > (widget_lines.size() - bottom_spacing - 1)))
+						if (k < (unsigned int)(top_spacing) || (k > (widget_lines.size() - bottom_spacing - 1)))
 						{
 							widget_lines[k].insert(left_spacing, "  ");
 							widget_lines[k].insert(widget_lines[k].length() - right_spacing, "  ");

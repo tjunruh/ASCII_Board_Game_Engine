@@ -73,7 +73,7 @@ int ascii_board::set_tile(int row, int column, std::string value, char ignore_ch
 	{
 		if (value.length() == get_value_length(action_tiles[action_tile_index]))
 		{
-			for (int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
+			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
 			{
 				if (((value[i] != ignore_character) || (ignore_character == '\0')))
 				{
@@ -103,7 +103,7 @@ int ascii_board::set_tile(tile_configuration configuration, bool activate)
 		if (get_value_length(action_tiles[action_tile_index]) == configuration.value.length())
 		{
 			status = SUCCESS;
-			for (int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
+			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
 			{
 				if (((configuration.value[i] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
 				{
@@ -139,7 +139,7 @@ int ascii_board::set_row(int row, std::string value, char ignore_character)
 		{
 			if (get_value_length(action_tiles[i]) == value.length())
 			{
-				for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
 					if (((value[j] != ignore_character) || (ignore_character == '\0')))
 					{
@@ -166,7 +166,7 @@ int ascii_board::set_row(tile_configuration configuration, bool activate)
 		{
 			if (get_value_length(action_tiles[i]) == configuration.value.length())
 			{
-				for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
 					if (((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
 					{
@@ -200,7 +200,7 @@ int ascii_board::set_column(int column, std::string value, char ignore_character
 		{
 			if (get_value_length(action_tiles[i]) == value.length())
 			{
-				for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
 					if (((value[j] != ignore_character) || (ignore_character == '\0')))
 					{
@@ -227,7 +227,7 @@ int ascii_board::set_column(tile_configuration configuration, bool activate)
 		{
 			if (get_value_length(action_tiles[i]) == configuration.value.length())
 			{
-				for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
 					if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
 					{
@@ -259,7 +259,7 @@ int ascii_board::set_all(std::string value, char ignore_character)
 	{
 		if (get_value_length(action_tiles[i]) == value.length())
 		{
-			for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 			{
 				if ((value[j] != ignore_character) || (ignore_character == '\0'))
 				{
@@ -283,7 +283,7 @@ int ascii_board::set_all(tile_configuration configuration, bool activate)
 	{
 		if (get_value_length(action_tiles[i]) == configuration.value.length())
 		{
-			for (int j = 0; j < get_value_length(action_tiles[i]); j++)
+			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 			{
 				if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
 				{
@@ -306,7 +306,7 @@ int ascii_board::set_all(tile_configuration configuration, bool activate)
 	}
 	return status;
 }
-int ascii_board::set_tile_character(int row, int column, char character, int character_index)
+int ascii_board::set_tile_character(int row, int column, char character, unsigned int character_index)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -340,7 +340,7 @@ std::string ascii_board::get_tile(int row, int column)
 	return tile;
 }
 
-char ascii_board::get_tile_character(int row, int column, int character_index)
+char ascii_board::get_tile_character(int row, int column, unsigned int character_index)
 {
 	char character = ' ';
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -734,7 +734,7 @@ void ascii_board::update_board()
 	{
 		int row = 0;
 		int column = 0;
-		int value_position = 0;
+		unsigned int value_position = 0;
 		for (unsigned int j = 0; j < board.length(); j++)
 		{
 			if ((row >= action_tiles[i].board_start_row) && (row <= action_tiles[i].board_stop_row) && (column >= action_tiles[i].board_start_column) && (column <= action_tiles[i].board_stop_column))
@@ -759,15 +759,15 @@ void ascii_board::update_board()
 	}
 }
 
-int ascii_board::get_value_length(action_tile tile)
+unsigned int ascii_board::get_value_length(action_tile tile)
 {
-	int width = 0;
-	int height = 0;
+	unsigned int width = 0;
+	unsigned int height = 0;
 
-	width = tile.board_stop_column - tile.board_start_column + 1;
-	height = tile.board_stop_row - tile.board_stop_row + 1;
+	width = (unsigned int)(tile.board_stop_column - tile.board_start_column + 1);
+	height = (unsigned int)(tile.board_stop_row - tile.board_start_row + 1);
 
-	int length = width * height;
+	unsigned int length = width * height;
 
 	return length;
 }
