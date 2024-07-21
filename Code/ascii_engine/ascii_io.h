@@ -25,6 +25,7 @@ namespace ascii_io
 
 	const int undefined = -1;
 	const int backspace = 8;
+	const int TAB = 9;
 	const int ESC = 27;
 	const int space = 32;
 	const int exclamation = 33;
@@ -121,7 +122,6 @@ namespace ascii_io
 	const int pipe = 124;
 	const int end_curly_bracket = 125;
 	const int tilde = 126;
-	const int DEL = 127;
 
 #ifdef _WIN32
 	const int enter = 13;
@@ -129,6 +129,8 @@ namespace ascii_io
 	const int left = 299;
 	const int up = 296;
 	const int down = 304;
+	const int DEL = 307;
+	const int Insert = 306;
 #elif __linux__
 	const int enter = 10;
 	const int right = 67;
