@@ -8,8 +8,8 @@ class widget
 public:
 	widget(frame* parent, std::string special_operation="none");
 	void set_alignment(std::string alignment);
-	int set_spacing(int top, int bottom, int left, int right);
-	int set_border_spacing(int top, int bottom, int left, int right);
+	void set_spacing(int top, int bottom, int left, int right);
+	void set_border_spacing(int top, int bottom, int left, int right);
 	void set_widget_type(int type);
 	void set_vertical_border(char border);
 	void set_horizontal_border(char border);
@@ -22,10 +22,14 @@ public:
 	int get_y_origin();
 	std::string get_output();
 	std::string get_alignment();
+	int start_logging(std::string file_path);
+	void stop_logging();
 	operator int() { return widget_id; }
 protected:
 	void set_output_to_frame(const std::string& text);
 private:
 	frame *parent_frame;
 	int widget_id;
+	bool log = false;
+	std::string log_file_path = "";
 };

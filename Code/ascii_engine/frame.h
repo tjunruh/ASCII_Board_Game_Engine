@@ -76,6 +76,7 @@ private:
 	int get_alignment(int id, std::string& allignment);
 	float get_width_weight(widget_info item);
 	int generate_widget_id();
+	int get_widget_type(int id, int& type);
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
 	int get_min_column_index(const std::vector<widget_info>& widget_vec);
