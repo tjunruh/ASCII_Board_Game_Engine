@@ -262,7 +262,7 @@ int frame::set_alignment(int id, std::string alignment)
 	return status;
 }
 
-int frame::set_spacing(int id, int top, int bottom, int right, int left)
+int frame::set_spacing(int id, int top, int bottom, int left, int right)
 {
 	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
 	{
@@ -451,21 +451,25 @@ int frame::highlight(int row, int column, int level)
 			
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
 			y = y_origin - 1 - widgets[i].top_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin - 2 - widgets[i].left_border_spacing;
 			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
 			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 			status = SUCCESS;
@@ -496,21 +500,25 @@ int frame::unhighlight(int row, int column, int level)
 
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, corner_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
 			y = y_origin - 1 - widgets[i].top_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, corner_character));
 
 			x = x_origin - 2 - widgets[i].left_border_spacing;
 			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, corner_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
 			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			keep_point_in_console_bounds(x, y);
 			ascii_io::move_curser_to_position(x, y);
 			ascii_io::print(std::string(1, corner_character));
 			status = SUCCESS;
@@ -518,6 +526,30 @@ int frame::unhighlight(int row, int column, int level)
 		}
 	}
 	return status;
+}
+
+void frame::keep_point_in_console_bounds(int& x, int& y)
+{
+	int max_x = 0;
+	int max_y = 0;
+	ascii_io::get_terminal_size(max_x, max_y);
+	if (x < 0)
+	{
+		x = 0;
+	}
+	else if (x >= max_x)
+	{
+		x = max_x - 1;
+	}
+
+	if (y < 0)
+	{
+		y = 0;
+	}
+	else if (y >= max_y)
+	{
+		y = max_y - 1;
+	}
 }
 
 bool frame::widget_exists(int id)
@@ -1054,13 +1086,13 @@ std::string frame::get_frame_output()
 				std::vector<std::string> widget_lines;
 				widget_lines = get_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
-				int top_spacing = item.top_spacing - item.top_border_spacing;
-				int left_spacing = item.left_spacing - item.left_border_spacing;
-				int middle_spacing = get_widget_width(item, false) + 2 + item.left_border_spacing + item.right_border_spacing;
-				int right_spacing = item.right_spacing - item.right_border_spacing;
-				int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
 				if (item.add_border)
 				{
+					int top_spacing = item.top_spacing - item.top_border_spacing;
+					int left_spacing = item.left_spacing - item.left_border_spacing;
+					int middle_spacing = get_widget_width(item, false) + 2 + item.left_border_spacing + item.right_border_spacing;
+					int right_spacing = item.right_spacing - item.right_border_spacing;
+					int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
 					for (unsigned int k = 0; k < widget_lines.size(); k++)
 					{
 						if (k < (top_spacing) || (k > (widget_lines.size() - bottom_spacing - 1)))

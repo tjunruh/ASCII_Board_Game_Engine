@@ -53,8 +53,8 @@ private:
 	int append(int id, std::string special_operation="none");
 	int set_output(int id, const std::string& output);
 	int set_alignment(int id, std::string alignment);
-	int set_spacing(int id, int top, int bottom, int right, int left);
-	int set_border_spacing(int id, int top, int bottom, int right, int left);
+	int set_spacing(int id, int top, int bottom, int left, int right);
+	int set_border_spacing(int id, int top, int bottom, int left, int right);
 	int set_widget_type(int id, int type);
 	int set_vertical_border(int id, char border);
 	int set_horizontal_border(int id, char border);
@@ -66,6 +66,7 @@ private:
 	int add_border(int id);
 	int highlight(int row, int column, int level);
 	int unhighlight(int row, int column, int level);
+	void keep_point_in_console_bounds(int& x, int& y);
 	bool widget_exists(int id);
 	bool widget_exists(int row, int column);
 	int get_levels(int row, int column);

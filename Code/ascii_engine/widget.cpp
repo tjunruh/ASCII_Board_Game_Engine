@@ -18,9 +18,9 @@ void widget::set_output_to_frame(const std::string& text)
 	int status = parent_frame->set_output(widget_id, text);
 }
 
-int widget::set_spacing(int top, int bottom, int right, int left)
+int widget::set_spacing(int top, int bottom, int left, int right)
 {
-	int status = parent_frame->set_spacing(widget_id, top, bottom, right, left);
+	int status = parent_frame->set_spacing(widget_id, top, bottom, left, right);
 	return status;
 }
 

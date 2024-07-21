@@ -8,8 +8,8 @@ class widget
 public:
 	widget(frame* parent, std::string special_operation="none");
 	void set_alignment(std::string alignment);
-	int set_spacing(int top, int bottom, int right, int left);
-	int set_border_spacing(int top, int bottom, int right, int left);
+	int set_spacing(int top, int bottom, int left, int right);
+	int set_border_spacing(int top, int bottom, int left, int right);
 	void set_widget_type(int type);
 	void set_vertical_border(char border);
 	void set_horizontal_border(char border);
