@@ -149,6 +149,8 @@ void text_box::clear()
 	top_line = 0;
 	editable_content = "";
 	editable_lines.clear();
+	saved_curser_x = -1;
+	saved_curser_y = -1;
 	set_output();
 }
 
