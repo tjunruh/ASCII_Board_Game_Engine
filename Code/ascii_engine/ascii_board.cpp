@@ -6,15 +6,20 @@
 #include "error_codes.h"
 #include "format_tools.h"
 
-ascii_board::ascii_board(frame* parent, std::string path, int& status, std::string special_operation) : widget(parent, special_operation)
+ascii_board::ascii_board(frame* parent, std::string path, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
+	if (start_logging)
+	{
+		log.start_widget_logging(logging_file_path, BOARD);
+	}
 	validate_board_config validator;
-	status = UNDEFINED;
+	int status = UNDEFINED;
 	std::string board_config = "";
 	int file_status = file_manager::read_file(path, board_config);
 	if (file_status == 1)
 	{
 		status = INVALID_PATH;
+		log.log_status(status, "ascii_board::ascii_board");
 		return;
 	}
 
@@ -22,6 +27,7 @@ ascii_board::ascii_board(frame* parent, std::string path, int& status, std::stri
 	if (validation_status == 1)
 	{
 		status = INVALID_CONFIG;
+		log.log_status(status, "ascii_board::ascii_board");
 		return;
 	}
 
@@ -40,9 +46,10 @@ ascii_board::ascii_board(frame* parent, std::string path, int& status, std::stri
 	set_tile_default_values();
 	set_widget_type(BOARD);
 	status = SUCCESS;
+	log.log_status(status, "ascii_board::ascii_board");
 }
 
-int ascii_board::clear_tile(int row, int column)
+void ascii_board::clear_tile(int row, int column)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -54,7 +61,8 @@ int ascii_board::clear_tile(int row, int column)
 			break;
 		}
 	}
-	return status;
+
+	log.log_status(status, "ascii_board::clear_tile");
 }
 
 void ascii_board::clear_tiles()
@@ -65,7 +73,7 @@ void ascii_board::clear_tiles()
 	}
 }
 
-int ascii_board::set_tile(int row, int column, std::string value, char ignore_character)
+void ascii_board::set_tile(int row, int column, std::string value, char ignore_character)
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(row, column);
@@ -91,10 +99,11 @@ int ascii_board::set_tile(int row, int column, std::string value, char ignore_ch
 	{
 		status = ELEMENT_NOT_FOUND;
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_tile");
 }
 
-int ascii_board::set_tile(tile_configuration configuration, bool activate)
+void ascii_board::set_tile(tile_configuration configuration, bool activate)
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(configuration.row, configuration.column);
@@ -127,10 +136,11 @@ int ascii_board::set_tile(tile_configuration configuration, bool activate)
 	{
 		status = ELEMENT_NOT_FOUND;
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_tiles");
 }
 
-int ascii_board::set_row(int row, std::string value, char ignore_character)
+void ascii_board::set_row(int row, std::string value, char ignore_character)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -154,10 +164,11 @@ int ascii_board::set_row(int row, std::string value, char ignore_character)
 			}
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_row");
 }
 
-int ascii_board::set_row(tile_configuration configuration, bool activate)
+void ascii_board::set_row(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -188,10 +199,11 @@ int ascii_board::set_row(tile_configuration configuration, bool activate)
 			}
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_row");
 }
 
-int ascii_board::set_column(int column, std::string value, char ignore_character)
+void ascii_board::set_column(int column, std::string value, char ignore_character)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -215,10 +227,11 @@ int ascii_board::set_column(int column, std::string value, char ignore_character
 			}
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_column");
 }
 
-int ascii_board::set_column(tile_configuration configuration, bool activate)
+void ascii_board::set_column(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -249,10 +262,11 @@ int ascii_board::set_column(tile_configuration configuration, bool activate)
 			}
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_column");
 }
 
-int ascii_board::set_all(std::string value, char ignore_character)
+void ascii_board::set_all(std::string value, char ignore_character)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -273,10 +287,11 @@ int ascii_board::set_all(std::string value, char ignore_character)
 			break;
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_all");
 }
 
-int ascii_board::set_all(tile_configuration configuration, bool activate)
+void ascii_board::set_all(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -304,9 +319,11 @@ int ascii_board::set_all(tile_configuration configuration, bool activate)
 			break;
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_all");
 }
-int ascii_board::set_tile_character(int row, int column, char character, unsigned int character_index)
+
+void ascii_board::set_tile_character(int row, int column, char character, unsigned int character_index)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -324,7 +341,8 @@ int ascii_board::set_tile_character(int row, int column, char character, unsigne
 			}
 		}
 	}
-	return status;
+	
+	log.log_status(status, "ascii_board::set_tile_character");
 }
 
 std::string ascii_board::get_tile(int row, int column)
@@ -359,7 +377,7 @@ std::string ascii_board::get_board()
 	return board;
 }
 
-int ascii_board::add_configuration(board_configuration configuration)
+void ascii_board::add_configuration(board_configuration configuration)
 {
 	int status = UNDEFINED;
 	if (!configuration_present(configuration.name_id) && !duplicate_point_present(configuration))
@@ -379,10 +397,10 @@ int ascii_board::add_configuration(board_configuration configuration)
 		status = DUPLICATE_ELEMENT;
 	}
 
-	return status;
+	log.log_status(status, "ascii_board::add_configuration");
 }
 
-int ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character)
+void ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character)
 {
 	board_configuration board_config;
 	tile_configuration tile_config;
@@ -392,144 +410,138 @@ int ascii_board::add_configuration(std::string name_id, int row, int column, std
 	tile_config.value = value;
 	tile_config.ignore_character = ignore_character;
 	board_config.tile_configurations.push_back(tile_config);
-	return add_configuration(board_config);
+	add_configuration(board_config);
 }
 
-int ascii_board::activate_configuration(int row, int column, std::string name_id)
+void ascii_board::activate_configuration(int row, int column, std::string name_id)
 {
-	int status = UNDEFINED;
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
-
+	log.log_begin("ascii_board::activate_configuration");
 	if ((config_index != -1) && (config_tile_index != -1))
 	{
-		status = set_tile(row, column, board_configurations[config_index].tile_configurations[config_tile_index].value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
+		set_tile(row, column, board_configurations[config_index].tile_configurations[config_tile_index].value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
 	}
 	else
 	{
-		status = ELEMENT_NOT_FOUND;
+		log.log_status(ELEMENT_NOT_FOUND, "ascii_board::activate_configuration");
 	}
-	return status;
+	
+	log.log_end("ascii_board::activate_configuration");
 }
 
-int ascii_board::activate_configuration(std::string name_id)
+void ascii_board::activate_configuration(std::string name_id)
 {
-	int status = UNDEFINED;
 	int config_index = get_board_config_index(name_id);
+	log.log_begin("ascii_board::activate_configuration");
 	if (config_index != -1)
 	{
 		for (unsigned int i = 0; i < board_configurations[config_index].tile_configurations.size(); i++)
 		{
+			log.log_comment("Activation for: " + board_configurations[config_index].tile_configurations[i].value);
 			if ((board_configurations[config_index].tile_configurations[i].row != -1) && (board_configurations[config_index].tile_configurations[i].column != -1))
 			{
-				status = set_tile(board_configurations[config_index].tile_configurations[i], true);
+				set_tile(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if ((board_configurations[config_index].tile_configurations[i].row == -1) && (board_configurations[config_index].tile_configurations[i].column == -1))
 			{
-				status = set_all(board_configurations[config_index].tile_configurations[i], true);
+				set_all(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].column == -1)
 			{
-				status = set_row(board_configurations[config_index].tile_configurations[i], true);
+				set_row(board_configurations[config_index].tile_configurations[i], true);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].row == -1)
 			{
-				status = set_column(board_configurations[config_index].tile_configurations[i], true);
-			}
-			
-			if (status != SUCCESS)
-			{
-				break;
+				set_column(board_configurations[config_index].tile_configurations[i], true);
 			}
 		}
 	}
 	else
 	{
-		status = ELEMENT_NOT_FOUND;
+		log.log_status(ELEMENT_NOT_FOUND, "ascii_board::activate_configuration");
 	}
-	return status;
+
+	log.log_end("ascii_board::activate_configuration");
 }
 
-int ascii_board::deactivate_configuration(int row, int column, std::string name_id)
+void ascii_board::deactivate_configuration(int row, int column, std::string name_id)
 {
-	int status = UNDEFINED;
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
 	int action_tile_index = get_action_tile_index(row, column);
-
+	log.log_begin("ascii_board::deactivate_configuration");
 	if ((config_index != -1) && (config_tile_index != -1) && (action_tile_index != -1))
 	{
-		status = set_tile(row, column, action_tiles[action_tile_index].default_value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
+		set_tile(row, column, action_tiles[action_tile_index].default_value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
 	}
 	else
 	{
-		status = ELEMENT_NOT_FOUND;
+		log.log_status(ELEMENT_NOT_FOUND, "ascii_board::deactivate_configuration");
 	}
-	return status;
+	
+	log.log_end("ascii_board::deactivate_configuration");
 }
 
-int ascii_board::deactivate_configuration(std::string name_id)
+void ascii_board::deactivate_configuration(std::string name_id)
 {
-	int status = UNDEFINED;
 	int config_index = get_board_config_index(name_id);
+	log.log_begin("ascii_board::deactivate_configuration");
 	if (config_index != -1)
 	{
 		for (unsigned int i = 0; i < board_configurations[config_index].tile_configurations.size(); i++)
 		{
 			if ((board_configurations[config_index].tile_configurations[i].row != -1) && (board_configurations[config_index].tile_configurations[i].column != -1))
 			{
-				status = set_tile(board_configurations[config_index].tile_configurations[i], false);
+				set_tile(board_configurations[config_index].tile_configurations[i], false);
 			}
 			else if ((board_configurations[config_index].tile_configurations[i].row == -1) && (board_configurations[config_index].tile_configurations[i].column == -1))
 			{
-				status = set_all(board_configurations[config_index].tile_configurations[i], false);
+				set_all(board_configurations[config_index].tile_configurations[i], false);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].column == -1)
 			{
-				status = set_row(board_configurations[config_index].tile_configurations[i], false);
+				set_row(board_configurations[config_index].tile_configurations[i], false);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].row == -1)
 			{
-				status = set_column(board_configurations[config_index].tile_configurations[i], false);
-			}
-
-			if (status != SUCCESS)
-			{
-				break;
+				set_column(board_configurations[config_index].tile_configurations[i], false);
 			}
 		}
 	}
 	else
 	{
-		status = ELEMENT_NOT_FOUND;
+		log.log_status(ELEMENT_NOT_FOUND, "ascii_board::deactivate_configuration");
 	}
-	return status;
+	
+	log.log_end("ascii_board::deactivate_configuration");
 }
 
-std::string ascii_board::load_configuration(std::string path, int& status)
+std::string ascii_board::load_configuration(std::string path)
 {
 	std::string value = "";
 	int file_status = file_manager::read_file(path, value);
 	if (file_status == 1)
 	{
-		status = INVALID_PATH;
+		log.log_status(INVALID_PATH, "ascii_board::load_configuration");
 		return "";
 	}
-	status = SUCCESS;
+	log.log_status(SUCCESS, "ascii_board::load_configuration");
 	format_tools::remove_newline_characters(value);
 	return value;
 }
 
-int ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character)
+void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character)
 {
 	int status = UNDEFINED;
-	std::string value = load_configuration(path, status);
-	if (status == 1)
+	log.log_begin("ascii_board::load_configuration");
+	std::string value = load_configuration(path);
+	if (value == "")
 	{
-		return INVALID_PATH;
+		return;
 	}
-	status = add_configuration(name_id, row, column, value, ignore_character);
-	return status;
+	add_configuration(name_id, row, column, value, ignore_character);
+	log.log_end("ascii_board::load_configuration");
 }
 
 int ascii_board::get_number_of_columns()
@@ -563,6 +575,17 @@ void ascii_board::sync()
 {
 	update_board();
 	set_output_to_frame(board);
+}
+
+int ascii_board::start_logging(std::string file_path)
+{
+	int status = log.start_widget_logging(file_path, get_widget_type());
+	return status;
+}
+
+void ascii_board::stop_logging()
+{
+	log.stop_widget_logging();
 }
 
 void ascii_board::initialize_tiles(int rows, int columns)

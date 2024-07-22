@@ -21,29 +21,31 @@ struct board_configuration
 class ascii_board : public widget
 {
 public:
-	ascii_board(frame* parent, std::string path, int& status, std::string special_operation = "none");
-	int clear_tile(int row, int column);
+	ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
+	void clear_tile(int row, int column);
 	void clear_tiles();
-	int set_tile(int row, int column, std::string value, char ignore_character);
-	int set_row(int row, std::string value, char ignore_character);
-	int set_column(int column, std::string value, char ignore_character);
-	int set_all(std::string value, char ignore_character);
-	int set_tile_character(int row, int column, char character, unsigned int character_index);
+	void set_tile(int row, int column, std::string value, char ignore_character);
+	void set_row(int row, std::string value, char ignore_character);
+	void set_column(int column, std::string value, char ignore_character);
+	void set_all(std::string value, char ignore_character);
+	void set_tile_character(int row, int column, char character, unsigned int character_index);
 	std::string get_tile(int row, int column);
 	char get_tile_character(int row, int column, unsigned int character_index);
 	std::string get_board();
-	int add_configuration(board_configuration configuration);
-	int add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
-	int activate_configuration(int row, int column, std::string name_id);
-	int activate_configuration(std::string name_id);
-	int deactivate_configuration(int row, int column, std::string name_id);
-	int deactivate_configuration(std::string name_id);
-	std::string load_configuration(std::string path, int& status);
-	int load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
+	void add_configuration(board_configuration configuration);
+	void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
+	void activate_configuration(int row, int column, std::string name_id);
+	void activate_configuration(std::string name_id);
+	void deactivate_configuration(int row, int column, std::string name_id);
+	void deactivate_configuration(std::string name_id);
+	std::string load_configuration(std::string path);
+	void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
 	int get_number_of_columns();
 	int get_number_of_rows();
 	void display();
 	void sync();
+	int start_logging(std::string file_path);
+	void stop_logging();
 
 private:
 	std::string board = "";
@@ -79,8 +81,8 @@ private:
 	int get_action_tile_index(int row, int column);
 	int get_board_config_index(std::string name_id);
 	int get_tile_config_index(std::string name_id, int row, int column);
-	int set_tile(tile_configuration configuration, bool activate);
-	int set_row(tile_configuration configuration, bool activate);
-	int set_column(tile_configuration configuration, bool activate);
-	int set_all(tile_configuration configuration, bool activate);
+	void set_tile(tile_configuration configuration, bool activate);
+	void set_row(tile_configuration configuration, bool activate);
+	void set_column(tile_configuration configuration, bool activate);
+	void set_all(tile_configuration configuration, bool activate);
 };

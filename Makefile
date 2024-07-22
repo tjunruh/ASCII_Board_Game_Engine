@@ -55,6 +55,8 @@ ASCII_ENGINE_OBJS := \
 	format_tools.o \
 	controls.o \
 	frame.o \
+        label.o \
+        logger.o \
 	menu.o \
 	text_box.o \
 	widget.o
@@ -68,6 +70,7 @@ ASCII_ENGINE_HEADERS := \
 	format_tools.h \
 	frame.h \
 	label.h \
+        logger.h \
 	menu.h \
 	text_box.h \
 	widget.h \

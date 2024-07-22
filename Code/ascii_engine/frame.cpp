@@ -702,24 +702,6 @@ int frame::generate_widget_id()
 	return id;
 }
 
-int frame::get_widget_type(int id, int& type)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].id == id)
-			{
-				type = widgets[i].widget_type;
-				status = SUCCESS;
-				break;
-			}
-		}
-	}
-	return status;
-}
-
 std::vector<int> frame::get_row_ids(int row)
 {
 	std::vector<int> ids;
