@@ -76,6 +76,8 @@ void ascii_io::get_terminal_size(int &x, int &y)
 	y = size_info.dwSize.Y;
 #elif __linux__
 	getmaxyx(stdscr, y, x);
+	y = y - 1;
+	x = x - 1;
 #endif
 }
 
