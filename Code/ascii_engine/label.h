@@ -8,4 +8,6 @@ class label : public widget
 public:
 	label(frame* parent, std::string special_operation = "none");
 	void set_output(const std::string& output);
+	int start_logging(const std::string& file_path);
+	void stop_logging();
 };
