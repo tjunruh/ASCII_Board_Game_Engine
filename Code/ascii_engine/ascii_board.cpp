@@ -10,7 +10,13 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string special_op
 {
 	if (start_logging)
 	{
-		log.start_widget_logging(logging_file_path, BOARD);
+		int logger_status = log.start_widget_logging(logging_file_path, BOARD);
+		if (logger_status != 0)
+		{
+			ascii_io::clear();
+			ascii_io::print("ascii_board initialization: Invalid logger path.\nPress any button to continue.");
+			ascii_io::getchar();
+		}
 	}
 	validate_board_config validator;
 	int status = UNDEFINED;
