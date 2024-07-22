@@ -577,7 +577,7 @@ void ascii_board::sync()
 	set_output_to_frame(board);
 }
 
-int ascii_board::start_logging(std::string file_path)
+int ascii_board::start_logging(const std::string& file_path)
 {
 	int status = log.start_widget_logging(file_path, get_widget_type());
 	return status;

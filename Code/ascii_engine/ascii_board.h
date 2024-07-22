@@ -44,7 +44,7 @@ public:
 	int get_number_of_rows();
 	void display();
 	void sync();
-	int start_logging(std::string file_path);
+	int start_logging(const std::string& file_path);
 	void stop_logging();
 
 private:
