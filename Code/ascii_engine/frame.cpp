@@ -5,9 +5,18 @@
 #include <algorithm>
 #endif
 
-frame::frame()
+frame::frame(bool start_logger, std::string logging_file_path)
 {
-	
+	if (start_logger)
+	{
+		int logger_status = log.start_widget_logging(logging_file_path, FRAME);
+		if (logger_status != 0)
+		{
+			ascii_io::clear();
+			ascii_io::print("frame initialization: Invalid logger path.\nPress any button to continue.");
+			ascii_io::getchar();
+		}
+	}
 }
 
 void frame::display()
@@ -140,11 +149,12 @@ int frame::get_selection()
 	return selected_id;
 }
 
-int frame::set_row_width_weight(float weight, unsigned int row)
+void frame::set_row_width_weight(float weight, unsigned int row)
 {
 	if ((weight < 0) || (weight > 1.0))
 	{
-		return INVALID_VALUE;
+		log.log_status(INVALID_VALUE, "frame::set_row_width_weight");
+		return;
 	}
 
 	if (row_width_weights.find(row) != row_width_weights.end())
@@ -153,14 +163,15 @@ int frame::set_row_width_weight(float weight, unsigned int row)
 	}
 
 	row_width_weights.insert({ row, weight });
-	return SUCCESS;
+	log.log_status(SUCCESS, "frame::set_row_width_weight");
 }
 
-int frame::set_coordinate_width_multiplier(float multiplier, int row, int column)
+void frame::set_coordinate_width_multiplier(float multiplier, int row, int column)
 {
 	if ((multiplier < 0) || (row < 0) || (column < 0))
 	{
-		return INVALID_VALUE;
+		log.log_status(INVALID_VALUE, "frame::set_coordinate_width_multiplier");
+		return;
 	}
 
 	int status = ELEMENT_NOT_FOUND;
@@ -172,7 +183,7 @@ int frame::set_coordinate_width_multiplier(float multiplier, int row, int column
 		}
 		status = SUCCESS;
 	}
-	return status;
+	log.log_status(status, "frame::set_coordinate_width_multiplier");
 }
 
 int frame::add_widget()
@@ -435,7 +446,7 @@ int frame::add_border(int id)
 	return status;
 }
 
-int frame::highlight(int row, int column, int level)
+void frame::highlight(int row, int column, int level)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
@@ -476,10 +487,10 @@ int frame::highlight(int row, int column, int level)
 			break;
 		}
 	}
-	return status;
+	log.log_status(status, "frame::highlight");
 }
 
-int frame::unhighlight(int row, int column, int level)
+void frame::unhighlight(int row, int column, int level)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
@@ -525,7 +536,7 @@ int frame::unhighlight(int row, int column, int level)
 			break;
 		}
 	}
-	return status;
+	log.log_status(status, "frame::unhighlight");
 }
 
 void frame::keep_point_in_console_bounds(int& x, int& y)
@@ -890,6 +901,12 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	{
 		width = (unsigned int)raw_width;
 	}
+	else
+	{
+		log.log_begin("frame::get_widget_width");
+		log.log_comment("Widget id: " + std::to_string(item.id) + " has zero width.");
+		log.log_end("frame::get_widget_width");
+	}
 	return width;
 }
 
@@ -925,6 +942,12 @@ unsigned int frame::get_widget_height(const widget_info& item, bool include_spac
 	if (raw_height >= 0)
 	{
 		height = (unsigned int)raw_height;
+	}
+	else
+	{
+		log.log_begin("frame::get_widget_height");
+		log.log_comment("Widget id: " + std::to_string(item.id) + " has zero height.");
+		log.log_end("frame::get_widget_height");
 	}
 	return height;
 }
@@ -992,7 +1015,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				{
 					line = format_tools::fill_line(line, width, item.alignment);
 					widget_lines.push_back(line);
-					if ((words[j] != " ") && item.widget_type == TEXTBOX)
+					if (words[j] != " ")
 					{
 						line = words[j];
 					}

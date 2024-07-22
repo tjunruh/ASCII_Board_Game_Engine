@@ -5,17 +5,18 @@
 #include "widget_types.h"
 #include "format_tools.h"
 #include <unordered_map>
+#include "logger.h"
 
 class frame
 {
 public:
 	friend class widget;
-	frame();
+	frame(bool start_logger=false, std::string logging_file_path="frame.log");
 	void display();
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();
-	int set_row_width_weight(float weight, unsigned int row);
-	int set_coordinate_width_multiplier(float multiplier, int row, int column);
+	void set_row_width_weight(float weight, unsigned int row);
+	void set_coordinate_width_multiplier(float multiplier, int row, int column);
 private:
 	struct widget_info
 	{
@@ -64,8 +65,8 @@ private:
 	int set_y_origin(int id, int y_origin);
 	int set_lines_count(int id, int lines_count);
 	int add_border(int id);
-	int highlight(int row, int column, int level);
-	int unhighlight(int row, int column, int level);
+	void highlight(int row, int column, int level);
+	void unhighlight(int row, int column, int level);
 	void keep_point_in_console_bounds(int& x, int& y);
 	bool widget_exists(int id);
 	bool widget_exists(int row, int column);
@@ -102,13 +103,13 @@ private:
 	int _right = ascii_io::right;
 	int _left = ascii_io::left;
 	int _quit = ascii_io::q;
-	int frame_id;
 	int append_row = 0;
 	int append_column = -1;
 	int append_level = 0;
 	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
 	std::unordered_map<unsigned int, float>row_width_weights;
+	logger log;
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;

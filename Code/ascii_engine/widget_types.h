@@ -4,3 +4,4 @@
 #define MENU 2
 #define BOARD 3
 #define LABEL 4
+#define FRAME 5
