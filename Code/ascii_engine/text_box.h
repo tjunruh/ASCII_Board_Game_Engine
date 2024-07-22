@@ -8,7 +8,7 @@
 class text_box : public widget
 {
 public:
-	text_box(frame* parent, std::string special_operation="none", unsigned int lines_count=1);
+	text_box(frame* parent, std::string special_operation = "none", unsigned int lines_count = 1, bool start_logging = false, std::string logging_file_path="text_box.log");
 	unsigned int write();
 	void set_max_characters(int characters);
 	void clear();

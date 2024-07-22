@@ -1,9 +1,18 @@
 #include "text_box.h"
 #include "widget_types.h"
 
-text_box::text_box(frame* parent, std::string special_operation, unsigned int lines_count) : widget(parent, special_operation)
+text_box::text_box(frame* parent, std::string special_operation, unsigned int lines_count, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
-	
+	if (start_logging)
+	{
+		int logger_status = log.start_widget_logging(logging_file_path, LABEL);
+		if (logger_status != 0)
+		{
+			ascii_io::clear();
+			ascii_io::print("text_box initialization: Invalid logger path.\nPress any button to continue.");
+			ascii_io::getchar();
+		}
+	}
 	set_widget_type(TEXTBOX);
 	displayed_lines = lines_count;
 	std::string lines = "";
