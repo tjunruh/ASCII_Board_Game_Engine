@@ -24,7 +24,6 @@ namespace ascii_io
 #endif
 
 	const int undefined = -1;
-	const int backspace = 8;
 	const int TAB = 9;
 	const int ESC = 27;
 	const int space = 32;
@@ -124,19 +123,30 @@ namespace ascii_io
 	const int tilde = 126;
 
 #ifdef _WIN32
+	const int backspace = 8;
 	const int enter = 13;
 	const int right = 301;
 	const int left = 299;
 	const int up = 296;
 	const int down = 304;
 	const int DEL = 307;
-	const int Insert = 306;
+	const int insert = 306;
+	const int end = 303;
+	const int home = 295;
+	const int page_down = 305;
+	const int page_up = 297;
 #elif __linux__
+	const int backspace = 127;
 	const int enter = 10;
-	const int right = 67;
-	const int left = 68;
-	const int up = 65;
-	const int down = 66;
-	const int DEL = 0; // Add true value for linux
+	const int right = 185;
+	const int left = 186;
+	const int up = 183;
+	const int down = 184;
+	const int DEL = 295;
+	const int insert = 294;
+	const int end = 188;
+	const int home = 190;
+	const int page_down = 298;
+	const int page_up = 297;
 #endif
 }

@@ -28,8 +28,18 @@ int ascii_io::getchar() {
 	input = getch();
 	if (input == 27) 
 	{
-		input = getch();
-		input = getch();
+		nodelay(stdscr, true);
+		int secondary_input = 0;
+		while (true)
+		{
+			secondary_input = getch();
+			if (secondary_input == ERR)
+			{
+				break;
+			}
+			input = input + secondary_input;
+		}
+		nodelay(stdscr, false);
 	}
 #endif
 
