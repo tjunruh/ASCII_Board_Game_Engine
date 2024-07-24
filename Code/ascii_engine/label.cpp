@@ -14,6 +14,7 @@ label::label(frame* parent, std::string special_operation, bool start_logging, s
 		}
 	}
 	set_widget_type(LABEL);
+	unselectable();
 }
 
 void label::set_output(const std::string& output)

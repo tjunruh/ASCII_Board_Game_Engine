@@ -11,11 +11,11 @@ class frame
 {
 public:
 	friend class widget;
+	friend void spacer(frame* parent, float multiplier, std::string special_operation, bool start_logging, std::string logging_file_path);
 	frame(bool start_logger=false, std::string logging_file_path="frame.log");
 	void display();
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();
-	void set_row_width_weight(float weight, unsigned int row);
 	void set_coordinate_width_multiplier(float multiplier, int row, int column);
 private:
 	struct widget_info
@@ -44,6 +44,7 @@ private:
 		int lines_count = 0;
 		int level = 0;
 		float width_multiplier = 1.0;
+		bool selectable = false;
 	};
 
 	const std::string special_operation_new_line = "new line";
@@ -64,6 +65,8 @@ private:
 	int set_x_origin(int id, int x_origin);
 	int set_y_origin(int id, int y_origin);
 	int set_lines_count(int id, int lines_count);
+	int set_width_multiplier(int id, float multiplier);
+	int set_selectable(int id, bool selectable);
 	int add_border(int id);
 	void highlight(int row, int column, int level);
 	void unhighlight(int row, int column, int level);
@@ -95,6 +98,8 @@ private:
 	unsigned int get_columns_in_row(int row);
 	std::string get_frame_output();
 	void set_widget_origins();
+	bool is_selectable(int row, int column, int level);
+	bool initialize_selection(int& row, int& column, int& level);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
@@ -108,7 +113,6 @@ private:
 	int append_level = 0;
 	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
-	std::unordered_map<unsigned int, float>row_width_weights;
 	logger log;
 #ifdef WIN32
 	std::string previous_output = "";

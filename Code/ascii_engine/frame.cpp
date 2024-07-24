@@ -69,6 +69,15 @@ int frame::get_selection()
 	int y = 0;
 	int last_x = 0;
 	int last_y = 0;
+	log.log_begin("frame::get_selection");
+	if (!initialize_selection(selected_row, selected_column, selected_level))
+	{
+		log.log_comment("No selectable widget found.");
+		return -1;
+	}
+
+	log.log_comment("Start row: " + std::to_string(selected_row) + " Start column: " + std::to_string(selected_column) + " Start level: " + std::to_string(selected_level));
+
 	do
 	{
 		if (selected_column >= (int)get_columns_in_row(selected_row))
@@ -91,79 +100,134 @@ int frame::get_selection()
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
+			log.log_comment("select action");
 			widget_info item;
 			get_widget(selected_row, selected_column, selected_level, item);
 			if (std::count(selectable_widgets.begin(), selectable_widgets.end(), item.widget_type) != 0)
 			{
 				selected_id = item.id;
+				log.log_comment("Selected row: " + std::to_string(selected_row) + " Selected column: " + std::to_string(selected_column) + " Selected level: " + std::to_string(selected_level));
+				log.log_comment("Selected ID: " + std::to_string(item.id));
 				break;
 			}
 		}
 		else if (input == _up)
 		{
-			if (((selected_level - 1) >= 0) && (get_levels(selected_row, selected_column) > 1))
+			log.log_comment("up action");
+			do
 			{
-				selected_level--;
-			}
-			else if ((selected_row - 1) >= 0)
-			{
-				selected_row--;
-				selected_level = get_levels(selected_row, selected_column) - 1;
-			}
+				if (((selected_level - 1) >= 0) && (get_levels(selected_row, selected_column) > 1))
+				{
+					selected_level--;
+				}
+				else if ((selected_row - 1) >= 0)
+				{
+					selected_row--;
+					selected_level = get_levels(selected_row, selected_column) - 1;
+				}
+				else
+				{
+					selected_row = last_selected_row;
+					selected_column = last_selected_column;
+					selected_level = last_selected_level;
+					break;
+				}
+
+			} while (!is_selectable(selected_row, selected_column, selected_level));
 		}
 		else if (input == _down)
 		{
-			if (((selected_level + 1) < get_levels(selected_row, selected_column)) && (get_levels(selected_row, selected_column) > 1))
+			log.log_comment("down action");
+			do
 			{
-				selected_level++;
-			}
-			else if ((selected_row + 1) < (int)get_total_rows())
-			{
-				selected_row++;
-				selected_level = 0;
-			}
+				if (((selected_level + 1) < get_levels(selected_row, selected_column)) && (get_levels(selected_row, selected_column) > 1))
+				{
+					selected_level++;
+				}
+				else if ((selected_row + 1) < (int)get_total_rows())
+				{
+					selected_row++;
+					selected_level = 0;
+				}
+				else
+				{
+					selected_row = last_selected_row;
+					selected_column = last_selected_column;
+					selected_level = last_selected_level;
+					break;
+				}
+
+			} while (!is_selectable(selected_row, selected_column, selected_level));
 		}
 		else if (input == _right)
 		{
-			if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
+			log.log_comment("right action");
+			do
 			{
-				selected_column++;
-				if (selected_level >= get_levels(selected_row, selected_column))
+				if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
 				{
-					selected_level = get_levels(selected_row, selected_column) - 1;
+					int total_levels = get_levels(selected_row, selected_column);
+					selected_column++;
+					if (selected_level >= total_levels)
+					{
+						selected_level = total_levels - 1;
+					}
+					for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
+					{
+						selected_level = j;
+						if (is_selectable(selected_row, selected_column, selected_level))
+						{
+							break;
+						}
+					}
 				}
-			}
+				else
+				{
+					selected_row = last_selected_row;
+					selected_column = last_selected_column;
+					selected_level = last_selected_level;
+					break;
+				}
+
+			} while (!is_selectable(selected_row, selected_column, selected_level));
 		}
 		else if (input == _left)
 		{
-			if ((selected_column - 1) >= 0)
+			log.log_comment("left action");
+			do
 			{
-				selected_column--;
-				if (selected_level >= get_levels(selected_row, selected_column))
+				if ((selected_column - 1) >= 0)
 				{
-					selected_level = get_levels(selected_row, selected_column) - 1;
+					int total_levels = get_levels(selected_row, selected_column);
+					selected_column--;
+					if (selected_level >= total_levels)
+					{
+						selected_level = total_levels - 1;
+					}
+					for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
+					{
+						selected_level = j;
+						if (is_selectable(selected_row, selected_column, selected_level))
+						{
+							break;
+						}
+					}
 				}
-			}
+				else
+				{
+					selected_row = last_selected_row;
+					selected_column = last_selected_column;
+					selected_level = last_selected_level;
+					break;
+				}
+
+			} while (!is_selectable(selected_row, selected_column, selected_level));
 		}
+		log.log_comment("Current row: " + std::to_string(selected_row) + " Current column: " + std::to_string(selected_column) + " Current level: " + std::to_string(selected_level));
 	} while (input != _quit);
+
+	log.log_end("frame::get_selection");
 	return selected_id;
-}
-
-void frame::set_row_width_weight(float weight, unsigned int row)
-{
-	if ((weight < 0) || (weight > 1.0))
-	{
-		log.log_status(INVALID_VALUE, "frame::set_row_width_weight");
-		return;
-	}
-
-	if (row_width_weights.find(row) != row_width_weights.end())
-	{
-		row_width_weights.erase(row);
-	}
-
-	row_width_weights.insert({ row, weight });
-	log.log_status(SUCCESS, "frame::set_row_width_weight");
 }
 
 void frame::set_coordinate_width_multiplier(float multiplier, int row, int column)
@@ -707,6 +771,41 @@ int frame::set_lines_count(int id, int lines_count)
 	return status;
 }
 
+int frame::set_width_multiplier(int id, float multiplier)
+{
+	if (multiplier < 0)
+	{
+		return INVALID_VALUE;
+	}
+
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].width_multiplier = multiplier;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_selectable(int id, bool selectable)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].selectable = selectable;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::generate_widget_id()
 {
 	int id = widgets.size();
@@ -881,13 +980,7 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	int x = 0;
 	int y = 0;
 	ascii_io::get_terminal_size(x, y);
-	float row_multiplier = 1.0;
-	auto updated_row_multiplier = row_width_weights.find(item.row);
-	if (updated_row_multiplier != row_width_weights.end())
-	{
-		row_multiplier = updated_row_multiplier->second;
-	}
-	int raw_width = int(x * get_width_weight(item) * row_multiplier);
+	int raw_width = int(x * get_width_weight(item));
 	if(!include_spacing)
 	{
 		raw_width = raw_width - item.left_spacing - item.right_spacing;
@@ -1186,5 +1279,52 @@ void frame::set_widget_origins()
 			x = x + get_widget_width(item, true);
 		}
 		y = y + row_heights[row];
+	}
+}
+
+bool frame::is_selectable(int row, int column, int level)
+{
+	bool selectable = false;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		{
+			if (widgets[i].selectable)
+			{
+				selectable = true;
+				break;
+			}
+		}
+	}
+	return selectable;
+}
+
+bool frame::initialize_selection(int& row, int& column, int& level)
+{
+	while (true)
+	{
+		if (is_selectable(row, column, level))
+		{
+			return true;
+		}
+
+		level++;
+		if (level >= get_levels(row, column))
+		{
+			column++;
+			level = 0;
+		}
+
+		if (column >= (int)get_columns_in_row(row))
+		{
+			row++;
+			column = 0;
+			level = 0;
+		}
+
+		if (row >= (int)get_total_rows())
+		{
+			return false;
+		}
 	}
 }

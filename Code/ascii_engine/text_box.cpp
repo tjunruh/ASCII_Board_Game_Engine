@@ -14,6 +14,7 @@ text_box::text_box(frame* parent, std::string special_operation, unsigned int li
 		}
 	}
 	set_widget_type(TEXTBOX);
+	selectable();
 	displayed_lines = lines_count;
 	std::string lines = "";
 	for (unsigned int i = 0; i < lines_count; i++)

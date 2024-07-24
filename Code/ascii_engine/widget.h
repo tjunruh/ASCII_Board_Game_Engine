@@ -16,6 +16,8 @@ public:
 	void set_corner_border(char border);
 	void add_border();
 	void refresh();
+	void selectable();
+	void unselectable();
 	unsigned int get_width(bool include_spacing=false);
 	unsigned int get_height(bool include_spacing=false);
 	int get_x_origin();

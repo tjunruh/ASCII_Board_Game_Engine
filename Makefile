@@ -58,6 +58,7 @@ ASCII_ENGINE_OBJS := \
         label.o \
         logger.o \
 	menu.o \
+        spacer.o \
 	text_box.o \
 	widget.o
 ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/ascii_engine/, $(ASCII_ENGINE_OBJS))
@@ -72,6 +73,7 @@ ASCII_ENGINE_HEADERS := \
 	label.h \
         logger.h \
 	menu.h \
+        spacer.h \
 	text_box.h \
 	widget.h \
 	widget_types.h

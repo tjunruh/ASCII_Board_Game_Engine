@@ -51,6 +51,7 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string special_op
 	remove_inactive_tiles();
 	set_tile_default_values();
 	set_widget_type(BOARD);
+	selectable();
 	status = SUCCESS;
 	log.log_status(status, "ascii_board::ascii_board");
 }

@@ -5,3 +5,4 @@
 #define BOARD 3
 #define LABEL 4
 #define FRAME 5
+#define SPACER 6

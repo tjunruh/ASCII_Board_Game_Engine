@@ -70,6 +70,18 @@ void widget::refresh()
 	parent_frame->display();
 }
 
+void widget::selectable()
+{
+	int status = parent_frame->set_selectable(widget_id, true);
+	log.log_status(status, "widget::selectable");
+}
+
+void widget::unselectable()
+{
+	int status = parent_frame->set_selectable(widget_id, false);
+	log.log_status(status, "widget::unselectable");
+}
+
 unsigned int widget::get_width(bool include_spacing)
 {
 	unsigned int width = 0;
