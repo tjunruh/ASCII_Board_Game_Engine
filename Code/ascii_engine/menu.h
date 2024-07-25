@@ -7,12 +7,14 @@
 class menu : public widget
 {
 public:
-	menu(frame* parent, std::string special_operation="none");
+	menu(frame* parent, std::string special_operation="none", bool start_logging=false, std::string logging_file_path="menu.log");
 	int append_item(std::string item);
 	void set_curser(char curser);
 	void set_controls(int select, int up, int down, int quit);
 	std::string get_selection();
 	void enable_quit();
+	int start_logging(const std::string& file_path);
+	void stop_logging();
 private:
 	
 	std::vector<std::string> menu_items;

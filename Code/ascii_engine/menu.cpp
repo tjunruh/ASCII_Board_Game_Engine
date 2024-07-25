@@ -1,9 +1,20 @@
 #include "menu.h"
 #include "widget_types.h"
 
-menu::menu(frame* parent, std::string special_operation) : widget(parent, special_operation)
+menu::menu(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
+	if (start_logging)
+	{
+		int logger_status = log.start_widget_logging(logging_file_path, MENU);
+		if (logger_status != 0)
+		{
+			ascii_io::clear();
+			ascii_io::print("menu initialization: Invalid logger path.\nPress any button to continue.");
+			ascii_io::getchar();
+		}
+	}
 	set_widget_type(MENU);
+	selectable();
 }
 
 int menu::append_item(std::string item)
