@@ -11,43 +11,45 @@ TREE_DIRS := \
 	ascii_engine \
 	headers/ascii_engine \
 	test_ascii_engine \
-	board_config_field_titles # TODO: figure out if this is nesccary 
+	board_config_field_titles
 TREE_DIRS := $(addprefix $(BLD_DIR)/, $(TREE_DIRS))
 
-# Swap the debug definitions for non-debug builds
+# Seap the debug definitions for non-debug builds
 DEBUG := -g
 #DEBUG :=
 
 LIBS := -lncurses
+CXXFLAGS := -Wall -O2 $(DEBUG) -Iexternal_libraries
 
-CXXFLAGS := -Wall -O2 $(DEBUG) -fPIC -Iexternal_libraries -I$(BLD_DIR)/headers
-
-.PHONY: all clean engine test test-headless
+TEST_ASCII_ENGINE := test_ascii_engine.out
 
 EXECUTABLES := \
 	build_board_config.out \
 	validate_board_config.out \
-	test_ascii_engine.out
+	$(TEST_ASCII_ENGINE)
 EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 
+.PHONY: all clean engine test test-headless
+
+all: $(EXECUTABLES) engine
+
+engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY))
+
+test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
+	env LD_LIBRARY_PATH="./$(BLD_DIR)" $<
+
+test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
+	env LD_LIBRARY_PATH="./$(BLD_DIR)" $< --gtest_filter=-ascii_io.*
+
+clean:
+	-rm -rf $(BLD_DIR)
+
+### ASCII Engine
 ASCII_ENGINE_LIBRARY := libascii_engine.so
+ASCII_ENGINE_HEADERS_DIR := $(BLD_DIR)/headers/ascii_engine
 
-LIBRARIES := \
-	$(ASCII_ENGINE_LIBRARY)
-LIBRARIES := $(addprefix $(BLD_DIR)/, $(LIBRARIES))
-
-BUILD_BOARD_CONFIG_OBJS := \
-	file_manager/file_manager.o \
-	build_board_config/build_board_config.o \
-	build_board_config/main.o
-BUILD_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/, $(BUILD_BOARD_CONFIG_OBJS))
-
-VALIDATE_BOARD_CONFIG_OBJS := \
-	file_manager/file_manager.o \
-	validate_board_config/validate_board_config.o \
-	validate_board_config/main.o \
-	board_config_field_parser/board_config_field_parser.o
-VALIDATE_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/, $(VALIDATE_BOARD_CONFIG_OBJS))
+ASCII_LIB := -L$(BLD_DIR) -lascii_engine
+ASCII_INCLUDE := -I$(BLD_DIR)/headers
 
 ASCII_ENGINE_OBJS := \
 	ascii_board.o \
@@ -55,13 +57,19 @@ ASCII_ENGINE_OBJS := \
 	format_tools.o \
 	controls.o \
 	frame.o \
-        label.o \
-        logger.o \
+	label.o \
+	logger.o \
 	menu.o \
-        spacer.o \
+	spacer.o \
 	text_box.o \
 	widget.o
 ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/ascii_engine/, $(ASCII_ENGINE_OBJS))
+
+ASCII_ENGINE_OBJS_EXTERNAL := \
+	board_config_field_parser/board_config_field_parser.o \
+	validate_board_config/validate_board_config.o \
+	file_manager/file_manager.o
+ASCII_ENGINE_OBJS_EXTERNAL := $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_OBJS_EXTERNAL))
 
 ASCII_ENGINE_HEADERS := \
 	ascii_board.h \
@@ -71,66 +79,87 @@ ASCII_ENGINE_HEADERS := \
 	format_tools.h \
 	frame.h \
 	label.h \
-        logger.h \
+	logger.h \
 	menu.h \
-        spacer.h \
+	spacer.h \
 	text_box.h \
 	widget.h \
 	widget_types.h
-ASCII_ENGINE_HEADERS_BUILD := $(addprefix $(BLD_DIR)/headers/ascii_engine/, $(ASCII_ENGINE_HEADERS))
+ASCII_ENGINE_HEADERS := $(addprefix $(BLD_DIR)/headers/ascii_engine/, $(ASCII_ENGINE_HEADERS))
 
-ASCII_ENGINE_OBJS_EXTERNAL := \
-	board_config_field_parser/board_config_field_parser.o \
-	validate_board_config/validate_board_config.o \
-	file_manager/file_manager.o
-ASCII_ENGINE_OBJS_EXTERNAL := $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_OBJS_EXTERNAL))
+$(BLD_DIR)/headers/ascii_engine/%.h: $(SRC_DIR)/ascii_engine/%.h | $(ASCII_ENGINE_HEADERS_DIR)
+	cp $< $@
 
-TEST_ASCII_ENGINE := test_ascii_engine.out
+$(BLD_DIR)/ascii_engine/%.o: $(SRC_DIR)/ascii_engine/%.cpp | $(addprefix $(BLD_DIR)/, ascii_engine)
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+$(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(LIBS)
+### End ASCII Engine
+
+### ASCII Engine Test
 TEST_ASCII_ENGINE_OBJS := \
 	main.o \
 	ascii_io.o \
 	controls.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 
-INCLUDE_ASCII_ENGINE_HEADERS := -I$(BLD_DIR)/headers
-INCLUDE_ASCII_ENGINE := $(INCLUDE_ASCII_ENGINE_HEADERS) -L$(BLD_DIR) -lascii_engine
+$(BLD_DIR)/test_ascii_engine/%.o: $(SRC_DIR)/test_ascii_engine/%.cpp $(ASCII_ENGINE_HEADERS) | $(BLD_DIR)/test_ascii_engine
+	$(CXX) $(CXXFLAGS) $(ASCII_INCLUDE) -c $< -o $@
 
-all: $(EXECUTABLES) $(ASCII_ENGINE_HEADERS_BUILD) $(LIBRARIES)
+$(BLD_DIR)/test_ascii_engine.out: $(TEST_ASCII_ENGINE_OBJS) $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY) $(ASCII_ENGINE_OBJS_EXTERNAL) | $(BLD_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(ASCII_LIB) $(LIBS) -lgtest
+### End ASCII Engine Test
 
-engine: $(LIBRARIES)
 
-test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
-	env LD_LIBRARY_PATH="./build" $<
 
-test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
-	env LD_LIBRARY_PATH="./build" $< --gtest_filter=-ascii_io.*
+### File manager
+FILE_MANAGER_OBJS := \
+	file_manager.o
+FILE_MANAGER_OBJS := $(addprefix $(BLD_DIR)/file_manager/, $(FILE_MANAGER_OBJS))
 
-clean:
-	-rm -rv $(BLD_DIR)
+$(BLD_DIR)/file_manager/%.o: $(SRC_DIR)/file_manager/%.cpp | $(BLD_DIR)/file_manager
+	$(CXX) -c $< -o $@
+### End file manager
 
-$(BLD_DIR):
-	mkdir -p $(BLD_DIR)
+
+### Board config field parser
+BOARD_CONFIG_FIELD_PARSER_OBJS := \
+	board_config_field_parser.o
+BOARD_CONFIG_FIELD_PARSER_OBJS := $(addprefix $(BLD_DIR)/board_config_field_parser/, $(BOARD_CONFIG_FIELD_PARSER_OBJS))
+
+$(BLD_DIR)/board_config_field_parser/%.o: $(SRC_DIR)/board_config_field_parser/%.cpp | $(BLD_DIR)/board_config_field_parser
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+### End board config field parser
+
+
+
+### Build board config
+BUILD_BOARD_CONFIG_OBJS := \
+	build_board_config.o \
+	main.o
+BUILD_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/build_board_config/, $(BUILD_BOARD_CONFIG_OBJS))
+
+$(BLD_DIR)/build_board_config/%.o: $(SRC_DIR)/build_board_config/%.cpp | $(BLD_DIR)/build_board_config
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+$(BLD_DIR)/build_board_config.out: $(BUILD_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) | $(BLD_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $(BUILD_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS)
+### End build board config 
+
+
+### Validate board config
+VALIDATE_BOARD_CONFIG_OBJS := \
+	validate_board_config.o \
+	main.o
+VALIDATE_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/validate_board_config/, $(VALIDATE_BOARD_CONFIG_OBJS))
+
+$(BLD_DIR)/validate_board_config/%.o: $(SRC_DIR)/validate_board_config/%.cpp | $(BLD_DIR)/validate_board_config
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+$(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS) | $(BLD_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
+### End validate board config
 
 $(TREE_DIRS):
 	mkdir -p $@
-
-$(BLD_DIR)/headers/ascii_engine/%.h: $(SRC_DIR)/ascii_engine/%.h | $(TREE_DIRS)
-	cp $< $@
-
-$(BLD_DIR)/$(TEST_ASCII_ENGINE): $(TEST_ASCII_ENGINE_OBJS) $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY) | $(TREE_DIRS)
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(INCLUDE_ASCII_ENGINE) -lgtest
-
-$(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL)
-	$(CXX) $(CXXFLAGS) -shared -o $@ $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(LIBS)
-
-$(BLD_DIR)/build_board_config.out: $(BUILD_BOARD_CONFIG_OBJS) | $(BLD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(BUILD_BOARD_CONFIG_OBJS)
-
-$(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) | $(BLD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(VALIDATE_BOARD_CONFIG_OBJS)
-
-$(BLD_DIR)/%.o: $(SRC_DIR)/%.cpp $(ASCII_ENGINE_HEADERS_BUILD) | $(TREE_DIRS)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(BLD_DIR)/%.o: $(SRC_DIR)/%.cpp  $(SRC_DIR)/%.h $(ASCII_ENGINE_HEADERS_BUILD) | $(TREE_DIRS)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
