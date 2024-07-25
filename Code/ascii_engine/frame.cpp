@@ -80,11 +80,6 @@ int frame::get_selection()
 
 	do
 	{
-		if (selected_column >= (int)get_columns_in_row(selected_row))
-		{
-			selected_column = (int)get_columns_in_row(selected_row) - 1;
-		}
-		
 		ascii_io::get_terminal_size(x, y);
 		if (x != last_x || y != last_y)
 		{
@@ -114,114 +109,22 @@ int frame::get_selection()
 		else if (input == _up)
 		{
 			log.log_comment("up action");
-			do
-			{
-				if (((selected_level - 1) >= 0) && (get_levels(selected_row, selected_column) > 1))
-				{
-					selected_level--;
-				}
-				else if ((selected_row - 1) >= 0)
-				{
-					selected_row--;
-					selected_level = get_levels(selected_row, selected_column) - 1;
-				}
-				else
-				{
-					selected_row = last_selected_row;
-					selected_column = last_selected_column;
-					selected_level = last_selected_level;
-					break;
-				}
-
-			} while (!is_selectable(selected_row, selected_column, selected_level));
+			up_handle(selected_row, selected_column, selected_level);
 		}
 		else if (input == _down)
 		{
 			log.log_comment("down action");
-			do
-			{
-				if (((selected_level + 1) < get_levels(selected_row, selected_column)) && (get_levels(selected_row, selected_column) > 1))
-				{
-					selected_level++;
-				}
-				else if ((selected_row + 1) < (int)get_total_rows())
-				{
-					selected_row++;
-					selected_level = 0;
-				}
-				else
-				{
-					selected_row = last_selected_row;
-					selected_column = last_selected_column;
-					selected_level = last_selected_level;
-					break;
-				}
-
-			} while (!is_selectable(selected_row, selected_column, selected_level));
+			down_handle(selected_row, selected_column, selected_level);
 		}
 		else if (input == _right)
 		{
 			log.log_comment("right action");
-			do
-			{
-				if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
-				{
-					int total_levels = get_levels(selected_row, selected_column);
-					selected_column++;
-					if (selected_level >= total_levels)
-					{
-						selected_level = total_levels - 1;
-					}
-					for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
-					{
-						selected_level = j;
-						if (is_selectable(selected_row, selected_column, selected_level))
-						{
-							break;
-						}
-					}
-				}
-				else
-				{
-					selected_row = last_selected_row;
-					selected_column = last_selected_column;
-					selected_level = last_selected_level;
-					break;
-				}
-
-			} while (!is_selectable(selected_row, selected_column, selected_level));
+			right_handle(selected_row, selected_column, selected_level);
 		}
 		else if (input == _left)
 		{
 			log.log_comment("left action");
-			do
-			{
-				if ((selected_column - 1) >= 0)
-				{
-					int total_levels = get_levels(selected_row, selected_column);
-					selected_column--;
-					if (selected_level >= total_levels)
-					{
-						selected_level = total_levels - 1;
-					}
-					for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
-					{
-						selected_level = j;
-						if (is_selectable(selected_row, selected_column, selected_level))
-						{
-							break;
-						}
-					}
-				}
-				else
-				{
-					selected_row = last_selected_row;
-					selected_column = last_selected_column;
-					selected_level = last_selected_level;
-					break;
-				}
-
-			} while (!is_selectable(selected_row, selected_column, selected_level));
+			left_handle(selected_row, selected_column, selected_level);
 		}
 		log.log_comment("Current row: " + std::to_string(selected_row) + " Current column: " + std::to_string(selected_column) + " Current level: " + std::to_string(selected_level));
 	} while (input != _quit);
@@ -1299,6 +1202,19 @@ bool frame::is_selectable(int row, int column, int level)
 	return selectable;
 }
 
+bool frame::is_selectable(int id)
+{
+	bool selectable = false;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			selectable = widgets[i].selectable;
+		}
+	}
+	return selectable;
+}
+
 bool frame::initialize_selection(int& row, int& column, int& level)
 {
 	while (true)
@@ -1327,4 +1243,190 @@ bool frame::initialize_selection(int& row, int& column, int& level)
 			return false;
 		}
 	}
+}
+
+bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, widget_info item, int search_row)
+{
+	int original_row = row;
+	int original_column = column;
+	int original_level = level;
+	row = search_row;
+	std::vector<int> row_ids = get_row_ids(row);
+	if (row_ids.size() == 0)
+	{
+		return false;
+	}
+	float distance = 0.0;
+	int original_x = item.x_origin;
+	int original_y = item.y_origin;
+	int x = 0;
+	int y = 0;
+	float min_distance = 0.0;
+	int min_id = 0;
+	bool widget_found = false;
+	for (unsigned int i = 0; i < row_ids.size(); i++)
+	{
+		if (is_selectable(row_ids[i]))
+		{
+			get_x_origin(row_ids[i], x);
+			get_y_origin(row_ids[i], y);
+			distance = pow(pow(abs(x - original_x), 2) + pow(abs(y - original_y), 2), 0.5);
+			if ((distance < min_distance) || min_distance == 0)
+			{
+				min_distance = distance;
+				min_id = row_ids[i];
+				widget_found = true;
+			}
+		}
+	}
+
+	if (!widget_found)
+	{
+		row = original_row;
+		column = original_column;
+		level = original_level;
+	}
+	else
+	{
+		get_widget(min_id, item);
+		row = item.row;
+		column = item.column;
+		level = item.level;
+	}
+	return widget_found;
+}
+
+void frame::up_handle(int& selected_row, int& selected_column, int& selected_level)
+{
+	int last_selected_row = selected_row;
+	int last_selected_column = selected_column;
+	int last_selected_level = selected_level;
+	widget_info item;
+	get_widget(selected_row, selected_column, selected_level, item);
+	do
+	{
+		if ((selected_level - 1) >= 0)
+		{
+			selected_level--;
+		}
+		else if ((selected_row - 1) >= 0)
+		{
+
+			if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row - 1))
+			{
+				selected_row--;
+				selected_level = 0;
+			}
+		}
+		else
+		{
+			selected_row = last_selected_row;
+			selected_column = last_selected_column;
+			selected_level = last_selected_level;
+			break;
+		}
+
+	} while (!is_selectable(selected_row, selected_column, selected_level));
+}
+
+void frame::down_handle(int& selected_row, int& selected_column, int& selected_level)
+{
+	int last_selected_row = selected_row;
+	int last_selected_column = selected_column;
+	int last_selected_level = selected_level;
+	widget_info item;
+	get_widget(selected_row, selected_column, selected_level, item);
+	do
+	{
+		if ((selected_level + 1) < get_levels(selected_row, selected_column))
+		{
+			selected_level++;
+		}
+		else if ((selected_row + 1) < (int)get_total_rows())
+		{
+			if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row + 1))
+			{
+				selected_row++;
+				selected_level = 0;
+			}
+		}
+		else
+		{
+			selected_row = last_selected_row;
+			selected_column = last_selected_column;
+			selected_level = last_selected_level;
+			break;
+		}
+
+	} while (!is_selectable(selected_row, selected_column, selected_level));
+}
+
+void frame::right_handle(int& selected_row, int& selected_column, int& selected_level)
+{
+	int last_selected_row = selected_row;
+	int last_selected_column = selected_column;
+	int last_selected_level = selected_level;
+	do
+	{
+		if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
+		{
+			int total_levels = get_levels(selected_row, selected_column);
+			selected_column++;
+			if (selected_level >= total_levels)
+			{
+				selected_level = total_levels - 1;
+			}
+			for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
+			{
+				selected_level = j;
+				if (is_selectable(selected_row, selected_column, selected_level))
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			selected_row = last_selected_row;
+			selected_column = last_selected_column;
+			selected_level = last_selected_level;
+			break;
+		}
+
+	} while (!is_selectable(selected_row, selected_column, selected_level));
+}
+
+void frame::left_handle(int& selected_row, int& selected_column, int& selected_level)
+{
+	int last_selected_row = selected_row;
+	int last_selected_column = selected_column;
+	int last_selected_level = selected_level;
+	do
+	{
+		if ((selected_column - 1) >= 0)
+		{
+			int total_levels = get_levels(selected_row, selected_column);
+			selected_column--;
+			if (selected_level >= total_levels)
+			{
+				selected_level = total_levels - 1;
+			}
+			for (int i = 0, j = selected_level; i < total_levels; ++i, j = (j + 1) % total_levels)
+			{
+				selected_level = j;
+				if (is_selectable(selected_row, selected_column, selected_level))
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			selected_row = last_selected_row;
+			selected_column = last_selected_column;
+			selected_level = last_selected_level;
+			break;
+		}
+
+	} while (!is_selectable(selected_row, selected_column, selected_level));
 }

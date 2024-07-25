@@ -99,7 +99,13 @@ private:
 	std::string get_frame_output();
 	void set_widget_origins();
 	bool is_selectable(int row, int column, int level);
+	bool is_selectable(int id);
 	bool initialize_selection(int& row, int& column, int& level);
+	bool get_nearest_selectable_in_row(int& row, int& column, int& level, widget_info item, int search_row);
+	void up_handle(int& selected_row, int& selected_column, int& selected_level);
+	void down_handle(int& selected_row, int& selected_column, int& selected_level);
+	void right_handle(int& selected_row, int& selected_column, int& selected_level);
+	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
