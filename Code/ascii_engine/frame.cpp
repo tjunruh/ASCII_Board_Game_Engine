@@ -1,5 +1,6 @@
 #include "frame.h"
 #include "error_codes.h"
+#include <cmath>
 
 #ifdef __linux__
 #include <algorithm>
