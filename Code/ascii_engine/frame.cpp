@@ -322,6 +322,11 @@ int frame::set_widget_type(int id, int type)
 
 int frame::set_vertical_border(int id, char border)
 {
+	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	{
+		return INVALID_VALUE;
+	}
+
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
@@ -337,6 +342,11 @@ int frame::set_vertical_border(int id, char border)
 
 int frame::set_horizontal_border(int id, char border)
 {
+	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	{
+		return INVALID_VALUE;
+	}
+
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
@@ -352,6 +362,11 @@ int frame::set_horizontal_border(int id, char border)
 
 int frame::set_corner_border(int id, char border)
 {
+	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	{
+		return INVALID_VALUE;
+	}
+
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
@@ -367,6 +382,11 @@ int frame::set_corner_border(int id, char border)
 
 int frame::set_highlight_character(int id, char character)
 {
+	if (std::count(invalid_characters.begin(), invalid_characters.end(), character) != 0)
+	{
+		return INVALID_VALUE;
+	}
+
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
