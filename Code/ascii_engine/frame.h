@@ -17,6 +17,7 @@ public:
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();
 	void set_coordinate_width_multiplier(float multiplier, int row, int column);
+	void set_spacer_character(char character);
 private:
 	struct widget_info
 	{
@@ -107,6 +108,7 @@ private:
 	void right_handle(int& selected_row, int& selected_column, int& selected_level);
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(widget_info item, std::vector<std::string>& lines);
+	bool only_widget_in_row(widget_info item);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
@@ -121,6 +123,8 @@ private:
 	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
 	logger log;
+	char spacer_character = '-';
+	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;

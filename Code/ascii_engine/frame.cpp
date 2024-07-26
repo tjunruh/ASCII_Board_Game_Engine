@@ -154,6 +154,17 @@ void frame::set_coordinate_width_multiplier(float multiplier, int row, int colum
 	log.log_status(status, "frame::set_coordinate_width_multiplier");
 }
 
+void frame::set_spacer_character(char character)
+{
+	if (std::count(invalid_characters.begin(), invalid_characters.end(), character) != 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_spacer_character");
+		return;
+	}
+
+	spacer_character = character;
+}
+
 int frame::add_widget()
 {
 	int id = generate_widget_id();
@@ -1106,6 +1117,13 @@ std::string frame::generate_frame_output()
 				std::vector<std::string> widget_lines;
 				widget_lines = get_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
+				if (item.widget_type == SPACER)
+				{
+					if (only_widget_in_row(item))
+					{
+						widget_lines[0] = format_tools::get_spacing(get_widget_width(item, false), spacer_character);
+					}
+				}
 				if (item.add_border)
 				{
 					generate_border(item, widget_lines);
@@ -1435,4 +1453,16 @@ void frame::generate_border(widget_info item, std::vector<std::string>& lines)
 	}
 	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
+}
+
+bool frame::only_widget_in_row(widget_info item)
+{
+	int row = item.row;
+	std::vector<int> ids = get_row_ids(row);
+	if (ids.size() == 1)
+	{
+		return true;
+	}
+
+	return false;
 }
