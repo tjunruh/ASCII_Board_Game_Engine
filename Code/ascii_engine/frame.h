@@ -96,7 +96,7 @@ private:
 	bool element_exists(const std::vector<int>& storage, int element);
 	unsigned int get_total_rows();
 	unsigned int get_columns_in_row(int row);
-	std::string get_frame_output();
+	std::string generate_frame_output();
 	void set_widget_origins();
 	bool is_selectable(int row, int column, int level);
 	bool is_selectable(int id);
@@ -106,6 +106,7 @@ private:
 	void down_handle(int& selected_row, int& selected_column, int& selected_level);
 	void right_handle(int& selected_row, int& selected_column, int& selected_level);
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
+	void generate_border(widget_info item, std::vector<std::string>& lines);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;

@@ -22,7 +22,7 @@ frame::frame(bool start_logger, std::string logging_file_path)
 
 void frame::display()
 {
-	std::string output = get_frame_output();
+	std::string output = generate_frame_output();
 #ifdef WIN32
 	int x = 0;
 	int y = 0;
@@ -1088,7 +1088,7 @@ unsigned int frame::get_columns_in_row(int row)
 	return columns.size();
 }
 
-std::string frame::get_frame_output()
+std::string frame::generate_frame_output()
 {
 	std::string frame_output = "";
 	int total_rows = get_total_rows();
@@ -1108,26 +1108,7 @@ std::string frame::get_frame_output()
 				get_widget((row_ids[j])[m], item);
 				if (item.add_border)
 				{
-					int top_spacing = item.top_spacing - item.top_border_spacing;
-					int left_spacing = item.left_spacing - item.left_border_spacing;
-					int middle_spacing = get_widget_width(item, false) + 2 + item.left_border_spacing + item.right_border_spacing;
-					int right_spacing = item.right_spacing - item.right_border_spacing;
-					int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
-					for (unsigned int k = 0; k < widget_lines.size(); k++)
-					{
-						if (k < (unsigned int)(top_spacing) || (k > (widget_lines.size() - bottom_spacing - 1)))
-						{
-							widget_lines[k].insert(left_spacing, "  ");
-							widget_lines[k].insert(widget_lines[k].length() - right_spacing, "  ");
-						}
-						else
-						{
-							widget_lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
-							widget_lines[k].insert(widget_lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
-						}
-					}
-					widget_lines.insert(widget_lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
-					widget_lines.insert(widget_lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
+					generate_border(item, widget_lines);
 				}
 				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
@@ -1271,7 +1252,7 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, wid
 		{
 			get_x_origin(row_ids[i], x);
 			get_y_origin(row_ids[i], y);
-			distance = pow(pow(abs(x - original_x), 2) + pow(abs(y - original_y), 2), 0.5);
+			distance = (float)pow(pow(abs(x - original_x), 2) + pow(abs(y - original_y), 2), 0.5);
 			if ((distance < min_distance) || min_distance == 0)
 			{
 				min_distance = distance;
@@ -1430,4 +1411,28 @@ void frame::left_handle(int& selected_row, int& selected_column, int& selected_l
 		}
 
 	} while (!is_selectable(selected_row, selected_column, selected_level));
+}
+
+void frame::generate_border(widget_info item, std::vector<std::string>& lines)
+{
+	int top_spacing = item.top_spacing - item.top_border_spacing;
+	int left_spacing = item.left_spacing - item.left_border_spacing;
+	int middle_spacing = get_widget_width(item, false) + 2 + item.left_border_spacing + item.right_border_spacing;
+	int right_spacing = item.right_spacing - item.right_border_spacing;
+	int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
+	for (unsigned int k = 0; k < lines.size(); k++)
+	{
+		if (k < (unsigned int)(top_spacing) || (k > (lines.size() - bottom_spacing - 1)))
+		{
+			lines[k].insert(left_spacing, "  ");
+			lines[k].insert(lines[k].length() - right_spacing, "  ");
+		}
+		else
+		{
+			lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
+			lines[k].insert(lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
+		}
+	}
+	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
+	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 }
