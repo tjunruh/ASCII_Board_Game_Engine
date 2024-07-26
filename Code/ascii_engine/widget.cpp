@@ -59,6 +59,12 @@ void widget::set_corner_border(char border)
 	log.log_status(status, "widget::set_corner_border");
 }
 
+void widget::set_highlight_character(char character)
+{
+	int status = parent_frame->set_highlight_character(widget_id, character);
+	log.log_status(status, "widget::set_highlight_character");
+}
+
 void widget::add_border()
 {
 	int status = parent_frame->add_border(widget_id);

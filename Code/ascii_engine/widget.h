@@ -14,6 +14,7 @@ public:
 	void set_vertical_border(char border);
 	void set_horizontal_border(char border);
 	void set_corner_border(char border);
+	void set_highlight_character(char character);
 	void add_border();
 	void refresh();
 	void selectable();
