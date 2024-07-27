@@ -14,6 +14,7 @@ public:
 	friend void spacer(frame* parent, float multiplier, std::string special_operation, bool start_logging, std::string logging_file_path);
 	frame(bool start_logger=false, std::string logging_file_path="frame.log");
 	void display();
+	bool stale();
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();
 	void set_coordinate_width_multiplier(float multiplier, int row, int column);
@@ -120,6 +121,9 @@ private:
 	int append_row = 0;
 	int append_column = -1;
 	int append_level = 0;
+	bool display_stale = true;
+	int last_screen_x_size_displayed = 0;
+	int last_screen_y_size_displayed = 0;
 	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
 	logger log;

@@ -23,10 +23,10 @@ frame::frame(bool start_logger, std::string logging_file_path)
 void frame::display()
 {
 	std::string output = generate_frame_output();
-#ifdef WIN32
 	int x = 0;
 	int y = 0;
 	ascii_io::get_terminal_size(x, y);
+#ifdef WIN32
 	if ((x != previous_x) || (y != previous_y))
 	{
 		ascii_io::clear();
@@ -44,6 +44,21 @@ void frame::display()
 	ascii_io::clear();
 	ascii_io::print(output);
 #endif
+	display_stale = false;
+	last_screen_x_size_displayed = x;
+	last_screen_y_size_displayed = y;
+}
+
+bool frame::stale()
+{
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	if ((x != last_screen_x_size_displayed) || (y != last_screen_y_size_displayed))
+	{
+		display_stale = true;
+	}
+	return display_stale;
 }
 
 void frame::set_controls(int select, int quit, int up, int down, int right, int left)
@@ -236,17 +251,26 @@ int frame::set_output(int id, const std::string& output)
 
 int frame::set_alignment(int id, std::string alignment)
 {
-	int status = ELEMENT_NOT_FOUND;
-	if ((alignment == format_tools::right_alignment_keyword) || (alignment == format_tools::left_alignment_keyword) || (alignment == format_tools::center_alignment_keyword) || (alignment == format_tools::center_block_alignment_keyword))
+	if ((alignment != format_tools::right_alignment_keyword) && (alignment != format_tools::left_alignment_keyword) && (alignment != format_tools::center_alignment_keyword) && (alignment != format_tools::center_block_alignment_keyword))
 	{
-		for (unsigned int i = 0; i < widgets.size(); i++)
+		return INVALID_VALUE;
+	}
+
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
 		{
-			if (widgets[i].id == id)
+			if (widgets[i].widget_type == TEXTBOX)
+			{
+				status = OPERATION_NOT_SUPPORTED;
+			}
+			else
 			{
 				widgets[i].alignment = alignment;
 				status = SUCCESS;
-				break;
 			}
+			break;
 		}
 	}
 	return status;

@@ -30,6 +30,8 @@ public:
 protected:
 	void set_output_to_frame(const std::string& text);
 	void set_widget_type(int type);
+	bool frame_stale();
+	void frame_display();
 	logger log;
 private:
 	frame *parent_frame;

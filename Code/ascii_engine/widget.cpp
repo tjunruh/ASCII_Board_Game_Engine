@@ -140,3 +140,13 @@ std::string widget::get_alignment()
 	log.log_status(status, "widget::get_alignment");
 	return alignment;
 }
+
+bool widget::frame_stale()
+{
+	return parent_frame->stale();
+}
+
+void widget::frame_display()
+{
+	parent_frame->display();
+}
