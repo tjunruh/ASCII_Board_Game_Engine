@@ -1,7 +1,6 @@
 #include "validate_board_config.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 #include "../board_config_field_parser/board_config_field_parser.h"
-#include <iostream>
 
 int validate_board_config::validate_board_begin(const std::string &content)
 {
@@ -443,84 +442,67 @@ int validate_board_config::get_columns(const std::string &board)
 	return max_columns;
 }
 
-int validate_board_config::validate(const std::string &content, bool debug)
+int validate_board_config::validate(const std::string &content, std::string& debug_info)
 {
+	debug_info = "";
 	if (validate_board_begin(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Board begin tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Board begin tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Board begin tag found." << std::endl;
+		debug_info = debug_info +  "Passed: Board begin tag found.\n";
 	}
 
 	if (validate_board_end(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Board end tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Board end tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Board end tag found." << std::endl;
+		debug_info = debug_info + "Passed: Board end tag found.\n";
 	}
 
 	if (validate_array_dimensions_begin(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Array dimenion begin tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Array dimenion begin tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Array dimensions begin tag found." << std::endl;
+		debug_info = debug_info + "Passed: Array dimensions begin tag found.\n";
 	}
 
 	if (validate_array_dimensions_end(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Array dimensions end tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Array dimensions end tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Array dimensions end tag found." << std::endl;
+		debug_info = debug_info + "Passed: Array dimensions end tag found.\n";
 	}
 
 	if (validate_action_tiles_begin(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Action tiles begin tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Action tiles begin tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Action tiles begin tag found." << std::endl;
+		debug_info = debug_info + "Passed: Action tiles begin tag found.\n";
 	}
 
 	if (validate_action_tiles_end(content) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Action tiles end tag is missing or malformed." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Action tiles end tag is missing or malformed.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Action tiles end tag found." << std::endl;
+		debug_info = debug_info + "Passed: Action tiles end tag found.\n";
 	}
 
 	std::string board = "";
@@ -535,93 +517,72 @@ int validate_board_config::validate(const std::string &content, bool debug)
 
 	if (validate_parenthesis(dimension_field) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Parenthesis mismatch in dimension field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Parenthesis mismatch in dimension field.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Parenthesis validation in dimension field." << std::endl;
+		debug_info = debug_info + "Passed: Parenthesis validation in dimension field.\n";
 	}
 
 	if (validate_parenthesis(action_tiles_field) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Parenthesis mismatch in action tiles field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Parenthesis mismatch in action tiles field.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Parenthesis validation in action tiles field." << std::endl;
+		debug_info = debug_info + "Passed: Parenthesis validation in action tiles field.\n";
 	}
 
 	if (validate_number_of_parameters(dimension_field, 2) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected)." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected).\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Correct number of parameters in dimension field parenthesis." << std::endl;
+		debug_info = debug_info + "Passed: Correct number of parameters in dimension field parenthesis.\n";
 	}
 
 	if (validate_number_of_parameters(action_tiles_field, 4) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected)." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected).\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Correct number of parameters in action tiles field parenthesis." << std::endl;
+		debug_info = debug_info + "Passed: Correct number of parameters in action tiles field parenthesis.\n";
 	}
 
 	if (validate_parameters(dimension_field, false) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Invalid parameter in dimension field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Invalid parameter in dimension field.\n";
 		return 1;
 	}
-	else if(debug)
+	else
 	{
-		std::cout << "Passed: Valid parameters in dimension filed." << std::endl;
+		debug_info = debug_info + "Passed: Valid parameters in dimension filed.\n";
 	}
 
 	if (validate_parameters(action_tiles_field, true) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Invalid parameter in action tiles field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Invalid parameter in action tiles field.\n";
 		return 1;
 	}
-	else if(debug)
+	else
 	{
-		std::cout << "Passed: Valid parameters in action tiles field." << std::endl;
+		debug_info = debug_info + "Passed: Valid parameters in action tiles field.\n";
 	}
 
 	if (validate_hyphen_range(action_tiles_field) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Invalid range using hyphen in action tiles field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Invalid range using hyphen in action tiles field.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Valid range using hyphen in action tiles field." << std::endl;
+		debug_info = debug_info + "Passed: Valid range using hyphen in action tiles field.\n";
 	}
 
 	int row = 0;
@@ -631,45 +592,33 @@ int validate_board_config::validate(const std::string &content, bool debug)
 
 	if ((row == -1) || (column == -1))
 	{
-		if (debug)
-		{
-			std::cout << "Error reading array dimensions." << std::endl;
-		}
+		debug_info = debug_info + "Error reading array dimensions.\n";
 		return 1;
 	}
 
 	if (validate_array_index(action_tiles_field, row, column) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Array dimension invalid in action tiles field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Array dimension invalid in action tiles field.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Array dimensions valid." << std::endl;
+		debug_info = debug_info + "Passed: Array dimensions valid.\n";
 	}
 
 	get_board_dimensions(board, row, column);
 
 	if (validate_board_index(action_tiles_field, row, column) == 1)
 	{
-		if (debug)
-		{
-			std::cout << "Failed: Board dimension out of bounds in action tiles field." << std::endl;
-		}
+		debug_info = debug_info + "Failed: Board dimension out of bounds in action tiles field.\n";
 		return 1;
 	}
-	else if (debug)
+	else
 	{
-		std::cout << "Passed: Board dimensions valid." << std::endl;
+		debug_info = debug_info + "Passed: Board dimensions valid.\n";
 	}
 
-	if (debug)
-	{
-		std::cout << "All validations passed." << std::endl;
-	}
+	debug_info = debug_info + "All validations passed.\n";
 
 	return 0;
 }

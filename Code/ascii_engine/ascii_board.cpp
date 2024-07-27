@@ -18,6 +18,7 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string special_op
 			ascii_io::getchar();
 		}
 	}
+	log.log_begin("ascii_board::ascii_board");
 	validate_board_config validator;
 	int status = UNDEFINED;
 	std::string board_config = "";
@@ -28,12 +29,13 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string special_op
 		log.log_status(status, "ascii_board::ascii_board");
 		return;
 	}
-
-	int validation_status = validator.validate(board_config, false);
+	std::string validation_debug_log = "";
+	int validation_status = validator.validate(board_config, validation_debug_log);
 	if (validation_status == 1)
 	{
 		status = INVALID_CONFIG;
 		log.log_status(status, "ascii_board::ascii_board");
+		log.log_comment(validation_debug_log);
 		return;
 	}
 
@@ -54,6 +56,8 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string special_op
 	selectable();
 	status = SUCCESS;
 	log.log_status(status, "ascii_board::ascii_board");
+	log.log_comment(validation_debug_log);
+	log.log_end("ascii_board::ascii_board");
 }
 
 void ascii_board::clear_tile(int row, int column)

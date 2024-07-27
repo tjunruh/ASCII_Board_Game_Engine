@@ -18,11 +18,13 @@ int main(int argc, char* argv[])
 		std::cout << "Invalid file path.\n" << std::endl;
 		return 1;
 	}
-	
-	if (map_validator.validate(content, true) == 1)
+	std::string debug_log = "";
+	if (map_validator.validate(content, debug_log) == 1)
 	{
+		std::cout << debug_log << std::endl;
 		return 1;
 	}
 
+	std::cout << debug_log << std::endl;
 	return 0;
 }

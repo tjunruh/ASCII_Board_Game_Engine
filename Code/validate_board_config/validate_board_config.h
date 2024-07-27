@@ -6,7 +6,7 @@
 class validate_board_config
 {
 public:
-	int validate(const std::string &content, bool debug);
+	int validate(const std::string& content, std::string& debug_log);
 
 private:
 	struct row_column
