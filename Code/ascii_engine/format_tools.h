@@ -12,10 +12,12 @@ namespace format_tools
 	const std::string right_alignment_keyword = "right";
 	const std::string left_alignment_keyword = "left";
 	const std::string center_alignment_keyword = "center";
+	const std::string center_block_alignment_keyword = "center block";
 	std::vector<std::string> split_string(std::string str, char split_character);
 	void cut_word(const std::string& word, unsigned int length, std::string& first_section, std::string& second_section);
 	std::string get_spacing(unsigned int length, char space_char);
-	std::string fill_line(std::string input, unsigned int length, std::string allignment);
+	std::string fill_line(std::string input, unsigned int length, std::string alignment);
+	std::vector<std::string> fill_lines(std::vector<std::string> input, unsigned int length, std::string alignment);
 	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	std::string fuse_columns_into_row(text_column data, unsigned int& lines);
 	std::vector<std::string> get_lines(const std::string& output_string);

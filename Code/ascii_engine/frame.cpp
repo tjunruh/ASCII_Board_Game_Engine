@@ -237,7 +237,7 @@ int frame::set_output(int id, const std::string& output)
 int frame::set_alignment(int id, std::string alignment)
 {
 	int status = ELEMENT_NOT_FOUND;
-	if ((alignment == format_tools::right_alignment_keyword) || (alignment == format_tools::left_alignment_keyword) || (alignment == format_tools::center_alignment_keyword))
+	if ((alignment == format_tools::right_alignment_keyword) || (alignment == format_tools::left_alignment_keyword) || (alignment == format_tools::center_alignment_keyword) || (alignment == format_tools::center_block_alignment_keyword))
 	{
 		for (unsigned int i = 0; i < widgets.size(); i++)
 		{
@@ -1003,16 +1003,11 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	std::vector<std::string> widget_lines;
 	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
 	std::string line = "";
-	for (int i = 0; i < item.top_spacing; i++)
-	{
-		widget_lines.push_back(active_spacing);
-	}
 
 	for (unsigned int i = 0; i < user_lines.size(); i++)
 	{
 		if (user_lines[i] == "\n")
 		{
-			line = format_tools::fill_line(line, width, item.alignment);
 			widget_lines.push_back(line);
 			line = "";
 		}
@@ -1041,7 +1036,6 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				}
 				else
 				{
-					line = format_tools::fill_line(line, width, item.alignment);
 					widget_lines.push_back(line);
 					if (words[j] != " ")
 					{
@@ -1058,9 +1052,15 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	}
 	if (line != "")
 	{
-		line = format_tools::fill_line(line, width, item.alignment);
 		widget_lines.push_back(line);
 		line = "";
+	}
+
+	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
+
+	for (int i = 0; i < item.top_spacing; i++)
+	{
+		widget_lines.insert(widget_lines.begin(), active_spacing);
 	}
 
 	for (int i = 0; i < item.bottom_spacing; i++)

@@ -574,6 +574,7 @@ void ascii_board::display()
 	ascii_io::get_curser_position(curser_x, curser_y);
 	update_board();
 	std::vector<std::string> lines = format_tools::get_lines(board);
+	lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{
 		ascii_io::move_curser_to_position(x_origin, y_origin + i);

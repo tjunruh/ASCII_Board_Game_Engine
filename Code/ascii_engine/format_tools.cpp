@@ -59,16 +59,16 @@ std::string format_tools::get_spacing(unsigned int length, char space_char)
 	return spacing;
 }
 
-std::string format_tools::fill_line(std::string input, unsigned int length, std::string allignment)
+std::string format_tools::fill_line(std::string input, unsigned int length, std::string alignment)
 {
-	if (allignment == left_alignment_keyword)
+	if (alignment == left_alignment_keyword)
 	{
 		while (input.length() < length)
 		{
 			input = input + " ";
 		}
 	}
-	else if (allignment == center_alignment_keyword)
+	else if (alignment == center_alignment_keyword)
 	{
 		bool begin = true;
 		while (input.length() < length)
@@ -85,11 +85,40 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 			}
 		}
 	}
-	else if (allignment == right_alignment_keyword)
+	else if (alignment == right_alignment_keyword)
 	{
 		while (input.length() < length)
 		{
 			input.insert(0, " ");
+		}
+	}
+	return input;
+}
+
+std::vector<std::string> format_tools::fill_lines(std::vector<std::string> input, unsigned int length, std::string alignment)
+{
+	unsigned int largest_width = 0;
+	if (alignment == center_block_alignment_keyword)
+	{
+		for (unsigned int i = 0; i < input.size(); i++)
+		{
+			if (input[i].length() > largest_width)
+			{
+				largest_width = input[i].length();
+			}
+		}
+
+		for (unsigned int i = 0; i < input.size(); i++)
+		{
+			input[i] = input[i] + get_spacing(largest_width - input[i].length(), ' ');
+			input[i] = fill_line(input[i], length, center_alignment_keyword);
+		}
+	}
+	else
+	{
+		for (unsigned int i = 0; i < input.size(); i++)
+		{
+			input[i] = fill_line(input[i], length, alignment);
 		}
 	}
 	return input;
