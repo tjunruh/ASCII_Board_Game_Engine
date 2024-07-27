@@ -85,6 +85,17 @@ void menu::enable_quit()
 	quit_enabled = true;
 }
 
+int menu::start_logging(const std::string& file_path)
+{
+	int status = log.start_widget_logging(file_path, get_widget_type());
+	return status;
+}
+
+void menu::stop_logging()
+{
+	log.stop_widget_logging();
+}
+
 std::string menu::get_selection()
 {
 	int input = 0;
