@@ -1474,8 +1474,8 @@ void frame::right_handle(int& selected_row, int& selected_column, int& selected_
 	{
 		if ((selected_column + 1) < (int)get_columns_in_row(selected_row))
 		{
-			int total_levels = get_levels(selected_row, selected_column);
 			selected_column++;
+			int total_levels = get_levels(selected_row, selected_column);
 			if (selected_level >= total_levels)
 			{
 				selected_level = total_levels - 1;
@@ -1509,8 +1509,8 @@ void frame::left_handle(int& selected_row, int& selected_column, int& selected_l
 	{
 		if ((selected_column - 1) >= 0)
 		{
-			int total_levels = get_levels(selected_row, selected_column);
 			selected_column--;
+			int total_levels = get_levels(selected_row, selected_column);
 			if (selected_level >= total_levels)
 			{
 				selected_level = total_levels - 1;
