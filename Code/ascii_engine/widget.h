@@ -32,6 +32,8 @@ protected:
 	void set_widget_type(int type);
 	bool frame_stale();
 	void frame_display();
+	bool dec_enabled();
+	std::vector<dec_region> dec_format(const std::string& format_content);
 	logger log;
 private:
 	frame *parent_frame;

@@ -52,6 +52,7 @@ VALIDATE_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/, $(VALIDATE_BOARD_CONFIG_O
 ASCII_ENGINE_OBJS := \
 	ascii_board.o \
 	ascii_io.o \
+        dec_formatter.o \
 	format_tools.o \
 	controls.o \
 	frame.o \
@@ -68,6 +69,7 @@ ASCII_ENGINE_HEADERS := \
 	ascii_io.h \
 	controls.h \
 	error_codes.h \
+        dec_formatter.h \
 	format_tools.h \
 	frame.h \
 	label.h \

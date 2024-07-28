@@ -61,6 +61,16 @@ std::string format_tools::get_spacing(unsigned int length, char space_char)
 
 std::string format_tools::fill_line(std::string input, unsigned int length, std::string alignment)
 {
+	bool new_line_character_detected = false;
+	if (input.length() > 0)
+	{
+		if (input[input.length() - 1] == '\n')
+		{
+			input.erase(input.length() - 1, 1);
+			new_line_character_detected = true;
+		}
+	}
+	
 	if (alignment == left_alignment_keyword)
 	{
 		while (input.length() < length)
@@ -91,6 +101,11 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 		{
 			input.insert(0, " ");
 		}
+	}
+
+	if (new_line_character_detected)
+	{
+		input = input + '\n';
 	}
 	return input;
 }
@@ -181,6 +196,16 @@ std::vector<std::string> format_tools::get_lines(const std::string& output_strin
 		output_lines.push_back(line);
 	}
 	return output_lines;
+}
+
+std::string format_tools::get_string(const std::vector<std::string>& lines)
+{
+	std::string output_string = "";
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		output_string = output_string + lines[i];
+	}
+	return output_string;
 }
 
 std::vector<std::string> format_tools::remove_trailing_whitespace(const std::vector<std::string>& lines)

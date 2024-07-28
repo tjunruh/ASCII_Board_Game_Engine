@@ -571,6 +571,43 @@ void ascii_board::display()
 	{
 		frame_display();
 	}
+	else if (dec_enabled())
+	{
+		int x_origin = get_x_origin();
+		int y_origin = get_y_origin();
+		int curser_x = 0;
+		int curser_y = 0;
+		ascii_io::get_curser_position(curser_x, curser_y);
+		update_board();
+		std::vector<std::string> lines = format_tools::get_lines(board);
+		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
+		std::string adjusted_board = format_tools::get_string(lines);
+		std::vector<dec_region> regions = dec_format(adjusted_board);
+		int line = 0;
+		ascii_io::move_curser_to_position(x_origin, y_origin);
+		for (unsigned int i = 0; i < regions.size(); i++)
+		{
+			if (regions[i].dec)
+			{
+				ascii_io::enable_dec();
+			}
+			else
+			{
+				ascii_io::disable_dec();
+			}
+			std::vector<std::string> sub_lines = format_tools::get_lines(regions[i].content);
+			for (unsigned int j = 0; j < sub_lines.size(); j++)
+			{
+				ascii_io::print(sub_lines[j]);
+				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
+				{
+					line++;
+					ascii_io::move_curser_to_position(x_origin, y_origin + line);
+				}
+			}
+		}
+		ascii_io::move_curser_to_position(curser_x, curser_y);
+	}
 	else
 	{
 		int x_origin = get_x_origin();

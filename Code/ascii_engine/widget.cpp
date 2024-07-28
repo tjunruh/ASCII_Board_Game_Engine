@@ -1,6 +1,4 @@
 #include "widget.h"
-#include "error_codes.h"
-#include "../file_manager/file_manager.h"
 
 widget::widget(frame* parent, std::string special_operation)
 {
@@ -149,4 +147,14 @@ bool widget::frame_stale()
 void widget::frame_display()
 {
 	parent_frame->display();
+}
+
+bool widget::dec_enabled()
+{
+	return parent_frame->dec_enabled();
+}
+
+std::vector<dec_region> widget::dec_format(const std::string& format_content)
+{
+	return parent_frame->dec_format(format_content);
 }

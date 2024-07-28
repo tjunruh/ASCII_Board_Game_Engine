@@ -21,6 +21,7 @@ namespace format_tools
 	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	std::string fuse_columns_into_row(text_column data, unsigned int& lines);
 	std::vector<std::string> get_lines(const std::string& output_string);
+	std::string get_string(const std::vector<std::string>& lines);
 	std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
 	void mask_string(std::string& new_string, const std::string& old_string);
 	void remove_newline_characters(std::string& text);

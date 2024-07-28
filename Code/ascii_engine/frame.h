@@ -6,6 +6,7 @@
 #include "format_tools.h"
 #include <unordered_map>
 #include "logger.h"
+#include "dec_formatter.h"
 
 class frame
 {
@@ -19,7 +20,12 @@ public:
 	int get_selection();
 	void set_coordinate_width_multiplier(float multiplier, int row, int column);
 	void set_spacer_character(char character);
+	void enable_dec();
+	void disable_dec();
+	bool dec_enabled();
+	void set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 private:
+	dec_formatter dec;
 	struct widget_info
 	{
 		int id = -1;
@@ -110,6 +116,7 @@ private:
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(widget_info item, std::vector<std::string>& lines);
 	bool only_widget_in_row(widget_info item);
+	std::vector<dec_region> dec_format(const std::string& format_content);
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;
@@ -129,6 +136,7 @@ private:
 	logger log;
 	char spacer_character = '-';
 	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
+	bool _dec_enabled = false;
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;
