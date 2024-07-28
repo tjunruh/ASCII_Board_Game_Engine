@@ -1,5 +1,9 @@
 #include "dec_formatter.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)
 {
 	_horizontal_char = horizontal_char;
