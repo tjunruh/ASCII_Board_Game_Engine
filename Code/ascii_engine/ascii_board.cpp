@@ -587,24 +587,34 @@ void ascii_board::display()
 		ascii_io::move_curser_to_position(x_origin, y_origin);
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
-			if (regions[i].dec)
-			{
-				ascii_io::enable_dec();
-			}
-			else
-			{
-				ascii_io::disable_dec();
-			}
 			std::vector<std::string> sub_lines = format_tools::get_lines(regions[i].content);
 			for (unsigned int j = 0; j < sub_lines.size(); j++)
 			{
-				ascii_io::print(sub_lines[j]);
+				if (regions[i].dec)
+				{
+#ifdef _WIN32
+					ascii_io::enable_dec();
+					ascii_io::print(sub_lines[j]);
+#elif __linux__
+					dec_print(sub_lines[j]);
+#endif
+				}
+				else
+				{
+#ifdef _WIN32
+					ascii_io::disable_dec();
+#endif
+					ascii_io::print(sub_lines[j]);
+				}
 				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
 				{
 					line++;
 					ascii_io::move_curser_to_position(x_origin, y_origin + line);
 				}
 			}
+#ifdef _WIN32
+			ascii_io::disable_dec();
+#endif
 		}
 		ascii_io::move_curser_to_position(curser_x, curser_y);
 	}

@@ -158,3 +158,8 @@ std::vector<dec_region> widget::dec_format(const std::string& format_content)
 {
 	return parent_frame->dec_format(format_content);
 }
+
+void widget::dec_print(const std::string& input)
+{
+	parent_frame->dec_print(input);
+}

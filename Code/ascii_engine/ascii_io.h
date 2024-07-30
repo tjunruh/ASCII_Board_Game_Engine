@@ -18,8 +18,11 @@ namespace ascii_io
 	void move_curser_right(unsigned int amount=1);
 	void move_curser_left(unsigned int amount=1);
 	void move_curser_to_position(unsigned int x, unsigned int y);
+#ifdef _WIN32
 	void enable_dec();
 	void disable_dec();
+#endif
+
 #ifdef __linux__
    void ncurses_init();
    void ncurses_end();

@@ -15,6 +15,9 @@ public:
 	void set_format_chars(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	std::vector<dec_region> format(const std::string& format_content);
 	char get_endpoint_char();
+#ifdef __linux__
+	void print_dec_string(const std::string& input);
+#endif
 	const char bottom_right_corner = 'j';
 	const char top_right_corner = 'k';
 	const char top_left_corner = 'l';
@@ -29,6 +32,9 @@ public:
 
 private:
 	char determine_dec_character(char top, char bottom, char left, char right, char center);
+#ifdef __linux__
+	int get_dec_ncurses_code(char character);
+#endif
 	char _horizontal_char = '-';
 	char _vertical_char = '|';
 	char _intersection_char = '+';

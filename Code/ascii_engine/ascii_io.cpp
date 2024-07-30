@@ -233,6 +233,7 @@ void ascii_io::move_curser_to_position(unsigned int x, unsigned int y)
 #endif
 }
 
+#ifdef _WIN32
 void ascii_io::enable_dec()
 {
 	print("\x1b(0");
@@ -242,6 +243,7 @@ void ascii_io::disable_dec()
 {
 	print("\x1b(B");
 }
+#endif
 
 #ifdef __linux__
 void ascii_io::ncurses_init()

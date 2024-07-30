@@ -117,6 +117,9 @@ private:
 	void generate_border(widget_info item, std::vector<std::string>& lines);
 	bool only_widget_in_row(widget_info item);
 	std::vector<dec_region> dec_format(const std::string& format_content);
+#ifdef __linux__
+	void dec_print(const std::string& input);
+#endif
 
 	std::vector<widget_info> widgets;
 	int _select = ascii_io::enter;

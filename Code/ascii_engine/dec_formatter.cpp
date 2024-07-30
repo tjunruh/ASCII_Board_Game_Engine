@@ -2,6 +2,7 @@
 
 #ifdef __linux__
 #include <algorithm>
+#include <ncurses.h>
 #endif
 
 void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)
@@ -172,3 +173,69 @@ char dec_formatter::get_endpoint_char()
 {
 	return _endpoint_char;
 }
+
+#ifdef __linux__
+int dec_formatter::get_dec_ncurses_code(char character)
+{
+	int code = 0;
+	if (character == bottom_right_corner)
+	{
+		code = ACS_LRCORNER;
+	}
+	else if (character == top_right_corner)
+	{
+		code = ACS_URCORNER;
+	}
+	else if (character == top_left_corner)
+	{
+		code = ACS_ULCORNER;
+	}
+	else if (character == bottom_left_corner)
+	{
+		code = ACS_LLCORNER;
+	}
+	else if (character == horizontal_line)
+	{
+		code = ACS_HLINE;
+	}
+	else if (character == intersection)
+	{
+		code = ACS_PLUS;
+	}
+	else if (character == right_facing_intersection)
+	{
+		code = ACS_LTEE;
+	}
+	else if (character == left_facing_intersection)
+	{
+		code = ACS_RTEE;
+	}
+	else if (character == up_facing_intersection)
+	{
+		code = ACS_BTEE;
+	}
+	else if (character == down_facing_intersection)
+	{
+		code = ACS_TTEE;
+	}
+	else if (character == vertical_line)
+	{
+		code = ACS_VLINE;
+	}
+	else
+	{
+		code = int(character);
+	}
+
+	return code;
+}
+
+void dec_formatter::print_dec_string(const std::string& input)
+{
+	for(unsigned int i = 0; i < input.length(); i++)
+	{
+		addch(get_dec_ncurses_code(input[i]));
+	}
+}
+
+#endif
