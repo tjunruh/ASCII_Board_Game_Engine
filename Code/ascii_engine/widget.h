@@ -34,7 +34,9 @@ protected:
 	void frame_display();
 	bool dec_enabled();
 	std::vector<dec_region> dec_format(const std::string& format_content);
+#ifdef __linux__
 	void dec_print(const std::string& input);
+#endif
 	logger log;
 private:
 	frame *parent_frame;
