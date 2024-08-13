@@ -42,13 +42,45 @@ void frame::display()
 #elif __linux__
 	ascii_io::clear();
 #endif
-	
-	if (_dec_enabled)
+	if (_dec_enabled || _color_enabled)
 	{
-		std::vector<dec_region> regions = dec.format(output);
+		std::vector<format_tools::index_format> index_regions;
+		if (_color_enabled)
+		{
+			index_regions = format_tools::convert(color_regions, x);
+		}
+
+		if (_dec_enabled)
+		{
+			std::vector<format_tools::index_format> dec_regions = dec.format(output);
+			if (index_regions.size() > 0)
+			{
+				index_regions = format_tools::combine(index_regions, dec_regions);
+			}
+			else
+			{
+				index_regions = dec_regions;
+			}
+		}
+
+		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, output);
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
-			if (regions[i].dec)
+			int foreground_color = default_foreground_color;
+			int background_color = default_background_color;
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
+			{
+				foreground_color = regions[i].format.foreground_format;
+			}
+
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
+			{
+				background_color = regions[i].format.background_format;
+			}
+
+			ascii_io::set_color(foreground_color, background_color);
+
+			if (regions[i].format.dec)
 			{
 #ifdef _WIN32
 				ascii_io::enable_dec();
@@ -73,6 +105,7 @@ void frame::display()
 	{
 		ascii_io::print(output);
 	}
+
 	display_stale = false;
 	last_screen_x_size_displayed = x;
 	last_screen_y_size_displayed = y;
@@ -224,9 +257,58 @@ bool frame::dec_enabled()
 	return _dec_enabled;
 }
 
+void frame::enable_color()
+{
+	_color_enabled = true;
+}
+
+void frame::disable_color()
+{
+	_color_enabled = false;
+}
+
+bool frame::color_enabled()
+{
+	return _color_enabled;
+}
+
 void frame::set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)
 {
 	dec.set_format_chars(horizontal_char, vertical_char, intersection_char, endpoint_char);
+}
+
+void frame::set_default_background_color(int color)
+{
+	if (std::count(format_tools::colors.begin(), format_tools::colors.end(), color) == 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_default_background_color");
+	}
+	else
+	{
+		default_background_color = color;
+	}
+}
+
+void frame::set_default_foreground_color(int color)
+{
+	if (std::count(format_tools::colors.begin(), format_tools::colors.end(), color) == 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_default_foreground_color");
+	}
+	else
+	{
+		default_foreground_color = color;
+	}
+}
+
+int frame::get_default_background_color()
+{
+	return default_background_color;
+}
+
+int frame::get_default_foreground_color()
+{
+	return default_foreground_color;
 }
 
 int frame::add_widget()
@@ -815,6 +897,21 @@ float frame::get_width_weight(widget_info item)
 	return (item.width_multiplier / total_width_multiplier);
 }
 
+int frame::get_index_colors(int id, std::vector<format_tools::index_format>& index_colors)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			index_colors = widgets[i].index_colors;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::set_lines_count(int id, int lines_count)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -858,6 +955,36 @@ int frame::set_selectable(int id, bool selectable)
 		if (widgets[i].id == id)
 		{
 			widgets[i].selectable = selectable;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].coordinate_colors = coordinate_colors;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_index_colors(int id, std::vector<format_tools::index_format> index_colors)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].index_colors = index_colors;
 			status = SUCCESS;
 			break;
 		}
@@ -1125,6 +1252,13 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	unsigned int width = get_widget_width(item, false);
 	std::string active_spacing = format_tools::get_spacing(width, ' ');
 	std::vector<std::string> widget_lines;
+	std::vector<int> ignore_flags;
+
+	if (_color_enabled)
+	{
+		ignore_flags = format_tools::set_flags(item.index_colors, item.output, '*');
+	}
+
 	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
 	std::string line = "";
 
@@ -1169,11 +1303,11 @@ std::vector<std::string> frame::get_widget_lines(int id)
 					{
 						line = "";
 					}
-					
 				}
 			}
 		}
 	}
+
 	if (line != "")
 	{
 		widget_lines.push_back(line);
@@ -1181,6 +1315,12 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	}
 
 	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
+
+	if (_color_enabled)
+	{
+		convert_flags(item.coordinate_colors, item.index_colors, ignore_flags, widget_lines, '*');
+		set_coordinate_colors(item.id, item.coordinate_colors);
+	}
 
 	for (int i = 0; i < item.top_spacing; i++)
 	{
@@ -1261,6 +1401,7 @@ std::string frame::generate_frame_output()
 				std::vector<std::string> widget_lines;
 				widget_lines = get_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
+
 				if (item.widget_type == SPACER)
 				{
 					if (only_widget_in_row(item))
@@ -1268,6 +1409,7 @@ std::string frame::generate_frame_output()
 						widget_lines[0] = format_tools::get_spacing(get_widget_width(item, false), spacer_character);
 					}
 				}
+
 				if (item.add_border)
 				{
 					generate_border(item, widget_lines);
@@ -1285,6 +1427,10 @@ std::string frame::generate_frame_output()
 		column_data.width.clear();
 	}
 	set_widget_origins();
+	if (_color_enabled)
+	{
+		translate_coordinate_colors_to_frame();
+	}
 	return frame_output;
 }
 
@@ -1326,6 +1472,21 @@ void frame::set_widget_origins()
 			x = x + get_widget_width(item, true);
 		}
 		y = y + row_heights[row];
+	}
+}
+
+void frame::translate_coordinate_colors_to_frame()
+{
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+		{
+			format_tools::coordinate_format color_region;
+			color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
+			color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
+			color_region.format = widgets[i].coordinate_colors[j].format;
+			color_regions.push_back(color_region);
+		}
 	}
 }
 
@@ -1611,7 +1772,7 @@ bool frame::only_widget_in_row(widget_info item)
 	return false;
 }
 
-std::vector<dec_region> frame::dec_format(const std::string& format_content)
+std::vector<format_tools::index_format> frame::dec_format(std::string& format_content)
 {
 	return dec.format(format_content);
 }

@@ -233,6 +233,32 @@ void ascii_io::move_curser_to_position(unsigned int x, unsigned int y)
 #endif
 }
 
+void ascii_io::set_color(int foreground, int background, bool bold)
+{
+#ifdef _WIN32
+	if (bold)
+	{
+		print("\x1b[1m");
+	}
+	else
+	{
+		print("\x1b[22m");
+	}
+	print("\x1b[" + std::to_string(foreground) + "m");
+	print("\x1b[" + std::to_string(background + 10) + "m");
+#elif __linux__
+	if (bold)
+	{
+		attron(A_BOLD);
+	}
+	else
+	{
+		attroff(A_BOLD);
+	}
+	attron(COLOR_PAIR(get_color_id(foreground, background)));
+#endif
+}
+
 #ifdef _WIN32
 void ascii_io::enable_dec()
 {
@@ -252,10 +278,34 @@ void ascii_io::ncurses_init()
    raw();
    noecho();
    cbreak();
+   initialize_colors();
 }
 
 void ascii_io::ncurses_end()
 {
    endwin();
+}
+
+int ascii_io::get_color_id(int foreground, int background)
+{
+	int most_significant_bit = 1 << 7;
+	int background_bits = (7 & background) << 4;
+	int foreground_bits = 7 & foreground;
+
+	return (most_significant_bit | background_bits | foreground_bits);
+}
+
+void ascii_io::initialize_colors(void)
+{
+	int color_id = 0;
+
+	for (unsigned int background = 0; background < colors.size(); background++) 
+	{
+		for (unsigned int foreground = 0; foreground < colors.size(); foreground++) 
+		{
+			color_id = get_color_id((int)colors[foreground], (int)colors[background]);
+			init_pair(color_id, (int)colors[foreground], (int)colors[background]);
+		}
+	}
 }
 #endif

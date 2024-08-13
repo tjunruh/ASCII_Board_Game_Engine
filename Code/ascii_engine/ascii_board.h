@@ -10,6 +10,7 @@ struct tile_configuration
 	int column = -2;
 	std::string value = "";
 	char ignore_character = '\0';
+	std::vector<format_tools::index_format> colors;
 };
 
 struct board_configuration
@@ -25,21 +26,27 @@ public:
 	void clear_tile(int row, int column);
 	void clear_tiles();
 	void set_tile(int row, int column, std::string value, char ignore_character);
+	void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	void set_row(int row, std::string value, char ignore_character);
+	void set_row(int row, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	void set_column(int column, std::string value, char ignore_character);
+	void set_column(int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	void set_all(std::string value, char ignore_character);
+	void set_all(std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	void set_tile_character(int row, int column, char character, unsigned int character_index);
 	std::string get_tile(int row, int column);
 	char get_tile_character(int row, int column, unsigned int character_index);
 	std::string get_board();
 	void add_configuration(board_configuration configuration);
 	void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
+	void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	void activate_configuration(int row, int column, std::string name_id);
 	void activate_configuration(std::string name_id);
 	void deactivate_configuration(int row, int column, std::string name_id);
 	void deactivate_configuration(std::string name_id);
 	std::string load_configuration(std::string path);
 	void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
+	void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	int get_number_of_columns();
 	int get_number_of_rows();
 	void display();
@@ -49,6 +56,7 @@ public:
 
 private:
 	std::string board = "";
+	std::vector<format_tools::index_format> board_colors;
 
 	struct action_tile
 	{
@@ -60,6 +68,7 @@ private:
 		int board_stop_column = -1;
 		std::string default_value = "";
 		std::string value = "";
+		std::vector<format_tools::index_format> colors;
 	};
 	int max_rows = 0;
 	int max_columns = 0;

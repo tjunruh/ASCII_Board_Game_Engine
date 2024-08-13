@@ -3,6 +3,7 @@
 #include <vector>
 #include "frame.h"
 #include "logger.h"
+#include "format_tools.h"
 
 class widget
 {
@@ -33,7 +34,13 @@ protected:
 	bool frame_stale();
 	void frame_display();
 	bool dec_enabled();
-	std::vector<dec_region> dec_format(const std::string& format_content);
+	bool color_enabled();
+	void set_index_colors(const std::vector<format_tools::index_format>& index_colors);
+	std::vector<format_tools::index_format> get_index_colors();
+	std::vector<format_tools::index_format> dec_format(std::string& format_content);
+	int get_default_foreground_color();
+	int get_default_background_color();
+
 #ifdef __linux__
 	void dec_print(const std::string& input);
 #endif

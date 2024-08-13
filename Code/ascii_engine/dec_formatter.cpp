@@ -13,23 +13,36 @@ void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, c
 	_endpoint_char = endpoint_char;
 }
 
-std::vector<dec_region> dec_formatter::format(const std::string& format_content)
+std::vector<format_tools::index_format> dec_formatter::format(std::string& format_content)
 {
 	std::vector<std::string> format_lines = format_tools::get_lines(format_content);
-	dec_region dec_or_ascii_region;
-	std::vector<dec_region> regions;
+	format_tools::index_format dec_or_ascii_region;
+	if (format_content.length() > 0)
+	{
+		if (std::count(dec_trigger_characters.begin(), dec_trigger_characters.end(), format_content[0]) != 0)
+		{
+			dec_or_ascii_region.format.dec = true;
+		}
+		else
+		{
+			dec_or_ascii_region.format.dec = false;
+		}
+	}
+	dec_or_ascii_region.index = 0;
+	std::vector<format_tools::index_format> regions;
+	int index = 0;
 	for (unsigned int i = 0; i < format_lines.size(); i++)
 	{
 		for (unsigned int j = 0; j < format_lines[i].length(); j++)
 		{
 			if (std::count(dec_trigger_characters.begin(), dec_trigger_characters.end(), (format_lines[i])[j]) != 0)
 			{
-				if ((dec_or_ascii_region.content != "") && (dec_or_ascii_region.dec == false))
+				if (!dec_or_ascii_region.format.dec)
 				{
 					regions.push_back(dec_or_ascii_region);
-					dec_or_ascii_region.content = "";
+					dec_or_ascii_region.format.dec = true;
+					dec_or_ascii_region.index = index;
 				}
-				dec_or_ascii_region.dec = true;
 				char top = '\0';
 				char bottom = '\0';
 				char right = '\0';
@@ -63,27 +76,23 @@ std::vector<dec_region> dec_formatter::format(const std::string& format_content)
 				char character = determine_dec_character(top, bottom, left, right, (format_lines[i])[j]);
 				if (std::count(dec_characters.begin(), dec_characters.end(), character) != 0)
 				{
-					dec_or_ascii_region.content = dec_or_ascii_region.content + character;
-				}
-				else
-				{
-					dec_or_ascii_region.content = dec_or_ascii_region.content + (format_lines[i])[j];
+					format_content[index] = character;
 				}
 			}
 			else
 			{
-				if ((dec_or_ascii_region.content != "") && (dec_or_ascii_region.dec == true))
+				if (dec_or_ascii_region.format.dec)
 				{
 					regions.push_back(dec_or_ascii_region);
-					dec_or_ascii_region.content = "";
+					dec_or_ascii_region.index = index;
+					dec_or_ascii_region.format.dec = false;
 				}
-				dec_or_ascii_region.dec = false;
-				dec_or_ascii_region.content = dec_or_ascii_region.content + (format_lines[i])[j];
 			}
+			index++;
 		}
 	}
 
-	if (dec_or_ascii_region.content != "")
+	if (dec_or_ascii_region.index != -1)
 	{
 		regions.push_back(dec_or_ascii_region);
 	}

@@ -18,6 +18,8 @@ namespace ascii_io
 	void move_curser_right(unsigned int amount=1);
 	void move_curser_left(unsigned int amount=1);
 	void move_curser_to_position(unsigned int x, unsigned int y);
+	void set_color(int foreground, int background, bool bold = false);
+	
 #ifdef _WIN32
 	void enable_dec();
 	void disable_dec();
@@ -26,6 +28,8 @@ namespace ascii_io
 #ifdef __linux__
    void ncurses_init();
    void ncurses_end();
+   void initialize_colors();
+   int get_color_id(int foreground, int background);
 #endif
 
 	const int undefined = -1;
@@ -140,6 +144,7 @@ namespace ascii_io
 	const int home = 295;
 	const int page_down = 305;
 	const int page_up = 297;
+
 #elif __linux__
 	const int backspace = 127;
 	const int enter = 10;

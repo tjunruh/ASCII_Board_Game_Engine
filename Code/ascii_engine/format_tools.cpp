@@ -105,7 +105,7 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 
 	if (new_line_character_detected)
 	{
-		input = input + '\n';
+		input[input.length() - 1] = '\n';
 	}
 	return input;
 }
@@ -278,6 +278,259 @@ void format_tools::remove_newline_characters(std::string& text)
 		if (text[i] == '\n')
 		{
 			text.erase(i, 1);
+		}
+	}
+}
+
+std::vector<format_tools::index_format> format_tools::sort(std::vector<index_format>& index_colors)
+{
+	std::vector<index_format> sorted_format;
+	unsigned int combined_format_length = index_colors.size();
+	for (unsigned int i = 0; i < combined_format_length; i++)
+	{
+		int index = get_min_format_index(index_colors);
+		sorted_format.push_back(index_colors[index]);
+		index_colors.erase(index_colors.begin() + index);
+	}
+	return sorted_format;
+}
+
+int format_tools::calculate_flag_number(const std::vector<index_format>& index_colors, int index)
+{
+	int number = 0;
+	for (unsigned int i = 0; i < index_colors.size(); i++)
+	{
+		if (index_colors[i].index < index)
+		{
+			number++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return number;
+}
+
+bool format_tools::index_found(const std::vector<index_format>& index_colors, int index)
+{
+	bool found = false;
+	for (unsigned int i = 0; i < index_colors.size(); i++)
+	{
+		if (index_colors[i].index == index)
+		{
+			found = true;
+			break;
+		}
+	}
+	return found;
+}
+
+std::vector<format_tools::index_format> format_tools::combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2)
+{
+	std::vector<index_format> combined_format;
+	std::vector<index_format> sorted_format;
+
+	for (unsigned int i = 0; i < format_1.size(); i++)
+	{
+		combined_format.push_back(format_1[i]);
+	}
+
+	for (unsigned int i = 0; i < format_2.size(); i++)
+	{
+		combined_format.push_back(format_2[i]);
+	}
+
+	for (unsigned int i = 0; i < combined_format.size(); i++)
+	{
+		for (unsigned int j = (i + 1); j < combined_format.size(); j++)
+		{
+			if (combined_format[i].index == combined_format[j].index)
+			{
+				if (combined_format[j].format.dec)
+				{
+					combined_format[i].format.dec = true;
+				}
+
+				if (combined_format[i].format.foreground_format == format_tools::none)
+				{
+					combined_format[i].format.foreground_format = combined_format[j].format.foreground_format;
+				}
+
+				if (combined_format[i].format.background_format == format_tools::none)
+				{
+					combined_format[i].format.background_format = combined_format[j].format.background_format;
+				}
+
+				combined_format.erase(combined_format.begin() + j);
+			}
+		}
+	}
+
+	sorted_format = sort(combined_format);
+	return sorted_format;
+}
+
+int format_tools::get_min_format_index(const std::vector<index_format>& format_vec)
+{
+	int min_vec_index = 0;
+	int min_index = 0;
+	if (format_vec.size() > 0)
+	{
+		min_vec_index = 0;
+		min_index = format_vec[min_vec_index].index;
+		for (unsigned int i = 1; i < format_vec.size(); i++)
+		{
+			if (format_vec[i].index < min_index)
+			{
+				min_vec_index = i;
+				min_index = format_vec[min_vec_index].index;
+			}
+		}
+	}
+	return min_vec_index;
+}
+
+std::vector<format_tools::content_format> format_tools::convert(const std::vector<index_format>& index_vec, const std::string& content)
+{
+	unsigned int index_vec_position = 0;
+	unsigned int content_position = 0;
+	content_format converted_format;
+	std::vector<content_format> content_vec;
+	if ((index_vec.size() > 0) && (index_vec[0].index > 0))
+	{
+		converted_format.format.foreground_format = none;
+		converted_format.format.background_format = none;
+		converted_format.format.dec = false;
+		for (int i = 0; i < index_vec[0].index; i++)
+		{
+			converted_format.content = converted_format.content + content[content_position];
+			content_position++;
+			if (content_position > content.length())
+			{
+				break;
+			}
+		}
+		content_vec.push_back(converted_format);
+		converted_format.format = index_vec[index_vec_position].format;
+		converted_format.content = "";
+	}
+
+	while (content_position < content.length())
+	{
+		if (((index_vec_position + 1) < index_vec.size()) && (content_position == index_vec[index_vec_position + 1].index))
+		{
+			index_vec_position++;
+			content_vec.push_back(converted_format);
+			converted_format.format = index_vec[index_vec_position].format;
+			converted_format.content = content[content_position];
+		}
+		else
+		{
+			converted_format.content = converted_format.content + content[content_position];
+		}
+		content_position++;
+	}
+
+	if (converted_format.content != "")
+	{
+		content_vec.push_back(converted_format);
+	}
+	return content_vec;
+}
+
+std::vector<format_tools::index_format> format_tools::convert(const std::vector<coordinate_format>& coordinate_vec, int width)
+{
+	index_format converted_format;
+	std::vector<index_format> index_vec;
+	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
+	{
+		converted_format.format = coordinate_vec[i].format;
+		converted_format.index = (coordinate_vec[i].y_position * width) + coordinate_vec[i].x_position;
+		index_vec.push_back(converted_format);
+	}
+	return index_vec;
+}
+
+std::vector<format_tools::coordinate_format> format_tools::convert(const std::vector<index_format>& index_vec, const std::vector<std::string>& lines)
+{
+	coordinate_format converted_format;
+	std::vector<coordinate_format> coordinate_vec;
+	int index = 0;
+	for (unsigned int i = 0; i < index_vec.size(); i++)
+	{
+		for (unsigned int j = 0; j < lines.size(); j++)
+		{
+			if ((int)(index + lines[j].length()) < index_vec[i].index)
+			{
+				index = index + lines[j].length();
+				converted_format.y_position++;
+			}
+			else
+			{
+				converted_format.x_position = index_vec[i].index - index;
+				converted_format.format = index_vec[i].format;
+				coordinate_vec.push_back(converted_format);
+				converted_format.x_position = 0;
+				converted_format.y_position = 0;
+			}
+		}
+	}
+	return coordinate_vec;
+}
+
+std::vector<int> format_tools::set_flags(std::vector<index_format>& index_colors, std::string& content, char flag)
+{
+	index_colors = sort(index_colors);
+	std::vector<int> ignore_flags;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		if ((content[i] == flag) && !index_found(index_colors, i))
+		{
+			ignore_flags.push_back(calculate_flag_number(index_colors, i));
+		}
+	}
+
+	for (unsigned int i = 0; i < index_colors.size(); i++)
+	{
+		if ((index_colors[i].index > 0) && (index_colors[i].index < (int)content.length()))
+		{
+			index_colors[i].flag_replacement = content[index_colors[i].index];
+			content[index_colors[i].index] = flag;
+		}
+	}
+	return ignore_flags;
+}
+
+void format_tools::convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag)
+{
+	coordinate_colors.clear();
+	coordinate_format converted_format;
+	for (unsigned int i = 0; i < index_colors.size(); i++)
+	{
+		converted_format.format = index_colors[i].format;
+		coordinate_colors.push_back(converted_format);
+	}
+
+	unsigned int color_index = 0;
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		for (unsigned int j = 0; j < lines[i].length(); j++)
+		{
+			if (((lines[i])[j] == flag) && (std::count(ignore_flags.begin(), ignore_flags.end(), j) == 0))
+			{
+				if (color_index < coordinate_colors.size())
+				{
+					coordinate_colors[color_index].y_position = i;
+					coordinate_colors[color_index].x_position = j;
+					(lines[i])[j] = index_colors[color_index].flag_replacement;
+					color_index++;
+				}
+				else
+				{
+					return;
+				}
+			}
 		}
 	}
 }

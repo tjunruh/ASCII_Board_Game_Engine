@@ -154,9 +154,38 @@ bool widget::dec_enabled()
 	return parent_frame->dec_enabled();
 }
 
-std::vector<dec_region> widget::dec_format(const std::string& format_content)
+bool widget::color_enabled()
+{
+	return parent_frame->color_enabled();
+}
+
+void widget::set_index_colors(const std::vector<format_tools::index_format>& index_colors)
+{
+	int status = parent_frame->set_index_colors(widget_id, index_colors);
+	log.log_status(status, "widget::set_index_colors");
+}
+
+std::vector<format_tools::index_format> widget::get_index_colors()
+{
+	std::vector<format_tools::index_format> index_colors;
+	int status = parent_frame->get_index_colors(widget_id, index_colors);
+	log.log_status(status, "widget::get_index_colors");
+	return index_colors;
+}
+
+std::vector<format_tools::index_format> widget::dec_format(std::string& format_content)
 {
 	return parent_frame->dec_format(format_content);
+}
+
+int widget::get_default_foreground_color()
+{
+	return parent_frame->get_default_foreground_color();
+}
+
+int widget::get_default_background_color()
+{
+	return parent_frame->get_default_background_color();
 }
 
 #ifdef __linux__

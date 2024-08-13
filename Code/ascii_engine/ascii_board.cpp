@@ -2,7 +2,6 @@
 #include "../file_manager/file_manager.h"
 #include "../validate_board_config/validate_board_config.h"
 #include "../board_config_field_parser/board_config_field_parser.h"
-#include <iostream>
 #include "error_codes.h"
 #include "format_tools.h"
 
@@ -114,6 +113,37 @@ void ascii_board::set_tile(int row, int column, std::string value, char ignore_c
 	log.log_status(status, "ascii_board::set_tile");
 }
 
+void ascii_board::set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	int status = UNDEFINED;
+	int action_tile_index = get_action_tile_index(row, column);
+	if (action_tile_index != -1)
+	{
+		if (value.length() == get_value_length(action_tiles[action_tile_index]))
+		{
+			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
+			{
+				if (((value[i] != ignore_character) || (ignore_character == '\0')))
+				{
+					(action_tiles[action_tile_index].value)[i] = value[i];
+				}
+			}
+			action_tiles[action_tile_index].colors = colors;
+			status = SUCCESS;
+		}
+		else
+		{
+			status = INVALID_INDEX;
+		}
+	}
+	else
+	{
+		status = ELEMENT_NOT_FOUND;
+	}
+
+	log.log_status(status, "ascii_board::set_tile");
+}
+
 void ascii_board::set_tile(tile_configuration configuration, bool activate)
 {
 	int status = UNDEFINED;
@@ -136,6 +166,15 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate)
 						(action_tiles[action_tile_index].value)[i] = (action_tiles[action_tile_index].default_value)[i];
 					}
 				}
+			}
+
+			if (activate)
+			{
+				action_tiles[action_tile_index].colors = configuration.colors;
+			}
+			else
+			{
+				action_tiles[action_tile_index].colors.clear();
 			}
 		}
 		else
@@ -179,6 +218,35 @@ void ascii_board::set_row(int row, std::string value, char ignore_character)
 	log.log_status(status, "ascii_board::set_row");
 }
 
+void ascii_board::set_row(int row, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	int status = SUCCESS;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (action_tiles[i].array_row == row)
+		{
+			if (get_value_length(action_tiles[i]) == value.length())
+			{
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
+				{
+					if (((value[j] != ignore_character) || (ignore_character == '\0')))
+					{
+						(action_tiles[i].value)[j] = value[j];
+					}
+				}
+				action_tiles[i].colors = colors;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+				break;
+			}
+		}
+	}
+
+	log.log_status(status, "ascii_board::set_row");
+}
+
 void ascii_board::set_row(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
@@ -201,6 +269,15 @@ void ascii_board::set_row(tile_configuration configuration, bool activate)
 							(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
 						}
 					}
+				}
+
+				if (activate)
+				{
+					action_tiles[i].colors = configuration.colors;
+				}
+				else
+				{
+					action_tiles[i].colors.clear();
 				}
 			}
 			else
@@ -242,6 +319,35 @@ void ascii_board::set_column(int column, std::string value, char ignore_characte
 	log.log_status(status, "ascii_board::set_column");
 }
 
+void ascii_board::set_column(int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	int status = SUCCESS;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (action_tiles[i].array_column == column)
+		{
+			if (get_value_length(action_tiles[i]) == value.length())
+			{
+				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
+				{
+					if (((value[j] != ignore_character) || (ignore_character == '\0')))
+					{
+						(action_tiles[i].value)[j] = value[j];
+					}
+				}
+				action_tiles[i].colors = colors;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+				break;
+			}
+		}
+	}
+
+	log.log_status(status, "ascii_board::set_column");
+}
+
 void ascii_board::set_column(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
@@ -264,6 +370,15 @@ void ascii_board::set_column(tile_configuration configuration, bool activate)
 							(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
 						}
 					}
+				}
+
+				if (activate)
+				{
+					action_tiles[i].colors = configuration.colors;
+				}
+				else
+				{
+					action_tiles[i].colors.clear();
 				}
 			}
 			else
@@ -302,6 +417,32 @@ void ascii_board::set_all(std::string value, char ignore_character)
 	log.log_status(status, "ascii_board::set_all");
 }
 
+void ascii_board::set_all(std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	int status = SUCCESS;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (get_value_length(action_tiles[i]) == value.length())
+		{
+			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
+			{
+				if ((value[j] != ignore_character) || (ignore_character == '\0'))
+				{
+					(action_tiles[i].value)[j] = value[j];
+				}
+				action_tiles[i].colors = colors;
+			}
+		}
+		else
+		{
+			status = INVALID_INDEX;
+			break;
+		}
+	}
+
+	log.log_status(status, "ascii_board::set_all");
+}
+
 void ascii_board::set_all(tile_configuration configuration, bool activate)
 {
 	int status = SUCCESS;
@@ -322,6 +463,15 @@ void ascii_board::set_all(tile_configuration configuration, bool activate)
 						(action_tiles[i].value)[j] = (action_tiles[i].default_value)[j];
 					}
 				}
+			}
+
+			if (activate)
+			{
+				action_tiles[i].colors = configuration.colors;
+			}
+			else
+			{
+				action_tiles[i].colors.clear();
 			}
 		}
 		else
@@ -424,6 +574,20 @@ void ascii_board::add_configuration(std::string name_id, int row, int column, st
 	add_configuration(board_config);
 }
 
+void ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	board_configuration board_config;
+	tile_configuration tile_config;
+	board_config.name_id = name_id;
+	tile_config.row = row;
+	tile_config.column = column;
+	tile_config.value = value;
+	tile_config.ignore_character = ignore_character;
+	tile_config.colors = colors;
+	board_config.tile_configurations.push_back(tile_config);
+	add_configuration(board_config);
+}
+
 void ascii_board::activate_configuration(int row, int column, std::string name_id)
 {
 	int config_index = get_board_config_index(name_id);
@@ -431,7 +595,7 @@ void ascii_board::activate_configuration(int row, int column, std::string name_i
 	log.log_begin("ascii_board::activate_configuration");
 	if ((config_index != -1) && (config_tile_index != -1))
 	{
-		set_tile(row, column, board_configurations[config_index].tile_configurations[config_tile_index].value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
+		set_tile(row, column, board_configurations[config_index].tile_configurations[config_tile_index].value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character, board_configurations[config_tile_index].tile_configurations[config_tile_index].colors);
 	}
 	else
 	{
@@ -481,10 +645,11 @@ void ascii_board::deactivate_configuration(int row, int column, std::string name
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
 	int action_tile_index = get_action_tile_index(row, column);
+	std::vector<format_tools::index_format> colors;
 	log.log_begin("ascii_board::deactivate_configuration");
 	if ((config_index != -1) && (config_tile_index != -1) && (action_tile_index != -1))
 	{
-		set_tile(row, column, action_tiles[action_tile_index].default_value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character);
+		set_tile(row, column, action_tiles[action_tile_index].default_value, board_configurations[config_index].tile_configurations[config_tile_index].ignore_character, colors);
 	}
 	else
 	{
@@ -555,6 +720,19 @@ void ascii_board::load_configuration(std::string path, std::string name_id, int 
 	log.log_end("ascii_board::load_configuration");
 }
 
+void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)
+{
+	int status = UNDEFINED;
+	log.log_begin("ascii_board::load_configuration");
+	std::string value = load_configuration(path);
+	if (value == "")
+	{
+		return;
+	}
+	add_configuration(name_id, row, column, value, ignore_character, colors);
+	log.log_end("ascii_board::load_configuration");
+}
+
 int ascii_board::get_number_of_columns()
 {
 	return max_columns;
@@ -571,7 +749,7 @@ void ascii_board::display()
 	{
 		frame_display();
 	}
-	else if (dec_enabled())
+	else if (dec_enabled() || color_enabled())
 	{
 		int x_origin = get_x_origin();
 		int y_origin = get_y_origin();
@@ -579,18 +757,63 @@ void ascii_board::display()
 		int curser_y = 0;
 		ascii_io::get_curser_position(curser_x, curser_y);
 		update_board();
-		std::vector<std::string> lines = format_tools::get_lines(board);
-		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
+		std::vector<format_tools::index_format> index_regions;
+		std::vector<std::string> lines;
+		if (color_enabled())
+		{
+			index_regions = board_colors;
+			std::string board_copy = board;
+			std::vector<int> ignore_flags = format_tools::set_flags(index_regions, board_copy, '*');
+			lines = format_tools::get_lines(board_copy);
+			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
+			std::vector<format_tools::coordinate_format> coordinate_colors;
+			format_tools::convert_flags(coordinate_colors, index_regions, ignore_flags, lines, '*');
+			index_regions = format_tools::convert(coordinate_colors, get_width());
+		}
+		else
+		{
+			lines = format_tools::get_lines(board);
+			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
+		}
+
 		std::string adjusted_board = format_tools::get_string(lines);
-		std::vector<dec_region> regions = dec_format(adjusted_board);
+		
+		if (dec_enabled())
+		{
+			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_board);
+			if (index_regions.size() > 0)
+			{
+				index_regions = format_tools::combine(index_regions, dec_regions);
+			}
+			else
+			{
+				index_regions = dec_regions;
+			}
+		}
+		
 		int line = 0;
 		ascii_io::move_curser_to_position(x_origin, y_origin);
+		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
 			std::vector<std::string> sub_lines = format_tools::get_lines(regions[i].content);
 			for (unsigned int j = 0; j < sub_lines.size(); j++)
 			{
-				if (regions[i].dec)
+				int foreground_color = get_default_foreground_color();
+				int background_color = get_default_background_color();
+				if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
+				{
+					foreground_color = regions[i].format.foreground_format;
+				}
+
+				if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
+				{
+					background_color = regions[i].format.background_format;
+				}
+
+				ascii_io::set_color(foreground_color, background_color);
+
+				if (regions[i].format.dec)
 				{
 #ifdef _WIN32
 					ascii_io::enable_dec();
@@ -606,6 +829,7 @@ void ascii_board::display()
 #endif
 					ascii_io::print(sub_lines[j]);
 				}
+
 				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
 				{
 					line++;
@@ -641,6 +865,7 @@ void ascii_board::sync()
 {
 	update_board();
 	set_output_to_frame(board);
+	set_index_colors(board_colors);
 }
 
 int ascii_board::start_logging(const std::string& file_path)
@@ -819,11 +1044,13 @@ std::string ascii_board::get_board_section(int start_row, int stop_row, int star
 
 void ascii_board::update_board()
 {
+	board_colors.clear();
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		int row = 0;
 		int column = 0;
 		unsigned int value_position = 0;
+		bool color_active = false;
 		for (unsigned int j = 0; j < board.length(); j++)
 		{
 			if ((row >= action_tiles[i].board_start_row) && (row <= action_tiles[i].board_stop_row) && (column >= action_tiles[i].board_start_column) && (column <= action_tiles[i].board_stop_column))
@@ -831,8 +1058,27 @@ void ascii_board::update_board()
 				if (value_position < get_value_length(action_tiles[i]))
 				{
 					board[j] = (action_tiles[i].value)[value_position];
+					for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
+					{
+						if (action_tiles[i].colors[k].index == value_position)
+						{
+							color_active = true;
+							format_tools::index_format color = action_tiles[i].colors[k];
+							color.index = j;
+							board_colors.push_back(color);
+						}
+					}
 					value_position++;
 				}
+			}
+			else if (color_active)
+			{
+				format_tools::index_format color;
+				color.index = j;
+				color.format.foreground_format = format_tools::none;
+				color.format.background_format = format_tools::none;
+				board_colors.push_back(color);
+				color_active = false;
 			}
 
 			if (board[j] == '\n')
@@ -924,6 +1170,15 @@ bool ascii_board::configuration_indexing_acceptable(board_configuration configur
 				{
 					acceptability = false;
 					break;
+				}
+
+				for (unsigned int k = 0; k < configuration.tile_configurations[i].colors.size(); k++)
+				{
+					if ((configuration.tile_configurations[i].colors[k].index < 0) || configuration.tile_configurations[i].colors[k].index >= (int)get_value_length(action_tiles[j]))
+					{
+						acceptability = false;
+						return acceptability;
+					}
 				}
 			}
 		}

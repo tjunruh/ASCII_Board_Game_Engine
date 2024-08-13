@@ -23,7 +23,15 @@ public:
 	void enable_dec();
 	void disable_dec();
 	bool dec_enabled();
+	void enable_color();
+	void disable_color();
+	bool color_enabled();
 	void set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
+	void set_default_background_color(int color);
+	void set_default_foreground_color(int color);
+	int get_default_background_color();
+	int get_default_foreground_color();
+
 private:
 	dec_formatter dec;
 	struct widget_info
@@ -53,6 +61,8 @@ private:
 		int level = 0;
 		float width_multiplier = 1.0;
 		bool selectable = false;
+		std::vector<format_tools::coordinate_format> coordinate_colors;
+		std::vector<format_tools::index_format> index_colors;
 	};
 
 	const std::string special_operation_new_line = "new line";
@@ -75,6 +85,8 @@ private:
 	int set_lines_count(int id, int lines_count);
 	int set_width_multiplier(int id, float multiplier);
 	int set_selectable(int id, bool selectable);
+	int set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors);
+	int set_index_colors(int id, std::vector<format_tools::index_format> index_colors);
 	int add_border(int id);
 	void highlight(int row, int column, int level);
 	void unhighlight(int row, int column, int level);
@@ -87,6 +99,7 @@ private:
 	int get_y_origin(int id, int& y_origin);
 	int get_alignment(int id, std::string& allignment);
 	float get_width_weight(widget_info item);
+	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
@@ -106,6 +119,7 @@ private:
 	unsigned int get_columns_in_row(int row);
 	std::string generate_frame_output();
 	void set_widget_origins();
+	void translate_coordinate_colors_to_frame();
 	bool is_selectable(int row, int column, int level);
 	bool is_selectable(int id);
 	bool initialize_selection(int& row, int& column, int& level);
@@ -116,7 +130,7 @@ private:
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(widget_info item, std::vector<std::string>& lines);
 	bool only_widget_in_row(widget_info item);
-	std::vector<dec_region> dec_format(const std::string& format_content);
+	std::vector<format_tools::index_format> dec_format(std::string& format_content);
 #ifdef __linux__
 	void dec_print(const std::string& input);
 #endif
@@ -140,6 +154,10 @@ private:
 	char spacer_character = '-';
 	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
 	bool _dec_enabled = false;
+	bool _color_enabled = false;
+	int default_foreground_color = format_tools::white;
+	int default_background_color = format_tools::black;
+	std::vector<format_tools::coordinate_format> color_regions;
 #ifdef WIN32
 	std::string previous_output = "";
 	int previous_x = 0;
