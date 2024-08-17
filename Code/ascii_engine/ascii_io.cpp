@@ -6,6 +6,7 @@
 #include <windows.h>
 #elif __linux__
 #include <ncurses.h>
+#include "format_tools.h"
 #endif
 
 void ascii_io::print(const std::string& output) {
@@ -13,6 +14,7 @@ void ascii_io::print(const std::string& output) {
 	std::cout << output;
 #elif __linux__
 	printw(output.c_str());
+	refresh();
 #endif
 }
 
@@ -278,7 +280,12 @@ void ascii_io::ncurses_init()
    raw();
    noecho();
    cbreak();
-   initialize_colors();
+}
+
+void ascii_io::colors_init()
+{
+	start_color();
+	initialize_colors();
 }
 
 void ascii_io::ncurses_end()
@@ -295,16 +302,16 @@ int ascii_io::get_color_id(int foreground, int background)
 	return (most_significant_bit | background_bits | foreground_bits);
 }
 
-void ascii_io::initialize_colors(void)
+void ascii_io::initialize_colors()
 {
 	int color_id = 0;
 
-	for (unsigned int background = 0; background < colors.size(); background++) 
+	for (unsigned int background = 0; background < format_tools::colors.size(); background++) 
 	{
-		for (unsigned int foreground = 0; foreground < colors.size(); foreground++) 
+		for (unsigned int foreground = 0; foreground < format_tools::colors.size(); foreground++) 
 		{
-			color_id = get_color_id((int)colors[foreground], (int)colors[background]);
-			init_pair(color_id, (int)colors[foreground], (int)colors[background]);
+			color_id = get_color_id((int)format_tools::colors[foreground], (int)format_tools::colors[background]);
+			init_pair(color_id, (int)format_tools::colors[foreground], (int)format_tools::colors[background]);
 		}
 	}
 }

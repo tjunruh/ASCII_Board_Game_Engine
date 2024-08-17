@@ -27,6 +27,7 @@ namespace ascii_io
 
 #ifdef __linux__
    void ncurses_init();
+   void colors_init();
    void ncurses_end();
    void initialize_colors();
    int get_color_id(int foreground, int background);

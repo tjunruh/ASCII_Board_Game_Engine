@@ -5,6 +5,10 @@
 #include "error_codes.h"
 #include "format_tools.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 ascii_board::ascii_board(frame* parent, std::string path, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
@@ -709,7 +713,6 @@ std::string ascii_board::load_configuration(std::string path)
 
 void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character)
 {
-	int status = UNDEFINED;
 	log.log_begin("ascii_board::load_configuration");
 	std::string value = load_configuration(path);
 	if (value == "")
@@ -722,7 +725,6 @@ void ascii_board::load_configuration(std::string path, std::string name_id, int 
 
 void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)
 {
-	int status = UNDEFINED;
 	log.log_begin("ascii_board::load_configuration");
 	std::string value = load_configuration(path);
 	if (value == "")
@@ -792,6 +794,7 @@ void ascii_board::display()
 		}
 		
 		int line = 0;
+		bool newline = false;
 		ascii_io::move_curser_to_position(x_origin, y_origin);
 		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
 		for (unsigned int i = 0; i < regions.size(); i++)
@@ -799,6 +802,12 @@ void ascii_board::display()
 			std::vector<std::string> sub_lines = format_tools::get_lines(regions[i].content);
 			for (unsigned int j = 0; j < sub_lines.size(); j++)
 			{
+				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
+				{
+					newline = true;
+					sub_lines[j].erase(sub_lines[j].length() - 1, 1);
+				}
+
 				int foreground_color = get_default_foreground_color();
 				int background_color = get_default_background_color();
 				if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
@@ -830,10 +839,11 @@ void ascii_board::display()
 					ascii_io::print(sub_lines[j]);
 				}
 
-				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
+				if (newline)
 				{
 					line++;
 					ascii_io::move_curser_to_position(x_origin, y_origin + line);
+					newline = false;
 				}
 			}
 #ifdef _WIN32
@@ -854,6 +864,9 @@ void ascii_board::display()
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{
+#ifdef __linux__
+			(lines[i]).erase(lines[i].length() -1, 1);
+#endif
 			ascii_io::move_curser_to_position(x_origin, y_origin + i);
 			ascii_io::print(lines[i]);
 		}
@@ -896,7 +909,6 @@ void ascii_board::initialize_tiles(int rows, int columns)
 void ascii_board::set_tile_ranges(std::string content)
 {
 	int parameter = 0;
-	char parenthesis = ' ';
 	bool range_end = false;
 	std::string array_row = "";
 	std::string array_column = "";
@@ -906,11 +918,6 @@ void ascii_board::set_tile_ranges(std::string content)
 	std::string map_stop_column = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
-		if ((content[i] == '(') || (content[i] == ')'))
-		{
-			parenthesis = content[i];
-		}
-
 		if (content[i] == ',')
 		{
 			parameter++;
@@ -1060,7 +1067,7 @@ void ascii_board::update_board()
 					board[j] = (action_tiles[i].value)[value_position];
 					for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
 					{
-						if (action_tiles[i].colors[k].index == value_position)
+						if (action_tiles[i].colors[k].index == (int)value_position)
 						{
 							color_active = true;
 							format_tools::index_format color = action_tiles[i].colors[k];

@@ -260,6 +260,9 @@ bool frame::dec_enabled()
 void frame::enable_color()
 {
 	_color_enabled = true;
+#ifdef __linux__
+	ascii_io::colors_init();
+#endif
 }
 
 void frame::disable_color()

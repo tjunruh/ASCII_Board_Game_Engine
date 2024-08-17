@@ -1,5 +1,9 @@
 #include "format_tools.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 std::vector<std::string> format_tools::split_string(std::string str, char split_character)
 {
 	std::string section = "";
@@ -418,7 +422,7 @@ std::vector<format_tools::content_format> format_tools::convert(const std::vecto
 
 	while (content_position < content.length())
 	{
-		if (((index_vec_position + 1) < index_vec.size()) && (content_position == index_vec[index_vec_position + 1].index))
+		if (((index_vec_position + 1) < index_vec.size()) && ((int)content_position == index_vec[index_vec_position + 1].index))
 		{
 			index_vec_position++;
 			content_vec.push_back(converted_format);
