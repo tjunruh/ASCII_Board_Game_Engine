@@ -4,6 +4,7 @@ SRC_DIR := Code
 CXX := g++
 
 TREE_DIRS := \
+	$(BLD_DIR) \
 	build_board_config \
 	validate_board_config \
 	file_manager \
@@ -19,7 +20,7 @@ DEBUG := -g
 #DEBUG :=
 
 LIBS := -lncurses
-CXXFLAGS := -Wall -O2 $(DEBUG) -Iexternal_libraries
+CXXFLAGS := -Wall -O2 $(DEBUG) -Iexternal_libraries -MMD
 
 TEST_ASCII_ENGINE := test_ascii_engine.out
 
@@ -44,6 +45,11 @@ test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
 clean:
 	-rm -rf $(BLD_DIR)
 
+$(TREE_DIRS):
+	mkdir -p $@
+
+ALL_OBJS :=
+
 ### ASCII Engine
 ASCII_ENGINE_LIBRARY := libascii_engine.so
 ASCII_ENGINE_HEADERS_DIR := $(BLD_DIR)/headers/ascii_engine
@@ -64,12 +70,14 @@ ASCII_ENGINE_OBJS := \
 	text_box.o \
 	widget.o
 ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/ascii_engine/, $(ASCII_ENGINE_OBJS))
+ALL_OJBS += $(ASCII_ENGINE_OBJS)
 
 ASCII_ENGINE_OBJS_EXTERNAL := \
 	board_config_field_parser/board_config_field_parser.o \
 	validate_board_config/validate_board_config.o \
 	file_manager/file_manager.o
 ASCII_ENGINE_OBJS_EXTERNAL := $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_OBJS_EXTERNAL))
+ALL_OBJS += $(ASCII_ENGINE_OBJS_EXTERNAL)
 
 ASCII_ENGINE_HEADERS := \
 	ascii_board.h \
@@ -103,6 +111,7 @@ TEST_ASCII_ENGINE_OBJS := \
 	ascii_io.o \
 	controls.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
+ALL_OBJS += $(TEST_ASCII_ENGINE_OBJS)
 
 $(BLD_DIR)/test_ascii_engine/%.o: $(SRC_DIR)/test_ascii_engine/%.cpp $(ASCII_ENGINE_HEADERS) | $(BLD_DIR)/test_ascii_engine
 	$(CXX) $(CXXFLAGS) $(ASCII_INCLUDE) -c $< -o $@
@@ -117,6 +126,7 @@ $(BLD_DIR)/test_ascii_engine.out: $(TEST_ASCII_ENGINE_OBJS) $(BLD_DIR)/$(ASCII_E
 FILE_MANAGER_OBJS := \
 	file_manager.o
 FILE_MANAGER_OBJS := $(addprefix $(BLD_DIR)/file_manager/, $(FILE_MANAGER_OBJS))
+ALL_OBJS += $(FILE_MANAGER_OBJS)
 
 $(BLD_DIR)/file_manager/%.o: $(SRC_DIR)/file_manager/%.cpp | $(BLD_DIR)/file_manager
 	$(CXX) -c $< -o $@
@@ -127,6 +137,7 @@ $(BLD_DIR)/file_manager/%.o: $(SRC_DIR)/file_manager/%.cpp | $(BLD_DIR)/file_man
 BOARD_CONFIG_FIELD_PARSER_OBJS := \
 	board_config_field_parser.o
 BOARD_CONFIG_FIELD_PARSER_OBJS := $(addprefix $(BLD_DIR)/board_config_field_parser/, $(BOARD_CONFIG_FIELD_PARSER_OBJS))
+ALL_OBJS += $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 
 $(BLD_DIR)/board_config_field_parser/%.o: $(SRC_DIR)/board_config_field_parser/%.cpp | $(BLD_DIR)/board_config_field_parser
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -139,11 +150,12 @@ BUILD_BOARD_CONFIG_OBJS := \
 	build_board_config.o \
 	main.o
 BUILD_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/build_board_config/, $(BUILD_BOARD_CONFIG_OBJS))
+ALL_OBJS += $(BUILD_BOARD_CONFIG_OBJS)
 
 $(BLD_DIR)/build_board_config/%.o: $(SRC_DIR)/build_board_config/%.cpp | $(BLD_DIR)/build_board_config
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
-$(BLD_DIR)/build_board_config.out: $(BUILD_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) | $(BLD_DIR)
+$(BLD_DIR)/build_board_config.out: $(BUILD_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(BUILD_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS)
 ### End build board config 
 
@@ -153,13 +165,21 @@ VALIDATE_BOARD_CONFIG_OBJS := \
 	validate_board_config.o \
 	main.o
 VALIDATE_BOARD_CONFIG_OBJS := $(addprefix $(BLD_DIR)/validate_board_config/, $(VALIDATE_BOARD_CONFIG_OBJS))
+ALL_OBJS += $(VALIDATE_BOARD_CONFIG_OBJS)
 
 $(BLD_DIR)/validate_board_config/%.o: $(SRC_DIR)/validate_board_config/%.cpp | $(BLD_DIR)/validate_board_config
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
-$(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS) | $(BLD_DIR)
+$(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 ### End validate board config
 
-$(TREE_DIRS):
-	mkdir -p $@
+# gcc option -MMD makes it output additional files that end with .d (as opposed to .o)
+# which is a makefile with the user header files that it includes.
+# To get all these makefiles we change the .o to a .d;
+# that is why we add all objects to ALL_OBJS
+DEPS := $(ALL_OBJS:.o=.d)
+
+# Include dependencies but they might not be generated
+# so we include ignoring if they do not exist
+-include $(DEPS)
