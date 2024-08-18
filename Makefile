@@ -15,7 +15,7 @@ TREE_DIRS := \
 	board_config_field_titles
 TREE_DIRS := $(addprefix $(BLD_DIR)/, $(TREE_DIRS))
 
-# Seap the debug definitions for non-debug builds
+# Swap the debug definitions for non-debug builds
 DEBUG := -g
 #DEBUG :=
 
