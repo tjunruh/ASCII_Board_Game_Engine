@@ -501,11 +501,13 @@ std::vector<int> format_tools::set_flags(std::vector<index_format>& index_colors
 {
 	index_colors = sort(index_colors);
 	std::vector<int> ignore_flags;
+	int flags_found = 0;
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
 		if ((content[i] == flag) && !index_found(index_colors, i))
 		{
-			ignore_flags.push_back(calculate_flag_number(index_colors, i));
+			ignore_flags.push_back(flags_found + calculate_flag_number(index_colors, i));
+			flags_found++;
 		}
 	}
 
@@ -531,23 +533,28 @@ void format_tools::convert_flags(std::vector<coordinate_format>& coordinate_colo
 	}
 
 	unsigned int color_index = 0;
+	unsigned int flag_characters_found = 0;
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{
 		for (unsigned int j = 0; j < lines[i].length(); j++)
 		{
-			if (((lines[i])[j] == flag) && (std::count(ignore_flags.begin(), ignore_flags.end(), j) == 0))
+			if ((lines[i])[j] == flag)
 			{
-				if (color_index < coordinate_colors.size())
+				if (std::count(ignore_flags.begin(), ignore_flags.end(), flag_characters_found) == 0)
 				{
-					coordinate_colors[color_index].y_position = i;
-					coordinate_colors[color_index].x_position = j;
-					(lines[i])[j] = index_colors[color_index].flag_replacement;
-					color_index++;
+					if (color_index < coordinate_colors.size())
+					{
+						coordinate_colors[color_index].y_position = i;
+						coordinate_colors[color_index].x_position = j;
+						(lines[i])[j] = index_colors[color_index].flag_replacement;
+						color_index++;
+					}
+					else
+					{
+						return;
+					}
 				}
-				else
-				{
-					return;
-				}
+				flag_characters_found++;
 			}
 		}
 	}
