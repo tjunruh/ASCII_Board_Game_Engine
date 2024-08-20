@@ -749,6 +749,7 @@ void ascii_board::display()
 {
 	if (frame_stale())
 	{
+		sync();
 		frame_display();
 	}
 	else if (dec_enabled() || color_enabled())
@@ -761,12 +762,13 @@ void ascii_board::display()
 		update_board();
 		std::vector<format_tools::index_format> index_regions;
 		std::vector<std::string> lines;
+		std::string board_copy = board;
 		if (color_enabled())
 		{
 			index_regions = board_colors;
-			std::string board_copy = board;
 			std::vector<int> ignore_flags = format_tools::set_flags(index_regions, board_copy, '*');
 			lines = format_tools::get_lines(board_copy);
+			lines = format_tools::remove_newline_character(lines);
 			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 			std::vector<format_tools::coordinate_format> coordinate_colors;
 			format_tools::convert_flags(coordinate_colors, index_regions, ignore_flags, lines, '*');
@@ -774,7 +776,8 @@ void ascii_board::display()
 		}
 		else
 		{
-			lines = format_tools::get_lines(board);
+			lines = format_tools::get_lines(board_copy);
+			lines = format_tools::remove_newline_character(lines);
 			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		}
 
@@ -782,7 +785,7 @@ void ascii_board::display()
 		
 		if (dec_enabled())
 		{
-			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_board);
+			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_board, get_width());
 			if (index_regions.size() > 0)
 			{
 				index_regions = format_tools::combine(index_regions, dec_regions);
@@ -794,62 +797,53 @@ void ascii_board::display()
 		}
 		
 		int line = 0;
-		bool newline = false;
+		unsigned int line_length = 0;
 		ascii_io::move_curser_to_position(x_origin, y_origin);
 		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
+		regions = format_tools::fit_to_width(regions, get_width());
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
-			std::vector<std::string> sub_lines = format_tools::get_lines(regions[i].content);
-			for (unsigned int j = 0; j < sub_lines.size(); j++)
+			int foreground_color = get_default_foreground_color();
+			int background_color = get_default_background_color();
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
 			{
-				if ((sub_lines[j])[sub_lines[j].length() - 1] == '\n')
-				{
-					newline = true;
-					sub_lines[j].erase(sub_lines[j].length() - 1, 1);
-				}
-
-				int foreground_color = get_default_foreground_color();
-				int background_color = get_default_background_color();
-				if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
-				{
-					foreground_color = regions[i].format.foreground_format;
-				}
-
-				if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
-				{
-					background_color = regions[i].format.background_format;
-				}
-
-				ascii_io::set_color(foreground_color, background_color);
-
-				if (regions[i].format.dec)
-				{
-#ifdef _WIN32
-					ascii_io::enable_dec();
-					ascii_io::print(sub_lines[j]);
-#elif __linux__
-					dec_print(sub_lines[j]);
-#endif
-				}
-				else
-				{
-#ifdef _WIN32
-					ascii_io::disable_dec();
-#endif
-					ascii_io::print(sub_lines[j]);
-				}
-
-				if (newline)
-				{
-					line++;
-					ascii_io::move_curser_to_position(x_origin, y_origin + line);
-					newline = false;
-				}
+				foreground_color = regions[i].format.foreground_format;
 			}
+
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
+			{
+				background_color = regions[i].format.background_format;
+			}
+
+			ascii_io::set_color(foreground_color, background_color);
+
+			if (regions[i].format.dec)
+			{
 #ifdef _WIN32
-			ascii_io::disable_dec();
+				ascii_io::enable_dec();
+				ascii_io::print(regions[i].content);
+#elif __linux__
+				dec_print(sub_lines[j]);
 #endif
+			}
+			else
+			{
+#ifdef _WIN32
+				ascii_io::disable_dec();
+#endif
+				ascii_io::print(regions[i].content);
+			}
+			line_length = line_length + regions[i].content.length();
+			if (line_length >= get_width())
+			{
+				line++;
+				line_length = 0;
+				ascii_io::move_curser_to_position(x_origin, y_origin + line);
+			}
 		}
+#ifdef _WIN32
+		ascii_io::disable_dec();
+#endif
 		ascii_io::move_curser_to_position(curser_x, curser_y);
 	}
 	else
@@ -864,9 +858,6 @@ void ascii_board::display()
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{
-#ifdef __linux__
-			(lines[i]).erase(lines[i].length() -1, 1);
-#endif
 			ascii_io::move_curser_to_position(x_origin, y_origin + i);
 			ascii_io::print(lines[i]);
 		}

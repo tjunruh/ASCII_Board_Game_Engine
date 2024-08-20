@@ -65,16 +65,6 @@ std::string format_tools::get_spacing(unsigned int length, char space_char)
 
 std::string format_tools::fill_line(std::string input, unsigned int length, std::string alignment)
 {
-	bool new_line_character_detected = false;
-	if (input.length() > 0)
-	{
-		if (input[input.length() - 1] == '\n')
-		{
-			input.erase(input.length() - 1, 1);
-			new_line_character_detected = true;
-		}
-	}
-	
 	if (alignment == left_alignment_keyword)
 	{
 		while (input.length() < length)
@@ -107,10 +97,6 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 		}
 	}
 
-	if (new_line_character_detected)
-	{
-		input[input.length() - 1] = '\n';
-	}
 	return input;
 }
 
@@ -200,6 +186,34 @@ std::vector<std::string> format_tools::get_lines(const std::string& output_strin
 		output_lines.push_back(line);
 	}
 	return output_lines;
+}
+
+std::vector<std::string> format_tools::get_lines(const std::string& content, unsigned int width, unsigned int current_position)
+{
+	std::vector<std::string> lines;
+	std::string line = "";
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		line = line + content[i];
+		if (lines.size() == 0)
+		{
+			if (line.length() >= (width - current_position))
+			{
+				lines.push_back(line);
+				line = "";
+			}
+		}
+		else if (line.length() >= width)
+		{
+			lines.push_back(line);
+			line = "";
+		}
+	}
+	if (line != "")
+	{
+		lines.push_back(line);
+	}
+	return lines;
 }
 
 std::string format_tools::get_string(const std::vector<std::string>& lines)
@@ -537,4 +551,61 @@ void format_tools::convert_flags(std::vector<coordinate_format>& coordinate_colo
 			}
 		}
 	}
+}
+
+std::vector<format_tools::content_format> format_tools::fit_to_width(const std::vector<content_format>& content_vec, unsigned int width)
+{
+	std::vector<content_format> updated_vec;
+	unsigned int length = 0;
+	for (unsigned int i = 0; i < content_vec.size(); i++)
+	{
+		if ((length + content_vec[i].content.length()) >= width)
+		{
+			std::vector<std::string> lines = get_lines(content_vec[i].content, width, length);
+			for (unsigned int j = 0; j < lines.size(); j++)
+			{
+				content_format temp;
+				temp.content = lines[j];
+				temp.format = content_vec[i].format;
+				updated_vec.push_back(temp);
+				length = length + lines[j].length();
+				if (length >= width)
+				{
+					length = 0;
+				}
+			}
+		}
+		else
+		{
+			updated_vec.push_back(content_vec[i]);
+			length = length + content_vec[i].content.length();
+		}
+	}
+	return updated_vec;
+}
+
+std::vector<std::string> format_tools::remove_newline_character(std::vector<std::string> lines)
+{
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		if ((lines[i].length() > 0) && (lines[i].back() == '\n'))
+		{
+			lines[i].erase((lines[i].length() - 1), 1);
+		}
+	}
+	return lines;
+}
+
+unsigned int format_tools::get_first_line_length(const std::string& content)
+{
+	unsigned int width = 0;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		width++;
+		if (content[i] == '\n')
+		{
+			break;
+		}
+	}
+	return width;
 }

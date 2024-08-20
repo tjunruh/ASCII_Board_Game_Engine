@@ -33,8 +33,22 @@ void frame::display()
 	}
 	else
 	{
+		std::vector<format_tools::index_format> index_regions;
+		std::vector<int> ignore_flags;
 		ascii_io::reset();
+		unsigned int width = 0;
+		if (_color_enabled)
+		{
+			index_regions = format_tools::convert(color_regions, format_tools::get_first_line_length(output));
+			ignore_flags = format_tools::set_flags(index_regions, output, '*');
+		}
 		format_tools::mask_string(output, previous_output);
+		if (_color_enabled)
+		{
+			std::vector<std::string> lines = format_tools::get_lines(output);
+			convert_flags(color_regions, index_regions, ignore_flags, lines, '*');
+			output = format_tools::get_string(lines);
+		}
 	}
 	previous_output = output;
 	previous_x = x;
@@ -47,7 +61,7 @@ void frame::display()
 		std::vector<format_tools::index_format> index_regions;
 		if (_color_enabled)
 		{
-			index_regions = format_tools::convert(color_regions, x);
+			index_regions = format_tools::convert(color_regions, format_tools::get_first_line_length(output));
 		}
 
 		if (_dec_enabled)
@@ -1480,6 +1494,7 @@ void frame::set_widget_origins()
 
 void frame::translate_coordinate_colors_to_frame()
 {
+	color_regions.clear();
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
@@ -1775,9 +1790,9 @@ bool frame::only_widget_in_row(widget_info item)
 	return false;
 }
 
-std::vector<format_tools::index_format> frame::dec_format(std::string& format_content)
+std::vector<format_tools::index_format> frame::dec_format(std::string& format_content, unsigned int line_length)
 {
-	return dec.format(format_content);
+	return dec.format(format_content, line_length);
 }
 
 #ifdef __linux__

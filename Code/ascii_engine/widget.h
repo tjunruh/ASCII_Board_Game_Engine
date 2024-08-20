@@ -37,7 +37,7 @@ protected:
 	bool color_enabled();
 	void set_index_colors(const std::vector<format_tools::index_format>& index_colors);
 	std::vector<format_tools::index_format> get_index_colors();
-	std::vector<format_tools::index_format> dec_format(std::string& format_content);
+	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 	int get_default_foreground_color();
 	int get_default_background_color();
 

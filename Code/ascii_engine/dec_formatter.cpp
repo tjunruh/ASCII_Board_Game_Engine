@@ -13,9 +13,18 @@ void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, c
 	_endpoint_char = endpoint_char;
 }
 
-std::vector<format_tools::index_format> dec_formatter::format(std::string& format_content)
+std::vector<format_tools::index_format> dec_formatter::format(std::string& format_content, unsigned int line_length)
 {
-	std::vector<std::string> format_lines = format_tools::get_lines(format_content);
+	std::vector<std::string> format_lines;
+	if (line_length == 0)
+	{
+		format_lines = format_tools::get_lines(format_content);
+	}
+	else
+	{
+		format_lines = format_tools::get_lines(format_content, line_length);
+	}
+	
 	format_tools::index_format dec_or_ascii_region;
 	if (format_content.length() > 0)
 	{

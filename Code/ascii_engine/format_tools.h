@@ -73,6 +73,7 @@ namespace format_tools
 	std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	std::string fuse_columns_into_row(text_column data, unsigned int& lines);
 	std::vector<std::string> get_lines(const std::string& output_string);
+	std::vector<std::string> get_lines(const std::string& content, unsigned int width, unsigned int current_position=0);
 	std::string get_string(const std::vector<std::string>& lines);
 	std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
 	void mask_string(std::string& new_string, const std::string& old_string);
@@ -87,4 +88,7 @@ namespace format_tools
 	std::vector<coordinate_format> convert(const std::vector<index_format>& index_vec, const std::vector<std::string>& lines);
 	std::vector<int> set_flags(std::vector<index_format>& index_colors, std::string& content, char flag);
 	void convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag);
+	std::vector<content_format> fit_to_width(const std::vector<content_format>& content_vec, unsigned int width);
+	std::vector<std::string> remove_newline_character(std::vector<std::string> lines);
+	unsigned int get_first_line_length(const std::string& content);
 }

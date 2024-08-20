@@ -173,9 +173,9 @@ std::vector<format_tools::index_format> widget::get_index_colors()
 	return index_colors;
 }
 
-std::vector<format_tools::index_format> widget::dec_format(std::string& format_content)
+std::vector<format_tools::index_format> widget::dec_format(std::string& format_content, unsigned int line_length)
 {
-	return parent_frame->dec_format(format_content);
+	return parent_frame->dec_format(format_content, line_length);
 }
 
 int widget::get_default_foreground_color()

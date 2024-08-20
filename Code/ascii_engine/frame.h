@@ -130,7 +130,7 @@ private:
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(widget_info item, std::vector<std::string>& lines);
 	bool only_widget_in_row(widget_info item);
-	std::vector<format_tools::index_format> dec_format(std::string& format_content);
+	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__
 	void dec_print(const std::string& input);
 #endif
