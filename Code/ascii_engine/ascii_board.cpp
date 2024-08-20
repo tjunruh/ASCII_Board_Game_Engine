@@ -823,7 +823,7 @@ void ascii_board::display()
 				ascii_io::enable_dec();
 				ascii_io::print(regions[i].content);
 #elif __linux__
-				dec_print(sub_lines[j]);
+				dec_print(regions[i].content);
 #endif
 			}
 			else
@@ -855,6 +855,7 @@ void ascii_board::display()
 		ascii_io::get_curser_position(curser_x, curser_y);
 		update_board();
 		std::vector<std::string> lines = format_tools::get_lines(board);
+		lines = format_tools::remove_newline_character(lines);
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{
