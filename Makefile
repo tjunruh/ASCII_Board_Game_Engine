@@ -30,6 +30,8 @@ EXECUTABLES := \
 	$(TEST_ASCII_ENGINE)
 EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 
+ASCII_ENGINE_LIBRARY := libascii_engine.so
+
 .PHONY: all clean engine test test-headless
 
 all: $(EXECUTABLES) engine
@@ -51,7 +53,6 @@ $(TREE_DIRS):
 ALL_OBJS :=
 
 ### ASCII Engine
-ASCII_ENGINE_LIBRARY := libascii_engine.so
 ASCII_ENGINE_HEADERS_DIR := $(BLD_DIR)/headers/ascii_engine
 
 ASCII_LIB := -L$(BLD_DIR) -lascii_engine
