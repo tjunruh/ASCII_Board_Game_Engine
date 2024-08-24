@@ -41,15 +41,16 @@ int file_manager::read_file(std::string file_path, std::string& extracted_conten
 
 int file_manager::append_to_file(std::string file_path, std::string content)
 {
-	std::string file_content = "";
-	int status = read_file(file_path, file_content);
-	if (status != 0)
-	{
-		return status;
+	int status = 1;
+	std::ofstream file(file_path, std::ios_base::app);
+	if (file.is_open()) {
+		file << content << std::endl;
+		status = 0;
+		file.close();
 	}
-
-	file_content = file_content + content;
-	status = write_file(file_path, file_content);
+	else {
+		status = 1;
+	}
 	return status;
 }
 
