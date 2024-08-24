@@ -15,6 +15,8 @@ public:
 	void enable_quit();
 	int start_logging(const std::string& file_path);
 	void stop_logging();
+	void display();
+	void sync();
 private:
 	
 	std::vector<std::string> menu_items;

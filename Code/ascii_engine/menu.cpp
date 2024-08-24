@@ -102,8 +102,7 @@ std::string menu::get_selection()
 	std::string selected_item = "";
 	do
 	{
-		set_output_to_frame(build_output());
-		refresh();
+		display();
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
@@ -126,4 +125,35 @@ std::string menu::get_selection()
 		}
 	} while ((input != _quit) || quit_enabled);
 	return selected_item;
+}
+
+void menu::display()
+{
+	if (frame_stale())
+	{
+		sync();
+		frame_display();
+	}
+	else
+	{
+		std::vector<std::string> lines = format_tools::get_lines(build_output());
+		lines = format_tools::remove_newline_character(lines);
+		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
+		int x_origin = get_x_origin();
+		int y_origin = get_y_origin();
+		int curser_x = 0;
+		int curser_y = 0;
+		ascii_io::get_curser_position(curser_x, curser_y);
+		for (unsigned int i = 0; i < lines.size(); i++)
+		{
+			ascii_io::move_curser_to_position(x_origin, y_origin + i);
+			ascii_io::print(lines[i]);
+		}
+		ascii_io::move_curser_to_position(curser_x, curser_y);
+	}
+}
+
+void menu::sync()
+{
+	set_output_to_frame(build_output());
 }
