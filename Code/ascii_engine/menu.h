@@ -4,6 +4,14 @@
 #include "widget.h"
 #include "frame.h"
 
+#ifdef _WIN32
+#ifdef MENU_EXPORTS
+#define MENU_API __declspec(dllexport)
+#else
+#define MENU_API __declspec(dllimport)
+#endif
+#endif
+
 class menu : public widget
 {
 public:
@@ -18,7 +26,8 @@ public:
 	void display();
 	void sync();
 private:
-	
+	const std::string special_operation_new_column = "new column";
+	const std::string special_operation_none = "none";
 	std::vector<std::string> menu_items;
 	char _curser = '*';
 	unsigned int curser_row = 0;

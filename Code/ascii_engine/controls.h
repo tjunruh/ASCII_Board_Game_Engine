@@ -5,6 +5,14 @@
 #include "ascii_io.h"
 #include "error_codes.h"
 
+#ifdef _WIN32
+#ifdef CONTROLS_EXPORTS
+#define CONTROLS_API __declspec(dllexport)
+#else
+#define CONTROLS_API __declspec(dllimport)
+#endif
+#endif
+
 class controls
 {
 public:

@@ -4,6 +4,14 @@
 #include "widget.h"
 #include "frame.h"
 
+#ifdef _WIN32
+#ifdef ASCII_BOARD_EXPORTS
+#define ASCII_BOARD_API __declspec(dllexport)
+#else
+#define ASCII_BOARD_API __declspec(dllimport)
+#endif
+#endif
+
 struct tile_configuration
 {
 	int row = -2;
@@ -22,8 +30,8 @@ struct board_configuration
 class ascii_board : public widget
 {
 public:
-	ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
-	void clear_tile(int row, int column);
+	ASCII_BOARD_API ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
+	ASCII_BOARD_API void clear_tile(int row, int column);
 	void clear_tiles();
 	void set_tile(int row, int column, std::string value, char ignore_character);
 	void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);

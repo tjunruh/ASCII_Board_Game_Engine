@@ -2,6 +2,14 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef ASCII_IO_EXPORTS
+#define ASCII_IO_API __declspec(dllexport)
+#else
+#define ASCII_IO_API __declspec(dllimport)
+#endif
+#endif
+
 namespace ascii_io
 {
 	void print(const std::string& output);

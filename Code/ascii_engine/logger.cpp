@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "logger.h"
 #include "error_codes.h"
 #include "../file_manager/file_manager.h"

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "controls.h"
 #include <json.hpp>
 #include <fstream>

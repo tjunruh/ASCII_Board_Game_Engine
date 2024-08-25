@@ -2,6 +2,14 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef BOARD_CONFIG_FIELD_PARSER_EXPORT
+#define BOARD_CONFIG_FIELD_PARSER_API __declspec(dllexport)
+#else
+#define BOARD_CONFIG_FIELD_PARSER_API __declspec(dllimport)
+#endif
+#endif
+
 class board_config_field_parser
 {
 public:

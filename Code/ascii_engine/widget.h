@@ -5,6 +5,14 @@
 #include "logger.h"
 #include "format_tools.h"
 
+#ifdef _WIN32
+#ifdef WIDGET_EXPORTS
+#define WIDGET_API __declspec(dllexport)
+#else
+#define WIDGET_API __declspec(dllimport)
+#endif
+#endif
+
 class widget
 {
 public:

@@ -3,6 +3,14 @@
 #include <vector>
 #include "format_tools.h"
 
+#ifdef _WIN32
+#ifdef DEC_FORMATTER_EXPORTS
+#define DEC_FORMATTER_API __declspec(dllexport)
+#else
+#define DEC_FORMATTER_API __declspec(dllimport)
+#endif
+#endif
+
 class dec_formatter
 {
 public:

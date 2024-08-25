@@ -8,13 +8,21 @@
 #include "logger.h"
 #include "dec_formatter.h"
 
+#ifdef _WIN32
+#ifdef FRAME_EXPORTS
+#define FRAME_API __declspec(dllexport)
+#else
+#define FRAME_API __declspec(dllimport)
+#endif
+#endif
+
 class frame
 {
 public:
 	friend class widget;
 	friend void spacer(frame* parent, float multiplier, std::string special_operation, bool start_logging, std::string logging_file_path);
-	frame(bool start_logger=false, std::string logging_file_path="frame.log");
-	void display();
+	FRAME_API frame(bool start_logger=false, std::string logging_file_path="frame.log");
+	FRAME_API void display();
 	bool stale();
 	void set_controls(int select, int quit, int up, int down, int right, int left);
 	int get_selection();

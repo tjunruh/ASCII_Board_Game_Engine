@@ -1,6 +1,14 @@
 #pragma once
 #include <string>
 
+#ifdef _WIN32
+#ifdef BOARD_CONFIG_FIELD_TITLES_EXPORTS
+#define BOARD_CONFIG_FIELD_TITLES_API __declspec(dllexport)
+#else
+#define BOARD_CONFIG_FIELD_TITLES_API __declspec(dllimport)
+#endif
+#endif
+
 namespace board_config_field_titles
 {
 	const std::string board_begin = "** board begin **";

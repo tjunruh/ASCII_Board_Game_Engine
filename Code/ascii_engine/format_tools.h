@@ -2,6 +2,14 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef FORMAT_TOOLS_EXPORTS
+#define FORMAT_TOOLS_API __declspec(dllexport)
+#else
+#define FORMAT_TOOLS_API __declspec(dllimport)
+#endif
+#endif
+
 namespace format_tools
 {
 
