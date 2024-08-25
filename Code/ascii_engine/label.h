@@ -3,6 +3,14 @@
 #include "frame.h"
 #include "widget.h"
 
+#ifdef _WIN32
+#ifdef LABEL_EXPORTS
+#define LABEL_API __declspec(dllexport)
+#else
+#define LABEL_API __declspec(dllimport)
+#endif
+#endif
+
 class label : public widget
 {
 public:

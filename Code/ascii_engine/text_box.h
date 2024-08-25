@@ -5,6 +5,14 @@
 #include "widget.h"
 #include "format_tools.h"
 
+#ifdef _WIN32
+#ifdef TEXT_BOX_EXPORTS
+#define TEXT_BOX_API __declspec(dllexport)
+#else
+#define TEXT_BOX_API __declspec(dllimport)
+#endif
+#endif
+
 class text_box : public widget
 {
 public:

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "validate_board_config.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 #include "../board_config_field_parser/board_config_field_parser.h"

@@ -3,6 +3,14 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+#ifdef VALIDATE_BOARD_CONFIG_EXPORTS
+#define VALIDATE_BOARD_CONFIG_API __declspec(dllexport)
+#else
+#define VALIDATE_BOARD_CONFIG_API __declspec(dllimport)
+#endif
+#endif
+
 class validate_board_config
 {
 public:

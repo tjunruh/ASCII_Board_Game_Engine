@@ -1,5 +1,6 @@
+#include "pch.h"
 #include "ascii_board.h"
-#include "../file_manager/file_manager.h"
+#include "file_manager.h"
 #include "../validate_board_config/validate_board_config.h"
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include "error_codes.h"

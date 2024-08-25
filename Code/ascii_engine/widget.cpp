@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "widget.h"
 
 widget::widget(frame* parent, std::string special_operation)
