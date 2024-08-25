@@ -1,6 +1,14 @@
 #pragma once
 #include <string>
 
+#ifdef _WIN32
+#ifdef FILE_MANAGER_EXPORTS
+#define FILE_MANAGER_API __declspec(dllexport)
+#else
+#define FILE_MANAGER_API __declspec(dllimport)
+#endif
+#endif
+
 namespace file_manager
 {
 	int write_file(std::string file_path, std::string content);
