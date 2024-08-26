@@ -7,6 +7,8 @@
 #else
 #define LOGGER_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define LOGGER_API
 #endif
 
 class logger

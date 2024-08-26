@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../ascii_engine_dll_files/pch.h"
 #include "widget.h"
 
 widget::widget(frame* parent, std::string special_operation)

@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../ascii_engine_dll_files/pch.h"
 #include "logger.h"
 #include "error_codes.h"
 #include "../file_manager/file_manager.h"

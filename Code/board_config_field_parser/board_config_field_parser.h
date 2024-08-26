@@ -8,6 +8,8 @@
 #else
 #define BOARD_CONFIG_FIELD_PARSER_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define BOARD_CONFIG_FIELD_PARSER_API
 #endif
 
 class board_config_field_parser

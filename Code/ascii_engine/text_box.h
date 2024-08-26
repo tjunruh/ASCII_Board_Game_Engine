@@ -11,6 +11,8 @@
 #else
 #define TEXT_BOX_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define TEXT_BOX_API
 #endif
 
 class text_box : public widget

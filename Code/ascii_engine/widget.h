@@ -11,30 +11,32 @@
 #else
 #define WIDGET_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define WIDGET_API
 #endif
 
 class widget
 {
 public:
-	widget(frame* parent, std::string special_operation="none");
-	void set_alignment(std::string alignment);
-	void set_spacing(int top, int bottom, int left, int right);
-	void set_border_spacing(int top, int bottom, int left, int right);
-	void set_vertical_border(char border);
-	void set_horizontal_border(char border);
-	void set_corner_border(char border);
-	void set_highlight_character(char character);
-	void add_border();
-	void refresh();
-	void selectable();
-	void unselectable();
-	unsigned int get_width(bool include_spacing=false);
-	unsigned int get_height(bool include_spacing=false);
-	int get_x_origin();
-	int get_y_origin();
-	int get_widget_type();
-	std::string get_output();
-	std::string get_alignment();
+	WIDGET_API widget(frame* parent, std::string special_operation="none");
+	WIDGET_API void set_alignment(std::string alignment);
+	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
+	WIDGET_API void set_border_spacing(int top, int bottom, int left, int right);
+	WIDGET_API void set_vertical_border(char border);
+	WIDGET_API void set_horizontal_border(char border);
+	WIDGET_API void set_corner_border(char border);
+	WIDGET_API void set_highlight_character(char character);
+	WIDGET_API void add_border();
+	WIDGET_API void refresh();
+	WIDGET_API void selectable();
+	WIDGET_API void unselectable();
+	WIDGET_API unsigned int get_width(bool include_spacing=false);
+	WIDGET_API unsigned int get_height(bool include_spacing=false);
+	WIDGET_API int get_x_origin();
+	WIDGET_API int get_y_origin();
+	WIDGET_API int get_widget_type();
+	WIDGET_API std::string get_output();
+	WIDGET_API std::string get_alignment();
 	operator int() { return widget_id; }
 protected:
 	void set_output_to_frame(const std::string& text);

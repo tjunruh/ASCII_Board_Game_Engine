@@ -6,6 +6,8 @@
 #else
 #define ERROR_CODES_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define ERROR_CODES_API
 #endif
 
 #define UNDEFINED -1

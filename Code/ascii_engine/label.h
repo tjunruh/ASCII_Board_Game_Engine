@@ -9,6 +9,8 @@
 #else
 #define LABEL_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define LABEL_API
 #endif
 
 class label : public widget

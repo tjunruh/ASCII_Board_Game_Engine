@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../ascii_engine_dll_files/pch.h"
 #include "controls.h"
 #include <json.hpp>
 #include <fstream>

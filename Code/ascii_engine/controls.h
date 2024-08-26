@@ -11,6 +11,8 @@
 #else
 #define CONTROLS_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define CONTROLS_API
 #endif
 
 class controls

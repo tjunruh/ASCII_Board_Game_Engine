@@ -6,6 +6,8 @@
 #else
 #define WIDGET_TYPES_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define WIDGET_TYPES_API
 #endif
 
 #define WIDGET 0
