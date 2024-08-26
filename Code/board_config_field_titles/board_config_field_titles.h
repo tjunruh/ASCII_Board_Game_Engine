@@ -7,6 +7,8 @@
 #else
 #define BOARD_CONFIG_FIELD_TITLES_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define BOARD_CONFIG_FIELD_TITLES_API
 #endif
 
 namespace board_config_field_titles

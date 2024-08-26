@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "../ascii_engine_dll_files/pch.h"
 #include "board_config_field_parser.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 

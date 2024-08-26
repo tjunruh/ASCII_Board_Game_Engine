@@ -10,6 +10,8 @@
 #else
 #define MENU_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define MENU_API
 #endif
 
 class menu : public widget

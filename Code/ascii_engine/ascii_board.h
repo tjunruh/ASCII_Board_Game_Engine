@@ -10,6 +10,8 @@
 #else
 #define ASCII_BOARD_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define ASCII_BOARD_API
 #endif
 
 struct tile_configuration
@@ -32,35 +34,35 @@ class ascii_board : public widget
 public:
 	ASCII_BOARD_API ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
 	ASCII_BOARD_API void clear_tile(int row, int column);
-	void clear_tiles();
-	void set_tile(int row, int column, std::string value, char ignore_character);
-	void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	void set_row(int row, std::string value, char ignore_character);
-	void set_row(int row, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	void set_column(int column, std::string value, char ignore_character);
-	void set_column(int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	void set_all(std::string value, char ignore_character);
-	void set_all(std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	void set_tile_character(int row, int column, char character, unsigned int character_index);
-	std::string get_tile(int row, int column);
-	char get_tile_character(int row, int column, unsigned int character_index);
-	std::string get_board();
-	void add_configuration(board_configuration configuration);
-	void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
-	void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	void activate_configuration(int row, int column, std::string name_id);
-	void activate_configuration(std::string name_id);
-	void deactivate_configuration(int row, int column, std::string name_id);
-	void deactivate_configuration(std::string name_id);
-	std::string load_configuration(std::string path);
-	void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
-	void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	int get_number_of_columns();
-	int get_number_of_rows();
-	void display();
-	void sync();
-	int start_logging(const std::string& file_path);
-	void stop_logging();
+	ASCII_BOARD_API void clear_tiles();
+	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character);
+	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void set_row(int row, std::string value, char ignore_character);
+	ASCII_BOARD_API void set_row(int row, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void set_column(int column, std::string value, char ignore_character);
+	ASCII_BOARD_API void set_column(int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void set_all(std::string value, char ignore_character);
+	ASCII_BOARD_API void set_all(std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void set_tile_character(int row, int column, char character, unsigned int character_index);
+	ASCII_BOARD_API std::string get_tile(int row, int column);
+	ASCII_BOARD_API char get_tile_character(int row, int column, unsigned int character_index);
+	ASCII_BOARD_API std::string get_board();
+	ASCII_BOARD_API void add_configuration(board_configuration configuration);
+	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
+	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void activate_configuration(int row, int column, std::string name_id);
+	ASCII_BOARD_API void activate_configuration(std::string name_id);
+	ASCII_BOARD_API void deactivate_configuration(int row, int column, std::string name_id);
+	ASCII_BOARD_API void deactivate_configuration(std::string name_id);
+	ASCII_BOARD_API std::string load_configuration(std::string path);
+	ASCII_BOARD_API void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
+	ASCII_BOARD_API void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API int get_number_of_columns();
+	ASCII_BOARD_API int get_number_of_rows();
+	ASCII_BOARD_API void display();
+	ASCII_BOARD_API void sync();
+	ASCII_BOARD_API int start_logging(const std::string& file_path);
+	ASCII_BOARD_API void stop_logging();
 
 private:
 	std::string board = "";

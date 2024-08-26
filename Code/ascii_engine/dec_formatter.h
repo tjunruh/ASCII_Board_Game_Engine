@@ -9,6 +9,8 @@
 #else
 #define DEC_FORMATTER_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define DEC_FORMATTER_API
 #endif
 
 class dec_formatter

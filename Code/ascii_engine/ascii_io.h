@@ -8,11 +8,16 @@
 #else
 #define ASCII_IO_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define ASCII_IO_API
 #endif
 
 namespace ascii_io
 {
 	void print(const std::string& output);
+#ifdef _WIN32
+ASCII_IO_API
+#endif
 	int getchar();
 	void clear();
 	void reset();

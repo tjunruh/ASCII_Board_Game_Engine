@@ -9,6 +9,8 @@
 #else
 #define VALIDATE_BOARD_CONFIG_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define VALIDATE_BOARD_CONFIG_API
 #endif
 
 class validate_board_config

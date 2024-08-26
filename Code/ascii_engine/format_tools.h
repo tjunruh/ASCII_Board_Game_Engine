@@ -8,6 +8,8 @@
 #else
 #define FORMAT_TOOLS_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define FORMAT_TOOLS_API
 #endif
 
 namespace format_tools

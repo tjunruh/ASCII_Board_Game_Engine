@@ -8,6 +8,8 @@
 #else
 #define SPACER_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define SPACER_API
 #endif
 
 void spacer(frame* parent, float multiplier, std::string special_operation="none", bool start_logging=false, std::string logging_file_path="spacer.log");

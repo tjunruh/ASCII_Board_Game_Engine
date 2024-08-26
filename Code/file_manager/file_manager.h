@@ -7,6 +7,8 @@
 #else
 #define FILE_MANAGER_API __declspec(dllimport)
 #endif
+#elif __linux__
+#define FILE_MANAGER_API
 #endif
 
 namespace file_manager
