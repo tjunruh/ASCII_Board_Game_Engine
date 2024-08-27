@@ -30,19 +30,9 @@ EXECUTABLES := \
 	$(TEST_ASCII_ENGINE)
 EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 
-ASCII_ENGINE_LIBRARY := libascii_engine.so
-
 .PHONY: all clean engine test test-headless
 
 all: $(EXECUTABLES) engine
-
-engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY))
-
-test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
-	env LD_LIBRARY_PATH="./$(BLD_DIR)" $<
-
-test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
-	env LD_LIBRARY_PATH="./$(BLD_DIR)" $< --gtest_filter=-ascii_io.*
 
 clean:
 	-rm -rf $(BLD_DIR)
@@ -55,6 +45,7 @@ ALL_OBJS :=
 ### ASCII Engine
 ASCII_ENGINE_HEADERS_DIR := $(BLD_DIR)/headers/ascii_engine
 
+ASCII_ENGINE_LIBRARY := libascii_engine.so
 ASCII_LIB := -L$(BLD_DIR) -lascii_engine
 ASCII_INCLUDE := -I$(BLD_DIR)/headers
 
@@ -176,6 +167,18 @@ $(BLD_DIR)/validate_board_config/%.o: $(SRC_DIR)/validate_board_config/%.cpp | $
 $(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 ### End validate board config
+
+
+### PHONY targets requiring other variables
+test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
+	env LD_LIBRARY_PATH="./$(BLD_DIR)" $<
+
+test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
+	env LD_LIBRARY_PATH="./$(BLD_DIR)" $< --gtest_filter=-ascii_io.*
+
+engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY))
+### End PHONY targets
+
 
 # gcc option -MMD makes it output additional files that end with .d (as opposed to .o)
 # which is a makefile with the user header files that it includes.
