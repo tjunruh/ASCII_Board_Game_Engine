@@ -22,7 +22,7 @@ class frame
 {
 public:
 	friend class widget;
-	friend void spacer(frame* parent, float multiplier, std::string special_operation, bool start_logging, std::string logging_file_path);
+	friend class spacer;
 	FRAME_API frame(bool start_logger=false, std::string logging_file_path="frame.log");
 	FRAME_API void display();
 	FRAME_API bool stale();

@@ -14,24 +14,21 @@
 
 namespace ascii_io
 {
-	void print(const std::string& output);
-#ifdef _WIN32
-ASCII_IO_API
-#endif
-	int getchar();
-	void clear();
-	void reset();
-	std::string getline();
-	void get_terminal_size(int& x, int& y);
-	void get_curser_position(int& x, int& y);
-	void hide_curser();
-	void show_curser();
-	void move_curser_up(unsigned int amount=1);
-	void move_curser_down(unsigned int amount=1);
-	void move_curser_right(unsigned int amount=1);
-	void move_curser_left(unsigned int amount=1);
-	void move_curser_to_position(unsigned int x, unsigned int y);
-	void set_color(int foreground, int background, bool bold = false);
+	ASCII_IO_API void print(const std::string& output);
+	ASCII_IO_API int getchar();
+	ASCII_IO_API void clear();
+	ASCII_IO_API void reset();
+	ASCII_IO_API std::string getline();
+	ASCII_IO_API void get_terminal_size(int& x, int& y);
+	ASCII_IO_API void get_curser_position(int& x, int& y);
+	ASCII_IO_API void hide_curser();
+	ASCII_IO_API void show_curser();
+	ASCII_IO_API void move_curser_up(unsigned int amount=1);
+	ASCII_IO_API void move_curser_down(unsigned int amount=1);
+	ASCII_IO_API void move_curser_right(unsigned int amount=1);
+	ASCII_IO_API void move_curser_left(unsigned int amount=1);
+	ASCII_IO_API void move_curser_to_position(unsigned int x, unsigned int y);
+	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
 	
 #ifdef _WIN32
 	void enable_dec();
