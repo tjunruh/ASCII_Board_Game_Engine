@@ -111,3 +111,16 @@ std::string file_manager::remove_extension(std::string path_with_extension)
 	}
 	return file;
 }
+
+int file_manager::delete_file(std::string file_path)
+{
+	int status = remove(file_path.c_str());
+	if (status == 0)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}

@@ -13,10 +13,11 @@
 
 namespace file_manager
 {
-	int write_file(std::string file_path, std::string content);
-	int read_file(std::string file_path, std::string& extracted_content);
-	int append_to_file(std::string file_path, std::string content);
-	std::string extract_path(std::string path_with_file);
-	std::string extract_file(std::string path_with_file);
-	std::string remove_extension(std::string path_with_extension);
+	FILE_MANAGER_API int write_file(std::string file_path, std::string content);
+	FILE_MANAGER_API int read_file(std::string file_path, std::string& extracted_content);
+	FILE_MANAGER_API int append_to_file(std::string file_path, std::string content);
+	FILE_MANAGER_API int delete_file(std::string file_path);
+	FILE_MANAGER_API std::string extract_path(std::string path_with_file);
+	FILE_MANAGER_API std::string extract_file(std::string path_with_file);
+	FILE_MANAGER_API std::string remove_extension(std::string path_with_extension);
 }
