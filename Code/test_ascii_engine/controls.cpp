@@ -1,11 +1,19 @@
+#include "pch.h"
+#ifdef __linux__
 #include <gtest/gtest.h>
+#endif
+#ifdef _WIN32
+#include "../ascii_engine/controls.h"
+#include "../ascii_engine/error_codes.h"
+#include "../file_manager/file_manager.h"
+#elif __linux__
 #include <ascii_engine/controls.h>
 #include <ascii_engine/error_codes.h>
+#include <ascii_engine/file_manager.h>
+#endif
 
 #include <vector>
 #include <utility>
-
-#include <filesystem>
 
 constexpr const char* FILE_NAME = "test_file";
 
@@ -106,6 +114,5 @@ TEST_F(controls_test, save_and_load)
       EXPECT_EQ(key, test.second);
    }
 
-   std::filesystem::path saved_file{FILE_NAME};
-   std::filesystem::remove(saved_file);
+   file_manager::delete_file(FILE_NAME);
 }
