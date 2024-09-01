@@ -52,7 +52,7 @@ ASCII_INCLUDE := -I$(BLD_DIR)/headers
 ASCII_ENGINE_OBJS := \
 	ascii_board.o \
 	ascii_io.o \
-        dec_formatter.o \
+	dec_formatter.o \
 	format_tools.o \
 	controls.o \
 	frame.o \
@@ -77,7 +77,8 @@ ASCII_ENGINE_HEADERS := \
 	ascii_io.h \
 	controls.h \
 	error_codes.h \
-        dec_formatter.h \
+	dec_formatter.h \
+	file_manager.h \
 	format_tools.h \
 	frame.h \
 	label.h \
@@ -90,6 +91,9 @@ ASCII_ENGINE_HEADERS := \
 ASCII_ENGINE_HEADERS := $(addprefix $(BLD_DIR)/headers/ascii_engine/, $(ASCII_ENGINE_HEADERS))
 
 $(BLD_DIR)/headers/ascii_engine/%.h: $(SRC_DIR)/ascii_engine/%.h | $(ASCII_ENGINE_HEADERS_DIR)
+	cp $< $@
+
+$(BLD_DIR)/headers/ascii_engine/%.h: $(SRC_DIR)/file_manager/%.h | $(ASCII_ENGINE_HEADERS_DIR)
 	cp $< $@
 
 $(BLD_DIR)/ascii_engine/%.o: $(SRC_DIR)/ascii_engine/%.cpp | $(addprefix $(BLD_DIR)/, ascii_engine)
@@ -111,7 +115,7 @@ $(BLD_DIR)/test_ascii_engine/%.o: $(SRC_DIR)/test_ascii_engine/%.cpp $(ASCII_ENG
 	$(CXX) $(CXXFLAGS) $(ASCII_INCLUDE) -c $< -o $@
 
 $(BLD_DIR)/test_ascii_engine.out: $(TEST_ASCII_ENGINE_OBJS) $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY) $(ASCII_ENGINE_OBJS_EXTERNAL) | $(BLD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(ASCII_LIB) $(LIBS) -lgtest
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(ASCII_LIB) $(LIBS) -pthread -lgtest
 ### End ASCII Engine Test
 
 
