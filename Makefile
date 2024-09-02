@@ -107,7 +107,8 @@ $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXT
 TEST_ASCII_ENGINE_OBJS := \
 	main.o \
 	ascii_io.o \
-	controls.o
+	controls.o \
+	format_tools.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 ALL_OBJS += $(TEST_ASCII_ENGINE_OBJS)
 
