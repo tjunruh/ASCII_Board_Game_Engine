@@ -22,6 +22,7 @@ public:
 	LOGGER_API void log_comment(const std::string& comment);
 	LOGGER_API void log_begin(const std::string& function_name);
 	LOGGER_API void log_end(const std::string& function_name);
+	LOGGER_API int log_reset(const std::string& file_path, int widget_type);
 private:
 	bool log = false;
 	std::string _file_path = "";

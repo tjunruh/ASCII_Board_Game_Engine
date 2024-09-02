@@ -189,6 +189,23 @@ int widget::get_default_background_color()
 	return parent_frame->get_default_background_color();
 }
 
+int widget::start_logging(const std::string& file_path)
+{
+	int status = log.start_widget_logging(file_path, widget_type);
+	return status;
+}
+
+void widget::stop_logging()
+{
+	log.stop_widget_logging();
+}
+
+int widget::reset_logging(const std::string& file_path)
+{
+	int status = log.log_reset(file_path, widget_type);
+	return status;
+}
+
 #ifdef __linux__
 void widget::dec_print(const std::string& input)
 {

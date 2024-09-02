@@ -23,8 +23,6 @@ public:
 	MENU_API void set_controls(int select, int up, int down, int quit);
 	MENU_API std::string get_selection();
 	MENU_API void enable_quit();
-	MENU_API int start_logging(const std::string& file_path);
-	MENU_API void stop_logging();
 	MENU_API void display();
 	MENU_API void sync();
 private:

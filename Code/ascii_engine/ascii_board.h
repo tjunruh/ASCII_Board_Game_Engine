@@ -61,8 +61,6 @@ public:
 	ASCII_BOARD_API int get_number_of_rows();
 	ASCII_BOARD_API void display();
 	ASCII_BOARD_API void sync();
-	ASCII_BOARD_API int start_logging(const std::string& file_path);
-	ASCII_BOARD_API void stop_logging();
 
 private:
 	std::string board = "";

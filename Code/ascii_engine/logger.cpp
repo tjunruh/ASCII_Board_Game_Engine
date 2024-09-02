@@ -65,3 +65,17 @@ void logger::log_end(const std::string& function_name)
 		file_manager::append_to_file(_file_path, "=== " + function_name + " end ===");
 	}
 }
+
+int logger::log_reset(const std::string& file_path, int widget_type)
+{
+	int status = file_manager::write_file(file_path, "Log for type " + std::to_string(widget_type) + " widget.");
+	if (status == 1)
+	{
+		return INVALID_PATH;
+	}
+	else
+	{
+		_file_path = file_path;
+		return SUCCESS;
+	}
+}

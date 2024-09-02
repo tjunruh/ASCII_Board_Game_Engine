@@ -874,17 +874,6 @@ void ascii_board::sync()
 	set_index_colors(board_colors);
 }
 
-int ascii_board::start_logging(const std::string& file_path)
-{
-	int status = log.start_widget_logging(file_path, get_widget_type());
-	return status;
-}
-
-void ascii_board::stop_logging()
-{
-	log.stop_widget_logging();
-}
-
 void ascii_board::initialize_tiles(int rows, int columns)
 {
 	for (int row = 0; row < rows; row++)

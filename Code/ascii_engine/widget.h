@@ -37,6 +37,9 @@ public:
 	WIDGET_API int get_widget_type();
 	WIDGET_API std::string get_output();
 	WIDGET_API std::string get_alignment();
+	WIDGET_API int start_logging(const std::string& file_path);
+	WIDGET_API void stop_logging();
+	WIDGET_API int reset_logging(const std::string& file_path);
 	operator int() { return widget_id; }
 protected:
 	void set_output_to_frame(const std::string& text);
