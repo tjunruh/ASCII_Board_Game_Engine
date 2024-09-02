@@ -769,7 +769,7 @@ void ascii_board::display()
 			index_regions = board_colors;
 			std::vector<int> ignore_flags = format_tools::set_flags(index_regions, board_copy, '*');
 			lines = format_tools::get_lines(board_copy);
-			lines = format_tools::remove_newline_character(lines);
+			lines = format_tools::remove_newline_characters(lines);
 			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 			std::vector<format_tools::coordinate_format> coordinate_colors;
 			format_tools::convert_flags(coordinate_colors, index_regions, ignore_flags, lines, '*');
@@ -778,7 +778,7 @@ void ascii_board::display()
 		else
 		{
 			lines = format_tools::get_lines(board_copy);
-			lines = format_tools::remove_newline_character(lines);
+			lines = format_tools::remove_newline_characters(lines);
 			lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		}
 
@@ -856,7 +856,7 @@ void ascii_board::display()
 		ascii_io::get_curser_position(curser_x, curser_y);
 		update_board();
 		std::vector<std::string> lines = format_tools::get_lines(board);
-		lines = format_tools::remove_newline_character(lines);
+		lines = format_tools::remove_newline_characters(lines);
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{

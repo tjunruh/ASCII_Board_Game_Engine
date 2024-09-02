@@ -273,11 +273,8 @@ void format_tools::mask_string(std::string& output, const std::string& old_outpu
 		}
 		else
 		{
-			std::string spacer = "";
-			for (unsigned int j = 0; j < old_output_lines[i].length(); j++)
-			{
-				spacer = spacer + " ";
-			}
+			std::string spacer = get_spacing(old_output_lines[i].length() - 1, ' ');
+			spacer = spacer + "\n";
 			new_output_lines.push_back(spacer);
 		}
 	}
@@ -410,12 +407,13 @@ int format_tools::get_min_format_index(const std::vector<index_format>& format_v
 	return min_vec_index;
 }
 
-std::vector<format_tools::content_format> format_tools::convert(const std::vector<index_format>& index_vec, const std::string& content)
+std::vector<format_tools::content_format> format_tools::convert(std::vector<index_format> index_vec, const std::string& content)
 {
 	unsigned int index_vec_position = 0;
 	unsigned int content_position = 0;
 	content_format converted_format;
 	std::vector<content_format> content_vec;
+	index_vec = sort(index_vec);
 	if ((index_vec.size() > 0) && (index_vec[0].index > 0))
 	{
 		converted_format.format.foreground_format = none;
@@ -431,9 +429,10 @@ std::vector<format_tools::content_format> format_tools::convert(const std::vecto
 			}
 		}
 		content_vec.push_back(converted_format);
-		converted_format.format = index_vec[index_vec_position].format;
 		converted_format.content = "";
 	}
+
+	converted_format.format = index_vec[index_vec_position].format;
 
 	while (content_position < content.length())
 	{
@@ -480,7 +479,7 @@ std::vector<format_tools::coordinate_format> format_tools::convert(const std::ve
 	{
 		for (unsigned int j = 0; j < lines.size(); j++)
 		{
-			if ((int)(index + lines[j].length()) < index_vec[i].index)
+			if ((int)(index + lines[j].length()) <= index_vec[i].index)
 			{
 				index = index + lines[j].length();
 				converted_format.y_position++;
@@ -492,6 +491,8 @@ std::vector<format_tools::coordinate_format> format_tools::convert(const std::ve
 				coordinate_vec.push_back(converted_format);
 				converted_format.x_position = 0;
 				converted_format.y_position = 0;
+				index = 0;
+				break;
 			}
 		}
 	}
@@ -514,7 +515,7 @@ std::vector<int> format_tools::set_flags(std::vector<index_format>& index_colors
 
 	for (unsigned int i = 0; i < index_colors.size(); i++)
 	{
-		if ((index_colors[i].index > 0) && (index_colors[i].index < (int)content.length()))
+		if ((index_colors[i].index >= 0) && (index_colors[i].index < (int)content.length()))
 		{
 			index_colors[i].flag_replacement = content[index_colors[i].index];
 			content[index_colors[i].index] = flag;
@@ -592,7 +593,7 @@ std::vector<format_tools::content_format> format_tools::fit_to_width(const std::
 	return updated_vec;
 }
 
-std::vector<std::string> format_tools::remove_newline_character(std::vector<std::string> lines)
+std::vector<std::string> format_tools::remove_newline_characters(std::vector<std::string> lines)
 {
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{

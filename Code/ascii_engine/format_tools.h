@@ -93,12 +93,12 @@ namespace format_tools
 	FORMAT_TOOLS_API bool index_found(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API std::vector<index_format> combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2);
 	FORMAT_TOOLS_API int get_min_format_index(const std::vector<index_format>& format_vec);
-	FORMAT_TOOLS_API std::vector<content_format> convert(const std::vector<index_format>& index_vec, const std::string& content);
+	FORMAT_TOOLS_API std::vector<content_format> convert(std::vector<index_format> index_vec, const std::string& content);
 	FORMAT_TOOLS_API std::vector<index_format> convert(const std::vector<coordinate_format>& coordinate_vec, int width);
 	FORMAT_TOOLS_API std::vector<coordinate_format> convert(const std::vector<index_format>& index_vec, const std::vector<std::string>& lines);
 	FORMAT_TOOLS_API std::vector<int> set_flags(std::vector<index_format>& index_colors, std::string& content, char flag);
 	FORMAT_TOOLS_API void convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag);
 	FORMAT_TOOLS_API std::vector<content_format> fit_to_width(const std::vector<content_format>& content_vec, unsigned int width);
-	FORMAT_TOOLS_API std::vector<std::string> remove_newline_character(std::vector<std::string> lines);
+	FORMAT_TOOLS_API std::vector<std::string> remove_newline_characters(std::vector<std::string> lines);
 	FORMAT_TOOLS_API unsigned int get_first_line_length(const std::string& content);
 }

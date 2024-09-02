@@ -138,7 +138,7 @@ void menu::display()
 	else
 	{
 		std::vector<std::string> lines = format_tools::get_lines(build_output());
-		lines = format_tools::remove_newline_character(lines);
+		lines = format_tools::remove_newline_characters(lines);
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		int x_origin = get_x_origin();
 		int y_origin = get_y_origin();
