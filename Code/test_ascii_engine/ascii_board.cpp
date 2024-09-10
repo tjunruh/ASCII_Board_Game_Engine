@@ -1,0 +1,1378 @@
+#include "pch.h"
+#ifdef __linux__
+#include <gtest/gtest.h>
+#endif
+#ifdef _WIN32
+#include "../ascii_engine/ascii_board.h"
+#include "../file_manager/file_manager.h"
+#include "../ascii_engine/error_codes.h"
+#include "../ascii_engine/frame.h"
+#include "../ascii_engine/format_tools.h"
+#elif __linux__
+#include <ascii_engine/ascii_board.h>
+#include <ascii_engine/file_manager.h>
+#include <ascii_engine/error_codes.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/format_tools.h>
+#endif
+
+#include <string>
+#include <vector>
+
+class ascii_board_test : public testing::Test
+{
+protected:
+	frame* global_test_frame = new frame();
+	ascii_board global_test_board = ascii_board(global_test_frame, "test_board_config.txt", "none", true, "global_ascii_board.log");
+	int total_rows = 10;
+	int total_columns = 10;
+	std::string empty_board = 
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string full_curser_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|_-`|`-_|( )|( )|_-`|`-_|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|_-`|`-_|( )|( )|_-`|`-_|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string full_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string full_curser_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|_-`|`-_|(x)|(x)|_-`|`-_|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|_-`|`-_|(x)|(x)|_-`|`-_|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string beginning_curser_board = 
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|( )|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string middle_curser_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|( )|   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string end_curser_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |( )|\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string beginning_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string middle_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_| x |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string end_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string beginning_curser_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string middle_curser_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|(x)|   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string end_curser_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |(x)|\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string beginning_row_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string middle_row_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string end_row_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x | x | x | x | x | x | x | x | x | x |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string beginning_column_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"| x |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string middle_column_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   | x |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::string end_column_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   | x |\n"
+		".---.---.---.---.---.---.---.---.---.---.\n";
+
+	std::vector<format_tools::index_format> empty_colors;
+	tile_configuration curser_config_tile{-1, -1, "(*)", '*', empty_colors};
+	std::vector<tile_configuration> curser_config_tile_vector = { curser_config_tile };
+	board_configuration curser_config_board{ "curser", curser_config_tile_vector };
+
+	tile_configuration x_config_tile{ -1, -1, "*x*", '*', empty_colors };
+	std::vector<tile_configuration> x_config_tile_vector = { x_config_tile };
+	board_configuration x_config_board{ "x", x_config_tile_vector };
+
+	tile_configuration duplicate_name_config_tile{ -1, -1, "*x*", '*', empty_colors };
+	std::vector<tile_configuration> duplicate_name_config_tile_vector = { duplicate_name_config_tile };
+	board_configuration duplicate_name_config_board{ "curser", duplicate_name_config_tile_vector };
+
+	tile_configuration out_of_bounds_config_tile{ 41, 0, "(*)", '*', empty_colors };
+	std::vector<tile_configuration> out_of_bounds_config_tile_vector = { out_of_bounds_config_tile };
+	board_configuration out_of_bounds_config_board{ "out_of_bounds", out_of_bounds_config_tile_vector };
+
+	std::vector<tile_configuration> overlapping_config_tile_vector = { curser_config_tile, x_config_tile };
+	board_configuration overlapping_config_board{ "overlapping", overlapping_config_tile_vector };
+
+	void add_configuration_structure(ascii_board& local_test_board, board_configuration structure, std::string expected_error_function, int expected_error_code)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		local_test_board.add_configuration(structure);
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos);
+	}
+
+	void add_or_load_configuration_parameters(ascii_board& local_test_board, std::string id, int row, int column, std::string value_or_file_path, char ignore_character, bool load, std::string expected_error_function, int expected_error_code)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		if (!load)
+		{
+			local_test_board.add_configuration(id, row, column, value_or_file_path, ignore_character);
+		}
+		else if (load)
+		{
+			local_test_board.load_configuration(value_or_file_path, id, row, column, ignore_character);
+		}
+
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos);
+	}
+
+	void add_or_load_configuration_parameters_with_colors(ascii_board& local_test_board, std::string id, int row, int column, std::string value_or_file_path, char ignore_character, std::vector<format_tools::index_format> colors, bool load, std::string expected_error_function, int expected_error_code)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		if (!load)
+		{
+			local_test_board.add_configuration(id, row, column, value_or_file_path, ignore_character, colors);
+		}
+		else if (load)
+		{
+			local_test_board.load_configuration(value_or_file_path, id, row, column, ignore_character, colors);
+		}
+
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos);
+	}
+
+	void activate_deactivate(ascii_board& local_test_board, std::string id, const std::string& comparison, std::string expected_status_function, int expected_status_code, bool activate, int test_num)
+	{
+		std::string log_content = "";
+		if (activate)
+		{
+			local_test_board.reset_logging("ascii_board.log");
+			int status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
+			local_test_board.activate_configuration(id);
+			status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+			
+			std::string board = local_test_board.get_board();
+			EXPECT_EQ(board, comparison) << std::to_string(test_num) << std::to_string(test_num);
+		}
+		else
+		{
+			local_test_board.reset_logging("ascii_board.log");
+			int status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
+			local_test_board.deactivate_configuration(id);
+			status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+			std::string board = local_test_board.get_board();
+			EXPECT_EQ(board, comparison) << std::to_string(test_num);
+		}
+		
+	}
+
+	void activate_deactivate(ascii_board& local_test_board, std::string id, int row, int column, const std::string& comparison, std::string expected_status_function, int expected_status_code, bool activate, int test_num)
+	{
+		std::string log_content = "";
+		if (activate)
+		{
+			local_test_board.reset_logging("ascii_board.log");
+			int status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
+			local_test_board.activate_configuration(row, column, id);
+			status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+			std::string board = local_test_board.get_board();
+			EXPECT_EQ(board, comparison) << std::to_string(test_num);
+		}
+		else
+		{
+			local_test_board.reset_logging("ascii_board.log");
+			int status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
+			local_test_board.deactivate_configuration(row, column, id);
+			status = file_manager::read_file("ascii_board.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+			std::string board = local_test_board.get_board();
+			EXPECT_EQ(board, comparison) << std::to_string(test_num);
+		}
+	}
+
+	void set_or_clear(ascii_board& local_test_board, int row, int column, const std::string& comparison, std::string expected_status_function, int expected_status_code, int test_num, bool set, std::string value = "", char ignore_character = '*')
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		if (set)
+		{
+			if (row != -1 && column != -1)
+			{
+				local_test_board.set_tile(row, column, value, ignore_character);
+			}
+			else if (row == -1 && column == -1)
+			{
+				local_test_board.set_all(value, ignore_character);
+			}
+			else if (column == -1)
+			{
+				local_test_board.set_row(row, value, ignore_character);
+			}
+			else if (row == -1)
+			{
+				local_test_board.set_column(column, value, ignore_character);
+			}
+		}
+		else
+		{
+			if (row != -1 && column != -1)
+			{
+				local_test_board.clear_tile(row, column);
+			}
+			else if (row == -1 && column == -1)
+			{
+				local_test_board.clear_all();
+			}
+			else if (column == -1)
+			{
+				local_test_board.clear_row(row);
+			}
+			else if (row == -1)
+			{
+				local_test_board.clear_column(column);
+			}
+		}
+
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+		std::string board = local_test_board.get_board();
+		EXPECT_EQ(board, comparison) << std::to_string(test_num);
+	}
+
+	void set_or_clear(ascii_board& local_test_board, int row, int column, const std::string& comparison, std::string expected_status_function, int expected_status_code, int test_num, bool set, std::vector<format_tools::index_format> colors, std::string value = "", char ignore_character = '*')
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		if (set)
+		{
+			if (row != -1 && column != -1)
+			{
+				local_test_board.set_tile(row, column, value, ignore_character, colors);
+			}
+			else if (row == -1 && column == -1)
+			{
+				local_test_board.set_all(value, ignore_character, colors);
+			}
+			else if (column == -1)
+			{
+				local_test_board.set_row(row, value, ignore_character, colors);
+			}
+			else if (row == -1)
+			{
+				local_test_board.set_column(column, value, ignore_character, colors);
+			}
+		}
+		else
+		{
+			if (row != -1 && column != -1)
+			{
+				local_test_board.clear_tile(row, column);
+			}
+			else if (row == -1 && column == -1)
+			{
+				local_test_board.clear_all();
+			}
+			else if (column == -1)
+			{
+				local_test_board.clear_row(row);
+			}
+			else if (row == -1)
+			{
+				local_test_board.clear_column(column);
+			}
+		}
+
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+		std::string board = local_test_board.get_board();
+		EXPECT_EQ(board, comparison) << std::to_string(test_num);
+	}
+
+	bool colors_equivalent(std::vector<format_tools::index_format> input_colors, std::vector<format_tools::index_format> board_colors, int test_num)
+	{
+		std::string log_report = "";
+		bool matching = false;
+		if (input_colors.size() == 0 && board_colors.size() == 0)
+		{
+			matching = true;
+		}
+		for (unsigned int j = 0; j < input_colors.size(); j++)
+		{
+			log_report = log_report + "input color:\n";
+			log_report = log_report + std::to_string(input_colors[j].format.background_format) + "\n";
+			log_report = log_report + std::to_string(input_colors[j].format.foreground_format) + "\n";
+			log_report = log_report + std::to_string(input_colors[j].format.dec) + "\n";
+			log_report = log_report + std::to_string(input_colors[j].index) + "\n";
+			log_report = log_report + std::to_string(input_colors[j].flag_replacement) + "\n";
+			log_report = log_report + "\n";
+			matching = false;
+			for (unsigned int i = 0; i < board_colors.size(); i++)
+			{
+				if ((board_colors[i].format.background_format == input_colors[j].format.background_format) &&
+					(board_colors[i].format.foreground_format == input_colors[j].format.foreground_format) &&
+					(board_colors[i].format.dec == input_colors[j].format.dec) &&
+					(board_colors[i].index == input_colors[j].index) &&
+					(board_colors[i].flag_replacement == input_colors[j].flag_replacement))
+				{
+					matching = true;
+				}
+				log_report = log_report + "board color:\n";
+				log_report = log_report + std::to_string(board_colors[i].format.background_format) + "\n";
+				log_report = log_report + std::to_string(board_colors[i].format.foreground_format) + "\n";
+				log_report = log_report + std::to_string(board_colors[i].format.dec) + "\n";
+				log_report = log_report + std::to_string(board_colors[i].index) + "\n";
+				log_report = log_report + std::to_string(board_colors[i].flag_replacement) + "\n";
+				log_report = log_report + "\n";
+			}
+
+			if (!matching)
+			{
+				break;
+			}
+		}
+
+		if (!matching)
+		{
+			ascii_io::print(log_report);
+		}
+		EXPECT_EQ(matching, true) << std::to_string(test_num);
+		return matching;
+	}
+
+	void colors_equivalent(ascii_board local_test_board, std::vector<format_tools::index_format> input_colors, int row, int column, int test_num)
+	{
+		ascii_board::action_tile tile;
+		if (row != -1 && column != -1)
+		{
+			tile = local_test_board.get_action_tile(row, column);
+			if (tile.array_row != -1)
+			{
+				bool matching = colors_equivalent(input_colors, tile.colors, test_num);
+				if (!matching)
+				{
+					ascii_io::print("row: " + std::to_string(row) + "\ncolumn: " + std::to_string(column) + "\n");
+					ascii_io::print("============================================================\n");
+				}
+			}
+		}
+		else if (row == -1 && column == -1)
+		{
+			for (int i = 0; i < total_rows; i++)
+			{
+				for (int j = 0; j < total_columns; j++)
+				{
+					tile = local_test_board.get_action_tile(i, j);
+					if (tile.array_row != -1)
+					{
+						bool matching = colors_equivalent(input_colors, tile.colors, test_num);
+						if (!matching)
+						{
+							ascii_io::print("row: " + std::to_string(i) + "\ncolumn: " + std::to_string(j) + "\n");
+							ascii_io::print("============================================================\n");
+						}
+					}
+				}
+			}
+		}
+		else if (column == -1)
+		{
+			for (int i = 0; i < total_columns; i++)
+			{
+				tile = local_test_board.get_action_tile(row, i);
+				if (tile.array_row != -1)
+				{
+					bool matching = colors_equivalent(input_colors, tile.colors, test_num);
+					if (!matching)
+					{
+						ascii_io::print("row: " + std::to_string(row) + "\ncolumn: " + std::to_string(i) + "\n");
+						ascii_io::print("============================================================\n");
+					}
+				}
+			}
+		}
+		else if (row == -1)
+		{
+			for (int i = 0; i < total_rows; i++)
+			{
+				tile = local_test_board.get_action_tile(i, column);
+				if (tile.array_row != -1)
+				{
+					bool matching = colors_equivalent(input_colors, tile.colors, test_num);
+					if (!matching)
+					{
+						ascii_io::print("row: " + std::to_string(i) + "\ncolumn: " + std::to_string(column) + "\n");
+						ascii_io::print("============================================================\n");
+					}
+				}
+			}
+		}
+	}
+
+	bool action_tiles_equivalent(ascii_board::action_tile tile, ascii_board::action_tile comparision, int test_num)
+	{
+		bool equivalent = false;
+		if ((tile.array_row == comparision.array_row) &&
+			(tile.array_column == comparision.array_column) &&
+			(tile.board_start_row == comparision.board_start_row) &&
+			(tile.board_stop_row == comparision.board_stop_row) &&
+			(tile.board_start_column == comparision.board_start_column) &&
+			(tile.board_stop_column == comparision.board_stop_column) &&
+			(tile.value == comparision.value) &&
+			(tile.default_value == comparision.default_value) &&
+			colors_equivalent(tile.colors, comparision.colors, test_num))
+		{
+			equivalent = true;
+		}
+		EXPECT_EQ(equivalent, true) << std::to_string(test_num);
+		if (!equivalent)
+		{
+			std::string log_message = "";
+			log_message = log_message + "array row: " + std::to_string(tile.array_row) + "\n";
+			log_message = log_message + "array column: " + std::to_string(tile.array_column) + "\n";
+			log_message = log_message + "boud start row: " + std::to_string(tile.board_start_row) + "\n";
+			log_message = log_message + "board stop row: " + std::to_string(tile.board_stop_row) + "\n";
+			log_message = log_message + "board start column: " + std::to_string(tile.board_start_column) + "\n";
+			log_message = log_message + "board stop column: " + std::to_string(tile.board_stop_column) + "\n";
+			log_message = log_message + "value: |" + tile.value + "|\n";
+			log_message = log_message + "default_value: |" + tile.default_value + "|\n";
+			ascii_io::print(log_message);
+		}
+		return equivalent;
+	}
+
+	void set_get_tile_character(ascii_board& local_test_board, int row, int column, char character, int character_index, std::string comparision, std::string expected_status_function, int expected_status_code, bool set, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		if (set)
+		{
+			local_test_board.set_tile_character(row, column, character, character_index);
+		}
+		else
+		{
+			char returned_character = local_test_board.get_tile_character(row, column, character_index);
+			EXPECT_EQ(returned_character, character) << std::to_string(test_num);
+		}
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+	}
+
+	void set_get_tile(ascii_board& local_test_board, int row, int column, std::string value, char ignore_character, std::string comparision, std::string expected_status_function, int expected_status_code, bool set, bool test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		if (set)
+		{
+			local_test_board.set_tile(row, column, value, ignore_character);
+		}
+		else
+		{
+			std::string returned_value = local_test_board.get_tile(row, column);
+			EXPECT_EQ(returned_value, value);
+		}
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+	}
+
+	void test_get_action_tile(ascii_board& local_test_board, int row, int column, ascii_board::action_tile comparision, std::string expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		ascii_board::action_tile tile = local_test_board.get_action_tile(row, column);
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		action_tiles_equivalent(tile, comparision, test_num);
+	}
+};
+
+TEST_F(ascii_board_test, initialization)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	std::string log_content = "";
+	int status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::ascii_board status: 0"), std::string::npos);
+	EXPECT_NE(log_content.find("All validations passed."), std::string::npos);
+	EXPECT_EQ(local_test_board.get_board(), empty_board);
+	status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	ascii_board local_test_board2(local_test_frame, "jibberish.txt", "none", true);
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::ascii_board status: " + std::to_string(INVALID_PATH)), std::string::npos);
+	status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	ascii_board local_test_board3(local_test_frame, "jibberish.txt");
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 1);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, add_configuration_structure)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+
+	// add first valid configuration
+	add_configuration_structure(local_test_board, curser_config_board, "ascii_board::add_configuration", SUCCESS);
+	// add second valid configuration
+	add_configuration_structure(local_test_board, x_config_board, "ascii_board::add_configuration", SUCCESS);
+	// add duplicate
+	add_configuration_structure(local_test_board, duplicate_name_config_board, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add overlapping
+	add_configuration_structure(local_test_board, overlapping_config_board, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add out of bounds index
+	add_configuration_structure(local_test_board, out_of_bounds_config_board, "ascii_board::add_configuration", INVALID_INDEX);
+
+	int status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, add_configuration_parameters)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+
+	// add first valid configuration
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "(*)", '*', false, "ascii_board::add_configuration", SUCCESS);
+	// add second valid configuration
+	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, "*x*", '*', false, "ascii_board::add_configuration", SUCCESS);
+	// add duplicate
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "*x*", '*', false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add out of bounds index
+	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, "(*)", '*', false, "ascii_board::add_configuration", INVALID_INDEX);
+	int status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, add_configuration_parameters_with_colors)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+
+	// add first valid configuration
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
+	// add second valid configuration
+	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, "*x*", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
+	// add duplicate
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "*x*", '*', empty_colors, false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add out of bounds index
+	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", INVALID_INDEX);
+	int status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, load_configuration)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+
+	// Valid path to config
+	int status = local_test_board.start_logging("ascii_board.log");
+	ASSERT_EQ(status, 0);
+	std::string value = local_test_board.load_configuration("test_curser_config.txt");
+	std::string log_content = "";
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::load_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
+	EXPECT_EQ(value, "(*)");
+
+
+	// Invalid path to config
+	local_test_board.reset_logging("ascii_board.log");
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
+	value = local_test_board.load_configuration("jibberish.txt");
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::load_configuration status: " + std::to_string(INVALID_PATH)), std::string::npos);
+	EXPECT_EQ(value, "");
+
+	status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, load_configuration_parameters)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+
+	// add first valid configuration
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "test_curser_config.txt", '*', true, "ascii_board::add_configuration", SUCCESS);
+	// add second valid configuration
+	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, "test_x_config.txt", '*', true, "ascii_board::add_configuration", SUCCESS);
+	// add duplicate
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "test_x_config.txt", '*', true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add out of bounds index
+	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, "test_curser_config.txt", '*', true, "ascii_board::add_configuration", INVALID_INDEX);
+	// invalid path
+	add_or_load_configuration_parameters(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', true, "ascii_board::load_configuration", INVALID_PATH);
+	
+	int status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, load_configuration_parameters_with_colors)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+
+	// add first valid configuration
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "test_curser_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
+	// add second valid configuration
+	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, "test_x_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
+	// add duplicate
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "test_x_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	// add out of bounds index
+	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, "test_curser_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", INVALID_INDEX);
+	// invalid path
+	add_or_load_configuration_parameters_with_colors(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', empty_colors, true, "ascii_board::load_configuration", INVALID_PATH);
+
+	int status = file_manager::delete_file("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int status = local_test_board.start_logging("ascii_board.log");
+	ASSERT_EQ(status, 0);
+	local_test_board.add_configuration(curser_config_board);
+	local_test_board.add_configuration(x_config_board);
+	std::string log_content = "";
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
+	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
+
+	activate_deactivate(local_test_board, "curser", full_curser_board, "ascii_board::set_all", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", full_curser_x_board, "ascii_board::set_all", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "jibberish", full_curser_x_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 2);
+	activate_deactivate(local_test_board, "jibberish", full_curser_x_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 3);
+	activate_deactivate(local_test_board, "curser", full_x_board, "ascii_board::set_all", SUCCESS, false, 4);
+	activate_deactivate(local_test_board, "x", empty_board, "ascii_board::set_all", SUCCESS, false, 5);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int status = local_test_board.start_logging("ascii_board.log");
+	ASSERT_EQ(status, 0);
+	local_test_board.add_configuration(curser_config_board);
+	local_test_board.add_configuration(x_config_board);
+	std::string log_content = "";
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
+	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
+
+	activate_deactivate(local_test_board, "curser", 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "curser", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, false, 2);
+	activate_deactivate(local_test_board, "x", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
+	activate_deactivate(local_test_board, "curser", 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	activate_deactivate(local_test_board, "x", 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 5);
+	activate_deactivate(local_test_board, "curser", 5, 4, middle_x_board, "ascii_board::set_tile", SUCCESS, false, 6);
+	activate_deactivate(local_test_board, "x", 5, 4, empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
+	activate_deactivate(local_test_board, "curser", 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	activate_deactivate(local_test_board, "x", 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 9);
+	activate_deactivate(local_test_board, "curser", 9, 9, end_x_board, "ascii_board::set_tile", SUCCESS, false, 10);
+	activate_deactivate(local_test_board, "x", 9, 9, empty_board, "ascii_board::set_tile", SUCCESS, false, 11);
+
+	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 12);
+	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 13);
+
+	activate_deactivate(local_test_board, "curser", 10, 0, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 14);
+	activate_deactivate(local_test_board, "curser", 10, 0, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 15);
+	activate_deactivate(local_test_board, "curser", 0, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 16);
+	activate_deactivate(local_test_board, "curser", 0, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 17);
+	activate_deactivate(local_test_board, "curser", 10, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 18);
+	activate_deactivate(local_test_board, "curser", 10, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 19);
+	activate_deactivate(local_test_board, "curser", 4, 2, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 20);
+	activate_deactivate(local_test_board, "curser", 4, 2, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
+
+	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 22);
+	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 23);
+	activate_deactivate(local_test_board, "x", 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, true, 24);
+	activate_deactivate(local_test_board, "x", 5, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 25);
+	activate_deactivate(local_test_board, "x", 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, true, 26);
+	activate_deactivate(local_test_board, "x", 9, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 27);
+
+	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 28);
+	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 29);
+	activate_deactivate(local_test_board, "x", -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, true, 30);
+	activate_deactivate(local_test_board, "x", -1, 2, empty_board, "ascii_board::set_tile", SUCCESS, false, 31);
+	activate_deactivate(local_test_board, "x", -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, true, 32);
+	activate_deactivate(local_test_board, "x", -1, 9, empty_board, "ascii_board::set_tile", SUCCESS, false, 33);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, set_or_clear_tiles)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int status = local_test_board.start_logging("ascii_board.log");
+	ASSERT_EQ(status, 0);
+	
+	set_or_clear(local_test_board, 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, 0, true, "(*)", '*');
+	set_or_clear(local_test_board, 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, 1, true, "*x*", '*');
+	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
+	set_or_clear(local_test_board, 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, 3, true, "(*)", '*');
+	set_or_clear(local_test_board, 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, 4, true, "*x*", '*');
+	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
+	set_or_clear(local_test_board, 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, 6, true, "(*)", '*');
+	set_or_clear(local_test_board, 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, 7, true, "*x*", '*');
+	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
+
+	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, "(*)", '*');
+	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
+	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, "(*)", '*');
+	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
+	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, "(*)", '*');
+	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
+	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, "(*)", '*');
+	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
+
+	set_or_clear(local_test_board, 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, "*x*", '*');
+	set_or_clear(local_test_board, 0, -1, empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
+	set_or_clear(local_test_board, 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, "*x*", '*');
+	set_or_clear(local_test_board, 5, -1, empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
+	set_or_clear(local_test_board, 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, "*x*", '*');
+	set_or_clear(local_test_board, 9, -1, empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
+
+	set_or_clear(local_test_board, -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 0, empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
+	set_or_clear(local_test_board, -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 2, empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
+	set_or_clear(local_test_board, -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 9, empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
+}
+
+TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int status = local_test_board.start_logging("ascii_board.log");
+	ASSERT_EQ(status, 0);
+
+	std::vector<format_tools::index_format> curser_colors =
+	{
+		{0, {format_tools::green, format_tools::black, false}, ' '}
+	};
+
+	std::vector<format_tools::index_format> x_colors =
+	{
+		{1, {format_tools::red, format_tools::black, false}, ' '},
+		{2, {format_tools::none, format_tools::none, false}, ' '}
+	};
+
+	std::vector<format_tools::index_format> curser_x_colors =
+	{
+		{0, {format_tools::green, format_tools::black, false}, ' '},
+		{1, {format_tools::red, format_tools::black, false}, ' '},
+		{2, {format_tools::none, format_tools::none, false}, ' '}
+	};
+
+	set_or_clear(local_test_board, 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, 0, true, curser_colors, "(*)", '*');
+	colors_equivalent(local_test_board, curser_colors, 0, 0, 0);
+	set_or_clear(local_test_board, 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, 1, true, curser_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, curser_x_colors, 0, 0, 1);
+	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
+	colors_equivalent(local_test_board, empty_colors, 0, 0, 2);
+	set_or_clear(local_test_board, 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, 3, true, curser_colors, "(*)", '*');
+	colors_equivalent(local_test_board, curser_colors, 5, 4, 3);
+	set_or_clear(local_test_board, 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, 4, true, curser_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, curser_x_colors, 5, 4, 4);
+	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
+	colors_equivalent(local_test_board, empty_colors, 5, 4, 5);
+	set_or_clear(local_test_board, 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, 6, true, curser_colors, "(*)", '*');
+	colors_equivalent(local_test_board, curser_colors, 9, 9, 6);
+	set_or_clear(local_test_board, 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, 7, true, curser_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, curser_x_colors, 9, 9, 7);
+	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
+	colors_equivalent(local_test_board, empty_colors, 9, 9, 8);
+
+	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
+	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
+	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
+	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
+
+	set_or_clear(local_test_board, 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, 0, -1, 9);
+	set_or_clear(local_test_board, 0, -1, empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
+	colors_equivalent(local_test_board, empty_colors, 0, -1, 10);
+	set_or_clear(local_test_board, 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, 5, -1, 11);
+	set_or_clear(local_test_board, 5, -1, empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
+	colors_equivalent(local_test_board, empty_colors, 5, -1, 12);
+	set_or_clear(local_test_board, 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, 9, -1, 13);
+	set_or_clear(local_test_board, 9, -1, empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
+	colors_equivalent(local_test_board, empty_colors, 9, -1, 14);
+
+	set_or_clear(local_test_board, -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, -1, 0, 15);
+	set_or_clear(local_test_board, -1, 0, empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
+	colors_equivalent(local_test_board, empty_colors, -1, 0, 16);
+	set_or_clear(local_test_board, -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, -1, 2, 17);
+	set_or_clear(local_test_board, -1, 2, empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
+	colors_equivalent(local_test_board, empty_colors, -1, 2, 18);
+	set_or_clear(local_test_board, -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, x_colors, -1, 9, 19);
+	set_or_clear(local_test_board, -1, 9, empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
+	colors_equivalent(local_test_board, empty_colors, -1, 9, 20);
+}
+
+TEST_F(ascii_board_test, get_number_of_rows)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int rows = local_test_board.get_number_of_rows();
+	EXPECT_EQ(rows, total_rows);
+}
+
+TEST_F(ascii_board_test, get_number_of_columns)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	int columns = local_test_board.get_number_of_columns();
+	EXPECT_EQ(columns, total_columns);
+}
+
+TEST_F(ascii_board_test, get_board)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	std::string board = local_test_board.get_board();
+	EXPECT_EQ(board, empty_board);
+}
+
+TEST_F(ascii_board_test, set_get_tile_character)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::set_tile_character", SUCCESS, true, 0);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::get_tile_character", SUCCESS, false, 1);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 2);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 3);
+	set_get_tile_character(local_test_board, 5, 4, 'x', 1, middle_x_board, "ascii_board::set_tile_character", SUCCESS, true, 4);
+	set_get_tile_character(local_test_board, 5, 4, 'x', 1, middle_x_board, "ascii_board::get_tile_character", SUCCESS, false, 5);
+	set_get_tile_character(local_test_board, 5, 4, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 6);
+	set_get_tile_character(local_test_board, 5, 4, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 7);
+	set_get_tile_character(local_test_board, 9, 9, 'x', 1, end_x_board, "ascii_board::set_tile_character", SUCCESS, true, 8);
+	set_get_tile_character(local_test_board, 9, 9, 'x', 1, end_x_board, "ascii_board::get_tile_character", SUCCESS, false, 9);
+	set_get_tile_character(local_test_board, 9, 9, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 10);
+	set_get_tile_character(local_test_board, 9, 9, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 11);
+	set_get_tile_character(local_test_board, -1, 0, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 12);
+	set_get_tile_character(local_test_board, -1, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 13);
+	set_get_tile_character(local_test_board, 10, 0, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 14);
+	set_get_tile_character(local_test_board, 10, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 15);
+	set_get_tile_character(local_test_board, 0, -1, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 16);
+	set_get_tile_character(local_test_board, 0, -1, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 17);
+	set_get_tile_character(local_test_board, 0, 10, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 18);
+	set_get_tile_character(local_test_board, 0, 10, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 19);
+	set_get_tile_character(local_test_board, 4, 2, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 20);
+	set_get_tile_character(local_test_board, 4, 2, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 21);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 3, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 22);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 3, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 23);
+	set_get_tile_character(local_test_board, 0, 0, 'x', -1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 24);
+	set_get_tile_character(local_test_board, 0, 0, ' ', -1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 25);
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, set_get_tile)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	set_get_tile(local_test_board, 0, 0, "(*)", '*', beginning_curser_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	set_get_tile(local_test_board, 0, 0, "( )", '*', beginning_curser_board, "ascii_board::get_tile", SUCCESS, false, 1);
+	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 2);
+	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 3);
+	set_get_tile(local_test_board, 5, 4, "(*)", '*', middle_curser_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	set_get_tile(local_test_board, 5, 4, "( )", '*', middle_curser_board, "ascii_board::get_tile", SUCCESS, false, 5);
+	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 6);
+	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 7);
+	set_get_tile(local_test_board, 9, 9, "(*)", '*', end_curser_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	set_get_tile(local_test_board, 9, 9, "( )", '*', end_curser_board, "ascii_board::get_tile", SUCCESS, false, 9);
+	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 10);
+	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 11);
+	set_get_tile(local_test_board, -1, 0, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
+	set_get_tile(local_test_board, -1, 0, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
+	set_get_tile(local_test_board, 10, 0, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
+	set_get_tile(local_test_board, 10, 0, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
+	set_get_tile(local_test_board, 0, -1, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
+	set_get_tile(local_test_board, 0, -1, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
+	set_get_tile(local_test_board, 0, 10, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
+	set_get_tile(local_test_board, 0, 10, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
+	set_get_tile(local_test_board, 4, 2, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 16);
+	set_get_tile(local_test_board, 4, 2, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 17);
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, get_action_tile)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board::action_tile beginning_empty_tile = {0, 0, 1, 1, 1, 3, "   ", "   ", empty_colors};
+	ascii_board::action_tile beginning_curser_tile = { 0, 0, 1, 1, 1, 3, "   ", "( )", empty_colors };
+	test_get_action_tile(local_test_board, 0, 0, beginning_empty_tile, "ascii_board::get_action_tile", SUCCESS, 0);
+	local_test_board.set_tile(0, 0, "(*)", '*');
+	test_get_action_tile(local_test_board, 0, 0, beginning_curser_tile, "ascii_board::get_action_tile", SUCCESS, 0);
+	delete(local_test_frame);
+}

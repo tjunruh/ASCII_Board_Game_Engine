@@ -106,6 +106,7 @@ $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXT
 ### ASCII Engine Test
 TEST_ASCII_ENGINE_OBJS := \
 	main.o \
+        ascii_board.o \
 	ascii_io.o \
 	controls.o \
 	format_tools.o
