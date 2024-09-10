@@ -32,9 +32,24 @@ struct board_configuration
 class ascii_board : public widget
 {
 public:
+	struct action_tile
+	{
+		int array_row = -1;
+		int array_column = -1;
+		int board_start_row = -1;
+		int board_stop_row = -1;
+		int board_start_column = -1;
+		int board_stop_column = -1;
+		std::string default_value = "";
+		std::string value = "";
+		std::vector<format_tools::index_format> colors;
+	};
+
 	ASCII_BOARD_API ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
 	ASCII_BOARD_API void clear_tile(int row, int column);
-	ASCII_BOARD_API void clear_tiles();
+	ASCII_BOARD_API void clear_row(int row);
+	ASCII_BOARD_API void clear_column(int column);
+	ASCII_BOARD_API void clear_all();
 	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character);
 	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API void set_row(int row, std::string value, char ignore_character);
@@ -61,23 +76,12 @@ public:
 	ASCII_BOARD_API int get_number_of_rows();
 	ASCII_BOARD_API void display();
 	ASCII_BOARD_API void sync();
+	ASCII_BOARD_API action_tile get_action_tile(int row, int column);
 
 private:
 	std::string board = "";
 	std::vector<format_tools::index_format> board_colors;
 
-	struct action_tile
-	{
-		int array_row = -1;
-		int array_column = -1;
-		int board_start_row = -1;
-		int board_stop_row = -1;
-		int board_start_column = -1;
-		int board_stop_column = -1;
-		std::string default_value = "";
-		std::string value = "";
-		std::vector<format_tools::index_format> colors;
-	};
 	int max_rows = 0;
 	int max_columns = 0;
 
@@ -95,6 +99,7 @@ private:
 	board_configuration get_configuration(std::string name_id);
 	bool duplicate_point_present(board_configuration configuration);
 	bool configuration_indexing_acceptable(board_configuration configuration);
+	bool action_tile_index_exists(int row, int column);
 	int get_action_tile_index(int row, int column);
 	int get_board_config_index(std::string name_id);
 	int get_tile_config_index(std::string name_id, int row, int column);
@@ -102,4 +107,5 @@ private:
 	void set_row(tile_configuration configuration, bool activate);
 	void set_column(tile_configuration configuration, bool activate);
 	void set_all(tile_configuration configuration, bool activate);
+	std::string fill_default_value_with_ignore_character(std::string config_value, std::string default_value, char ignore_character);
 };
