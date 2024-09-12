@@ -22,11 +22,14 @@
 class ascii_board_test : public testing::Test
 {
 protected:
+	std::string board_config_path = "Code/test_ascii_engine/test_configs/test_board_config.txt";
+	std::string curser_config_path = "Code/test_ascii_engine/test_configs/test_curser_config.txt";
+	std::string x_config_path = "Code/test_ascii_engine/test_configs/test_x_config.txt";
 	frame* global_test_frame = new frame();
-	ascii_board global_test_board = ascii_board(global_test_frame, "test_board_config.txt", "none", true, "global_ascii_board.log");
+	ascii_board global_test_board = ascii_board(global_test_frame, board_config_path, "none", true, "global_ascii_board.log");
 	int total_rows = 10;
 	int total_columns = 10;
-	std::string empty_board = 
+	std::string empty_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -917,7 +920,7 @@ protected:
 TEST_F(ascii_board_test, initialization)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	std::string log_content = "";
 	int status = file_manager::read_file("ascii_board.log", log_content);
 	ASSERT_EQ(status, 0);
@@ -944,7 +947,7 @@ TEST_F(ascii_board_test, initialization)
 TEST_F(ascii_board_test, add_configuration_structure)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
 	add_configuration_structure(local_test_board, curser_config_board, "ascii_board::add_configuration", SUCCESS);
@@ -966,7 +969,7 @@ TEST_F(ascii_board_test, add_configuration_structure)
 TEST_F(ascii_board_test, add_configuration_parameters)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
 	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "(*)", '*', false, "ascii_board::add_configuration", SUCCESS);
@@ -985,7 +988,7 @@ TEST_F(ascii_board_test, add_configuration_parameters)
 TEST_F(ascii_board_test, add_configuration_parameters_with_colors)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
 	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
@@ -1004,12 +1007,12 @@ TEST_F(ascii_board_test, add_configuration_parameters_with_colors)
 TEST_F(ascii_board_test, load_configuration)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 
 	// Valid path to config
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
-	std::string value = local_test_board.load_configuration("test_curser_config.txt");
+	std::string value = local_test_board.load_configuration(curser_config_path);
 	std::string log_content = "";
 	status = file_manager::read_file("ascii_board.log", log_content);
 	ASSERT_EQ(status, 0);
@@ -1037,16 +1040,16 @@ TEST_F(ascii_board_test, load_configuration)
 TEST_F(ascii_board_test, load_configuration_parameters)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "test_curser_config.txt", '*', true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, curser_config_path, '*', true, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
-	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, "test_x_config.txt", '*', true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, x_config_path, '*', true, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "test_x_config.txt", '*', true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, x_config_path, '*', true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
-	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, "test_curser_config.txt", '*', true, "ascii_board::add_configuration", INVALID_INDEX);
+	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, curser_config_path, '*', true, "ascii_board::add_configuration", INVALID_INDEX);
 	// invalid path
 	add_or_load_configuration_parameters(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', true, "ascii_board::load_configuration", INVALID_PATH);
 	
@@ -1059,16 +1062,16 @@ TEST_F(ascii_board_test, load_configuration_parameters)
 TEST_F(ascii_board_test, load_configuration_parameters_with_colors)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "test_curser_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, curser_config_path, '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
-	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, "test_x_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, x_config_path, '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "test_x_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, x_config_path, '*', empty_colors, true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
-	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, "test_curser_config.txt", '*', empty_colors, true, "ascii_board::add_configuration", INVALID_INDEX);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, curser_config_path, '*', empty_colors, true, "ascii_board::add_configuration", INVALID_INDEX);
 	// invalid path
 	add_or_load_configuration_parameters_with_colors(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', empty_colors, true, "ascii_board::load_configuration", INVALID_PATH);
 
@@ -1081,7 +1084,7 @@ TEST_F(ascii_board_test, load_configuration_parameters_with_colors)
 TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 	local_test_board.add_configuration(curser_config_board);
@@ -1105,7 +1108,7 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
 TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 	local_test_board.add_configuration(curser_config_board);
@@ -1161,7 +1164,7 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 TEST_F(ascii_board_test, set_or_clear_tiles)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 	
@@ -1202,7 +1205,7 @@ TEST_F(ascii_board_test, set_or_clear_tiles)
 TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 
@@ -1282,7 +1285,7 @@ TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 TEST_F(ascii_board_test, get_number_of_rows)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int rows = local_test_board.get_number_of_rows();
 	EXPECT_EQ(rows, total_rows);
 }
@@ -1290,7 +1293,7 @@ TEST_F(ascii_board_test, get_number_of_rows)
 TEST_F(ascii_board_test, get_number_of_columns)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	int columns = local_test_board.get_number_of_columns();
 	EXPECT_EQ(columns, total_columns);
 }
@@ -1298,7 +1301,7 @@ TEST_F(ascii_board_test, get_number_of_columns)
 TEST_F(ascii_board_test, get_board)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt");
+	ascii_board local_test_board(local_test_frame, board_config_path);
 	std::string board = local_test_board.get_board();
 	EXPECT_EQ(board, empty_board);
 }
@@ -1306,7 +1309,7 @@ TEST_F(ascii_board_test, get_board)
 TEST_F(ascii_board_test, set_get_tile_character)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::set_tile_character", SUCCESS, true, 0);
 	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::get_tile_character", SUCCESS, false, 1);
 	set_get_tile_character(local_test_board, 0, 0, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 2);
@@ -1339,7 +1342,7 @@ TEST_F(ascii_board_test, set_get_tile_character)
 TEST_F(ascii_board_test, set_get_tile)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	set_get_tile(local_test_board, 0, 0, "(*)", '*', beginning_curser_board, "ascii_board::set_tile", SUCCESS, true, 0);
 	set_get_tile(local_test_board, 0, 0, "( )", '*', beginning_curser_board, "ascii_board::get_tile", SUCCESS, false, 1);
 	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 2);
@@ -1368,7 +1371,7 @@ TEST_F(ascii_board_test, set_get_tile)
 TEST_F(ascii_board_test, get_action_tile)
 {
 	frame* local_test_frame = new frame();
-	ascii_board local_test_board(local_test_frame, "test_board_config.txt", "none", true);
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	ascii_board::action_tile beginning_empty_tile = {0, 0, 1, 1, 1, 3, "   ", "   ", empty_colors};
 	ascii_board::action_tile beginning_curser_tile = { 0, 0, 1, 1, 1, 3, "   ", "( )", empty_colors };
 	test_get_action_tile(local_test_board, 0, 0, beginning_empty_tile, "ascii_board::get_action_tile", SUCCESS, 0);
