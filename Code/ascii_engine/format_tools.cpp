@@ -432,7 +432,10 @@ std::vector<format_tools::content_format> format_tools::convert(std::vector<inde
 		converted_format.content = "";
 	}
 
-	converted_format.format = index_vec[index_vec_position].format;
+	if (index_vec.size() > 0)
+	{
+		converted_format.format = index_vec[index_vec_position].format;
+	}
 
 	while (content_position < content.length())
 	{
