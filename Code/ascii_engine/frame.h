@@ -41,6 +41,11 @@ public:
 	FRAME_API void set_default_foreground_color(int color);
 	FRAME_API int get_default_background_color();
 	FRAME_API int get_default_foreground_color();
+	FRAME_API void use_fake_console_dimensions();
+	FRAME_API void use_true_console_dimensions();
+	FRAME_API void set_fake_console_width(int width);
+	FRAME_API void set_fake_console_height(int height);
+	FRAME_API std::string get_frame_output();
 
 private:
 	dec_formatter dec;
@@ -108,6 +113,12 @@ private:
 	int get_x_origin(int id, int& x_origin);
 	int get_y_origin(int id, int& y_origin);
 	int get_alignment(int id, std::string& allignment);
+	int get_spacing(int id, int& top, int& bottom, int& left, int& right);
+	int get_border_spacing(int id, int& top, int& bottom, int& left, int& right);
+	int get_vertical_border(int id, char& border);
+	int get_horizontal_border(int id, char& border);
+	int get_corner_border(int id, char& border);
+	int get_highlight_character(int id, char& highlight_character);
 	float get_width_weight(widget_info item);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int generate_widget_id();
@@ -165,6 +176,9 @@ private:
 	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
 	bool _dec_enabled = false;
 	bool _color_enabled = false;
+	bool _use_fake_console_dimensions = false;
+	int _fake_console_width = 0;
+	int _fake_console_height = 0;
 	int default_foreground_color = format_tools::white;
 	int default_background_color = format_tools::black;
 	std::vector<format_tools::coordinate_format> color_regions;

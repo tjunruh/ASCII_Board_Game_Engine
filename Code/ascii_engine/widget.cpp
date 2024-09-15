@@ -87,6 +87,50 @@ void widget::unselectable()
 	log.log_status(status, "widget::unselectable");
 }
 
+void widget::get_spacing(int& top, int& bottom, int& left, int& right)
+{
+	int status = parent_frame->get_spacing(widget_id, top, bottom, left, right);
+	log.log_status(status, "widget::get_spacing");
+}
+
+void widget::get_border_spacing(int& top, int& bottom, int& left, int& right)
+{
+	int status = parent_frame->get_border_spacing(widget_id, top, bottom, left, right);
+	log.log_status(status, "widget::get_border_spacing");
+}
+
+char widget::get_vertical_border()
+{
+	char border = ' ';
+	int status = parent_frame->get_vertical_border(widget_id, border);
+	log.log_status(status, "widget::get_vertical_border");
+	return border;
+}
+
+char widget::get_horizontal_border()
+{
+	char border = ' ';
+	int status = parent_frame->get_horizontal_border(widget_id, border);
+	log.log_status(status, "widget::get_horizontal_border");
+	return border;
+}
+
+char widget::get_corner_border()
+{
+	char border = ' ';
+	int status = parent_frame->get_corner_border(widget_id, border);
+	log.log_status(status, "widget::get_corner_border");
+	return border;
+}
+
+char widget::get_highlight_character()
+{
+	char highlight_character = ' ';
+	int status = parent_frame->get_highlight_character(widget_id, highlight_character);
+	log.log_status(status, "widget::get_highlight_character");
+	return highlight_character;
+}
+
 unsigned int widget::get_width(bool include_spacing)
 {
 	unsigned int width = 0;

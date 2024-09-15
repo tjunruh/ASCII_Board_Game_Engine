@@ -30,6 +30,12 @@ public:
 	WIDGET_API void refresh();
 	WIDGET_API void selectable();
 	WIDGET_API void unselectable();
+	WIDGET_API void get_spacing(int& top, int& bottom, int& left, int& right);
+	WIDGET_API void get_border_spacing(int& top, int& bottom, int& left, int& right);
+	WIDGET_API char get_vertical_border();
+	WIDGET_API char get_horizontal_border();
+	WIDGET_API char get_corner_border();
+	WIDGET_API char get_highlight_character();
 	WIDGET_API unsigned int get_width(bool include_spacing=false);
 	WIDGET_API unsigned int get_height(bool include_spacing=false);
 	WIDGET_API int get_x_origin();

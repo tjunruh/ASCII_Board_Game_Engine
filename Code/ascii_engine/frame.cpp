@@ -329,6 +329,45 @@ int frame::get_default_foreground_color()
 	return default_foreground_color;
 }
 
+void frame::use_fake_console_dimensions()
+{
+	_use_fake_console_dimensions = true;
+}
+
+void frame::use_true_console_dimensions()
+{
+	_use_fake_console_dimensions = false;
+}
+
+void frame::set_fake_console_width(int width)
+{
+	if (width >= 0)
+	{
+		_fake_console_width = width;
+	}
+	else
+	{
+		log.log_status(INVALID_VALUE, "frame::set_fake_console_width");
+	}
+}
+
+void frame::set_fake_console_height(int height)
+{
+	if (height >= 0)
+	{
+		_fake_console_height = height;
+	}
+	else
+	{
+		log.log_status(INVALID_VALUE, "frame::set_fake_console_height");
+	}
+}
+
+std::string frame::get_frame_output()
+{
+	return generate_frame_output();
+}
+
 int frame::add_widget()
 {
 	int id = generate_widget_id();
@@ -901,6 +940,102 @@ int frame::get_alignment(int id, std::string& alignment)
 	return status;
 }
 
+int frame::get_spacing(int id, int& top, int& bottom, int& left, int& right)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			top = widgets[i].top_spacing;
+			bottom = widgets[i].bottom_spacing;
+			left = widgets[i].left_spacing;
+			right = widgets[i].right_spacing;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_border_spacing(int id, int& top, int& bottom, int& left, int& right)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			top = widgets[i].top_border_spacing;
+			bottom = widgets[i].bottom_border_spacing;
+			left = widgets[i].left_border_spacing;
+			right = widgets[i].right_border_spacing;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_vertical_border(int id, char& border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			border = widgets[i].vertical_border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_horizontal_border(int id, char& border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			border = widgets[i].horizontal_border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_corner_border(int id, char& border)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			border = widgets[i].corner_border;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_highlight_character(int id, char& highlight_character)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			highlight_character = widgets[i].highlight_character;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 float frame::get_width_weight(widget_info item)
 {
 	float total_width_multiplier = item.width_multiplier;
@@ -1183,7 +1318,16 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 {
 	int x = 0;
 	int y = 0;
-	ascii_io::get_terminal_size(x, y);
+	if (!_use_fake_console_dimensions)
+	{
+		ascii_io::get_terminal_size(x, y);
+	}
+	else
+	{
+		x = _fake_console_width;
+		y = _fake_console_height;
+	}
+	
 	int raw_width = int(x * get_width_weight(item));
 	if(!include_spacing)
 	{
