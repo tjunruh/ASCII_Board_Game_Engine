@@ -109,7 +109,8 @@ TEST_ASCII_ENGINE_OBJS := \
         ascii_board.o \
 	ascii_io.o \
 	controls.o \
-	format_tools.o
+	format_tools.o \
+        widget.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 ALL_OBJS += $(TEST_ASCII_ENGINE_OBJS)
 
