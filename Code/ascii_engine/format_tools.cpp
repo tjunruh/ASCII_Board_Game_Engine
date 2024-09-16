@@ -608,6 +608,18 @@ std::vector<std::string> format_tools::remove_newline_characters(std::vector<std
 	return lines;
 }
 
+std::vector<std::string> format_tools::add_newline_characters(std::vector<std::string> lines)
+{
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		if ((lines[i].length() > 0) && (lines[i].back() != '\n'))
+		{
+			lines[i] = lines[i] + '\n';
+		}
+	}
+	return lines;
+}
+
 unsigned int format_tools::get_first_line_length(const std::string& content)
 {
 	unsigned int width = 0;

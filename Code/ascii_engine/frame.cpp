@@ -1588,6 +1588,21 @@ std::string frame::generate_frame_output()
 		column_data.text.clear();
 		column_data.width.clear();
 	}
+	std::vector<std::string> frame_lines = format_tools::get_lines(frame_output);
+	frame_lines = format_tools::remove_newline_characters(frame_lines);
+	int x = 0;
+	int y = 0;
+	if (!_use_fake_console_dimensions)
+	{
+		ascii_io::get_terminal_size(x, y);
+	}
+	else
+	{
+		x = _fake_console_width;
+	}
+	frame_lines = format_tools::fill_lines(frame_lines, x, format_tools::left_alignment_keyword);
+	frame_lines = format_tools::add_newline_characters(frame_lines);
+	frame_output = format_tools::get_string(frame_lines);
 	set_widget_origins();
 	if (_color_enabled)
 	{

@@ -100,5 +100,6 @@ namespace format_tools
 	FORMAT_TOOLS_API void convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag);
 	FORMAT_TOOLS_API std::vector<content_format> fit_to_width(const std::vector<content_format>& content_vec, unsigned int width);
 	FORMAT_TOOLS_API std::vector<std::string> remove_newline_characters(std::vector<std::string> lines);
+	FORMAT_TOOLS_API std::vector<std::string> add_newline_characters(std::vector<std::string> lines);
 	FORMAT_TOOLS_API unsigned int get_first_line_length(const std::string& content);
 }
