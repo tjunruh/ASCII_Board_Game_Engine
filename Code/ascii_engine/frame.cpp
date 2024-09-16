@@ -1599,10 +1599,19 @@ std::string frame::generate_frame_output()
 	else
 	{
 		x = _fake_console_width;
+		y = _fake_console_height;
 	}
 	frame_lines = format_tools::fill_lines(frame_lines, x, format_tools::left_alignment_keyword);
+	if (frame_lines.size() < y)
+	{
+		frame_lines = format_tools::add_lines(frame_lines, y - frame_lines.size(), x);
+	}
 	frame_lines = format_tools::add_newline_characters(frame_lines);
 	frame_output = format_tools::get_string(frame_lines);
+	if ((frame_output.back() == '\n') && (frame_output.length() > 0))
+	{
+		frame_output.erase((frame_output.length() - 1), 1);
+	}
 	set_widget_origins();
 	if (_color_enabled)
 	{
