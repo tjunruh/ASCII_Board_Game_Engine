@@ -1478,6 +1478,11 @@ std::vector<std::string> frame::get_widget_lines(int id)
 
 	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
 
+	if (user_lines.back() == "\n")
+	{
+		widget_lines.push_back(active_spacing);
+	}
+
 	if (_color_enabled)
 	{
 		convert_flags(item.coordinate_colors, item.index_colors, ignore_flags, widget_lines, '*');
@@ -1602,7 +1607,7 @@ std::string frame::generate_frame_output()
 		y = _fake_console_height;
 	}
 	frame_lines = format_tools::fill_lines(frame_lines, x, format_tools::left_alignment_keyword);
-	if (frame_lines.size() < y)
+	if (frame_lines.size() < (unsigned int)y)
 	{
 		frame_lines = format_tools::add_lines(frame_lines, y - frame_lines.size(), x);
 	}

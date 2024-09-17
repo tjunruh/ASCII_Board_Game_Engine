@@ -52,6 +52,11 @@ std::string board_config_field_parser::get_board(const std::string &content)
 		}
 	}
 
+	if (board.back() == '\n')
+	{
+		board.erase((board.length() - 1), 1);
+	}
+
 	return board;
 }
 
