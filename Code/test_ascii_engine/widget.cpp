@@ -395,3 +395,14 @@ TEST_F(widget_test, get_widget_type)
 
 	delete(local_test_frame);
 }
+
+TEST_F(widget_test, selectability)
+{
+	frame* local_test_frame = new frame();
+	widget local_test_widget(local_test_frame);
+	local_test_widget.selectable();
+	EXPECT_EQ(local_test_widget.is_selectable(), true);
+	local_test_widget.unselectable();
+	EXPECT_EQ(local_test_widget.is_selectable(), false);
+	delete(local_test_frame);
+}
