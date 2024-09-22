@@ -87,6 +87,14 @@ void widget::unselectable()
 	log.log_status(status, "widget::unselectable");
 }
 
+bool widget::is_selectable()
+{
+	bool selectable = false;
+	int status = parent_frame->get_selectability(widget_id, selectable);
+	log.log_status(status, "widget::is_selectable");
+	return selectable;
+}
+
 void widget::get_spacing(int& top, int& bottom, int& left, int& right)
 {
 	int status = parent_frame->get_spacing(widget_id, top, bottom, left, right);

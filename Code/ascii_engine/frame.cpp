@@ -1036,6 +1036,21 @@ int frame::get_highlight_character(int id, char& highlight_character)
 	return status;
 }
 
+int frame::get_selectability(int id, bool& selectable)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			selectable = widgets[i].selectable;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 float frame::get_width_weight(widget_info item)
 {
 	float total_width_multiplier = item.width_multiplier;
@@ -1707,6 +1722,7 @@ bool frame::is_selectable(int id)
 		if (widgets[i].id == id)
 		{
 			selectable = widgets[i].selectable;
+			break;
 		}
 	}
 	return selectable;

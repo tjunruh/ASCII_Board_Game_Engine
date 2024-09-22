@@ -30,6 +30,7 @@ public:
 	WIDGET_API void refresh();
 	WIDGET_API void selectable();
 	WIDGET_API void unselectable();
+	WIDGET_API bool is_selectable();
 	WIDGET_API void get_spacing(int& top, int& bottom, int& left, int& right);
 	WIDGET_API void get_border_spacing(int& top, int& bottom, int& left, int& right);
 	WIDGET_API char get_vertical_border();

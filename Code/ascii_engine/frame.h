@@ -119,6 +119,7 @@ private:
 	int get_horizontal_border(int id, char& border);
 	int get_corner_border(int id, char& border);
 	int get_highlight_character(int id, char& highlight_character);
+	int get_selectability(int id, bool& selectable);
 	float get_width_weight(widget_info item);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int generate_widget_id();
