@@ -80,12 +80,12 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 		{
 			if (begin)
 			{
-				input.insert(0, " ");
+				input = input + " ";
 				begin = false;
 			}
 			else
 			{
-				input = input + " ";
+				input.insert(0, " ");
 				begin = true;
 			}
 		}
