@@ -76,12 +76,12 @@ TEST_F(format_tools_test, fill_line)
 
 	filled_string = format_tools::fill_line(test_string, 51, format_tools::center_alignment_keyword);
 	correct_answer = test_string;
-	for (unsigned int i = 0; i < 8; i++)
+	for (unsigned int i = 0; i < 7; i++)
 	{
 		correct_answer = " " + correct_answer;
 	}
 
-	for (unsigned int i = 0; i < 7; i++)
+	for (unsigned int i = 0; i < 8; i++)
 	{
 		correct_answer = correct_answer + " ";
 	}
@@ -132,12 +132,12 @@ TEST_F(format_tools_test, fill_lines)
 	correct_answer = test_lines;
 	for (unsigned int i = 0; i < 25; i++)
 	{
-		for (unsigned int j = 0; j < 13; j++)
+		for (unsigned int j = 0; j < 12; j++)
 		{
 			correct_answer[i] = " " + correct_answer[i];
 		}
 
-		for (unsigned int j = 0; j < 12; j++)
+		for (unsigned int j = 0; j < 13; j++)
 		{
 			correct_answer[i] = correct_answer[i] + " ";
 		}
@@ -190,24 +190,24 @@ TEST_F(format_tools_test, fill_lines)
 	test_lines[0] = test_lines[0] + "longer line.";
 	filled_lines = format_tools::fill_lines(test_lines, 51, format_tools::center_block_alignment_keyword);
 	correct_answer = test_lines;
-	for (unsigned int i = 0; i < 7; i++)
+	for (unsigned int i = 0; i < 6; i++)
 	{
 		correct_answer[0] = " " + correct_answer[0];
 	}
 
-	for (unsigned int i = 0; i < 6; i++)
+	for (unsigned int i = 0; i < 7; i++)
 	{
 		correct_answer[0] = correct_answer[0] + " ";
 	}
 
 	for (unsigned int i = 1; i < 25; i++)
 	{
-		for (unsigned int j = 0; j < 7; j++)
+		for (unsigned int j = 0; j < 6; j++)
 		{
 			correct_answer[i] = " " + correct_answer[i];
 		}
 
-		for (unsigned int j = 0; j < 18; j++)
+		for (unsigned int j = 0; j < 19; j++)
 		{
 			correct_answer[i] = correct_answer[i] + " ";
 		}
