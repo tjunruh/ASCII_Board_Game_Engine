@@ -288,8 +288,7 @@ TEST_F(label_test, test_basic)
 	label local_test_label_6(local_test_frame);
 	local_test_label_6.set_output("This is widget 6");
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_1);
+	EXPECT_EQ(output, frame_output_1) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_1_x_origins[0]);
@@ -357,8 +356,7 @@ TEST_F(label_test, test_border)
 	local_test_label_6.set_output("This is widget 6");
 	local_test_label_6.add_border();
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_2);
+	EXPECT_EQ(output, frame_output_2) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_2_x_origins[0]);
@@ -445,8 +443,7 @@ TEST_F(label_test, test_newline)
 	local_test_label_6.set_output("This is widget 6\n\n\n");
 	local_test_label_6.add_border();
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_3);
+	EXPECT_EQ(output, frame_output_3) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_3_x_origins[0]);
@@ -530,8 +527,7 @@ TEST_F(label_test, test_merge)
 	label local_test_label_8(local_test_frame, "merge");
 	local_test_label_8.set_output("This is widget 8");
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_4);
+	EXPECT_EQ(output, frame_output_4) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_4_x_origins[0]);
@@ -587,8 +583,7 @@ TEST_F(label_test, test_merge)
 	local_test_label_7.add_border();
 	local_test_label_8.add_border();
 	output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_5);
+	EXPECT_EQ(output, frame_output_5) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_5_x_origins[0]);
@@ -682,8 +677,7 @@ TEST_F(label_test, test_spacer)
 	local_test_label_6.set_output("This is widget 6");
 	local_test_label_6.add_border();
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_6);
+	EXPECT_EQ(output, frame_output_6) << "Frame output:\n" + output;
 	
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_6_x_origins[0]);
@@ -774,8 +768,7 @@ TEST_F(label_test, test_spacing)
 	local_test_label_6.add_border();
 	local_test_label_6.set_spacing(0, 0, 1, 1);
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_7);
+	EXPECT_EQ(output, frame_output_7) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_7_x_origins[0]);
@@ -867,8 +860,7 @@ TEST_F(label_test, right_alignment)
 	local_test_label_6.add_border();
 	local_test_label_6.set_alignment("right");
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_8);
+	EXPECT_EQ(output, frame_output_8) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_8_x_origins[0]);
@@ -960,8 +952,7 @@ TEST_F(label_test, center_alignment)
 	local_test_label_6.add_border();
 	local_test_label_6.set_alignment("center");
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_9);
+	EXPECT_EQ(output, frame_output_9) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_9_x_origins[0]);
@@ -1053,8 +1044,7 @@ TEST_F(label_test, center_block_alignment)
 	local_test_label_6.add_border();
 	local_test_label_6.set_alignment("center block");
 	std::string output = local_test_frame->get_frame_output();
-	ascii_io::print(output);
-	EXPECT_EQ(output, frame_output_10);
+	EXPECT_EQ(output, frame_output_10) << "Frame output:\n" + output;
 
 	// test origins
 	EXPECT_EQ(local_test_label_1.get_x_origin(), frame_output_10_x_origins[0]);
