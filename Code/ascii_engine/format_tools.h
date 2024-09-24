@@ -37,6 +37,7 @@ namespace format_tools
 	const int none = 8;
 #endif
 	const std::vector<int> colors = { black, red, green, yellow, blue, magenta, cyan, white };
+	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
 
 	struct common_format
 	{

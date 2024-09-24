@@ -174,7 +174,6 @@ private:
 	std::vector<unsigned int> row_heights;
 	logger log;
 	char spacer_character = '-';
-	const std::vector<char> invalid_characters = { '\n', '\a', '\b', '\f', '\r', '\t', '\v', '\0' };
 	bool _dec_enabled = false;
 	bool _color_enabled = false;
 	bool _use_fake_console_dimensions = false;

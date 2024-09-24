@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "widget_types.h"
 #include "error_codes.h"
+#include "format_tools.h"
 
 menu::menu(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
@@ -34,7 +35,18 @@ int menu::append_item(std::string item)
 
 void menu::set_curser(char curser)
 {
-	_curser = curser;
+	int status = UNDEFINED;
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), curser) != 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		_curser = curser;
+		set_output_to_frame(build_output());
+		status = SUCCESS;
+	}
+	log.log_status(status, "menu::set_curser");
 }
 
 bool menu::item_exists(std::string item)

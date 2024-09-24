@@ -248,7 +248,7 @@ void frame::set_coordinate_width_multiplier(float multiplier, int row, int colum
 
 void frame::set_spacer_character(char character)
 {
-	if (std::count(invalid_characters.begin(), invalid_characters.end(), character) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
 	{
 		log.log_status(INVALID_VALUE, "frame::set_spacer_character");
 		return;
@@ -534,7 +534,7 @@ int frame::set_widget_type(int id, int type)
 
 int frame::set_vertical_border(int id, char border)
 {
-	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
 	{
 		return INVALID_VALUE;
 	}
@@ -554,7 +554,7 @@ int frame::set_vertical_border(int id, char border)
 
 int frame::set_horizontal_border(int id, char border)
 {
-	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
 	{
 		return INVALID_VALUE;
 	}
@@ -574,7 +574,7 @@ int frame::set_horizontal_border(int id, char border)
 
 int frame::set_corner_border(int id, char border)
 {
-	if (std::count(invalid_characters.begin(), invalid_characters.end(), border) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
 	{
 		return INVALID_VALUE;
 	}
@@ -594,7 +594,7 @@ int frame::set_corner_border(int id, char border)
 
 int frame::set_highlight_character(int id, char character)
 {
-	if (std::count(invalid_characters.begin(), invalid_characters.end(), character) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
 	{
 		return INVALID_VALUE;
 	}
