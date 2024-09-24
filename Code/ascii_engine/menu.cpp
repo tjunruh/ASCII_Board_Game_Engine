@@ -1,6 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "menu.h"
 #include "widget_types.h"
+#include "error_codes.h"
 
 menu::menu(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
@@ -20,13 +21,14 @@ menu::menu(frame* parent, std::string special_operation, bool start_logging, std
 
 int menu::append_item(std::string item)
 {
-	int status = 1;
+	int status = DUPLICATE_ELEMENT;
 	if (!item_exists(item))
 	{
 		menu_items.push_back(item);
-		status = 0;
+		status = SUCCESS;
 		set_output_to_frame(build_output());
 	}
+	log.log_status(status, "menu::append_item");
 	return status;
 }
 

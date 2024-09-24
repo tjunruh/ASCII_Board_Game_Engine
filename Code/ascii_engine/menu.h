@@ -26,8 +26,6 @@ public:
 	MENU_API void display();
 	MENU_API void sync();
 private:
-	const std::string special_operation_new_column = "new column";
-	const std::string special_operation_none = "none";
 	std::vector<std::string> menu_items;
 	char _curser = '*';
 	unsigned int curser_row = 0;
