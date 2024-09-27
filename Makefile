@@ -111,6 +111,7 @@ TEST_ASCII_ENGINE_OBJS := \
 	controls.o \
 	format_tools.o \
         label.o \
+        menu.o \
         widget.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 ALL_OBJS += $(TEST_ASCII_ENGINE_OBJS)
