@@ -57,14 +57,6 @@ void ascii_io::clear() {
 #endif
 }
 
-void ascii_io::reset() {
-#ifdef _WIN32
-	move_curser_to_position(0, 0);
-#elif __linux__
-	erase();
-#endif
-}
-
 std::string ascii_io::getline() {
 #ifdef _WIN32
 	std::string input = "";

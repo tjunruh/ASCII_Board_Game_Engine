@@ -36,7 +36,7 @@ void frame::display()
 	{
 		std::vector<format_tools::index_format> index_regions;
 		std::vector<int> ignore_flags;
-		ascii_io::reset();
+		ascii_io::move_curser_to_position(0, 0);
 		unsigned int width = 0;
 		if (_color_enabled)
 		{
