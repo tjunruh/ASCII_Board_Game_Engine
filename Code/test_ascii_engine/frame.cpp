@@ -8,9 +8,9 @@
 #include "../file_manager/file_manager.h"
 #include "../ascii_engine/error_codes.h"
 #include "../ascii_engine/label.h"
-#elif
+#elif __linux__
 #include <ascii_engine/frame.h>
-#include <ascii_engine/frame.h>
+#include <ascii_engine/format_tools.h>
 #include <ascii_engine/file_manager.h>
 #include <ascii_engine/error_codes.h>
 #include <ascii_engine/label.h>
