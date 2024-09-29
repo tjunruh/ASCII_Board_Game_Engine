@@ -110,6 +110,7 @@ TEST_ASCII_ENGINE_OBJS := \
 	ascii_io.o \
 	controls.o \
 	format_tools.o \
+        frame.o \
         label.o \
         menu.o \
         widget.o
