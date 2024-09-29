@@ -43,6 +43,7 @@ namespace format_tools
 	{
 		int foreground_format = none;
 		int background_format = none;
+		bool bold = false;
 		bool dec = false;
 	};
 

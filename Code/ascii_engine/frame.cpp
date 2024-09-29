@@ -93,7 +93,7 @@ void frame::display()
 				background_color = regions[i].format.background_format;
 			}
 
-			ascii_io::set_color(foreground_color, background_color);
+			ascii_io::set_color(foreground_color, background_color, regions[i].format.bold);
 
 			if (regions[i].format.dec)
 			{
