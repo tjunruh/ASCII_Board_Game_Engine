@@ -188,6 +188,14 @@ char dec_formatter::determine_dec_character(char top, char bottom, char left, ch
 	return character;
 }
 
+void dec_formatter::get_format_chars(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char)
+{
+	horizontal_char = _horizontal_char;
+	vertical_char = _vertical_char;
+	intersection_char = _intersection_char;
+	endpoint_char = _endpoint_char;
+}
+
 char dec_formatter::get_endpoint_char()
 {
 	return _endpoint_char;

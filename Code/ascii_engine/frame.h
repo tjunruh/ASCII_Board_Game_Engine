@@ -26,10 +26,13 @@ public:
 	FRAME_API frame(bool start_logger=false, std::string logging_file_path="frame.log");
 	FRAME_API void display();
 	FRAME_API bool stale();
-	FRAME_API void set_controls(int select, int quit, int up, int down, int right, int left);
+	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
+	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
 	FRAME_API int get_selection();
 	FRAME_API void set_coordinate_width_multiplier(float multiplier, int row, int column);
+	FRAME_API float get_coordinate_width_multiplier(int row, int column);
 	FRAME_API void set_spacer_character(char character);
+	FRAME_API char get_spacer_character();
 	FRAME_API void enable_dec();
 	FRAME_API void disable_dec();
 	FRAME_API bool dec_enabled();
@@ -37,6 +40,7 @@ public:
 	FRAME_API void disable_color();
 	FRAME_API bool color_enabled();
 	FRAME_API void set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
+	FRAME_API void get_dec_format_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	FRAME_API void set_default_background_color(int color);
 	FRAME_API void set_default_foreground_color(int color);
 	FRAME_API int get_default_background_color();
@@ -46,6 +50,9 @@ public:
 	FRAME_API void set_fake_console_width(int width);
 	FRAME_API void set_fake_console_height(int height);
 	FRAME_API std::string get_frame_output();
+	FRAME_API int start_logging(const std::string& file_path);
+	FRAME_API void stop_logging();
+	FRAME_API int reset_logging(const std::string& file_path);
 
 private:
 	dec_formatter dec;

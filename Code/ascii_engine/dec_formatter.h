@@ -18,6 +18,7 @@ class dec_formatter
 public:
 	void set_format_chars(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	std::vector<format_tools::index_format> format(std::string& format_content, unsigned int line_length=0);
+	void get_format_chars(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	char get_endpoint_char();
 #ifdef __linux__
 	void print_dec_string(const std::string& input);

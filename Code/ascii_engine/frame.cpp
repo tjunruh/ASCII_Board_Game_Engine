@@ -138,7 +138,7 @@ bool frame::stale()
 	return display_stale;
 }
 
-void frame::set_controls(int select, int quit, int up, int down, int right, int left)
+void frame::set_controls(int select, int quit, int up, int down, int left, int right)
 {
 	_select = select;
 	_quit = quit;
@@ -146,6 +146,16 @@ void frame::set_controls(int select, int quit, int up, int down, int right, int 
 	_down = down;
 	_right = right;
 	_left = left;
+}
+
+void frame::get_controls(int& select, int& quit, int& up, int& down, int& left, int& right)
+{
+	select = _select;
+	quit = _quit;
+	up = _up;
+	down = _down;
+	left = _left;
+	right = _right;
 }
 
 int frame::get_selection()
@@ -240,10 +250,27 @@ void frame::set_coordinate_width_multiplier(float multiplier, int row, int colum
 		if ((widgets[i].row == row) && (widgets[i].column == column))
 		{
 			widgets[i].width_multiplier = multiplier;
+			status = SUCCESS;
 		}
-		status = SUCCESS;
 	}
 	log.log_status(status, "frame::set_coordinate_width_multiplier");
+}
+
+float frame::get_coordinate_width_multiplier(int row, int column)
+{
+	int status = ELEMENT_NOT_FOUND;
+	float multiplier = 0.0;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == row) && (widgets[i].column == column))
+		{
+			multiplier = widgets[i].width_multiplier;
+			status = SUCCESS;
+			break;
+		}
+	}
+	log.log_status(status, "frame::get_coordinate_width_multiplier");
+	return multiplier;
 }
 
 void frame::set_spacer_character(char character)
@@ -255,6 +282,12 @@ void frame::set_spacer_character(char character)
 	}
 
 	spacer_character = character;
+	log.log_status(SUCCESS, "frame::set_spacer_character");
+}
+
+char frame::get_spacer_character()
+{
+	return spacer_character;
 }
 
 void frame::enable_dec()
@@ -292,7 +325,32 @@ bool frame::color_enabled()
 
 void frame::set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)
 {
-	dec.set_format_chars(horizontal_char, vertical_char, intersection_char, endpoint_char);
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), horizontal_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_dec_format_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), vertical_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_dec_format_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), intersection_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_dec_format_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), endpoint_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "frame::set_dec_format_characters");
+	}
+	else
+	{
+		dec.set_format_chars(horizontal_char, vertical_char, intersection_char, endpoint_char);
+		log.log_status(SUCCESS, "frame::set_dec_format_characters");
+	}
+}
+
+void frame::get_dec_format_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char)
+{
+	dec.get_format_chars(horizontal_char, vertical_char, intersection_char, endpoint_char);
 }
 
 void frame::set_default_background_color(int color)
@@ -304,6 +362,7 @@ void frame::set_default_background_color(int color)
 	else
 	{
 		default_background_color = color;
+		log.log_status(SUCCESS, "frame::set_default_background_color");
 	}
 }
 
@@ -316,6 +375,7 @@ void frame::set_default_foreground_color(int color)
 	else
 	{
 		default_foreground_color = color;
+		log.log_status(SUCCESS, "frame::set_default_foreground_color");
 	}
 }
 
@@ -366,6 +426,23 @@ void frame::set_fake_console_height(int height)
 std::string frame::get_frame_output()
 {
 	return generate_frame_output();
+}
+
+int frame::start_logging(const std::string& file_path)
+{
+	int status = log.start_widget_logging(file_path, FRAME);
+	return status;
+}
+
+void frame::stop_logging()
+{
+	log.stop_widget_logging();
+}
+
+int frame::reset_logging(const std::string& file_path)
+{
+	int status = log.log_reset(file_path, FRAME);
+	return status;
 }
 
 int frame::add_widget()
