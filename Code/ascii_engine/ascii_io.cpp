@@ -86,7 +86,7 @@ void ascii_io::get_terminal_size(int &x, int &y)
 #endif
 }
 
-void ascii_io::get_curser_position(int& x, int& y)
+void ascii_io::get_cursor_position(int& x, int& y)
 {
 #ifdef _WIN32
 	CONSOLE_SCREEN_BUFFER_INFO position_info;
@@ -98,7 +98,7 @@ void ascii_io::get_curser_position(int& x, int& y)
 #endif
 }
 
-void ascii_io::hide_curser()
+void ascii_io::hide_cursor()
 {
 #ifdef _WIN32
 	print("\x1b[?25l");
@@ -107,7 +107,7 @@ void ascii_io::hide_curser()
 #endif
 }
 
-void ascii_io::show_curser()
+void ascii_io::show_cursor()
 {
 #ifdef _WIN32
 	print("\x1b[?25h");
@@ -116,13 +116,13 @@ void ascii_io::show_curser()
 #endif
 }
 
-void ascii_io::move_curser_up(unsigned int amount)
+void ascii_io::move_cursor_up(unsigned int amount)
 {
 #ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "A");
 #elif __linux__
    int x = 0, y = 0;
-   get_curser_position(x, y);
+   get_cursor_position(x, y);
    y -= amount;
 
    // Basic bound snapping. move() will return error if outside range
@@ -139,7 +139,7 @@ void ascii_io::move_curser_up(unsigned int amount)
 #endif
 }
 
-void ascii_io::move_curser_down(unsigned int amount)
+void ascii_io::move_cursor_down(unsigned int amount)
 {
 #ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "B");
@@ -148,7 +148,7 @@ void ascii_io::move_curser_down(unsigned int amount)
    get_terminal_size(max_x, max_y);
 
    int x = 0, y = 0;
-   get_curser_position(x, y);
+   get_cursor_position(x, y);
 
    y += amount;
 
@@ -166,7 +166,7 @@ void ascii_io::move_curser_down(unsigned int amount)
 #endif
 }
 
-void ascii_io::move_curser_right(unsigned int amount)
+void ascii_io::move_cursor_right(unsigned int amount)
 {
 #ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "C");
@@ -175,7 +175,7 @@ void ascii_io::move_curser_right(unsigned int amount)
    get_terminal_size(max_x, max_y);
 
    int x = 0, y = 0;
-   get_curser_position(x, y);
+   get_cursor_position(x, y);
    x += amount;
 
    // Basic bound snapping. move() will return error if outside range
@@ -192,13 +192,13 @@ void ascii_io::move_curser_right(unsigned int amount)
 #endif
 }
 
-void ascii_io::move_curser_left(unsigned int amount)
+void ascii_io::move_cursor_left(unsigned int amount)
 {
 #ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "D");
 #elif __linux__
    int x = 0, y = 0;
-   get_curser_position(x, y);
+   get_cursor_position(x, y);
    x -= amount;
 
    // Basic bound snapping. move() will return error if outside range
@@ -215,7 +215,7 @@ void ascii_io::move_curser_left(unsigned int amount)
 #endif
 }
 
-void ascii_io::move_curser_to_position(unsigned int x, unsigned int y)
+void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
 {
 #ifdef _WIN32
 	x = x + 1;

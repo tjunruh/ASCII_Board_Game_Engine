@@ -24,17 +24,17 @@ public:
 	TEXT_BOX_API void clear();
 	TEXT_BOX_API std::string get_text();
 private:
-	bool curser_on_top_border();
-	bool curser_on_bottom_border();
+	bool cursor_on_top_border();
+	bool cursor_on_bottom_border();
 	void update_lines();
 	void display();
-	unsigned int get_linear_curser_position();
-	void get_two_dimensional_curser_position(unsigned int linear_position, int& x, int& y);
-	unsigned int get_curser_line();
-	unsigned int get_curser_column();
+	unsigned int get_linear_cursor_position();
+	void get_two_dimensional_cursor_position(unsigned int linear_position, int& x, int& y);
+	unsigned int get_cursor_line();
+	unsigned int get_cursor_column();
 	unsigned int get_line_of_position(unsigned int position);
-	void move_curser_to_linear_position(unsigned int position);
-	void fit_curser_to_line();
+	void move_cursor_to_linear_position(unsigned int position);
+	void fit_cursor_to_line();
 	void set_output();
 	unsigned int top_line = 0;
 	unsigned int displayed_lines = 0;
@@ -42,8 +42,8 @@ private:
 	std::vector<std::string> editable_lines;
 	int x_origin = 0;
 	int y_origin = 0;
-	int saved_curser_x = -1;
-	int saved_curser_y = -1;
+	int saved_cursor_x = -1;
+	int saved_cursor_y = -1;
 	int width = 0;
 	int height = 0;
 	int max_characters = -1;

@@ -19,14 +19,14 @@ namespace ascii_io
 	ASCII_IO_API void clear();
 	ASCII_IO_API std::string getline();
 	ASCII_IO_API void get_terminal_size(int& x, int& y);
-	ASCII_IO_API void get_curser_position(int& x, int& y);
-	ASCII_IO_API void hide_curser();
-	ASCII_IO_API void show_curser();
-	ASCII_IO_API void move_curser_up(unsigned int amount=1);
-	ASCII_IO_API void move_curser_down(unsigned int amount=1);
-	ASCII_IO_API void move_curser_right(unsigned int amount=1);
-	ASCII_IO_API void move_curser_left(unsigned int amount=1);
-	ASCII_IO_API void move_curser_to_position(unsigned int x, unsigned int y);
+	ASCII_IO_API void get_cursor_position(int& x, int& y);
+	ASCII_IO_API void hide_cursor();
+	ASCII_IO_API void show_cursor();
+	ASCII_IO_API void move_cursor_up(unsigned int amount=1);
+	ASCII_IO_API void move_cursor_down(unsigned int amount=1);
+	ASCII_IO_API void move_cursor_right(unsigned int amount=1);
+	ASCII_IO_API void move_cursor_left(unsigned int amount=1);
+	ASCII_IO_API void move_cursor_to_position(unsigned int x, unsigned int y);
 	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
 	
 #ifdef _WIN32

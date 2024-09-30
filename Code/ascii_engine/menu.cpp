@@ -37,20 +37,20 @@ int menu::append_item(std::string item)
 	return status;
 }
 
-void menu::set_curser(char curser)
+void menu::set_cursor(char cursor)
 {
 	int status = UNDEFINED;
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), curser) != 0)
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), cursor) != 0)
 	{
 		status = INVALID_VALUE;
 	}
 	else
 	{
-		_curser = curser;
+		_cursor = cursor;
 		set_output_to_frame(build_output());
 		status = SUCCESS;
 	}
-	log.log_status(status, "menu::set_curser");
+	log.log_status(status, "menu::set_cursor");
 }
 
 bool menu::item_exists(std::string item)
@@ -72,9 +72,9 @@ std::string menu::build_output()
 	std::string output = "";
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (curser_row == i)
+		if (cursor_row == i)
 		{
-			output = output + _curser + " ";
+			output = output + _cursor + " ";
 		}
 		else
 		{
@@ -114,21 +114,21 @@ std::string menu::get_selection()
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
-			selected_item = menu_items[curser_row];
+			selected_item = menu_items[cursor_row];
 			break;
 		}
 		else if (input == _up)
 		{
-			if (curser_row > 0)
+			if (cursor_row > 0)
 			{
-				curser_row--;
+				cursor_row--;
 			}
 		}
 		else if (input == _down)
 		{
-			if (curser_row < (menu_items.size() - 1))
+			if (cursor_row < (menu_items.size() - 1))
 			{
-				curser_row++;
+				cursor_row++;
 			}
 		}
 	} while ((input != _quit) || quit_enabled);
@@ -149,15 +149,15 @@ void menu::display()
 		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
 		int x_origin = get_x_origin();
 		int y_origin = get_y_origin();
-		int curser_x = 0;
-		int curser_y = 0;
-		ascii_io::get_curser_position(curser_x, curser_y);
+		int cursor_x = 0;
+		int cursor_y = 0;
+		ascii_io::get_cursor_position(cursor_x, cursor_y);
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{
-			ascii_io::move_curser_to_position(x_origin, y_origin + i);
+			ascii_io::move_cursor_to_position(x_origin, y_origin + i);
 			ascii_io::print(lines[i]);
 		}
-		ascii_io::move_curser_to_position(curser_x, curser_y);
+		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
 	}
 }
 

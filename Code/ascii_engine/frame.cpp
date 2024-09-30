@@ -36,7 +36,7 @@ void frame::display()
 	{
 		std::vector<format_tools::index_format> index_regions;
 		std::vector<int> ignore_flags;
-		ascii_io::move_curser_to_position(0, 0);
+		ascii_io::move_cursor_to_position(0, 0);
 		unsigned int width = 0;
 		if (_color_enabled)
 		{
@@ -751,25 +751,25 @@ void frame::highlight(int row, int column, int level)
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
 			y = y_origin - 1 - widgets[i].top_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin - 2 - widgets[i].left_border_spacing;
 			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 
 			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
 			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			ascii_io::print(std::string(1, widgets[i].highlight_character));
 			status = SUCCESS;
 			break;
@@ -800,7 +800,7 @@ void frame::unhighlight(int row, int column, int level)
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
@@ -818,7 +818,7 @@ void frame::unhighlight(int row, int column, int level)
 			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
 			y = y_origin - 1 - widgets[i].top_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
@@ -835,7 +835,7 @@ void frame::unhighlight(int row, int column, int level)
 			x = x_origin - 2 - widgets[i].left_border_spacing;
 			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
@@ -852,7 +852,7 @@ void frame::unhighlight(int row, int column, int level)
 			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
 			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
-			ascii_io::move_curser_to_position(x, y);
+			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32

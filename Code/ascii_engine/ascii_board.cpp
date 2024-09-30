@@ -885,9 +885,9 @@ void ascii_board::display()
 	{
 		int x_origin = get_x_origin();
 		int y_origin = get_y_origin();
-		int curser_x = 0;
-		int curser_y = 0;
-		ascii_io::get_curser_position(curser_x, curser_y);
+		int cursor_x = 0;
+		int cursor_y = 0;
+		ascii_io::get_cursor_position(cursor_x, cursor_y);
 		update_board();
 		std::vector<format_tools::index_format> index_regions;
 		std::vector<std::string> lines;
@@ -927,7 +927,7 @@ void ascii_board::display()
 		
 		int line = 0;
 		unsigned int line_length = 0;
-		ascii_io::move_curser_to_position(x_origin, y_origin);
+		ascii_io::move_cursor_to_position(x_origin, y_origin);
 		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
 		regions = format_tools::fit_to_width(regions, width);
 		for (unsigned int i = 0; i < regions.size(); i++)
@@ -967,31 +967,31 @@ void ascii_board::display()
 			{
 				line++;
 				line_length = 0;
-				ascii_io::move_curser_to_position(x_origin, y_origin + line);
+				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
 			}
 		}
 #ifdef _WIN32
 		ascii_io::disable_dec();
 #endif
-		ascii_io::move_curser_to_position(curser_x, curser_y);
+		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
 	}
 	else
 	{
 		int x_origin = get_x_origin();
 		int y_origin = get_y_origin();
-		int curser_x = 0;
-		int curser_y = 0;
-		ascii_io::get_curser_position(curser_x, curser_y);
+		int cursor_x = 0;
+		int cursor_y = 0;
+		ascii_io::get_cursor_position(cursor_x, cursor_y);
 		update_board();
 		std::vector<std::string> lines = format_tools::get_lines(board);
 		lines = format_tools::remove_newline_characters(lines);
 		lines = format_tools::fill_lines(lines, width, get_alignment());
 		for (unsigned int i = 0; i < lines.size(); i++)
 		{
-			ascii_io::move_curser_to_position(x_origin, y_origin + i);
+			ascii_io::move_cursor_to_position(x_origin, y_origin + i);
 			ascii_io::print(lines[i]);
 		}
-		ascii_io::move_curser_to_position(curser_x, curser_y);
+		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
 	}
 }
 
