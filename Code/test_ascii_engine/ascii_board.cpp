@@ -24,11 +24,11 @@ class ascii_board_test : public testing::Test
 protected:
 #ifdef _WIN32
 	std::string board_config_path = "test_board_config.txt";
-	std::string curser_config_path = "test_curser_config.txt";
+	std::string cursor_config_path = "test_cursor_config.txt";
 	std::string x_config_path = "test_x_config.txt";
 #elif __linux__
 	std::string board_config_path = "Code/test_ascii_engine/test_configs/test_board_config.txt";
-	std::string curser_config_path = "Code/test_ascii_engine/test_configs/test_curser_config.txt";
+	std::string cursor_config_path = "Code/test_ascii_engine/test_configs/test_cursor_config.txt";
 	std::string x_config_path = "Code/test_ascii_engine/test_configs/test_x_config.txt";
 #endif
 	frame* global_test_frame = new frame();
@@ -58,7 +58,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string full_curser_board =
+	std::string full_cursor_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -104,7 +104,7 @@ protected:
 		"| x | x | x | x | x | x | x | x | x | x |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string full_curser_x_board =
+	std::string full_cursor_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -127,7 +127,7 @@ protected:
 		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string beginning_curser_board = 
+	std::string beginning_cursor_board = 
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|( )|   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -150,7 +150,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string middle_curser_board =
+	std::string middle_cursor_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -173,7 +173,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string end_curser_board =
+	std::string end_cursor_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -265,7 +265,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   | x |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string beginning_curser_x_board =
+	std::string beginning_cursor_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|(x)|   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -288,7 +288,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string middle_curser_x_board =
+	std::string middle_cursor_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -311,7 +311,7 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
-	std::string end_curser_x_board =
+	std::string end_cursor_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---+---+---+---+---+---+---+---+---+---.\n"
@@ -473,9 +473,9 @@ protected:
 		".---.---.---.---.---.---.---.---.---.---.";
 
 	std::vector<format_tools::index_format> empty_colors;
-	tile_configuration curser_config_tile{-1, -1, "(*)", '*', empty_colors};
-	std::vector<tile_configuration> curser_config_tile_vector = { curser_config_tile };
-	board_configuration curser_config_board{ "curser", curser_config_tile_vector };
+	tile_configuration cursor_config_tile{-1, -1, "(*)", '*', empty_colors};
+	std::vector<tile_configuration> cursor_config_tile_vector = { cursor_config_tile };
+	board_configuration cursor_config_board{ "cursor", cursor_config_tile_vector };
 
 	tile_configuration x_config_tile{ -1, -1, "*x*", '*', empty_colors };
 	std::vector<tile_configuration> x_config_tile_vector = { x_config_tile };
@@ -483,13 +483,13 @@ protected:
 
 	tile_configuration duplicate_name_config_tile{ -1, -1, "*x*", '*', empty_colors };
 	std::vector<tile_configuration> duplicate_name_config_tile_vector = { duplicate_name_config_tile };
-	board_configuration duplicate_name_config_board{ "curser", duplicate_name_config_tile_vector };
+	board_configuration duplicate_name_config_board{ "cursor", duplicate_name_config_tile_vector };
 
 	tile_configuration out_of_bounds_config_tile{ 41, 0, "(*)", '*', empty_colors };
 	std::vector<tile_configuration> out_of_bounds_config_tile_vector = { out_of_bounds_config_tile };
 	board_configuration out_of_bounds_config_board{ "out_of_bounds", out_of_bounds_config_tile_vector };
 
-	std::vector<tile_configuration> overlapping_config_tile_vector = { curser_config_tile, x_config_tile };
+	std::vector<tile_configuration> overlapping_config_tile_vector = { cursor_config_tile, x_config_tile };
 	board_configuration overlapping_config_board{ "overlapping", overlapping_config_tile_vector };
 
 	void add_configuration_structure(ascii_board& local_test_board, board_configuration structure, std::string expected_error_function, int expected_error_code)
@@ -956,7 +956,7 @@ TEST_F(ascii_board_test, add_configuration_structure)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_configuration_structure(local_test_board, curser_config_board, "ascii_board::add_configuration", SUCCESS);
+	add_configuration_structure(local_test_board, cursor_config_board, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
 	add_configuration_structure(local_test_board, x_config_board, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
@@ -978,11 +978,11 @@ TEST_F(ascii_board_test, add_configuration_parameters)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "(*)", '*', false, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters(local_test_board, "cursor", -1, -1, "(*)", '*', false, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
 	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, "*x*", '*', false, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, "*x*", '*', false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters(local_test_board, "cursor", -1, -1, "*x*", '*', false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
 	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, "(*)", '*', false, "ascii_board::add_configuration", INVALID_INDEX);
 	int status = file_manager::delete_file("ascii_board.log");
@@ -997,11 +997,11 @@ TEST_F(ascii_board_test, add_configuration_parameters_with_colors)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
 	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, "*x*", '*', empty_colors, false, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, "*x*", '*', empty_colors, false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, "*x*", '*', empty_colors, false, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
 	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, "(*)", '*', empty_colors, false, "ascii_board::add_configuration", INVALID_INDEX);
 	int status = file_manager::delete_file("ascii_board.log");
@@ -1018,7 +1018,7 @@ TEST_F(ascii_board_test, load_configuration)
 	// Valid path to config
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
-	std::string value = local_test_board.load_configuration(curser_config_path);
+	std::string value = local_test_board.load_configuration(cursor_config_path);
 	std::string log_content = "";
 	status = file_manager::read_file("ascii_board.log", log_content);
 	ASSERT_EQ(status, 0);
@@ -1049,13 +1049,13 @@ TEST_F(ascii_board_test, load_configuration_parameters)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, curser_config_path, '*', true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters(local_test_board, "cursor", -1, -1, cursor_config_path, '*', true, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
 	add_or_load_configuration_parameters(local_test_board, "x", -1, -1, x_config_path, '*', true, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters(local_test_board, "curser", -1, -1, x_config_path, '*', true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters(local_test_board, "cursor", -1, -1, x_config_path, '*', true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
-	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, curser_config_path, '*', true, "ascii_board::add_configuration", INVALID_INDEX);
+	add_or_load_configuration_parameters(local_test_board, "out_of_bounds", 41, 0, cursor_config_path, '*', true, "ascii_board::add_configuration", INVALID_INDEX);
 	// invalid path
 	add_or_load_configuration_parameters(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', true, "ascii_board::load_configuration", INVALID_PATH);
 	
@@ -1071,13 +1071,13 @@ TEST_F(ascii_board_test, load_configuration_parameters_with_colors)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 
 	// add first valid configuration
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, curser_config_path, '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, cursor_config_path, '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
 	// add second valid configuration
 	add_or_load_configuration_parameters_with_colors(local_test_board, "x", -1, -1, x_config_path, '*', empty_colors, true, "ascii_board::add_configuration", SUCCESS);
 	// add duplicate
-	add_or_load_configuration_parameters_with_colors(local_test_board, "curser", -1, -1, x_config_path, '*', empty_colors, true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, x_config_path, '*', empty_colors, true, "ascii_board::add_configuration", DUPLICATE_ELEMENT);
 	// add out of bounds index
-	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, curser_config_path, '*', empty_colors, true, "ascii_board::add_configuration", INVALID_INDEX);
+	add_or_load_configuration_parameters_with_colors(local_test_board, "out_of_bounds", 41, 0, cursor_config_path, '*', empty_colors, true, "ascii_board::add_configuration", INVALID_INDEX);
 	// invalid path
 	add_or_load_configuration_parameters_with_colors(local_test_board, "invalid_path", -1, -1, "jibberish.txt", '*', empty_colors, true, "ascii_board::load_configuration", INVALID_PATH);
 
@@ -1093,7 +1093,7 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
 	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
-	local_test_board.add_configuration(curser_config_board);
+	local_test_board.add_configuration(cursor_config_board);
 	local_test_board.add_configuration(x_config_board);
 	std::string log_content = "";
 	status = file_manager::read_file("ascii_board.log", log_content);
@@ -1101,11 +1101,11 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
 	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
 	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
 
-	activate_deactivate(local_test_board, "curser", full_curser_board, "ascii_board::set_all", SUCCESS, true, 0);
-	activate_deactivate(local_test_board, "x", full_curser_x_board, "ascii_board::set_all", SUCCESS, true, 1);
-	activate_deactivate(local_test_board, "jibberish", full_curser_x_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 2);
-	activate_deactivate(local_test_board, "jibberish", full_curser_x_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 3);
-	activate_deactivate(local_test_board, "curser", full_x_board, "ascii_board::set_all", SUCCESS, false, 4);
+	activate_deactivate(local_test_board, "cursor", full_cursor_board, "ascii_board::set_all", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", full_cursor_x_board, "ascii_board::set_all", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "jibberish", full_cursor_x_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 2);
+	activate_deactivate(local_test_board, "jibberish", full_cursor_x_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 3);
+	activate_deactivate(local_test_board, "cursor", full_x_board, "ascii_board::set_all", SUCCESS, false, 4);
 	activate_deactivate(local_test_board, "x", empty_board, "ascii_board::set_all", SUCCESS, false, 5);
 
 	delete(local_test_frame);
@@ -1117,7 +1117,7 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 	ascii_board local_test_board(local_test_frame, board_config_path);
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
-	local_test_board.add_configuration(curser_config_board);
+	local_test_board.add_configuration(cursor_config_board);
 	local_test_board.add_configuration(x_config_board);
 	std::string log_content = "";
 	status = file_manager::read_file("ascii_board.log", log_content);
@@ -1125,30 +1125,30 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
 	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
 
-	activate_deactivate(local_test_board, "curser", 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, true, 0);
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 1);
-	activate_deactivate(local_test_board, "curser", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, false, 2);
+	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, false, 2);
 	activate_deactivate(local_test_board, "x", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
-	activate_deactivate(local_test_board, "curser", 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, true, 4);
-	activate_deactivate(local_test_board, "x", 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 5);
-	activate_deactivate(local_test_board, "curser", 5, 4, middle_x_board, "ascii_board::set_tile", SUCCESS, false, 6);
+	activate_deactivate(local_test_board, "cursor", 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	activate_deactivate(local_test_board, "x", 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 5);
+	activate_deactivate(local_test_board, "cursor", 5, 4, middle_x_board, "ascii_board::set_tile", SUCCESS, false, 6);
 	activate_deactivate(local_test_board, "x", 5, 4, empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
-	activate_deactivate(local_test_board, "curser", 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, true, 8);
-	activate_deactivate(local_test_board, "x", 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, true, 9);
-	activate_deactivate(local_test_board, "curser", 9, 9, end_x_board, "ascii_board::set_tile", SUCCESS, false, 10);
+	activate_deactivate(local_test_board, "cursor", 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	activate_deactivate(local_test_board, "x", 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 9);
+	activate_deactivate(local_test_board, "cursor", 9, 9, end_x_board, "ascii_board::set_tile", SUCCESS, false, 10);
 	activate_deactivate(local_test_board, "x", 9, 9, empty_board, "ascii_board::set_tile", SUCCESS, false, 11);
 
 	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 12);
 	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 13);
 
-	activate_deactivate(local_test_board, "curser", 10, 0, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 14);
-	activate_deactivate(local_test_board, "curser", 10, 0, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 15);
-	activate_deactivate(local_test_board, "curser", 0, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 16);
-	activate_deactivate(local_test_board, "curser", 0, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 17);
-	activate_deactivate(local_test_board, "curser", 10, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 18);
-	activate_deactivate(local_test_board, "curser", 10, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 19);
-	activate_deactivate(local_test_board, "curser", 4, 2, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 20);
-	activate_deactivate(local_test_board, "curser", 4, 2, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
+	activate_deactivate(local_test_board, "cursor", 10, 0, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 14);
+	activate_deactivate(local_test_board, "cursor", 10, 0, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 15);
+	activate_deactivate(local_test_board, "cursor", 0, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 16);
+	activate_deactivate(local_test_board, "cursor", 0, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 17);
+	activate_deactivate(local_test_board, "cursor", 10, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 18);
+	activate_deactivate(local_test_board, "cursor", 10, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 19);
+	activate_deactivate(local_test_board, "cursor", 4, 2, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 20);
+	activate_deactivate(local_test_board, "cursor", 4, 2, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
 
 	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 22);
 	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 23);
@@ -1174,14 +1174,14 @@ TEST_F(ascii_board_test, set_or_clear_tiles)
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 	
-	set_or_clear(local_test_board, 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, 0, true, "(*)", '*');
-	set_or_clear(local_test_board, 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, 1, true, "*x*", '*');
+	set_or_clear(local_test_board, 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, "(*)", '*');
+	set_or_clear(local_test_board, 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, "*x*", '*');
 	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
-	set_or_clear(local_test_board, 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, 3, true, "(*)", '*');
-	set_or_clear(local_test_board, 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, 4, true, "*x*", '*');
+	set_or_clear(local_test_board, 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, "(*)", '*');
+	set_or_clear(local_test_board, 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, "*x*", '*');
 	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
-	set_or_clear(local_test_board, 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, 6, true, "(*)", '*');
-	set_or_clear(local_test_board, 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, 7, true, "*x*", '*');
+	set_or_clear(local_test_board, 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, "(*)", '*');
+	set_or_clear(local_test_board, 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, "*x*", '*');
 	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
 
 	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, "(*)", '*');
@@ -1215,7 +1215,7 @@ TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 
-	std::vector<format_tools::index_format> curser_colors =
+	std::vector<format_tools::index_format> cursor_colors =
 	{
 		{0, {format_tools::green, format_tools::black, false}, ' '}
 	};
@@ -1226,39 +1226,39 @@ TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 		{2, {format_tools::none, format_tools::none, false}, ' '}
 	};
 
-	std::vector<format_tools::index_format> curser_x_colors =
+	std::vector<format_tools::index_format> cursor_x_colors =
 	{
 		{0, {format_tools::green, format_tools::black, false}, ' '},
 		{1, {format_tools::red, format_tools::black, false}, ' '},
 		{2, {format_tools::none, format_tools::none, false}, ' '}
 	};
 
-	set_or_clear(local_test_board, 0, 0, beginning_curser_board, "ascii_board::set_tile", SUCCESS, 0, true, curser_colors, "(*)", '*');
-	colors_equivalent(local_test_board, curser_colors, 0, 0, 0);
-	set_or_clear(local_test_board, 0, 0, beginning_curser_x_board, "ascii_board::set_tile", SUCCESS, 1, true, curser_x_colors, "*x*", '*');
-	colors_equivalent(local_test_board, curser_x_colors, 0, 0, 1);
+	set_or_clear(local_test_board, 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, cursor_colors, "(*)", '*');
+	colors_equivalent(local_test_board, cursor_colors, 0, 0, 0);
+	set_or_clear(local_test_board, 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, cursor_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, cursor_x_colors, 0, 0, 1);
 	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
 	colors_equivalent(local_test_board, empty_colors, 0, 0, 2);
-	set_or_clear(local_test_board, 5, 4, middle_curser_board, "ascii_board::set_tile", SUCCESS, 3, true, curser_colors, "(*)", '*');
-	colors_equivalent(local_test_board, curser_colors, 5, 4, 3);
-	set_or_clear(local_test_board, 5, 4, middle_curser_x_board, "ascii_board::set_tile", SUCCESS, 4, true, curser_x_colors, "*x*", '*');
-	colors_equivalent(local_test_board, curser_x_colors, 5, 4, 4);
+	set_or_clear(local_test_board, 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, cursor_colors, "(*)", '*');
+	colors_equivalent(local_test_board, cursor_colors, 5, 4, 3);
+	set_or_clear(local_test_board, 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, cursor_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, cursor_x_colors, 5, 4, 4);
 	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
 	colors_equivalent(local_test_board, empty_colors, 5, 4, 5);
-	set_or_clear(local_test_board, 9, 9, end_curser_board, "ascii_board::set_tile", SUCCESS, 6, true, curser_colors, "(*)", '*');
-	colors_equivalent(local_test_board, curser_colors, 9, 9, 6);
-	set_or_clear(local_test_board, 9, 9, end_curser_x_board, "ascii_board::set_tile", SUCCESS, 7, true, curser_x_colors, "*x*", '*');
-	colors_equivalent(local_test_board, curser_x_colors, 9, 9, 7);
+	set_or_clear(local_test_board, 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, cursor_colors, "(*)", '*');
+	colors_equivalent(local_test_board, cursor_colors, 9, 9, 6);
+	set_or_clear(local_test_board, 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, cursor_x_colors, "*x*", '*');
+	colors_equivalent(local_test_board, cursor_x_colors, 9, 9, 7);
 	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
 	colors_equivalent(local_test_board, empty_colors, 9, 9, 8);
 
-	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, cursor_colors, "(*)", '*');
 	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
-	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, cursor_colors, "(*)", '*');
 	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
-	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, cursor_colors, "(*)", '*');
 	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
-	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, curser_colors, "(*)", '*');
+	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, cursor_colors, "(*)", '*');
 	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
 
 	set_or_clear(local_test_board, 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, x_colors, "*x*", '*');
@@ -1349,16 +1349,16 @@ TEST_F(ascii_board_test, set_get_tile)
 {
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
-	set_get_tile(local_test_board, 0, 0, "(*)", '*', beginning_curser_board, "ascii_board::set_tile", SUCCESS, true, 0);
-	set_get_tile(local_test_board, 0, 0, "( )", '*', beginning_curser_board, "ascii_board::get_tile", SUCCESS, false, 1);
+	set_get_tile(local_test_board, 0, 0, "(*)", '*', beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	set_get_tile(local_test_board, 0, 0, "( )", '*', beginning_cursor_board, "ascii_board::get_tile", SUCCESS, false, 1);
 	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 2);
 	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 3);
-	set_get_tile(local_test_board, 5, 4, "(*)", '*', middle_curser_board, "ascii_board::set_tile", SUCCESS, true, 4);
-	set_get_tile(local_test_board, 5, 4, "( )", '*', middle_curser_board, "ascii_board::get_tile", SUCCESS, false, 5);
+	set_get_tile(local_test_board, 5, 4, "(*)", '*', middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	set_get_tile(local_test_board, 5, 4, "( )", '*', middle_cursor_board, "ascii_board::get_tile", SUCCESS, false, 5);
 	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 6);
 	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 7);
-	set_get_tile(local_test_board, 9, 9, "(*)", '*', end_curser_board, "ascii_board::set_tile", SUCCESS, true, 8);
-	set_get_tile(local_test_board, 9, 9, "( )", '*', end_curser_board, "ascii_board::get_tile", SUCCESS, false, 9);
+	set_get_tile(local_test_board, 9, 9, "(*)", '*', end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	set_get_tile(local_test_board, 9, 9, "( )", '*', end_cursor_board, "ascii_board::get_tile", SUCCESS, false, 9);
 	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 10);
 	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 11);
 	set_get_tile(local_test_board, -1, 0, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
@@ -1379,9 +1379,9 @@ TEST_F(ascii_board_test, get_action_tile)
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	ascii_board::action_tile beginning_empty_tile = {0, 0, 1, 1, 1, 3, "   ", "   ", empty_colors};
-	ascii_board::action_tile beginning_curser_tile = { 0, 0, 1, 1, 1, 3, "   ", "( )", empty_colors };
+	ascii_board::action_tile beginning_cursor_tile = { 0, 0, 1, 1, 1, 3, "   ", "( )", empty_colors };
 	test_get_action_tile(local_test_board, 0, 0, beginning_empty_tile, "ascii_board::get_action_tile", SUCCESS, 0);
 	local_test_board.set_tile(0, 0, "(*)", '*');
-	test_get_action_tile(local_test_board, 0, 0, beginning_curser_tile, "ascii_board::get_action_tile", SUCCESS, 0);
+	test_get_action_tile(local_test_board, 0, 0, beginning_cursor_tile, "ascii_board::get_action_tile", SUCCESS, 0);
 	delete(local_test_frame);
 }
