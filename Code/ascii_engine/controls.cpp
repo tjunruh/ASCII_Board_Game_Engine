@@ -26,7 +26,7 @@ int controls::unbind(const std::string& control_name)
    return SUCCESS;
 }
 
-const int controls::get_key(const std::string& control_name)
+int controls::get_key(const std::string& control_name)
 {
    auto map = control_mapping.find(control_name);
    if ( map == control_mapping.end() )
