@@ -21,8 +21,10 @@ public:
 	MENU_API int append_item(std::string item);
 	MENU_API void set_cursor(char cursor);
 	MENU_API void set_controls(int select, int up, int down, int quit);
+	MENU_API void get_controls(int& select, int& up, int& down, int& quit);
 	MENU_API std::string get_selection();
 	MENU_API void enable_quit();
+	MENU_API void disable_quit();
 	MENU_API void display();
 	MENU_API void sync();
 private:

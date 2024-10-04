@@ -99,9 +99,22 @@ void menu::set_controls(int select, int up, int down, int quit)
 	_quit = quit;
 }
 
+void menu::get_controls(int& select, int& up, int& down, int& quit)
+{
+	select = _select;
+	up = _up;
+	down = _down;
+	quit = _quit;
+}
+
 void menu::enable_quit()
 {
 	quit_enabled = true;
+}
+
+void menu::disable_quit()
+{
+	quit_enabled = false;
 }
 
 std::string menu::get_selection()
@@ -131,7 +144,7 @@ std::string menu::get_selection()
 				cursor_row++;
 			}
 		}
-	} while ((input != _quit) || quit_enabled);
+	} while ((input != _quit) || !quit_enabled);
 	return selected_item;
 }
 
