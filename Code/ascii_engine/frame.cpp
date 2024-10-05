@@ -1501,6 +1501,10 @@ std::vector<std::string> frame::get_widget_lines(int id)
 {
 	widget_info item;
 	get_widget(id, item);
+	if (item.output == "")
+	{
+		item.output = " ";
+	}
 	std::string left_spacing = format_tools::get_spacing(item.left_spacing, ' ');
 	std::string right_spacing = format_tools::get_spacing(item.right_spacing, ' ');
 	unsigned int width = get_widget_width(item, false);

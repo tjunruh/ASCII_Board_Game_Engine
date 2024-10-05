@@ -18,10 +18,15 @@ text_box::text_box(frame* parent, std::string special_operation, unsigned int li
 	selectable();
 	displayed_lines = lines_count;
 	std::string lines = "";
-	for (unsigned int i = 0; i < lines_count; i++)
+	if (lines_count >= 2)
 	{
-		lines = lines + "\n";
+		lines_count = lines_count - 1;
+		for (unsigned int i = 0; i < lines_count; i++)
+		{
+			lines = lines + "\n";
+		}
 	}
+	
 	set_output_to_frame(lines);
 }
 
@@ -408,11 +413,6 @@ void text_box::set_output()
 	for (unsigned int i = top_line; i < stop_line; i++)
 	{
 		output = output + editable_lines[i];
-	}
-
-	if (output != "")
-	{
-		output = output + "\n";
 	}
 	
 	for (unsigned int i = (stop_line - top_line); i < displayed_lines; i++)
