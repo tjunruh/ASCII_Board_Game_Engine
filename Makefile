@@ -15,9 +15,9 @@ TREE_DIRS := \
 	board_config_field_titles
 TREE_DIRS := $(addprefix $(BLD_DIR)/, $(TREE_DIRS))
 
-# Swap the debug definitions for non-debug builds
-DEBUG := -g
-#DEBUG :=
+# Swap the debug definitions for debug builds
+#DEBUG := -g
+DEBUG :=
 
 LIBS := -lncurses
 CXXFLAGS := -Wall -O2 $(DEBUG) -Iexternal_libraries -MMD
