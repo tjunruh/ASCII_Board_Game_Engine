@@ -587,7 +587,7 @@ protected:
 			int status = file_manager::read_file("ascii_board.log", log_content);
 			ASSERT_EQ(status, 0) << std::to_string(test_num);
 			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
-			local_test_board.activate_configuration(row, column, id);
+			local_test_board.activate_configuration(id, row, column);
 			status = file_manager::read_file("ascii_board.log", log_content);
 			ASSERT_EQ(status, 0) << std::to_string(test_num);
 			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
@@ -601,7 +601,7 @@ protected:
 			int status = file_manager::read_file("ascii_board.log", log_content);
 			ASSERT_EQ(status, 0) << std::to_string(test_num);
 			ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
-			local_test_board.deactivate_configuration(row, column, id);
+			local_test_board.deactivate_configuration(id, row, column);
 			status = file_manager::read_file("ascii_board.log", log_content);
 			ASSERT_EQ(status, 0) << std::to_string(test_num);
 			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);

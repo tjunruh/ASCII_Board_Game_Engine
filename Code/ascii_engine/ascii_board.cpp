@@ -625,7 +625,7 @@ void ascii_board::add_configuration(std::string name_id, int row, int column, st
 	add_configuration(board_config);
 }
 
-void ascii_board::activate_configuration(int row, int column, std::string name_id)
+void ascii_board::activate_configuration(std::string name_id, int row, int column)
 {
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
@@ -696,7 +696,7 @@ void ascii_board::activate_configuration(std::string name_id)
 	log.log_end("ascii_board::activate_configuration");
 }
 
-void ascii_board::deactivate_configuration(int row, int column, std::string name_id)
+void ascii_board::deactivate_configuration(std::string name_id, int row, int column)
 {
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);

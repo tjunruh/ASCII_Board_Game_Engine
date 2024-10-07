@@ -65,9 +65,9 @@ public:
 	ASCII_BOARD_API void add_configuration(board_configuration configuration);
 	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
 	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void activate_configuration(int row, int column, std::string name_id);
+	ASCII_BOARD_API void activate_configuration(std::string name_id, int row, int column);
 	ASCII_BOARD_API void activate_configuration(std::string name_id);
-	ASCII_BOARD_API void deactivate_configuration(int row, int column, std::string name_id);
+	ASCII_BOARD_API void deactivate_configuration(std::string name_id, int row, int column);
 	ASCII_BOARD_API void deactivate_configuration(std::string name_id);
 	ASCII_BOARD_API std::string load_configuration(std::string path);
 	ASCII_BOARD_API void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
