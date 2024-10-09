@@ -1151,18 +1151,18 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 	activate_deactivate(local_test_board, "cursor", 4, 2, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
 
 	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 22);
-	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 23);
+	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 23);
 	activate_deactivate(local_test_board, "x", 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, true, 24);
-	activate_deactivate(local_test_board, "x", 5, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 25);
+	activate_deactivate(local_test_board, "x", 5, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 25);
 	activate_deactivate(local_test_board, "x", 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, true, 26);
-	activate_deactivate(local_test_board, "x", 9, -1, empty_board, "ascii_board::set_tile", SUCCESS, false, 27);
+	activate_deactivate(local_test_board, "x", 9, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 27);
 
 	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 28);
-	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 29);
+	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 29);
 	activate_deactivate(local_test_board, "x", -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, true, 30);
-	activate_deactivate(local_test_board, "x", -1, 2, empty_board, "ascii_board::set_tile", SUCCESS, false, 31);
+	activate_deactivate(local_test_board, "x", -1, 2, empty_board, "ascii_board::set_column", SUCCESS, false, 31);
 	activate_deactivate(local_test_board, "x", -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, true, 32);
-	activate_deactivate(local_test_board, "x", -1, 9, empty_board, "ascii_board::set_tile", SUCCESS, false, 33);
+	activate_deactivate(local_test_board, "x", -1, 9, empty_board, "ascii_board::set_column", SUCCESS, false, 33);
 
 	delete(local_test_frame);
 }
