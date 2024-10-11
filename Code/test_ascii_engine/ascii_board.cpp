@@ -265,6 +265,52 @@ protected:
 		"|   |   |   |   |   |   |   |   |   | x |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
+	std::string beginning_o_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"| o |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.";
+
+	std::string beginning_arrow_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|( >|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.";
+
 	std::string beginning_cursor_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|(x)|   |   |   |   |   |   |   |   |   |\n"
@@ -357,6 +403,29 @@ protected:
 		"|   |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
+	std::string beginning_row_cursor_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|   |   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.";
+
 	std::string middle_row_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
@@ -426,6 +495,29 @@ protected:
 		"| x |   |   |   |   |   |   |   |   |   |\n"
 		".---.---.---.---.---.---.---.---.---.---.";
 
+	std::string beginning_column_cursor_x_board =
+		".---.---.---.---.---.---.---.---.---.---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---+---+---+---+---+---+---+---+---+---.\n"
+		"|(x)|   |   |   |   |   |   |   |   |   |\n"
+		".---.---.---.---.---.---.---.---.---.---.";
+
 	std::string middle_column_x_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   | x |   |   |   |   |   |   |   |\n"
@@ -480,6 +572,14 @@ protected:
 	tile_configuration x_config_tile{ -1, -1, "*x*", '*', empty_colors };
 	std::vector<tile_configuration> x_config_tile_vector = { x_config_tile };
 	board_configuration x_config_board{ "x", x_config_tile_vector };
+
+	tile_configuration o_config_tile{ -1, -1, "*o*", '*', empty_colors };
+	std::vector<tile_configuration> o_config_tile_vector = { o_config_tile };
+	board_configuration o_config_board{ "o", o_config_tile_vector };
+
+	tile_configuration arrow_config_tile{ -1, -1, "**>", '*', empty_colors };
+	std::vector<tile_configuration> arrow_config_tile_vector = { arrow_config_tile };
+	board_configuration arrow_config_board{ "arrow", arrow_config_tile_vector };
 
 	tile_configuration duplicate_name_config_tile{ -1, -1, "*x*", '*', empty_colors };
 	std::vector<tile_configuration> duplicate_name_config_tile_vector = { duplicate_name_config_tile };
@@ -935,6 +1035,20 @@ protected:
 		status = file_manager::read_file("ascii_board.log", log_content);
 		ASSERT_EQ(status, 0) << std::to_string(test_num);
 		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+	}
+
+	void test_modify_configuration(ascii_board& local_test_board, std::string target_name_id, std::string modification_name_id, const std::string& comparison, std::string expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		local_test_board.modify_configuration(target_name_id, modification_name_id);
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		std::string board = local_test_board.get_board();
+		EXPECT_EQ(board, comparison) << std::to_string(test_num);
 	}
 };
 
@@ -1417,6 +1531,8 @@ TEST_F(ascii_board_test, configuration_set)
 	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
 	local_test_board.add_configuration(cursor_config_board);
 	local_test_board.add_configuration(x_config_board);
+	local_test_board.add_configuration(o_config_board);
+	local_test_board.add_configuration(arrow_config_board);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 0);
 	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 1);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 2);
@@ -1436,7 +1552,72 @@ TEST_F(ascii_board_test, configuration_set)
 	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 13);
 	test_configuration_activated(local_test_board, "x", 9, 0, true, "ascii_board::configuration_activated", SUCCESS, 14);
 	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 15);
-	test_configuration_activated(local_test_board, "x", 9, 0, false, "ascii_board::configuration_activated", SUCCESS, 14);
+	test_configuration_activated(local_test_board, "x", 9, 0, false, "ascii_board::configuration_activated", SUCCESS, 16);
+
+	activate_deactivate(local_test_board, "x", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, true, 17);
+	test_configuration_activated(local_test_board, "x", 9, 0, true, "ascii_board::configuration_activated", SUCCESS, 18);
+	activate_deactivate(local_test_board, "x", -1, -1, empty_board, "ascii_board::set_all", SUCCESS, false, 19);
+	test_configuration_activated(local_test_board, "x", 9, 0, false, "ascii_board::configuration_activated", SUCCESS, 20);
+
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 21);
+	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 22);
+	test_configuration_activated(local_test_board, "x", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 23);
+	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 24);
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 25);
+	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 26);
+	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 27);
+	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 28);
+	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 29);
+	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 30);
+
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 31);
+	activate_deactivate(local_test_board, "o", 0, 0, beginning_o_board, "ascii_board::set_tile", SUCCESS, true, 32);
+	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 33);
+	test_configuration_activated(local_test_board, "o", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 34);
+	activate_deactivate(local_test_board, "o", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 35);
+
+	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 36);
+	activate_deactivate(local_test_board, "arrow", 0, 0, beginning_arrow_board, "ascii_board::set_tile", SUCCESS, true, 37);
+	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 38);
+	test_configuration_activated(local_test_board, "arrow", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 39);
+	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 40);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, modify_configuration)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, board_config_path, "none", true);
+	local_test_board.add_configuration(cursor_config_board);
+	local_test_board.add_configuration(x_config_board);
+	local_test_board.add_configuration(o_config_board);
+	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	test_modify_configuration(local_test_board, "cursor", "x", beginning_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 1);
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 2);
+	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
+
+	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 4);
+	test_modify_configuration(local_test_board, "x", "cursor", beginning_row_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 5);
+	activate_deactivate(local_test_board, "cursor", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, false, 6);
+	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 7);
+
+	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 8);
+	test_modify_configuration(local_test_board, "x", "cursor", beginning_column_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 9);
+	activate_deactivate(local_test_board, "cursor", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, false, 10);
+	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 11);
+
+	activate_deactivate(local_test_board, "x", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, true, 12);
+	test_modify_configuration(local_test_board, "x", "cursor", full_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 13);
+	activate_deactivate(local_test_board, "cursor", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, false, 14);
+	activate_deactivate(local_test_board, "x", -1, -1, empty_board, "ascii_board::set_all", SUCCESS, false, 15);
 	
+	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 16);
+	test_modify_configuration(local_test_board, "x", "o", beginning_o_board, "ascii_board::modify_configuration", SUCCESS, 17);
+	activate_deactivate(local_test_board, "o", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 18);
+
+	test_modify_configuration(local_test_board, "x", "gibberish", empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 19);
+	test_modify_configuration(local_test_board, "gibberish", "x", empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 20);
+
 	delete(local_test_frame);
 }

@@ -31,6 +31,14 @@ struct board_configuration
 
 class ascii_board : public widget
 {
+private:
+	struct sub_tile_configuration
+	{
+		std::string name_id = "";
+		std::string value = "";
+		char ignore_character = '\0';
+	};
+
 public:
 	struct action_tile
 	{
@@ -43,7 +51,7 @@ public:
 		std::string default_value = "";
 		std::string value = "";
 		std::vector<format_tools::index_format> colors;
-		std::string activated_config = "";
+		std::vector<sub_tile_configuration> activated_configs;
 	};
 
 	ASCII_BOARD_API ascii_board(frame* parent, std::string path, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="ascii_board.log");
@@ -79,6 +87,7 @@ public:
 	ASCII_BOARD_API void sync();
 	ASCII_BOARD_API action_tile get_action_tile(int row, int column);
 	ASCII_BOARD_API bool configuration_activated(std::string name_id, int row, int column);
+	ASCII_BOARD_API void modify_configuration(std::string target_name_id, std::string modification_name_id);
 
 private:
 	std::string board = "";
@@ -110,4 +119,6 @@ private:
 	void set_column(tile_configuration configuration, bool activate, std::string name_id = "");
 	void set_all(tile_configuration configuration, bool activate, std::string name_id = "");
 	std::string fill_default_value_with_ignore_character(std::string config_value, std::string default_value, char ignore_character);
+	void trim_activated_configs(std::vector<sub_tile_configuration>& activated_configurations, std::string tile_value);
+	bool configuration_activated(std::vector <sub_tile_configuration> activated_configurations, std::string name_id);
 };

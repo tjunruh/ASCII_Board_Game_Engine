@@ -73,7 +73,7 @@ void ascii_board::clear_tile(int row, int column)
 		{
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
-			action_tiles[i].activated_config = "";
+			action_tiles[i].activated_configs.clear();
 			status = SUCCESS;
 			break;
 		}
@@ -88,7 +88,7 @@ void ascii_board::clear_all()
 	{
 		action_tiles[i].value = action_tiles[i].default_value;
 		action_tiles[i].colors.clear();
-		action_tiles[i].activated_config = "";
+		action_tiles[i].activated_configs.clear();
 	}
 }
 
@@ -101,7 +101,7 @@ void ascii_board::clear_row(int row)
 		{
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
-			action_tiles[i].activated_config = "";
+			action_tiles[i].activated_configs.clear();
 			status = SUCCESS;
 		}
 	}
@@ -118,7 +118,7 @@ void ascii_board::clear_column(int column)
 		{
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
-			action_tiles[i].activated_config = "";
+			action_tiles[i].activated_configs.clear();
 			status = SUCCESS;
 		}
 	}
@@ -214,13 +214,18 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 			if (activate)
 			{
 				action_tiles[action_tile_index].colors = configuration.colors;
-				action_tiles[action_tile_index].activated_config = name_id;
 			}
 			else
 			{
 				action_tiles[action_tile_index].colors.clear();
-				action_tiles[action_tile_index].activated_config = "";
 			}
+
+			sub_tile_configuration temp_sub_config;
+			temp_sub_config.name_id = name_id;
+			temp_sub_config.value = configuration.value;
+			temp_sub_config.ignore_character = configuration.ignore_character;
+			action_tiles[action_tile_index].activated_configs.push_back(temp_sub_config);
+			trim_activated_configs(action_tiles[action_tile_index].activated_configs, action_tiles[action_tile_index].value);
 		}
 		else
 		{
@@ -320,13 +325,18 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 				if (activate)
 				{
 					action_tiles[i].colors = configuration.colors;
-					action_tiles[i].activated_config = name_id;
 				}
 				else
 				{
 					action_tiles[i].colors.clear();
-					action_tiles[i].activated_config = "";
 				}
+
+				sub_tile_configuration temp_sub_config;
+				temp_sub_config.name_id = name_id;
+				temp_sub_config.value = configuration.value;
+				temp_sub_config.ignore_character = configuration.ignore_character;
+				action_tiles[i].activated_configs.push_back(temp_sub_config);
+				trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
 			}
 			else
 			{
@@ -423,13 +433,19 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 				if (activate)
 				{
 					action_tiles[i].colors = configuration.colors;
-					action_tiles[i].activated_config = name_id;
+					
 				}
 				else
 				{
 					action_tiles[i].colors.clear();
-					action_tiles[i].activated_config = "";
 				}
+
+				sub_tile_configuration temp_sub_config;
+				temp_sub_config.name_id = name_id;
+				temp_sub_config.value = configuration.value;
+				temp_sub_config.ignore_character = configuration.ignore_character;
+				action_tiles[i].activated_configs.push_back(temp_sub_config);
+				trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
 			}
 			else
 			{
@@ -512,13 +528,18 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, std::
 			if (activate)
 			{
 				action_tiles[i].colors = configuration.colors;
-				action_tiles[i].activated_config = name_id;
 			}
 			else
 			{
 				action_tiles[i].colors.clear();
-				action_tiles[i].activated_config = "";
 			}
+
+			sub_tile_configuration temp_sub_config;
+			temp_sub_config.name_id = name_id;
+			temp_sub_config.value = configuration.value;
+			temp_sub_config.ignore_character = configuration.ignore_character;
+			action_tiles[i].activated_configs.push_back(temp_sub_config);
+			trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
 		}
 		else
 		{
@@ -999,7 +1020,7 @@ bool ascii_board::configuration_activated(std::string name_id, int row, int colu
 		{
 			if ((action_tiles[i].array_row == row) && (action_tiles[i].array_column == column))
 			{
-				if (action_tiles[i].activated_config == name_id)
+				if (configuration_activated(action_tiles[i].activated_configs, name_id))
 				{
 					activated = true;
 				}
@@ -1011,6 +1032,28 @@ bool ascii_board::configuration_activated(std::string name_id, int row, int colu
 
 	log.log_status(status, "ascii_board::configuration_activated");
 	return activated;
+}
+
+void ascii_board::modify_configuration(std::string target_name_id, std::string modification_name_id)
+{
+	int status = UNDEFINED;
+	if (!configuration_present(target_name_id) || !configuration_present(modification_name_id))
+	{
+		status = ELEMENT_NOT_FOUND;
+	}
+	else
+	{
+		status = SUCCESS;
+		for (unsigned int i = 0; i < action_tiles.size(); i++)
+		{
+			if (configuration_activated(action_tiles[i].activated_configs, target_name_id))
+			{
+				activate_configuration(modification_name_id, action_tiles[i].array_row, action_tiles[i].array_column);
+			}
+		}
+	}
+
+	log.log_status(status, "ascii_board::modify_configuration");
 }
 
 void ascii_board::initialize_tiles(int rows, int columns)
@@ -1416,4 +1459,40 @@ std::string ascii_board::fill_default_value_with_ignore_character(std::string co
 		}
 	}
 	return default_value;
+}
+
+void ascii_board::trim_activated_configs(std::vector<sub_tile_configuration>& activated_configurations, std::string tile_value)
+{
+	for (int i = (activated_configurations.size() - 1); i >= 0; i--)
+	{
+		if (activated_configurations[i].value.length() == tile_value.length())
+		{
+			for (unsigned int j = 0; j < tile_value.length(); j++)
+			{
+				if ((activated_configurations[i].value[j] != activated_configurations[i].ignore_character) && (activated_configurations[i].value[j] != tile_value[j]))
+				{
+					activated_configurations.erase(activated_configurations.begin() + i);
+					break;
+				}
+			}
+		}
+		else
+		{
+			log.log_comment("ascii_board::trim_activated_config: " + activated_configurations[i].value + " is not the same length as " + tile_value);
+		}
+		
+	}
+}
+
+bool ascii_board::configuration_activated(std::vector<sub_tile_configuration> activated_configurations, std::string name_id)
+{
+	bool activated = false;
+	for (unsigned int i = 0; i < activated_configurations.size(); i++)
+	{
+		if (activated_configurations[i].name_id == name_id)
+		{
+			activated = true;
+		}
+	}
+	return activated;
 }
