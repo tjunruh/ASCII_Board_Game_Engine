@@ -63,20 +63,21 @@ int validate_board_config::validate_action_tiles_end(const std::string &content)
 	return validity;
 }
 
-int validate_board_config::validate_parenthesis(const std::string &content)
+int validate_board_config::validate_parenthesis(const std::string &content, int& error_line, std::string& error_line_content)
 {
 	char previous_parenthesis = ' ';
-	char parenthesis = ' ';
+	char parenthesis = ')';
 	int validity = 0;
-	int open = 0;
-	int close = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		error_line_content = error_line_content + content[i];
 		if (content[i] == '(')
 		{
 			previous_parenthesis = parenthesis;
 			parenthesis = '(';
-			open++;
 			if (parenthesis == previous_parenthesis)
 			{
 				validity = 1;
@@ -85,7 +86,6 @@ int validate_board_config::validate_parenthesis(const std::string &content)
 		}
 		else if (content[i] == ')')
 		{
-			close++;
 			previous_parenthesis = parenthesis;
 			parenthesis = ')';
 			if (parenthesis == previous_parenthesis)
@@ -94,65 +94,109 @@ int validate_board_config::validate_parenthesis(const std::string &content)
 				break;
 			}
 		}
+		else if ((content[i] == '\n') && ((i + 1) < content.length()))
+		{
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
+		}
 	}
 
-	if (open != close)
+	if (parenthesis == '(')
 	{
 		validity = 1;
 	}
-	else if ((open == 0) || (close == 0))
-	{
-		validity = 1;
-	}
+
+	error_line_content = previous_line_content + error_line_content;
+
 	return validity;
 }
 
-int validate_board_config::validate_parameters(const std::string &content, bool action_tile_field)
+int validate_board_config::validate_parameters(const std::string &content, bool action_tile_field, int& error_line, std::string& error_line_content)
 {
 	char parenthesis = ' ';
 	int validity = 0;
 	int parameter = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
+	bool hyphen_found = false;
+	int previous_parameter_begin_index = -2;
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		error_line_content = error_line_content + content[i];
 		if (content[i] == '(')
 		{
 			parenthesis = '(';
+			previous_parameter_begin_index = i;
 		}
 		else if(content[i] == ')')
 		{
 			parenthesis = ')';
 			parameter = 0;
+			if ((previous_parameter_begin_index + 1) == i)
+			{
+				validity = 1;
+				break;
+			}
+			hyphen_found = false;
 		}
 		else if (content[i] == ',')
 		{
 			parameter++;
+			if ((previous_parameter_begin_index + 1) == i)
+			{
+				validity = 1;
+				break;
+			}
+			previous_parameter_begin_index = i;
+			hyphen_found = false;
+		}
+		else if (content[i] == '\n')
+		{
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
 		}
 
 		if (parenthesis == '(')
 		{
-			if (!(isdigit(content[i]) || ((content[i] == '-') && action_tile_field && ((parameter == 0) || (parameter == 1))) || (content[i] == ',') || (content[i] == '(')))
+			if (!(isdigit(content[i]) || ((content[i] == '-') && action_tile_field && !hyphen_found && ((parameter == 0) || (parameter == 1))) || (content[i] == ',') || (content[i] == '(')))
 			{
 				validity = 1;
+				break;
 			}
 		}
+
+		if (content[i] == '-')
+		{
+			hyphen_found = true;
+		}
 	}
+
+	error_line_content = previous_line_content + error_line_content;
+
 	return validity;
 }
 
-int validate_board_config::validate_number_of_parameters(const std::string &content, int number_of_parameters)
+int validate_board_config::validate_number_of_parameters(const std::string &content, int number_of_parameters, int& error_line, std::string& error_line_content)
 {
 	char parenthesis = ' ';
 	int validity = 0;
 	std::string parameter_content = "";
 	int parameters = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		error_line_content = error_line_content + content[i];
 		if ((content[i] == '(') || (content[i] == ')'))
 		{
 			parenthesis = content[i];
 		}
 
-		if (((content[i] == ')') || (content[i] == ',')) && (parameter_content != ""))
+		if ((content[i] == ')') || (content[i] == ','))
 		{
 			parameters++;
 			parameter_content = "";
@@ -173,20 +217,34 @@ int validate_board_config::validate_number_of_parameters(const std::string &cont
 		{
 			parameters = 0;
 		}
+
+		if (content[i] == '\n')
+		{
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
+		}
 	}
+
+	error_line_content = previous_line_content + error_line_content;
+
 	return validity;
 }
 
-int validate_board_config::validate_array_index(const std::string &content, int max_row, int max_column)
+int validate_board_config::validate_array_index(const std::string &content, int max_row, int max_column, int& error_line, std::string& error_line_content)
 {
+	int validity = 0;
 	std::vector<row_column> two_dimensional_spaces;
 	row_column two_dimensional_space;
 	two_dimensional_space.row = "";
 	two_dimensional_space.column = "";
 	int parameter = -1;
-
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		error_line_content = error_line_content + content[i];
 		if ((parameter == 2) && isdigit(content[i]))
 		{
 			two_dimensional_space.row = two_dimensional_space.row + content[i];
@@ -208,33 +266,39 @@ int validate_board_config::validate_array_index(const std::string &content, int 
 		{
 			parameter = -1;
 			two_dimensional_spaces.push_back(two_dimensional_space);
+			if (multiple(two_dimensional_spaces, two_dimensional_space) || (stoi(two_dimensional_space.row) >= max_row) || (stoi(two_dimensional_space.column) >= max_column))
+			{
+				validity = 1;
+				break;
+			}
 			two_dimensional_space.row = "";
 			two_dimensional_space.column = "";
 		}
-	}
-
-	for (unsigned int i = 0; i < two_dimensional_spaces.size(); i++)
-	{
-		if (multiple(two_dimensional_spaces, two_dimensional_spaces[i]) || (stoi(two_dimensional_spaces[i].row) >= max_row) || (stoi(two_dimensional_spaces[i].column) >= max_column))
+		else if (content[i] == '\n')
 		{
-			return 1;
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
 		}
 	}
 
-	return 0;
+	error_line_content = previous_line_content + error_line_content;
+
+	return validity;
 }
 
-int validate_board_config::validate_board_index(const std::string &content, int max_row, int max_column)
+int validate_board_config::validate_board_index(const std::string &content, int max_row, int max_column, int& error_line, std::string& error_line_content)
 {
-	std::vector<std::string> rows;
-	std::vector<std::string> columns;
 	std::string row = "";
 	std::string column = "";
 	int parameter = -1;
 	int validity = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
-
+		error_line_content = error_line_content + content[i];
 		if (parameter == 0)
 		{
 			if (isdigit(content[i]))
@@ -243,10 +307,13 @@ int validate_board_config::validate_board_index(const std::string &content, int 
 			}
 			else if (content[i] == '-')
 			{
-				rows.push_back(row);
+				if (stoi(row) >= max_row)
+				{
+					validity = 1;
+					break;
+				}
 				row = "";
 			}
-			
 		}
 		else if (parameter == 1)
 		{
@@ -256,7 +323,11 @@ int validate_board_config::validate_board_index(const std::string &content, int 
 			}
 			else if (content[i] == '-')
 			{
-				columns.push_back(column);
+				if (stoi(column) >= max_column)
+				{
+					validity = 1;
+					break;
+				}
 				column = "";
 			}
 		}
@@ -272,59 +343,38 @@ int validate_board_config::validate_board_index(const std::string &content, int 
 		else if (content[i] == ')')
 		{
 			parameter = -1;
-			rows.push_back(row);
-			columns.push_back(column);
+			if ((stoi(row) >= max_row) || (stoi(column) >= max_column))
+			{
+				validity = 1;
+				break;
+			}
 			row = "";
 			column = "";
 		}
-	}
-
-	for (unsigned int i = 0; i < rows.size(); i++)
-	{
-		if (stoi(rows[i]) >= max_row)
+		else if (content[i] == '\n')
 		{
-			return 1;
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
 		}
 	}
 
-	for (unsigned int i = 0; i < columns.size(); i++)
-	{
-		if (stoi(columns[i]) >= max_column)
-		{
-			return 1;
-		}
-	}
+	error_line_content = previous_line_content + error_line_content;
 
 	return validity;
 }
 
-int validate_board_config::validate_number_of_entries(const std::string &content, int number_of_entries)
-{
-	int entries = 0;
-	int validity = 0;
-	for (unsigned int i = 0; i < content.length(); i++)
-	{
-		if (content[i] == ')')
-		{
-			entries++;
-		}
-	}
-
-	if (entries != number_of_entries)
-	{
-		validity = 1;
-	}
-
-	return validity;
-}
-
-int validate_board_config::validate_hyphen_range(const std::string &content)
+int validate_board_config::validate_hyphen_range(const std::string &content, int& error_line, std::string& error_line_content)
 {
 	std::string number = "";
 	std::string previous_number = "";
 	int validity = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		error_line_content = error_line_content + content[i];
 		if (isdigit(content[i]))
 		{
 			number = number + content[i];
@@ -342,6 +392,7 @@ int validate_board_config::validate_hyphen_range(const std::string &content)
 			else if ((previous_number != "") && (number == ""))
 			{
 				validity = 1;
+				break;
 			}
 			number = "";
 			previous_number = "";
@@ -356,7 +407,16 @@ int validate_board_config::validate_hyphen_range(const std::string &content)
 			previous_number = number;
 			number = "";
 		}
+		else if (content[i] == '\n')
+		{
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
+		}
 	}
+
+	error_line_content = previous_line_content + error_line_content;
+
 	return validity;
 }
 
@@ -449,6 +509,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_board_begin(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Board begin tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::board_begin + "\n";
 		return 1;
 	}
 	else
@@ -459,6 +520,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_board_end(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Board end tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::board_end + "\n";
 		return 1;
 	}
 	else
@@ -469,6 +531,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_array_dimensions_begin(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Array dimenion begin tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::array_dimensions_begin + "\n";
 		return 1;
 	}
 	else
@@ -479,6 +542,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_array_dimensions_end(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Array dimensions end tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::array_dimensions_end + "\n";
 		return 1;
 	}
 	else
@@ -489,6 +553,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_action_tiles_begin(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Action tiles begin tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::action_tiles_begin + "\n";
 		return 1;
 	}
 	else
@@ -499,6 +564,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	if (validate_action_tiles_end(content) == 1)
 	{
 		debug_info = debug_info + "Failed: Action tiles end tag is missing or malformed.\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::action_tiles_end + "\n";
 		return 1;
 	}
 	else
@@ -515,10 +581,14 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	action_tiles_field = parser.get_action_tiles_field(content);
 	dimension_field = parser.remove_spaces(dimension_field);
 	action_tiles_field = parser.remove_spaces(action_tiles_field);
+	int error_line = 0;
+	std::string error_line_content = "";
 
-	if (validate_parenthesis(dimension_field) == 1)
+	if (validate_parenthesis(dimension_field, error_line, error_line_content) == 1)
 	{
-		debug_info = debug_info + "Failed: Parenthesis mismatch in dimension field.\n";
+		debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in dimension field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of array dimensions field.\n";
+		debug_info = debug_info + error_line_content + " << parenthesis mismatch or data not enclosed\n";
 		return 1;
 	}
 	else
@@ -526,9 +596,11 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 		debug_info = debug_info + "Passed: Parenthesis validation in dimension field.\n";
 	}
 
-	if (validate_parenthesis(action_tiles_field) == 1)
+	if (validate_parenthesis(action_tiles_field, error_line, error_line_content) == 1)
 	{
-		debug_info = debug_info + "Failed: Parenthesis mismatch in action tiles field.\n";
+		debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << parenthesis mismatch or data not enclosed\n";
 		return 1;
 	}
 	else
@@ -536,49 +608,59 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 		debug_info = debug_info + "Passed: Parenthesis validation in action tiles field.\n";
 	}
 
-	if (validate_number_of_parameters(dimension_field, 2) == 1)
+	if (validate_number_of_parameters(dimension_field, 2, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Incorrect number of parameters in dimension field parenthesis (2 expected).\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of array dimensions field.\n";
+		debug_info = debug_info + error_line_content + " << incorrect number of parameters\n";
 		return 1;
 	}
 	else
 	{
 		debug_info = debug_info + "Passed: Correct number of parameters in dimension field parenthesis.\n";
 	}
-
-	if (validate_number_of_parameters(action_tiles_field, 4) == 1)
+	
+	if (validate_number_of_parameters(action_tiles_field, 4, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected).\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << incorrect number of parameters\n";
 		return 1;
 	}
 	else
 	{
 		debug_info = debug_info + "Passed: Correct number of parameters in action tiles field parenthesis.\n";
 	}
-
-	if (validate_parameters(dimension_field, false) == 1)
+	
+	if (validate_parameters(dimension_field, false, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Invalid parameter in dimension field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of array dimensions field.\n";
+		debug_info = debug_info + error_line_content + " << invalid parameter\n";
 		return 1;
 	}
 	else
 	{
-		debug_info = debug_info + "Passed: Valid parameters in dimension filed.\n";
+		debug_info = debug_info + "Passed: Valid parameters in dimension field.\n";
 	}
-
-	if (validate_parameters(action_tiles_field, true) == 1)
+	
+	if (validate_parameters(action_tiles_field, true, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Invalid parameter in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << invalid parameter\n";
 		return 1;
 	}
 	else
 	{
 		debug_info = debug_info + "Passed: Valid parameters in action tiles field.\n";
 	}
-
-	if (validate_hyphen_range(action_tiles_field) == 1)
+	
+	if (validate_hyphen_range(action_tiles_field, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Invalid range using hyphen in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << invalid range\n";
 		return 1;
 	}
 	else
@@ -597,28 +679,34 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 		return 1;
 	}
 
-	if (validate_array_index(action_tiles_field, row, column) == 1)
+	
+	if (validate_array_index(action_tiles_field, row, column, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Array dimension invalid in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of array dimensions field.\n";
+		debug_info = debug_info + error_line_content + " << invalid index\n";
 		return 1;
 	}
 	else
 	{
 		debug_info = debug_info + "Passed: Array dimensions valid.\n";
 	}
-
+	
 	get_board_dimensions(board, row, column);
 
-	if (validate_board_index(action_tiles_field, row, column) == 1)
+	
+	if (validate_board_index(action_tiles_field, row, column, error_line, error_line_content) == 1)
 	{
 		debug_info = debug_info + "Failed: Board dimension out of bounds in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << invalid index\n";
 		return 1;
 	}
 	else
 	{
 		debug_info = debug_info + "Passed: Board dimensions valid.\n";
 	}
-
+	
 	debug_info = debug_info + "All validations passed.\n";
 
 	return 0;
