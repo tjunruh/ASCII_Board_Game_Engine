@@ -74,6 +74,7 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string name_id, s
 		tile.value = translation.action_tile_skeletons[i].default_value;
 		action_tiles.push_back(tile);
 	}
+
 	set_widget_type(BOARD);
 	selectable();
 	status = SUCCESS;
@@ -1134,6 +1135,7 @@ int ascii_board::load_board_translation(std::string name_id, std::string path)
 	log.log_comment(validation_debug_log);
 	log.log_status(SUCCESS, "ascii_board::load_board_translation");
 	log.log_end("ascii_board::load_board_translation");
+	return status;
 }
 
 void ascii_board::use_translation(std::string name_id)
@@ -1652,4 +1654,5 @@ int ascii_board::validate_translation(std::vector<action_tile_skeleton> action_t
 			return ELEMENT_NOT_FOUND;
 		}
 	}
+	return status;
 }
