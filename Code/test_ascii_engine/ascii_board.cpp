@@ -29,6 +29,7 @@ protected:
 	std::string x_config_path = "test_x_config.txt";
 #elif __linux__
 	std::string board_config_path = "Code/test_ascii_engine/test_configs/test_board_config.txt";
+	std::string upside_down_board_config_path = "Code/test_ascii_engine/test_configs/test_board_config_upside_down.txt";
 	std::string cursor_config_path = "Code/test_ascii_engine/test_configs/test_cursor_config.txt";
 	std::string x_config_path = "Code/test_ascii_engine/test_configs/test_x_config.txt";
 #endif
