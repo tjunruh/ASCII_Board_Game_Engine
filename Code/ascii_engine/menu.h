@@ -17,7 +17,7 @@
 class menu : public widget
 {
 public:
-	MENU_API menu(frame* parent, std::string special_operation="none", bool start_logging=false, std::string logging_file_path="menu.log");
+	MENU_API menu(frame* parent, std::string special_operation="none", unsigned int lines_count=0, bool start_logging=false, std::string logging_file_path="menu.log");
 	MENU_API int append_item(std::string item);
 	MENU_API void set_cursor(char cursor);
 	MENU_API void set_controls(int select, int up, int down, int quit);
@@ -30,12 +30,16 @@ public:
 private:
 	std::vector<std::string> menu_items;
 	char _cursor = '*';
-	unsigned int cursor_row = 0;
+	unsigned int cursor_line = 0;
 	int _select = ascii_io::enter;
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
 	int _quit = ascii_io::q;
 	bool quit_enabled = false;
+	bool no_lines_constraint = false;
+	unsigned int displayed_lines = 0;
+	unsigned int top_line = 0;
 	std::string build_output();
 	bool item_exists(std::string item);
+	unsigned int get_longest_item_length();
 };

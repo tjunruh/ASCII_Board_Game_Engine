@@ -8,7 +8,7 @@
 #include <algorithm>
 #endif
 
-menu::menu(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
+menu::menu(frame* parent, std::string special_operation, unsigned int lines_count, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -22,6 +22,15 @@ menu::menu(frame* parent, std::string special_operation, bool start_logging, std
 	}
 	set_widget_type(MENU);
 	selectable();
+	if (lines_count != 0)
+	{
+		displayed_lines = lines_count;
+	}
+	else
+	{
+		no_lines_constraint = true;
+	}
+
 }
 
 int menu::append_item(std::string item)
@@ -31,6 +40,10 @@ int menu::append_item(std::string item)
 	{
 		menu_items.push_back(item);
 		status = SUCCESS;
+		if (no_lines_constraint)
+		{
+			displayed_lines++;
+		}
 		set_output_to_frame(build_output());
 	}
 	log.log_status(status, "menu::append_item");
@@ -70,9 +83,19 @@ bool menu::item_exists(std::string item)
 std::string menu::build_output()
 {
 	std::string output = "";
-	for (unsigned int i = 0; i < menu_items.size(); i++)
+	unsigned int stop_line = 0;
+	if (menu_items.size() < (displayed_lines + top_line))
 	{
-		if (cursor_row == i)
+		stop_line = menu_items.size();
+	}
+	else
+	{
+		stop_line = displayed_lines + top_line;
+	}
+
+	for (unsigned int i = top_line; i < stop_line; i++)
+	{
+		if (cursor_line == i)
 		{
 			output = output + _cursor + " ";
 		}
@@ -81,12 +104,17 @@ std::string menu::build_output()
 			output = output + "  ";
 		}
 		
-		output = output + menu_items[i];
+		output = output + menu_items[i] + "\n";
+	}
 
-		if (i < (menu_items.size() - 1))
-		{
-			output = output + "\n";
-		}
+	std::vector<std::string> lines = format_tools::get_lines(output);
+	lines = format_tools::remove_newline_characters(lines);
+	lines = format_tools::fill_lines(lines, get_longest_item_length() + 2, format_tools::left_alignment_keyword);
+	lines = format_tools::add_newline_characters(lines);
+	output = format_tools::get_string(lines);
+	if (output.length() > 0)
+	{
+		output.erase((output.length() - 1), 1);
 	}
 	return output;
 }
@@ -127,21 +155,29 @@ std::string menu::get_selection()
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
-			selected_item = menu_items[cursor_row];
+			selected_item = menu_items[cursor_line];
 			break;
 		}
 		else if (input == _up)
 		{
-			if (cursor_row > 0)
+			if (cursor_line > 0)
 			{
-				cursor_row--;
+				if (cursor_line == top_line)
+				{
+					top_line--;
+				}
+				cursor_line--;
 			}
 		}
 		else if (input == _down)
 		{
-			if (cursor_row < (menu_items.size() - 1))
+			if (cursor_line < (menu_items.size() - 1))
 			{
-				cursor_row++;
+				if ((cursor_line - top_line + 1) == displayed_lines)
+				{
+					top_line++;
+				}
+				cursor_line++;
 			}
 		}
 	} while ((input != _quit) || !quit_enabled);
@@ -177,4 +213,17 @@ void menu::display()
 void menu::sync()
 {
 	set_output_to_frame(build_output());
+}
+
+unsigned int menu::get_longest_item_length()
+{
+	unsigned int longest_length = 0;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].length() > longest_length)
+		{
+			longest_length = menu_items[i].length();
+		}
+	}
+	return longest_length;
 }
