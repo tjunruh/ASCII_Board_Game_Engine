@@ -19,6 +19,7 @@ class menu : public widget
 public:
 	MENU_API menu(frame* parent, std::string special_operation="none", unsigned int lines_count=0, bool start_logging=false, std::string logging_file_path="menu.log");
 	MENU_API int append_item(std::string item);
+	MENU_API int set_item_label(std::string item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API void set_controls(int select, int up, int down, int quit);
 	MENU_API void get_controls(int& select, int& up, int& down, int& quit);
@@ -27,8 +28,14 @@ public:
 	MENU_API void disable_quit();
 	MENU_API void display();
 	MENU_API void sync();
+	MENU_API void separate_items(bool separate);
 private:
-	std::vector<std::string> menu_items;
+	struct item_structure
+	{
+		std::string name_id = "";
+		std::string label = "";
+	};
+	std::vector<item_structure> menu_items;
 	char _cursor = '*';
 	unsigned int cursor_line = 0;
 	int _select = ascii_io::enter;
@@ -39,7 +46,10 @@ private:
 	bool no_lines_constraint = false;
 	unsigned int displayed_lines = 0;
 	unsigned int top_line = 0;
+	bool _separate_items = false;
 	std::string build_output();
 	bool item_exists(std::string item);
+	bool label_exists();
 	unsigned int get_longest_item_length();
+	unsigned int get_longest_label_length();
 };

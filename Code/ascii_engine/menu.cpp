@@ -38,7 +38,9 @@ int menu::append_item(std::string item)
 	int status = DUPLICATE_ELEMENT;
 	if (!item_exists(item))
 	{
-		menu_items.push_back(item);
+		item_structure item_initialization;
+		item_initialization.name_id = item;
+		menu_items.push_back(item_initialization);
 		status = SUCCESS;
 		if (no_lines_constraint)
 		{
@@ -47,6 +49,22 @@ int menu::append_item(std::string item)
 		set_output_to_frame(build_output());
 	}
 	log.log_status(status, "menu::append_item");
+	return status;
+}
+
+int menu::set_item_label(std::string item, const std::string& label)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].name_id == item)
+		{
+			menu_items[i].label = label;
+			status = SUCCESS;
+		}
+		set_output_to_frame(build_output());
+	}
+	log.log_status(status, "menu::set_item_label");
 	return status;
 }
 
@@ -71,7 +89,7 @@ bool menu::item_exists(std::string item)
 	bool exists = false;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i] == item)
+		if (menu_items[i].name_id == item)
 		{
 			exists = true;
 			break;
@@ -82,8 +100,22 @@ bool menu::item_exists(std::string item)
 
 std::string menu::build_output()
 {
-	std::string output = "";
+	std::string item_output = "";
+	std::string label_output = "";
 	unsigned int stop_line = 0;
+	bool build_label = label_exists();
+	unsigned int item_width = get_longest_item_length() + 2;
+	unsigned int label_width = get_longest_label_length() + 3;
+
+	if (_separate_items)
+	{
+		item_output = format_tools::get_spacing(item_width, '-') + "\n";
+		if (build_label)
+		{
+			label_output = "-." + format_tools::get_spacing(label_width - 2, '-') + "\n";
+		}
+	}
+
 	if (menu_items.size() < (displayed_lines + top_line))
 	{
 		stop_line = menu_items.size();
@@ -93,25 +125,73 @@ std::string menu::build_output()
 		stop_line = displayed_lines + top_line;
 	}
 
+	std::string separation_string = "   ";
+	if (_separate_items)
+	{
+		separation_string = " | ";
+	}
+
 	for (unsigned int i = top_line; i < stop_line; i++)
 	{
 		if (cursor_line == i)
 		{
-			output = output + _cursor + " ";
+			item_output = item_output + _cursor + " ";
 		}
 		else
 		{
-			output = output + "  ";
+			item_output = item_output + "  ";
 		}
 		
-		output = output + menu_items[i] + "\n";
+		item_output = item_output + menu_items[i].name_id + "\n";
+		if (_separate_items && ((i + 1) != stop_line))
+		{
+			item_output = item_output + format_tools::get_spacing(item_width, '-') + "\n";
+		}
+
+		if (build_label)
+		{
+			label_output = label_output + separation_string + menu_items[i].label + "\n";
+			if (_separate_items && ((i + 1) != stop_line))
+			{
+				label_output = label_output + "-+" + format_tools::get_spacing(label_width - 2, '-') + "\n";
+			}
+		}
 	}
 
-	std::vector<std::string> lines = format_tools::get_lines(output);
-	lines = format_tools::remove_newline_characters(lines);
-	lines = format_tools::fill_lines(lines, get_longest_item_length() + 2, format_tools::left_alignment_keyword);
-	lines = format_tools::add_newline_characters(lines);
-	output = format_tools::get_string(lines);
+	if (_separate_items)
+	{
+		item_output = item_output + format_tools::get_spacing(item_width, '-') + "\n";
+		if (build_label)
+		{
+			label_output = label_output + "-." + format_tools::get_spacing(label_width - 2, '-') + "\n";
+		}
+	}
+
+	std::string output = "";
+	std::vector<std::string> item_lines = format_tools::get_lines(item_output);
+	item_lines = format_tools::remove_newline_characters(item_lines);
+	item_lines = format_tools::fill_lines(item_lines, item_width, format_tools::left_alignment_keyword);
+	
+	if (build_label)
+	{
+		std::vector<std::string> label_lines = format_tools::get_lines(label_output);
+		label_lines = format_tools::remove_newline_characters(label_lines);
+		label_lines = format_tools::fill_lines(label_lines, label_width, format_tools::left_alignment_keyword);
+		label_output = format_tools::get_string(label_lines);
+		format_tools::text_column lines;
+		lines.text.push_back(item_lines);
+		lines.width.push_back(item_width);
+		lines.text.push_back(label_lines);
+		lines.width.push_back(label_width);
+		unsigned int lines_in_column = 0;
+		output = format_tools::fuse_columns_into_row(lines, lines_in_column);
+	}
+	else
+	{
+		item_lines = format_tools::add_newline_characters(item_lines);
+		output = format_tools::get_string(item_lines);
+	}
+
 	if (output.length() > 0)
 	{
 		output.erase((output.length() - 1), 1);
@@ -155,7 +235,7 @@ std::string menu::get_selection()
 		input = ascii_io::getchar();
 		if (input == _select)
 		{
-			selected_item = menu_items[cursor_line];
+			selected_item = menu_items[cursor_line].name_id;
 			break;
 		}
 		else if (input == _up)
@@ -191,6 +271,56 @@ void menu::display()
 		sync();
 		frame_display();
 	}
+	else if (dec_enabled())
+	{
+		unsigned int width = get_width();
+		int x_origin = get_x_origin();
+		int y_origin = get_y_origin();
+		int cursor_x = 0;
+		int cursor_y = 0;
+		ascii_io::get_cursor_position(cursor_x, cursor_y);
+		std::string menu_output = build_output();
+		std::vector<std::string> lines = format_tools::get_lines(menu_output);
+		lines = format_tools::remove_newline_characters(lines);
+		lines = format_tools::fill_lines(lines, width, get_alignment());
+		std::string adjusted_menu_output = format_tools::get_string(lines);
+		std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_menu_output, width);
+		std::vector<format_tools::content_format> regions = format_tools::convert(dec_regions, adjusted_menu_output);
+		regions = format_tools::fit_to_width(regions, width);
+		int line = 0;
+		unsigned int line_length = 0;
+		ascii_io::move_cursor_to_position(x_origin, y_origin);
+		for (unsigned int i = 0; i < regions.size(); i++)
+		{
+			if (regions[i].format.dec)
+			{
+#ifdef _WIN32
+				ascii_io::enable_dec();
+				ascii_io::print(regions[i].content);
+#elif __linux__
+				dec_print(regions[i].content);
+#endif
+			}
+			else
+			{
+#ifdef _WIN32
+				ascii_io::disable_dec();
+#endif
+				ascii_io::print(regions[i].content);
+			}
+			line_length = line_length + regions[i].content.length();
+			if (line_length >= width)
+			{
+				line++;
+				line_length = 0;
+				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
+			}
+		}
+#ifdef _WIN32
+		ascii_io::disable_dec();
+#endif
+		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
+	}
 	else
 	{
 		std::vector<std::string> lines = format_tools::get_lines(build_output());
@@ -215,14 +345,47 @@ void menu::sync()
 	set_output_to_frame(build_output());
 }
 
+void menu::separate_items(bool separate)
+{
+	_separate_items = separate;
+	set_output_to_frame(build_output());
+}
+
+bool menu::label_exists()
+{
+	bool exists = false;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].label != "")
+		{
+			exists = true;
+			break;
+		}
+	}
+	return exists;
+}
+
 unsigned int menu::get_longest_item_length()
 {
 	unsigned int longest_length = 0;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].length() > longest_length)
+		if (menu_items[i].name_id.length() > longest_length)
 		{
-			longest_length = menu_items[i].length();
+			longest_length = menu_items[i].name_id.length();
+		}
+	}
+	return longest_length;
+}
+
+unsigned int menu::get_longest_label_length()
+{
+	unsigned int longest_length = 0;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].label.length() > longest_length)
+		{
+			longest_length = menu_items[i].label.length();
 		}
 	}
 	return longest_length;
