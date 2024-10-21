@@ -21,8 +21,11 @@ public:
 	MENU_API int append_item(std::string item);
 	MENU_API int set_item_label(std::string item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
+	MENU_API char get_cursor();
 	MENU_API void set_controls(int select, int up, int down, int quit);
 	MENU_API void get_controls(int& select, int& up, int& down, int& quit);
+	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
+	MENU_API void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	MENU_API std::string get_selection();
 	MENU_API void enable_quit();
 	MENU_API void disable_quit();
@@ -47,6 +50,10 @@ private:
 	unsigned int displayed_lines = 0;
 	unsigned int top_line = 0;
 	bool _separate_items = false;
+	char _horizontal_char = '-';
+	char _vertical_char = '|';
+	char _intersection_char = '+';
+	char _endpoint_char = '.';
 	std::string build_output();
 	bool item_exists(std::string item);
 	bool label_exists();

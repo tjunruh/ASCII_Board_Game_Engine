@@ -84,6 +84,11 @@ void menu::set_cursor(char cursor)
 	log.log_status(status, "menu::set_cursor");
 }
 
+char menu::get_cursor()
+{
+	return _cursor;
+}
+
 bool menu::item_exists(std::string item)
 {
 	bool exists = false;
@@ -109,10 +114,10 @@ std::string menu::build_output()
 
 	if (_separate_items)
 	{
-		item_output = format_tools::get_spacing(item_width, '-') + "\n";
+		item_output = format_tools::get_spacing(item_width, _horizontal_char) + "\n";
 		if (build_label)
 		{
-			label_output = "-." + format_tools::get_spacing(label_width - 2, '-') + "\n";
+			label_output = std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
 		}
 	}
 
@@ -128,7 +133,7 @@ std::string menu::build_output()
 	std::string separation_string = "   ";
 	if (_separate_items)
 	{
-		separation_string = " | ";
+		separation_string = " " + std::string(1, _vertical_char) + " ";
 	}
 
 	for (unsigned int i = top_line; i < stop_line; i++)
@@ -145,7 +150,7 @@ std::string menu::build_output()
 		item_output = item_output + menu_items[i].name_id + "\n";
 		if (_separate_items && ((i + 1) != stop_line))
 		{
-			item_output = item_output + format_tools::get_spacing(item_width, '-') + "\n";
+			item_output = item_output + format_tools::get_spacing(item_width, _horizontal_char) + "\n";
 		}
 
 		if (build_label)
@@ -153,17 +158,17 @@ std::string menu::build_output()
 			label_output = label_output + separation_string + menu_items[i].label + "\n";
 			if (_separate_items && ((i + 1) != stop_line))
 			{
-				label_output = label_output + "-+" + format_tools::get_spacing(label_width - 2, '-') + "\n";
+				label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _intersection_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
 			}
 		}
 	}
 
 	if (_separate_items)
 	{
-		item_output = item_output + format_tools::get_spacing(item_width, '-') + "\n";
+		item_output = item_output + format_tools::get_spacing(item_width, _horizontal_char) + "\n";
 		if (build_label)
 		{
-			label_output = label_output + "-." + format_tools::get_spacing(label_width - 2, '-') + "\n";
+			label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
 		}
 	}
 
@@ -213,6 +218,43 @@ void menu::get_controls(int& select, int& up, int& down, int& quit)
 	up = _up;
 	down = _down;
 	quit = _quit;
+}
+
+void menu::set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)
+{
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), horizontal_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "menu::set_separater_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), vertical_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "menu::set_separater_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), intersection_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "menu::set_separater_characters");
+	}
+	else if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), endpoint_char) != 0)
+	{
+		log.log_status(INVALID_VALUE, "menu::set_separater_characters");
+	}
+	else
+	{
+		_horizontal_char = horizontal_char;
+		_vertical_char = vertical_char;
+		_intersection_char = intersection_char;
+		_endpoint_char = endpoint_char;
+		log.log_status(SUCCESS, "menu::set_separater_characters");
+		set_output_to_frame(build_output());
+	}
+}
+
+void menu::get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char)
+{
+	horizontal_char = _horizontal_char;
+	vertical_char = _vertical_char;
+	intersection_char = _intersection_char;
+	endpoint_char = _endpoint_char;
 }
 
 void menu::enable_quit()
