@@ -208,30 +208,36 @@ TEST_F(menu_test, test_basic)
 	std::vector<menu> menus;
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
 	local_test_menu_2.append_item("2");
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
 	local_test_menu_4.append_item("c");
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
 	local_test_menu_5.append_item("e");
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 	
@@ -276,6 +282,7 @@ TEST_F(menu_test, test_border)
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -283,17 +290,20 @@ TEST_F(menu_test, test_border)
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -301,10 +311,12 @@ TEST_F(menu_test, test_border)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 	
@@ -342,36 +354,44 @@ TEST_F(menu_test, test_merge)
 	std::vector<menu> menus;
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame, "merge");
 	local_test_menu_2.append_item("2");
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame);
 	local_test_menu_3.append_item("1");
 	local_test_menu_3.append_item("2");
 	local_test_menu_3.append_item("3");
 	local_test_menu_3.append_item("4");
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("First option");
 	local_test_menu_4.append_item("Second option");
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame, "new line");
 	local_test_menu_5.append_item("a");
 	local_test_menu_5.append_item("b");
 	local_test_menu_5.append_item("c");
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("d");
 	local_test_menu_6.append_item("e");
 	local_test_menu_6.append_item("f");
 	local_test_menu_6.append_item("g");
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	menu local_test_menu_7(local_test_frame);
 	local_test_menu_7.append_item("h");
+	local_test_menu_7.sync();
 	menus.push_back(local_test_menu_7);
 	menu local_test_menu_8(local_test_frame, "merge");
 	local_test_menu_8.append_item("i");
+	local_test_menu_8.sync();
 	menus.push_back(local_test_menu_8);
 	std::string output = local_test_frame->get_frame_output();
 	
@@ -406,20 +426,28 @@ TEST_F(menu_test, test_merge)
 	menus.clear();
 	local_test_frame->set_fake_console_height(16);
 	local_test_menu_1.add_border();
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
+	local_test_menu_3.add_border();
 	local_test_menu_3.add_border();
 	menus.push_back(local_test_menu_3);
 	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	local_test_menu_7.add_border();
+	local_test_menu_7.sync();
 	menus.push_back(local_test_menu_7);
 	local_test_menu_8.add_border();
+	local_test_menu_8.sync();
 	menus.push_back(local_test_menu_8);
 	output = local_test_frame->get_frame_output();
 	
@@ -464,6 +492,7 @@ TEST_F(menu_test, test_spacer)
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -471,12 +500,14 @@ TEST_F(menu_test, test_spacer)
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	spacer local_test_spacer_1(local_test_frame, 1, "new line");
 	menu local_test_menu_3(local_test_frame);
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	spacer local_test_spacer_2(local_test_frame, 1);
 	menu local_test_menu_4(local_test_frame, "new line");
@@ -484,6 +515,7 @@ TEST_F(menu_test, test_spacer)
 	local_test_menu_4.append_item("b");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -491,10 +523,12 @@ TEST_F(menu_test, test_spacer)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 	
@@ -544,6 +578,7 @@ TEST_F(menu_test, test_spacing)
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
 	local_test_menu_1.set_spacing(1, 1, 0, 1);
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -552,12 +587,14 @@ TEST_F(menu_test, test_spacing)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
 	local_test_menu_2.set_spacing(0, 0, 0, 1);
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.set_spacing(1, 2, 5, 5);
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -565,6 +602,7 @@ TEST_F(menu_test, test_spacing)
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
 	local_test_menu_4.set_spacing(1, 1, 0, 0);
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -572,11 +610,13 @@ TEST_F(menu_test, test_spacing)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
 	local_test_menu_6.set_spacing(0, 0, 1, 1);
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 	
@@ -622,6 +662,7 @@ TEST_F(menu_test, test_border_spacing)
 	local_test_menu_1.add_border();
 	local_test_menu_1.set_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_border_spacing(0, 3, 0, 0);
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -629,11 +670,13 @@ TEST_F(menu_test, test_border_spacing)
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -642,6 +685,7 @@ TEST_F(menu_test, test_border_spacing)
 	local_test_menu_4.add_border();
 	local_test_menu_4.set_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_border_spacing(0, 1, 0, 0);
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -649,12 +693,14 @@ TEST_F(menu_test, test_border_spacing)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
 	local_test_menu_6.set_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_border_spacing(0, 3, 0, 0);
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -701,6 +747,7 @@ TEST_F(menu_test, right_alignment)
 	local_test_menu_1.set_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_alignment("right");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -709,12 +756,14 @@ TEST_F(menu_test, right_alignment)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
 	local_test_menu_2.set_alignment("right");
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.set_alignment("right");
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -724,6 +773,7 @@ TEST_F(menu_test, right_alignment)
 	local_test_menu_4.set_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_border_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_alignment("right");
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -732,6 +782,7 @@ TEST_F(menu_test, right_alignment)
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
 	local_test_menu_5.set_alignment("right");
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
@@ -739,6 +790,7 @@ TEST_F(menu_test, right_alignment)
 	local_test_menu_6.set_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_alignment("right");
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -785,6 +837,7 @@ TEST_F(menu_test, center_alignment)
 	local_test_menu_1.set_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_alignment("center");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -793,12 +846,14 @@ TEST_F(menu_test, center_alignment)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
 	local_test_menu_2.set_alignment("center");
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.set_alignment("center");
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -808,6 +863,7 @@ TEST_F(menu_test, center_alignment)
 	local_test_menu_4.set_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_border_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_alignment("center");
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -816,6 +872,7 @@ TEST_F(menu_test, center_alignment)
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
 	local_test_menu_5.set_alignment("center");
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
@@ -823,6 +880,7 @@ TEST_F(menu_test, center_alignment)
 	local_test_menu_6.set_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_alignment("center");
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -869,6 +927,7 @@ TEST_F(menu_test, center_block_alignment)
 	local_test_menu_1.set_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_1.set_alignment("center block");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -877,12 +936,14 @@ TEST_F(menu_test, center_block_alignment)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
 	local_test_menu_2.set_alignment("center block");
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.set_alignment("center block");
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -892,6 +953,7 @@ TEST_F(menu_test, center_block_alignment)
 	local_test_menu_4.set_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_border_spacing(0, 1, 0, 0);
 	local_test_menu_4.set_alignment("center block");
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -900,6 +962,7 @@ TEST_F(menu_test, center_block_alignment)
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
 	local_test_menu_5.set_alignment("center block");
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
@@ -907,6 +970,7 @@ TEST_F(menu_test, center_block_alignment)
 	local_test_menu_6.set_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_border_spacing(0, 3, 0, 0);
 	local_test_menu_6.set_alignment("center block");
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -964,6 +1028,7 @@ TEST_F(menu_test, separated)
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
 	local_test_menu_1.separate_items(true);
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -972,12 +1037,14 @@ TEST_F(menu_test, separated)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.add_border();
 	local_test_menu_2.separate_items(true);
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.separate_items(true);
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -985,6 +1052,7 @@ TEST_F(menu_test, separated)
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
 	local_test_menu_4.separate_items(true);
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -993,11 +1061,13 @@ TEST_F(menu_test, separated)
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
 	local_test_menu_5.separate_items(true);
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
 	local_test_menu_6.separate_items(true);
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -1043,6 +1113,7 @@ TEST_F(menu_test, basic_label_test)
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
 	local_test_menu_1.set_item_label("1", "This is the first item");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -1052,11 +1123,13 @@ TEST_F(menu_test, basic_label_test)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.set_item_label("4", "Last option");
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -1064,6 +1137,7 @@ TEST_F(menu_test, basic_label_test)
 	local_test_menu_4.set_item_label("b", "Middle option");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -1071,10 +1145,12 @@ TEST_F(menu_test, basic_label_test)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -1134,6 +1210,7 @@ TEST_F(menu_test, separated_label)
 	local_test_menu_1.add_border();
 	local_test_menu_1.separate_items(true);
 	local_test_menu_1.set_item_label("1", "This is the first item");
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -1144,12 +1221,14 @@ TEST_F(menu_test, separated_label)
 	local_test_menu_2.set_item_label("4", "Last option");
 	local_test_menu_2.add_border();
 	local_test_menu_2.separate_items(true);
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
 	local_test_menu_3.separate_items(true);
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -1158,6 +1237,7 @@ TEST_F(menu_test, separated_label)
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
 	local_test_menu_4.separate_items(true);
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -1166,11 +1246,13 @@ TEST_F(menu_test, separated_label)
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
 	local_test_menu_5.separate_items(true);
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
 	local_test_menu_6.separate_items(true);
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -1215,6 +1297,7 @@ TEST_F(menu_test, test_displayed_line_limit)
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border();
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame, "none", 4);
 	local_test_menu_2.append_item("1");
@@ -1223,17 +1306,20 @@ TEST_F(menu_test, test_displayed_line_limit)
 	local_test_menu_2.append_item("4");
 	local_test_menu_2.append_item("5");
 	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -1241,11 +1327,13 @@ TEST_F(menu_test, test_displayed_line_limit)
 	local_test_menu_5.append_item("f");
 	local_test_menu_5.append_item("g");
 	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame, "none", 1);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.append_item("i");
 	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 
@@ -1306,6 +1394,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_1.separate_items(true);
 	local_test_menu_1.set_item_label("1", "This is the first item");
 	local_test_menu_1.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_1.sync();
 	menus.push_back(local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
@@ -1317,6 +1406,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_2.add_border();
 	local_test_menu_2.separate_items(true);
 	local_test_menu_2.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
 	menu local_test_menu_3(local_test_frame, "new line");
 	local_test_menu_3.append_item("First option");
@@ -1324,6 +1414,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_3.add_border();
 	local_test_menu_3.separate_items(true);
 	local_test_menu_3.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
@@ -1333,6 +1424,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_4.add_border();
 	local_test_menu_4.separate_items(true);
 	local_test_menu_4.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_4.sync();
 	menus.push_back(local_test_menu_4);
 	menu local_test_menu_5(local_test_frame);
 	local_test_menu_5.append_item("d");
@@ -1342,12 +1434,14 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_5.add_border();
 	local_test_menu_5.separate_items(true);
 	local_test_menu_5.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_5.sync();
 	menus.push_back(local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
 	local_test_menu_6.add_border();
 	local_test_menu_6.separate_items(true);
 	local_test_menu_6.set_separater_characters('=', '!', '#', '*');
+	local_test_menu_6.sync();
 	menus.push_back(local_test_menu_6);
 	std::string output = local_test_frame->get_frame_output();
 

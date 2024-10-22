@@ -46,7 +46,6 @@ int menu::append_item(std::string item)
 		{
 			displayed_lines++;
 		}
-		set_output_to_frame(build_output());
 	}
 	log.log_status(status, "menu::append_item");
 	return status;
@@ -62,7 +61,6 @@ int menu::set_item_label(std::string item, const std::string& label)
 			menu_items[i].label = label;
 			status = SUCCESS;
 		}
-		set_output_to_frame(build_output());
 	}
 	log.log_status(status, "menu::set_item_label");
 	return status;
@@ -78,7 +76,6 @@ void menu::set_cursor(char cursor)
 	else
 	{
 		_cursor = cursor;
-		set_output_to_frame(build_output());
 		status = SUCCESS;
 	}
 	log.log_status(status, "menu::set_cursor");
@@ -245,7 +242,6 @@ void menu::set_separater_characters(char horizontal_char, char vertical_char, ch
 		_intersection_char = intersection_char;
 		_endpoint_char = endpoint_char;
 		log.log_status(SUCCESS, "menu::set_separater_characters");
-		set_output_to_frame(build_output());
 	}
 }
 
@@ -390,7 +386,6 @@ void menu::sync()
 void menu::separate_items(bool separate)
 {
 	_separate_items = separate;
-	set_output_to_frame(build_output());
 }
 
 bool menu::label_exists()
