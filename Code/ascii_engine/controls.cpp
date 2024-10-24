@@ -1,6 +1,6 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "controls.h"
-#include <json.hpp>
+#include "../../external_libraries/json.hpp"
 #include <fstream>
 
 int controls::bind(const std::string& control_name, const int key)
