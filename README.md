@@ -3,7 +3,13 @@
 This respository contains software to generate ascii graphics in a terminal specifically for board game creation. Look at the repository's wiki on the top bar for the detailed API description.
 
 ## Windows
-Build ASCII_Board_Game_Engine as a dll and link to your project. Also build the build_board_config and validate_board_config binaries. If you would prefer to not build everything, binaries are available in releases.
+Build ASCII_Board_Game_Engine as a dll and link to your project. Also build the build_board_config and validate_board_config binaries. For the build to succeed, make sure msbuild is installed on your system and add msbuild.exe to your path environment variable. Then the build can be completed by running:
+
+```
+.\windows_make.bat
+```
+
+If you would prefer to not build everything, binaries are available in releases.
 
 ## Linux
 Build ASCII_Board_Game_Engine as a shared object and link to your project. A make file is provided in the repository. To make the shared object, the build_board_config binary, and validate_board_config binary, simply run:
