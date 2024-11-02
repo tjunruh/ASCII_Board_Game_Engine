@@ -414,8 +414,14 @@ void text_box::set_output()
 	{
 		output = output + editable_lines[i];
 	}
+
+	unsigned int required_newlines = 1;
+	if (displayed_lines > 0)
+	{
+		required_newlines = displayed_lines - 1;
+	}
 	
-	for (unsigned int i = (stop_line - top_line); i < displayed_lines; i++)
+	for (unsigned int i = (stop_line - top_line); i < (required_newlines - 1); i++)
 	{
 		output = output + "\n";
 	}
