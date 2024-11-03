@@ -201,17 +201,25 @@ std::string menu::build_output()
 	return output;
 }
 
-void menu::set_controls(int select, int up, int down, int quit)
+void menu::set_controls(std::vector<int> select, int up, int down, int quit)
 {
-	_select = select;
+	_select.clear();
+	for (unsigned int i = 0; i < select.size(); i++)
+	{
+		_select.push_back(select[i]);
+	}
 	_up = up;
 	_down = down;
 	_quit = quit;
 }
 
-void menu::get_controls(int& select, int& up, int& down, int& quit)
+void menu::get_controls(std::vector<int>& select, int& up, int& down, int& quit)
 {
-	select = _select;
+	select.clear();
+	for (unsigned int i = 0; i < _select.size(); i++)
+	{
+		select.push_back(_select[i]);
+	}
 	up = _up;
 	down = _down;
 	quit = _quit;
@@ -263,20 +271,20 @@ void menu::disable_quit()
 	quit_enabled = false;
 }
 
-std::string menu::get_selection()
+void menu::get_selection(std::string& selection, int& key_stroke)
 {
-	int input = 0;
-	std::string selected_item = "";
+	key_stroke = ascii_io::undefined;
+	selection = "";
 	do
 	{
 		display();
-		input = ascii_io::getchar();
-		if (input == _select)
+		key_stroke = ascii_io::getchar();
+		if (std::count(_select.begin(), _select.end(), key_stroke) != 0)
 		{
-			selected_item = menu_items[cursor_line].name_id;
+			selection = menu_items[cursor_line].name_id;
 			break;
 		}
-		else if (input == _up)
+		else if (key_stroke == _up)
 		{
 			if (cursor_line > 0)
 			{
@@ -287,7 +295,7 @@ std::string menu::get_selection()
 				cursor_line--;
 			}
 		}
-		else if (input == _down)
+		else if (key_stroke == _down)
 		{
 			if (cursor_line < (menu_items.size() - 1))
 			{
@@ -298,8 +306,7 @@ std::string menu::get_selection()
 				cursor_line++;
 			}
 		}
-	} while ((input != _quit) || !quit_enabled);
-	return selected_item;
+	} while ((key_stroke != _quit) || !quit_enabled);
 }
 
 void menu::display()
