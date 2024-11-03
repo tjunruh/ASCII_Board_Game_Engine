@@ -190,7 +190,7 @@ void ascii_board::set_tile(int row, int column, std::string value, char ignore_c
 					(action_tiles[action_tile_index].value)[i] = value[i];
 				}
 			}
-			action_tiles[action_tile_index].colors = colors;
+			action_tiles[action_tile_index].colors = format_tools::combine(colors, action_tiles[action_tile_index].colors);
 			status = SUCCESS;
 		}
 		else
@@ -232,7 +232,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 
 			if (activate)
 			{
-				action_tiles[action_tile_index].colors = configuration.colors;
+				action_tiles[action_tile_index].colors = format_tools::combine(configuration.colors, action_tiles[action_tile_index].colors);
 			}
 			else
 			{
@@ -304,7 +304,7 @@ void ascii_board::set_row(int row, std::string value, char ignore_character, con
 						(action_tiles[i].value)[j] = value[j];
 					}
 				}
-				action_tiles[i].colors = colors;
+				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
 			}
 			else
 			{
@@ -343,7 +343,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 
 				if (activate)
 				{
-					action_tiles[i].colors = configuration.colors;
+					action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
 				}
 				else
 				{
@@ -412,7 +412,7 @@ void ascii_board::set_column(int column, std::string value, char ignore_characte
 						(action_tiles[i].value)[j] = value[j];
 					}
 				}
-				action_tiles[i].colors = colors;
+				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
 			}
 			else
 			{
@@ -451,7 +451,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 
 				if (activate)
 				{
-					action_tiles[i].colors = configuration.colors;
+					action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
 					
 				}
 				else
@@ -511,7 +511,7 @@ void ascii_board::set_all(std::string value, char ignore_character, const std::v
 				{
 					(action_tiles[i].value)[j] = value[j];
 				}
-				action_tiles[i].colors = colors;
+				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
 			}
 		}
 		else
@@ -546,7 +546,7 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, std::
 
 			if (activate)
 			{
-				action_tiles[i].colors = configuration.colors;
+				action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
 			}
 			else
 			{
