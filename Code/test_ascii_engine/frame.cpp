@@ -209,9 +209,9 @@ TEST_F(frame_test, set_get_spacer_character_test)
 TEST_F(frame_test, enable_disable_dec_test)
 {
 	frame* test_frame = new frame(true);
-	test_frame->enable_dec();
+	test_frame->enable_dec(true);
 	EXPECT_EQ(test_frame->dec_enabled(), true);
-	test_frame->disable_dec();
+	test_frame->enable_dec(false);
 	EXPECT_EQ(test_frame->dec_enabled(), false);
 	delete(test_frame);
 }
@@ -219,9 +219,9 @@ TEST_F(frame_test, enable_disable_dec_test)
 TEST_F(frame_test, enable_disable_color_test)
 {
 	frame* test_frame = new frame(true);
-	test_frame->enable_color();
+	test_frame->enable_color(true);
 	EXPECT_EQ(test_frame->color_enabled(), true);
-	test_frame->disable_color();;
+	test_frame->enable_color(false);
 	EXPECT_EQ(test_frame->color_enabled(), false);
 	delete(test_frame);
 }

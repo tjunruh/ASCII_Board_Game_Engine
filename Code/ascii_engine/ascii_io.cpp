@@ -286,6 +286,7 @@ void ascii_io::ncurses_init()
    raw();
    noecho();
    cbreak();
+   colors_init();
 }
 
 void ascii_io::colors_init()

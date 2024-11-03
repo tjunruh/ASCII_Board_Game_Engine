@@ -33,11 +33,9 @@ public:
 	FRAME_API float get_coordinate_width_multiplier(int row, int column);
 	FRAME_API void set_spacer_character(char character);
 	FRAME_API char get_spacer_character();
-	FRAME_API void enable_dec();
-	FRAME_API void disable_dec();
+	FRAME_API void enable_dec(bool enable);
 	FRAME_API bool dec_enabled();
-	FRAME_API void enable_color();
-	FRAME_API void disable_color();
+	FRAME_API void enable_color(bool enable);
 	FRAME_API bool color_enabled();
 	FRAME_API void set_dec_format_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	FRAME_API void get_dec_format_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);

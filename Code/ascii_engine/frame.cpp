@@ -290,14 +290,9 @@ char frame::get_spacer_character()
 	return spacer_character;
 }
 
-void frame::enable_dec()
+void frame::enable_dec(bool enable)
 {
-	_dec_enabled = true;
-}
-
-void frame::disable_dec()
-{
-	_dec_enabled = false;
+	_dec_enabled = enable;
 }
 
 bool frame::dec_enabled()
@@ -305,17 +300,9 @@ bool frame::dec_enabled()
 	return _dec_enabled;
 }
 
-void frame::enable_color()
+void frame::enable_color(bool enable)
 {
-	_color_enabled = true;
-#ifdef __linux__
-	ascii_io::colors_init();
-#endif
-}
-
-void frame::disable_color()
-{
-	_color_enabled = false;
+	_color_enabled = enable;
 }
 
 bool frame::color_enabled()
