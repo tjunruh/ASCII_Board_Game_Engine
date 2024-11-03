@@ -28,6 +28,7 @@ namespace ascii_io
 	ASCII_IO_API void move_cursor_left(unsigned int amount=1);
 	ASCII_IO_API void move_cursor_to_position(unsigned int x, unsigned int y);
 	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
+	ASCII_IO_API std::string get_key_name(int key);
 	
 #ifdef _WIN32
 	void enable_dec();
@@ -47,7 +48,7 @@ namespace ascii_io
 	const int ESC = 27;
 	const int space = 32;
 	const int exclamation = 33;
-	const int double_quoatation = 34;
+	const int double_quotation = 34;
 	const int pound = 35;
 	const int dollar = 36;
 	const int percent = 37;
@@ -169,4 +170,124 @@ namespace ascii_io
 	const int page_down = 298;
 	const int page_up = 297;
 #endif
+
+	struct key_string
+	{
+		int key = undefined;
+		std::string name = "";
+	};
+
+	const std::vector<key_string> key_string_map
+	{
+		{undefined, "undefined"},
+		{TAB, "Tab"},
+		{ESC, "Escape"},
+		{space, "Space"},
+		{exclamation, "!"},
+		{double_quotation, "\""},
+		{pound, "#"},
+		{dollar, "$"},
+		{percent, "%"},
+		{ampersand, "&"},
+		{single_quotation, "\'"},
+		{begin_parentheses, "("},
+		{end_parentheses, ")"},
+		{asterisk, "*"},
+		{plus, "+"},
+		{comma, ","},
+		{minus, "-"},
+		{period, "."},
+		{forward_slash, "/"},
+		{zero, "0"},
+		{one, "1"},
+		{two, "2"},
+		{three, "3"},
+		{four, "4"},
+		{five, "5"},
+		{six, "6"},
+		{seven, "7"},
+		{eight, "8"},
+		{nine, "9"},
+		{colon, ":"},
+		{semi_colon, ";"},
+		{less_than, "<"},
+		{equal, "="},
+		{greater_than, ">"},
+		{question, "?"},
+		{at_sign, "@"},
+		{A, "A"},
+		{B, "B"},
+		{C, "C"},
+		{D, "D"},
+		{E, "E"},
+		{F, "F"},
+		{G, "G"},
+		{H, "H"},
+		{I, "I"},
+		{J, "J"},
+		{K, "K"},
+		{L, "L"},
+		{M, "M"},
+		{N, "N"},
+		{O, "O"},
+		{P, "P"},
+		{Q, "Q"},
+		{R, "R"},
+		{S, "S"},
+		{T, "T"},
+		{U, "U"},
+		{V, "V"},
+		{W, "W"},
+		{X, "X"},
+		{Y, "Y"},
+		{Z, "Z"},
+		{begin_bracket, "["},
+		{backslash, "\\"},
+		{end_bracket, "]"},
+		{caret, "^"},
+		{underscore, "_"},
+		{back_quote, "`"},
+		{a, "a"},
+		{b, "b"},
+		{c, "c"},
+		{d, "d"},
+		{e, "e"},
+		{f, "f"},
+		{g, "g"},
+		{h, "h"},
+		{i, "i"},
+		{j, "j"},
+		{k, "k"},
+		{l, "l"},
+		{m, "m"},
+		{n, "n"},
+		{o, "o"},
+		{p, "p"},
+		{q, "q"},
+		{r, "r"},
+		{s, "s"},
+		{t, "t"},
+		{u, "u"},
+		{v, "v"},
+		{w, "w"},
+		{x, "x"},
+		{y, "y"},
+		{z, "z"},
+		{begin_curly_bracket, "{"},
+		{pipe, "|"},
+		{end_curly_bracket, "}"},
+		{tilde, "~"},
+		{backspace, "Backspace"},
+		{enter, "Enter"},
+		{right, "Right"},
+		{left, "Left"},
+		{up, "Up"},
+		{down, "Down"},
+		{DEL, "Delete"},
+		{insert, "Insert"},
+		{end, "End"},
+		{home, "Home"},
+		{page_down, "Page Down"},
+		{page_up, "Page Up"}
+	};
 }

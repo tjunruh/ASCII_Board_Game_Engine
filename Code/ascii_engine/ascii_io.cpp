@@ -254,6 +254,19 @@ void ascii_io::set_color(int foreground, int background, bool bold)
 #endif
 }
 
+std::string ascii_io::get_key_name(int key)
+{
+	std::string name = "";
+	for (unsigned int i = 0; i < key_string_map.size(); i++)
+	{
+		if (key == key_string_map[i].key)
+		{
+			name = key_string_map[i].name;
+		}
+	}
+	return name;
+}
+
 #ifdef _WIN32
 void ascii_io::enable_dec()
 {

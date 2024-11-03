@@ -73,6 +73,25 @@ namespace format_tools
 		std::vector<unsigned int> width;
 	};
 
+	struct color_string
+	{
+		int color = none;
+		std::string name = "";
+	};
+
+	const std::vector<color_string> color_string_map =
+	{
+		{black, "Black"},
+		{red, "Red"},
+		{green, "Green"},
+		{yellow, "Yellow"},
+		{blue, "Blue"},
+		{magenta, "Magenta"},
+		{cyan, "Cyan"},
+		{white, "White"},
+		{none, "None"}
+	};
+
 	const std::string right_alignment_keyword = "right";
 	const std::string left_alignment_keyword = "left";
 	const std::string center_alignment_keyword = "center";
@@ -104,4 +123,5 @@ namespace format_tools
 	FORMAT_TOOLS_API std::vector<std::string> remove_newline_characters(std::vector<std::string> lines);
 	FORMAT_TOOLS_API std::vector<std::string> add_newline_characters(std::vector<std::string> lines);
 	FORMAT_TOOLS_API unsigned int get_first_line_length(const std::string& content);
+	FORMAT_TOOLS_API std::string get_color_name(int color);
 }

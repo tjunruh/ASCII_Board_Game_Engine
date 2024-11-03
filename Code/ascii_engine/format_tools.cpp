@@ -633,3 +633,16 @@ unsigned int format_tools::get_first_line_length(const std::string& content)
 	}
 	return width;
 }
+
+std::string format_tools::get_color_name(int color)
+{
+	std::string name = "";
+	for (unsigned int i = 0; i < color_string_map.size(); i++)
+	{
+		if (color_string_map[i].color == color)
+		{
+			name = color_string_map[i].name;
+		}
+	}
+	return name;
+}
