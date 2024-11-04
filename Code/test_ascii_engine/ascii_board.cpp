@@ -741,6 +741,18 @@ protected:
 		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Expected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
 	}
 
+	void set_sub_configuration_color_test(ascii_board& local_test_board, std::string id, std::string value, const std::vector<format_tools::index_format>& colors, std::string expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		local_test_board.set_sub_configuration_color(id, value, colors);
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+	}
+
 	void activate_deactivate(ascii_board& local_test_board, std::string id, const std::string& comparison, std::string expected_status_function, int expected_status_code, bool activate, int test_num)
 	{
 		std::string log_content = "";
@@ -1333,6 +1345,49 @@ TEST_F(ascii_board_test, load_configuration_parameters_with_colors)
 
 	int status = file_manager::delete_file("ascii_board.log");
 	ASSERT_EQ(status, 0);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, sub_configuration_color_test)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, board_config_path, "default", "none", true);
+
+	std::vector<format_tools::index_format> cursor_colors =
+	{
+		{0, {format_tools::green, format_tools::black, false}, ' '},
+		{1, {format_tools::red, format_tools::black, false}, ' '},
+		{2, {format_tools::none, format_tools::none, false}, ' '}
+	};
+
+	std::vector<format_tools::index_format> new_valid_cursor_colors =
+	{
+		{0, {format_tools::red, format_tools::red, false}, ' '},
+		{1, {format_tools::none, format_tools::none, false}, ' '},
+		{2, {format_tools::green, format_tools::green, false}, ' '}
+	};
+
+	std::vector<format_tools::index_format> new_low_invalid_cursor_colors =
+	{
+		{-1, {format_tools::red, format_tools::red, false}, ' '},
+		{1, {format_tools::none, format_tools::none, false}, ' '},
+		{2, {format_tools::green, format_tools::green, false}, ' '}
+	};
+
+	std::vector<format_tools::index_format> new_high_invalid_cursor_colors =
+	{
+		{0, {format_tools::red, format_tools::red, false}, ' '},
+		{1, {format_tools::none, format_tools::none, false}, ' '},
+		{3, {format_tools::green, format_tools::green, false}, ' '}
+	};
+
+	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, "(*)", '*', cursor_colors, false, "ascii_board::add_configuration", SUCCESS);
+	set_sub_configuration_color_test(local_test_board, "cursor", "(*)", new_valid_cursor_colors, "ascii_board::set_sub_configuration_color", SUCCESS, 0);
+	set_sub_configuration_color_test(local_test_board, "cursor", "(*)", new_low_invalid_cursor_colors, "ascii_board::set_sub_configuration_color", INVALID_INDEX, 1);
+	set_sub_configuration_color_test(local_test_board, "cursor", "(*)", new_high_invalid_cursor_colors, "ascii_board::set_sub_configuration_color", INVALID_INDEX, 2);
+	set_sub_configuration_color_test(local_test_board, "gibberish", "(*)", new_valid_cursor_colors, "ascii_board::set_sub_configuration_color", ELEMENT_NOT_FOUND, 3);
+	set_sub_configuration_color_test(local_test_board, "cursor", "123", new_valid_cursor_colors, "ascii_board::set_sub_configuration_color", ELEMENT_NOT_FOUND, 4);
 
 	delete(local_test_frame);
 }

@@ -99,6 +99,7 @@ public:
 	ASCII_BOARD_API std::string load_configuration(std::string path);
 	ASCII_BOARD_API void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character);
 	ASCII_BOARD_API void load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void set_sub_configuration_color(std::string name_id, std::string value_match, const std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API int get_number_of_columns();
 	ASCII_BOARD_API int get_number_of_rows();
 	ASCII_BOARD_API void display();

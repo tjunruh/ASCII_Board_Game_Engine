@@ -869,6 +869,35 @@ void ascii_board::load_configuration(std::string path, std::string name_id, int 
 	log.log_end("ascii_board::load_configuration");
 }
 
+void ascii_board::set_sub_configuration_color(std::string name_id, std::string value_match, const std::vector<format_tools::index_format>& colors)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < colors.size(); i++)
+	{
+		if ((colors[i].index < 0) || ((unsigned int)colors[i].index >= value_match.size()))
+		{
+			log.log_status(INVALID_INDEX, "ascii_board::set_sub_configuration_color");
+			return;
+		}
+	}
+
+	for (unsigned int i = 0; i < board_configurations.size(); i++)
+	{
+		if (board_configurations[i].name_id == name_id)
+		{
+			for (unsigned int j = 0; j < board_configurations[i].tile_configurations.size(); j++)
+			{
+				if (board_configurations[i].tile_configurations[j].value == value_match)
+				{
+					board_configurations[i].tile_configurations[j].colors = colors;
+					status = SUCCESS;
+				}
+			}
+		}
+	}
+	log.log_status(status, "ascii_board::set_sub_configuration_color");
+}
+
 int ascii_board::get_number_of_columns()
 {
 	return max_columns;
