@@ -957,6 +957,7 @@ protected:
 			log_report = log_report + std::to_string(input_colors[j].format.background_format) + "\n";
 			log_report = log_report + std::to_string(input_colors[j].format.foreground_format) + "\n";
 			log_report = log_report + std::to_string(input_colors[j].format.dec) + "\n";
+			log_report = log_report + std::to_string(input_colors[j].format.bold) + "\n";
 			log_report = log_report + std::to_string(input_colors[j].index) + "\n";
 			log_report = log_report + std::to_string(input_colors[j].flag_replacement) + "\n";
 			log_report = log_report + "\n";
@@ -975,6 +976,7 @@ protected:
 				log_report = log_report + std::to_string(board_colors[i].format.background_format) + "\n";
 				log_report = log_report + std::to_string(board_colors[i].format.foreground_format) + "\n";
 				log_report = log_report + std::to_string(board_colors[i].format.dec) + "\n";
+				log_report = log_report + std::to_string(board_colors[i].format.bold) + "\n";
 				log_report = log_report + std::to_string(board_colors[i].index) + "\n";
 				log_report = log_report + std::to_string(board_colors[i].flag_replacement) + "\n";
 				log_report = log_report + "\n";
@@ -1356,30 +1358,30 @@ TEST_F(ascii_board_test, sub_configuration_color_test)
 
 	std::vector<format_tools::index_format> cursor_colors =
 	{
-		{0, {format_tools::green, format_tools::black, false}, ' '},
-		{1, {format_tools::red, format_tools::black, false}, ' '},
-		{2, {format_tools::none, format_tools::none, false}, ' '}
+		{0, {format_tools::green, format_tools::black, false, false}, ' '},
+		{1, {format_tools::red, format_tools::black, false, false}, ' '},
+		{2, {format_tools::none, format_tools::none, false, false}, ' '}
 	};
 
 	std::vector<format_tools::index_format> new_valid_cursor_colors =
 	{
-		{0, {format_tools::red, format_tools::red, false}, ' '},
-		{1, {format_tools::none, format_tools::none, false}, ' '},
-		{2, {format_tools::green, format_tools::green, false}, ' '}
+		{0, {format_tools::red, format_tools::red, true, false}, ' '},
+		{1, {format_tools::none, format_tools::none, true, false}, ' '},
+		{2, {format_tools::green, format_tools::green, true, false}, ' '}
 	};
 
 	std::vector<format_tools::index_format> new_low_invalid_cursor_colors =
 	{
-		{-1, {format_tools::red, format_tools::red, false}, ' '},
-		{1, {format_tools::none, format_tools::none, false}, ' '},
-		{2, {format_tools::green, format_tools::green, false}, ' '}
+		{-1, {format_tools::red, format_tools::red, false, false}, ' '},
+		{1, {format_tools::none, format_tools::none, false, false}, ' '},
+		{2, {format_tools::green, format_tools::green, false, false}, ' '}
 	};
 
 	std::vector<format_tools::index_format> new_high_invalid_cursor_colors =
 	{
-		{0, {format_tools::red, format_tools::red, false}, ' '},
-		{1, {format_tools::none, format_tools::none, false}, ' '},
-		{3, {format_tools::green, format_tools::green, false}, ' '}
+		{0, {format_tools::red, format_tools::red, false, false}, ' '},
+		{1, {format_tools::none, format_tools::none, false, false}, ' '},
+		{3, {format_tools::green, format_tools::green, false, false}, ' '}
 	};
 
 	add_or_load_configuration_parameters_with_colors(local_test_board, "cursor", -1, -1, "(*)", '*', cursor_colors, false, "ascii_board::add_configuration", SUCCESS);
@@ -1524,20 +1526,20 @@ TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 
 	std::vector<format_tools::index_format> cursor_colors =
 	{
-		{0, {format_tools::green, format_tools::black, false}, ' '}
+		{0, {format_tools::green, format_tools::black, false, false}, ' '}
 	};
 
 	std::vector<format_tools::index_format> x_colors =
 	{
-		{1, {format_tools::red, format_tools::black, false}, ' '},
-		{2, {format_tools::none, format_tools::none, false}, ' '}
+		{1, {format_tools::red, format_tools::black, false, false}, ' '},
+		{2, {format_tools::none, format_tools::none, false, false}, ' '}
 	};
 
 	std::vector<format_tools::index_format> cursor_x_colors =
 	{
-		{0, {format_tools::green, format_tools::black, false}, ' '},
-		{1, {format_tools::red, format_tools::black, false}, ' '},
-		{2, {format_tools::none, format_tools::none, false}, ' '}
+		{0, {format_tools::green, format_tools::black, true, false}, ' '},
+		{1, {format_tools::red, format_tools::black, true, false}, ' '},
+		{2, {format_tools::none, format_tools::none, true, false}, ' '}
 	};
 
 	set_or_clear(local_test_board, 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, cursor_colors, "(*)", '*');

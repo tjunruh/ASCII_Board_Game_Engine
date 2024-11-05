@@ -368,6 +368,11 @@ std::vector<format_tools::index_format> format_tools::combine(const std::vector<
 					combined_format[i].format.dec = true;
 				}
 
+				if (combined_format[j].format.bold)
+				{
+					combined_format[i].format.bold = true;
+				}
+
 				if (combined_format[i].format.foreground_format == format_tools::none)
 				{
 					combined_format[i].format.foreground_format = combined_format[j].format.foreground_format;
