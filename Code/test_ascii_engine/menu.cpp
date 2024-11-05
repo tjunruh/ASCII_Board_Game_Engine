@@ -1449,3 +1449,87 @@ TEST_F(menu_test, test_different_separater_characters)
 
 	delete(local_test_frame);
 }
+
+TEST_F(menu_test, test_remove_items)
+{
+	const expected_display_data correct_answer =
+	{
+		".------------------------------------------------..------------------------------------------------.\n"
+		"| * 1                                            || * 1                                            |\n"
+		".------------------------------------------------.|   2                                            |\n"
+		"                                                  |   3                                            |\n"
+		"                                                  |   4                                            |\n"
+		"                                                  .------------------------------------------------.\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		"| * First option                                                                                   |\n"
+		"|   Second option                                                                                  |\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| * a                           || * d                           || * h                           | \n"
+		"|   b                           ||   e                           |.-------------------------------. \n"
+		"|   c                           ||   f                           |                                  \n"
+		".-------------------------------.|   g                           |                                  \n"
+		"                                 .-------------------------------.                                  ",
+		{ 2, 52, 2, 2, 35, 68 },
+		{ 1, 1, 7, 11, 11, 11 },
+		{ 46, 46, 96, 29, 29, 29 },
+		{ 1, 4, 2, 3, 4, 1 },
+		{ 50, 50, 100, 33, 33, 33 },
+		{ 3, 6, 4, 5, 6, 3 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<menu> menus;
+	menu local_test_menu_1(local_test_frame);
+	local_test_menu_1.append_item("z");
+	local_test_menu_1.append_item("y");
+	local_test_menu_1.remove_all_items();
+	local_test_menu_1.append_item("x");
+	local_test_menu_1.remove_item("x");
+	local_test_menu_1.append_item("1");
+	local_test_menu_1.add_border();
+	local_test_menu_1.sync();
+	menus.push_back(local_test_menu_1);
+	menu local_test_menu_2(local_test_frame);
+	local_test_menu_2.append_item("1");
+	local_test_menu_2.append_item("2");
+	local_test_menu_2.append_item("3");
+	local_test_menu_2.append_item("4");
+	local_test_menu_2.add_border();
+	local_test_menu_2.sync();
+	menus.push_back(local_test_menu_2);
+	menu local_test_menu_3(local_test_frame, "new line");
+	local_test_menu_3.append_item("First option");
+	local_test_menu_3.append_item("Second option");
+	local_test_menu_3.add_border();
+	local_test_menu_3.sync();
+	menus.push_back(local_test_menu_3);
+	menu local_test_menu_4(local_test_frame, "new line");
+	local_test_menu_4.append_item("a");
+	local_test_menu_4.append_item("b");
+	local_test_menu_4.append_item("c");
+	local_test_menu_4.add_border();
+	local_test_menu_4.sync();
+	menus.push_back(local_test_menu_4);
+	menu local_test_menu_5(local_test_frame);
+	local_test_menu_5.append_item("d");
+	local_test_menu_5.append_item("e");
+	local_test_menu_5.append_item("f");
+	local_test_menu_5.append_item("g");
+	local_test_menu_5.add_border();
+	local_test_menu_5.sync();
+	menus.push_back(local_test_menu_5);
+	menu local_test_menu_6(local_test_frame);
+	local_test_menu_6.append_item("h");
+	local_test_menu_6.add_border();
+	local_test_menu_6.sync();
+	menus.push_back(local_test_menu_6);
+	std::string output = local_test_frame->get_frame_output();
+
+	run_test(output, menus, correct_answer);
+
+	delete(local_test_frame);
+}

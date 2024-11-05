@@ -51,6 +51,27 @@ int menu::append_item(std::string item)
 	return status;
 }
 
+int menu::remove_item(std::string item)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].name_id == item)
+		{
+			menu_items.erase(menu_items.begin() + i);
+			status = SUCCESS;
+			break;
+		}
+	}
+	log.log_status(status, "menu::remove_item");
+	return status;
+}
+
+void menu::remove_all_items()
+{
+	menu_items.clear();
+}
+
 int menu::set_item_label(std::string item, const std::string& label)
 {
 	int status = ELEMENT_NOT_FOUND;

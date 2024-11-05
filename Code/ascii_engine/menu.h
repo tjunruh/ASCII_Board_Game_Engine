@@ -19,6 +19,8 @@ class menu : public widget
 public:
 	MENU_API menu(frame* parent, std::string special_operation="none", unsigned int lines_count=0, bool start_logging=false, std::string logging_file_path="menu.log");
 	MENU_API int append_item(std::string item);
+	MENU_API int remove_item(std::string item);
+	MENU_API void remove_all_items();
 	MENU_API int set_item_label(std::string item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
