@@ -302,7 +302,10 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		key_stroke = ascii_io::getchar();
 		if (std::count(_select.begin(), _select.end(), key_stroke) != 0)
 		{
-			selection = menu_items[cursor_line].name_id;
+			if (menu_items.size() > 0)
+			{
+				selection = menu_items[cursor_line].name_id;
+			}
 			break;
 		}
 		else if (key_stroke == _up)
