@@ -79,7 +79,14 @@ int menu::remove_item(std::string item)
 
 			if ((cursor_line - top_line) >= displayed_lines)
 			{
-				cursor_line = top_line + displayed_lines - 1;
+				if ((int)(top_line + displayed_lines - 1) >= 0)
+				{
+					cursor_line = top_line + displayed_lines - 1;
+				}
+				else
+				{
+					cursor_line = 0;
+				}
 			}
 
 			break;
@@ -116,7 +123,14 @@ void menu::set_lines_count(unsigned int lines_count)
 
 		if ((cursor_line - top_line) >= displayed_lines)
 		{
-			cursor_line = top_line + displayed_lines - 1;
+			if ((int)(top_line + displayed_lines - 1) >= 0)
+			{
+				cursor_line = top_line + displayed_lines - 1;
+			}
+			else
+			{
+				cursor_line = 0;
+			}
 		}
 	}
 }
