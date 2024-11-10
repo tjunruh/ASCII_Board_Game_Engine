@@ -60,6 +60,28 @@ int menu::remove_item(std::string item)
 		{
 			menu_items.erase(menu_items.begin() + i);
 			status = SUCCESS;
+			if (no_lines_constraint)
+			{
+				displayed_lines--;
+			}
+
+			if ((menu_items.size() - top_line) < displayed_lines)
+			{
+				if ((int)(menu_items.size() - displayed_lines) >= 0)
+				{
+					top_line = menu_items.size() - displayed_lines;
+				}
+				else
+				{
+					top_line = 0;
+				}
+			}
+
+			if ((cursor_line - top_line) >= displayed_lines)
+			{
+				cursor_line = top_line + displayed_lines - 1;
+			}
+
 			break;
 		}
 	}
@@ -67,9 +89,47 @@ int menu::remove_item(std::string item)
 	return status;
 }
 
+void menu::set_lines_count(unsigned int lines_count)
+{
+	displayed_lines = lines_count;
+	if (lines_count == 0)
+	{
+		no_lines_constraint = true;
+		top_line = 0;
+		displayed_lines = menu_items.size();
+	}
+	else
+	{
+		no_lines_constraint = false;
+
+		if ((menu_items.size() - top_line) < displayed_lines)
+		{
+			if ((int)(menu_items.size() - displayed_lines) >= 0)
+			{
+				top_line = menu_items.size() - displayed_lines;
+			}
+			else
+			{
+				top_line = 0;
+			}
+		}
+
+		if ((cursor_line - top_line) >= displayed_lines)
+		{
+			cursor_line = top_line + displayed_lines - 1;
+		}
+	}
+}
+
 void menu::remove_all_items()
 {
 	menu_items.clear();
+	top_line = 0;
+	cursor_line = 0;
+	if (no_lines_constraint)
+	{
+		displayed_lines = 0;
+	}
 }
 
 int menu::set_item_label(std::string item, const std::string& label)
