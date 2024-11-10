@@ -124,4 +124,5 @@ namespace format_tools
 	FORMAT_TOOLS_API std::vector<std::string> add_newline_characters(std::vector<std::string> lines);
 	FORMAT_TOOLS_API unsigned int get_first_line_length(const std::string& content);
 	FORMAT_TOOLS_API std::string get_color_name(int color);
+	FORMAT_TOOLS_API std::vector<index_format> shift_index(std::vector<index_format> index_colors, int shift_amount);
 }

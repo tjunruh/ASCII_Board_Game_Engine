@@ -627,6 +627,19 @@ std::string ascii_board::get_board()
 	return board;
 }
 
+std::vector<format_tools::index_format> ascii_board::get_colors()
+{
+	update_board();
+	return board_colors;
+}
+
+void ascii_board::get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors)
+{
+	update_board();
+	game_board = board;
+	colors = board_colors;
+}
+
 void ascii_board::add_configuration(board_configuration configuration)
 {
 	int status = UNDEFINED;

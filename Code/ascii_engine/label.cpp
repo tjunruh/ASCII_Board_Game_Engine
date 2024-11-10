@@ -1,6 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "label.h"
 #include "widget_types.h"
+#include "error_codes.h"
 
 label::label(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
@@ -21,4 +22,25 @@ label::label(frame* parent, std::string special_operation, bool start_logging, s
 void label::set_output(const std::string& output)
 {
 	set_output_to_frame(output);
+}
+
+void label::set_colors(const std::vector<format_tools::index_format>& colors)
+{
+	std::string output = get_output();
+	for (unsigned int i = 0; i < colors.size(); i++)
+	{
+		if ((colors[i].index < 0) || (colors[i].index >= output.length()))
+		{
+			log.log_status(INVALID_INDEX, "label::set_colors");
+			return;
+		}
+	}
+
+	log.log_status(SUCCESS, "label::set_colors");
+	set_index_colors(colors);
+}
+
+std::vector<format_tools::index_format> label::get_colors()
+{
+	return get_index_colors();
 }

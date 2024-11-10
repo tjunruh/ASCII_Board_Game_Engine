@@ -75,6 +75,24 @@ protected:
 		}
 	}
 
+	void set_color_test(label& local_test_label, std::vector<format_tools::index_format> colors, std::vector<format_tools::index_format> colors_match, std::string expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_label.reset_logging("label.log");
+		local_test_label.set_colors(colors);
+		int status = file_manager::read_file("label.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		std::vector<format_tools::index_format> returned_colors = local_test_label.get_colors();
+		ASSERT_EQ(colors_match.size(), returned_colors.size()) << "Test Number: " + std::to_string(test_num);
+		for (unsigned int i = 0; i < colors_match.size(); i++)
+		{
+			EXPECT_EQ(colors_match[i].index, returned_colors[i].index) << "Test Number: " + std::to_string(test_num) + "\nIndex: " + std::to_string(i);
+			EXPECT_EQ(colors_match[i].format.background_format, returned_colors[i].format.background_format) << "Test Number: " + std::to_string(test_num) + "\nIndex: " + std::to_string(i);
+			EXPECT_EQ(colors_match[i].format.foreground_format, returned_colors[i].format.foreground_format) << "Test Number: " + std::to_string(test_num) + "\nIndex: " + std::to_string(i);
+			EXPECT_EQ(colors_match[i].format.dec, returned_colors[i].format.dec) << "Test Number: " + std::to_string(test_num) + "\nIndex: " + std::to_string(i);
+		}
+	}
 };
 
 TEST_F(label_test, get_widget_type)
@@ -90,6 +108,37 @@ TEST_F(label_test, is_selectable)
 	frame* local_test_frame = new frame();
 	label local_test_label_1(local_test_frame);
 	EXPECT_EQ(local_test_label_1.is_selectable(), false);
+	delete(local_test_frame);
+}
+
+TEST_F(label_test, set_color)
+{
+	format_tools::common_format empty_format;
+	std::vector<format_tools::index_format> empty_color;
+	std::vector<format_tools::index_format> color1 =
+	{
+		{-1, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> color2 =
+	{
+		{0, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> color3 =
+	{
+		{9, empty_format, ' '}
+	};
+
+	frame* local_test_frame = new frame();
+	label local_test_label_1(local_test_frame, "none", true);
+	set_color_test(local_test_label_1, color2, empty_color, "label::set_colors", INVALID_INDEX, 0);
+	local_test_label_1.set_output("012345678");
+	set_color_test(local_test_label_1, color1, empty_color, "label::set_colors", INVALID_INDEX, 1);
+	set_color_test(local_test_label_1, color2, color2, "label::set_colors", SUCCESS, 2);
+	set_color_test(local_test_label_1, color3, color2, "label::set_colors", INVALID_INDEX, 3);
+	local_test_label_1.set_output("0123456789");
+	set_color_test(local_test_label_1, color3, color3, "label::set_colors", SUCCESS, 4);
 	delete(local_test_frame);
 }
 

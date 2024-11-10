@@ -1464,3 +1464,66 @@ TEST_F(format_tools_test, get_first_line_length)
 	first_line_length = format_tools::get_first_line_length(test_string);
 	EXPECT_EQ(first_line_length, correct_answer);
 }
+
+TEST_F(format_tools_test, shift_index)
+{
+	format_tools::common_format empty_format;
+	std::vector<format_tools::index_format> colors =
+	{
+		{5, empty_format, ' '},
+		{10, empty_format, ' '},
+		{15, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> correct_answer_shift_right =
+	{
+		{7, empty_format, ' '},
+		{12, empty_format, ' '},
+		{17, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> correct_answer_shift_left =
+	{
+		{3, empty_format, ' '},
+		{8, empty_format, ' '},
+		{13, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> correct_answer_shift_left_far =
+	{
+		{3, empty_format, ' '},
+		{8, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> result;
+
+	result = format_tools::shift_index(colors, 2);
+	ASSERT_EQ(result.size(), correct_answer_shift_right.size());
+	for (unsigned int i = 0; i < result.size(); i++)
+	{
+		EXPECT_EQ(result[i].index, correct_answer_shift_right[i].index) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_right[i].format.background_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_right[i].format.foreground_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.dec, correct_answer_shift_right[i].format.dec) << "Index: " + std::to_string(i);
+	}
+
+	result = format_tools::shift_index(colors, -2);
+	ASSERT_EQ(result.size(), correct_answer_shift_left.size());
+	for (unsigned int i = 0; i < result.size(); i++)
+	{
+		EXPECT_EQ(result[i].index, correct_answer_shift_left[i].index) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_left[i].format.background_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_left[i].format.foreground_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.dec, correct_answer_shift_left[i].format.dec) << "Index: " + std::to_string(i);
+	}
+
+	result = format_tools::shift_index(colors, -7);
+	ASSERT_EQ(result.size(), correct_answer_shift_left_far.size());
+	for (unsigned int i = 0; i < result.size(); i++)
+	{
+		EXPECT_EQ(result[i].index, correct_answer_shift_left_far[i].index) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_left_far[i].format.background_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_left_far[i].format.foreground_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(result[i].format.dec, correct_answer_shift_left_far[i].format.dec) << "Index: " + std::to_string(i);
+	}
+}

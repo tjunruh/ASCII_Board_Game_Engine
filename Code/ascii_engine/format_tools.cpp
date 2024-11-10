@@ -651,3 +651,17 @@ std::string format_tools::get_color_name(int color)
 	}
 	return name;
 }
+
+std::vector<format_tools::index_format> format_tools::shift_index(std::vector<index_format> index_colors, int shift_amount)
+{
+	int length = index_colors.size() - 1;
+	for (int i = length; i >= 0; i--)
+	{
+		index_colors[i].index = index_colors[i].index + shift_amount;
+		if (index_colors[i].index < 0)
+		{
+			index_colors.erase(index_colors.begin() + i);
+		}
+	}
+	return index_colors;
+}

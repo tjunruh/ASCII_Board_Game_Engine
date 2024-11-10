@@ -89,6 +89,8 @@ public:
 	ASCII_BOARD_API std::string get_tile(int row, int column);
 	ASCII_BOARD_API char get_tile_character(int row, int column, unsigned int character_index);
 	ASCII_BOARD_API std::string get_board();
+	ASCII_BOARD_API std::vector<format_tools::index_format> get_colors();
+	ASCII_BOARD_API void get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API void add_configuration(board_configuration configuration);
 	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character);
 	ASCII_BOARD_API void add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
