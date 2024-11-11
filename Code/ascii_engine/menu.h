@@ -25,6 +25,8 @@ public:
 	MENU_API int set_item_label(std::string item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
+	MENU_API void set_cursor_line(unsigned int line);
+	MENU_API unsigned int get_cursor_line();
 	MENU_API void set_controls(std::vector<int> select, int up, int down, int quit);
 	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
@@ -65,4 +67,5 @@ private:
 	bool label_exists();
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
+	unsigned int get_stop_line();
 };

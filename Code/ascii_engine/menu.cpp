@@ -77,11 +77,13 @@ int menu::remove_item(std::string item)
 				}
 			}
 
-			if ((cursor_line - top_line) >= displayed_lines)
+			unsigned int stop_line = get_stop_line();
+
+			if (cursor_line >= stop_line)
 			{
-				if ((int)(top_line + displayed_lines - 1) >= 0)
+				if ((int)(stop_line - 1) >= 0)
 				{
-					cursor_line = top_line + displayed_lines - 1;
+					cursor_line = stop_line - 1;
 				}
 				else
 				{
@@ -121,11 +123,13 @@ void menu::set_lines_count(unsigned int lines_count)
 			}
 		}
 
-		if ((cursor_line - top_line) >= displayed_lines)
+		unsigned int stop_line = get_stop_line();
+
+		if (cursor_line >= stop_line)
 		{
-			if ((int)(top_line + displayed_lines - 1) >= 0)
+			if ((int)(stop_line - 1) >= 0)
 			{
-				cursor_line = top_line + displayed_lines - 1;
+				cursor_line = stop_line - 1;
 			}
 			else
 			{
@@ -181,6 +185,35 @@ char menu::get_cursor()
 	return _cursor;
 }
 
+void menu::set_cursor_line(unsigned int line)
+{
+	unsigned int stop_line = get_stop_line();
+	if (line >= stop_line)
+	{
+		if ((int)(stop_line - 1) >= 0)
+		{
+			cursor_line = stop_line - 1;
+		}
+		else
+		{
+			cursor_line = 0;
+		}
+	}
+	else if (line < top_line)
+	{
+		cursor_line = top_line;
+	}
+	else
+	{
+		cursor_line = line;
+	}
+}
+
+unsigned int menu::get_cursor_line()
+{
+	return cursor_line;
+}
+
 bool menu::item_exists(std::string item)
 {
 	bool exists = false;
@@ -213,14 +246,7 @@ std::string menu::build_output()
 		}
 	}
 
-	if (menu_items.size() < (displayed_lines + top_line))
-	{
-		stop_line = menu_items.size();
-	}
-	else
-	{
-		stop_line = displayed_lines + top_line;
-	}
+	stop_line = get_stop_line();
 
 	std::string separation_string = "   ";
 	if (_separate_items)
@@ -531,4 +557,19 @@ unsigned int menu::get_longest_label_length()
 		}
 	}
 	return longest_length;
+}
+
+unsigned int menu::get_stop_line()
+{
+	unsigned int stop_line;
+	if (menu_items.size() < (displayed_lines + top_line))
+	{
+		stop_line = menu_items.size();
+	}
+	else
+	{
+		stop_line = displayed_lines + top_line;
+	}
+
+	return stop_line;
 }

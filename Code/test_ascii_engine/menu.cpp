@@ -129,6 +129,13 @@ protected:
 			EXPECT_EQ(character, returned_character) << std::to_string(test_num);
 		}
 	}
+
+	void set_get_cursor_line(menu& local_test_menu, unsigned int line, unsigned int expected_line, int test_num)
+	{
+		local_test_menu.set_cursor_line(line);
+		unsigned int returned_line = local_test_menu.get_cursor_line();
+		EXPECT_EQ(expected_line, returned_line) << "Test Number: " + std::to_string(test_num);
+	}
 };
 
 TEST_F(menu_test, get_widget_type)
@@ -176,6 +183,33 @@ TEST_F(menu_test, set_get_cursor_character_test)
 	set_get_cursor_character(local_test_menu_1, '\n', "menu::set_cursor", INVALID_VALUE, true, 0);
 	set_get_cursor_character(local_test_menu_1, '>', "menu::set_cursor", SUCCESS, true, 1);
 	set_get_cursor_character(local_test_menu_1, '>', "N/A", UNDEFINED, false, 2);
+	delete(local_test_frame);
+}
+
+TEST_F(menu_test, set_get_cursor_line_test)
+{
+	frame* local_test_frame = new frame();
+	menu local_test_menu_1(local_test_frame, "none", 5);
+	local_test_menu_1.append_item("0");
+	local_test_menu_1.append_item("1");
+	local_test_menu_1.append_item("2");
+	local_test_menu_1.append_item("3");
+	local_test_menu_1.append_item("4");
+	local_test_menu_1.append_item("5");
+	local_test_menu_1.append_item("6");
+	local_test_menu_1.append_item("7");
+	local_test_menu_1.append_item("8");
+	local_test_menu_1.append_item("9");
+	set_get_cursor_line(local_test_menu_1, 0, 0, 0);
+	set_get_cursor_line(local_test_menu_1, 5, 4, 1);
+	set_get_cursor_line(local_test_menu_1, 10, 4, 2);
+	set_get_cursor_line(local_test_menu_1, 9, 4, 3);
+	local_test_menu_1.set_lines_count(10);
+	set_get_cursor_line(local_test_menu_1, 9, 9, 4);
+	local_test_menu_1.set_lines_count(20);
+	set_get_cursor_line(local_test_menu_1, 15, 9, 5);
+	local_test_menu_1.set_lines_count(5);
+	set_get_cursor_line(local_test_menu_1, 9, 4, 6);
 	delete(local_test_frame);
 }
 

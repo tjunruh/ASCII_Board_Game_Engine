@@ -29,7 +29,7 @@ void label::set_colors(const std::vector<format_tools::index_format>& colors)
 	std::string output = get_output();
 	for (unsigned int i = 0; i < colors.size(); i++)
 	{
-		if ((colors[i].index < 0) || (colors[i].index >= output.length()))
+		if ((colors[i].index < 0) || ((unsigned int)colors[i].index >= output.length()))
 		{
 			log.log_status(INVALID_INDEX, "label::set_colors");
 			return;
