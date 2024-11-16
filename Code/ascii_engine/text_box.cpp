@@ -415,13 +415,19 @@ void text_box::set_output()
 		output = output + editable_lines[i];
 	}
 
+	unsigned int first_incomplete_line = 0;
+	if (stop_line > 1)
+	{
+		first_incomplete_line = stop_line - 1;
+	}
+
 	unsigned int required_newlines = 1;
-	if (displayed_lines > 0)
+	if (displayed_lines > 1)
 	{
 		required_newlines = displayed_lines - 1;
 	}
 	
-	for (unsigned int i = (stop_line - top_line); i < (required_newlines - 1); i++)
+	for (unsigned int i = first_incomplete_line; i < required_newlines; i++)
 	{
 		output = output + "\n";
 	}
