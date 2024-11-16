@@ -1569,6 +1569,10 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	if (_color_enabled)
 	{
 		convert_flags(item.coordinate_colors, item.index_colors, ignore_flags, widget_lines, '*');
+		if (item.widget_type == LABEL)
+		{
+			item.coordinate_colors = format_tools::bound_colors(item.coordinate_colors, widget_lines);
+		}
 		set_coordinate_colors(item.id, item.coordinate_colors);
 	}
 

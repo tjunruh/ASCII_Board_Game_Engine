@@ -665,3 +665,67 @@ std::vector<format_tools::index_format> format_tools::shift_index(std::vector<in
 	}
 	return index_colors;
 }
+
+std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vector<coordinate_format> colors, const std::vector<std::string>& lines)
+{
+	std::vector<int> rows;
+	std::vector<int> format_at_beginning_of_line_flags;
+	for (unsigned int i = 0; i < colors.size(); i++)
+	{
+		if (std::count(rows.begin(), rows.end(), colors[i].y_position) == 0)
+		{
+			rows.push_back(colors[i].y_position);
+		}
+
+		if (colors[i].x_position == 0)
+		{
+			format_at_beginning_of_line_flags.push_back(colors[i].y_position);
+		}
+	}
+
+	std::vector<coordinate_format> last_format_in_line_collection;
+	for (unsigned int i = 0; i < rows.size(); i++)
+	{
+		coordinate_format last_format_in_line;
+		last_format_in_line.x_position = -1;
+		for (unsigned int j = 0; j < colors.size(); j++)
+		{
+			if ((colors[j].y_position == rows[i]) && (colors[j].x_position > last_format_in_line.x_position))
+			{
+				last_format_in_line = colors[j];
+			}
+		}
+		last_format_in_line_collection.push_back(last_format_in_line);
+	}
+
+	for (unsigned int i = 0; i < last_format_in_line_collection.size(); i++)
+	{
+		if ((last_format_in_line_collection[i].format.background_format != none) || (last_format_in_line_collection[i].format.foreground_format != none))
+		{
+			coordinate_format temp_format;
+			temp_format.y_position = last_format_in_line_collection[i].y_position;
+			temp_format.x_position = lines[temp_format.y_position].length();
+			colors.push_back(temp_format);
+			if ((((unsigned int)(temp_format.y_position + 1)) < lines.size()) && (std::count(format_at_beginning_of_line_flags.begin(), format_at_beginning_of_line_flags.end(), temp_format.y_position + 1) == 0))
+			{
+				temp_format.y_position = temp_format.y_position + 1;
+				temp_format.x_position = 0;
+				temp_format.format.background_format = last_format_in_line_collection[i].format.background_format;
+				temp_format.format.foreground_format = last_format_in_line_collection[i].format.foreground_format;
+				temp_format.format.bold = last_format_in_line_collection[i].format.bold;
+				colors.push_back(temp_format);
+			}
+		}
+	}
+
+	coordinate_format cap_format;
+	int bottom_line = lines.size() - 1;
+	if (bottom_line < 0)
+	{
+		bottom_line = 0;
+	}
+	cap_format.y_position = bottom_line;
+	cap_format.x_position = lines[cap_format.y_position].length();
+	colors.push_back(cap_format);
+	return colors;
+}

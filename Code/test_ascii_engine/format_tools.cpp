@@ -1527,3 +1527,51 @@ TEST_F(format_tools_test, shift_index)
 		EXPECT_EQ(result[i].format.dec, correct_answer_shift_left_far[i].format.dec) << "Index: " + std::to_string(i);
 	}
 }
+
+TEST_F(format_tools_test, bound_colors)
+{
+	std::vector<std::string> lines =
+	{
+		"012",
+		"345",
+		"678",
+		"910"
+	};
+
+	format_tools::common_format empty_format;
+	format_tools::common_format green_foreground;
+	format_tools::common_format green_background;
+	green_foreground.foreground_format = format_tools::green;
+	green_background.background_format = format_tools::green;
+
+	std::vector<format_tools::coordinate_format> colors =
+	{
+		{1, 0, green_foreground},
+		{0, 1, green_background},
+		{2, 2, green_foreground}
+	};
+
+	std::vector<format_tools::coordinate_format> colors_answer =
+	{
+		{1, 0, green_foreground},
+		{0, 1, green_background},
+		{2, 2, green_foreground},
+		{3, 0, empty_format},
+		{3, 1, empty_format},
+		{0, 2, green_background},
+		{3, 2, empty_format},
+		{0, 3, green_foreground},
+		{3, 3, empty_format}
+	};
+
+	std::vector<format_tools::coordinate_format> formatted_color = format_tools::bound_colors(colors, lines);
+
+	ASSERT_EQ(formatted_color.size(), colors_answer.size());
+	for (unsigned int i = 0; i < formatted_color.size(); i++)
+	{
+		EXPECT_EQ(formatted_color[i].format.foreground_format, colors_answer[i].format.foreground_format) << "color number: " + std::to_string(i);
+		EXPECT_EQ(formatted_color[i].format.background_format, colors_answer[i].format.background_format) << "color number: " + std::to_string(i);
+		EXPECT_EQ(formatted_color[i].x_position, colors_answer[i].x_position) << "color number: " + std::to_string(i);
+		EXPECT_EQ(formatted_color[i].y_position, colors_answer[i].y_position) << "color number: " + std::to_string(i);
+	}
+}
