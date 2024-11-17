@@ -64,9 +64,9 @@ void widget::set_highlight_character(char character)
 	log.log_status(status, "widget::set_highlight_character");
 }
 
-void widget::add_border()
+void widget::add_border(bool border)
 {
-	int status = parent_frame->add_border(widget_id);
+	int status = parent_frame->add_border(widget_id, border);
 	log.log_status(status, "widget::add_border");
 }
 

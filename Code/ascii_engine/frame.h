@@ -107,7 +107,7 @@ private:
 	int set_selectable(int id, bool selectable);
 	int set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors);
 	int set_index_colors(int id, std::vector<format_tools::index_format> index_colors);
-	int add_border(int id);
+	int add_border(int id, bool border);
 	void highlight(int row, int column, int level);
 	void unhighlight(int row, int column, int level);
 	void keep_point_in_console_bounds(int& x, int& y);

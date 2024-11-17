@@ -706,14 +706,14 @@ int frame::set_y_origin(int id, int y_origin)
 	return status;
 }
 
-int frame::add_border(int id)
+int frame::add_border(int id, bool border)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
-			widgets[i].add_border = true;
+			widgets[i].add_border = border;
 			status = SUCCESS;
 			break;
 		}

@@ -26,7 +26,7 @@ public:
 	WIDGET_API void set_horizontal_border(char border);
 	WIDGET_API void set_corner_border(char border);
 	WIDGET_API void set_highlight_character(char character);
-	WIDGET_API void add_border();
+	WIDGET_API void add_border(bool border);
 	WIDGET_API void refresh();
 	WIDGET_API void selectable();
 	WIDGET_API void unselectable();
