@@ -718,14 +718,18 @@ std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vec
 		}
 	}
 
-	coordinate_format cap_format;
-	int bottom_line = lines.size() - 1;
-	if (bottom_line < 0)
+	if (colors.size() > 0)
 	{
-		bottom_line = 0;
+		coordinate_format cap_format;
+		int bottom_line = lines.size() - 1;
+		if (bottom_line < 0)
+		{
+			bottom_line = 0;
+		}
+		cap_format.y_position = bottom_line;
+		cap_format.x_position = lines[cap_format.y_position].length();
+		colors.push_back(cap_format);
 	}
-	cap_format.y_position = bottom_line;
-	cap_format.x_position = lines[cap_format.y_position].length();
-	colors.push_back(cap_format);
+	
 	return colors;
 }
