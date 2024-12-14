@@ -13,12 +13,10 @@ on:
 
 env:
   # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: Code/ascii_engine/ascii_engine.vcxproj
+  ASCII_ENGINE_FILE_PATH: Code/ascii_engine/windows_msbuild/ascii_engine.vcxproj
+  BUILD_BOARD_CONFIG_FILE_PATH: Code/build_board_config/windows_msbuild/build_board_config.vcxproj
+  VALIDATE_BOARD_CONFIG_FILE_PATH: Code/validate_board_config/windows_msbuild/validate_board_config.vcxproj
 
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
 
 permissions:
   contents: read
@@ -35,7 +33,9 @@ jobs:
 
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      run: nuget restore ${{env.ASCII_ENGINE_FILE_PATH}}
+      run: nuget restore ${{env.BUILD_BOARD_CONFIG_FILE_PATH}}
+      run: nuget restore ${{env.VALIDATE_BOARD_CONFIG_FILE_PATH}}
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
