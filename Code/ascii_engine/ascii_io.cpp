@@ -267,6 +267,22 @@ std::string ascii_io::get_key_name(int key)
 	return name;
 }
 
+void ascii_io::ascii_engine_init()
+{
+#ifdef _WIN32
+	fit_console_buffer_to_screen();
+#elif __linux__
+	ncurses_init();
+#endif
+}
+
+void ascii_io::ascii_engine_end()
+{
+#ifdef __linux__
+	ncurses_end();
+#endif
+}
+
 #ifdef _WIN32
 void ascii_io::enable_dec()
 {
