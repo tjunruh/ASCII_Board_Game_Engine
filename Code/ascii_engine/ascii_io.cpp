@@ -277,6 +277,19 @@ void ascii_io::disable_dec()
 {
 	print("\x1b(B");
 }
+
+void ascii_io::fit_console_buffer_to_screen()
+{
+	bool success = false;
+	CONSOLE_SCREEN_BUFFER_INFO buffer_info;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &buffer_info);
+	buffer_info.dwSize.Y = 1;
+	do
+	{
+		success = SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffer_info.dwSize);
+		buffer_info.dwSize.Y++;
+	} while (!success);
+}
 #endif
 
 #ifdef __linux__
