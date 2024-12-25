@@ -122,7 +122,7 @@ int validate_board_config::validate_parameters(const std::string &content, bool 
 	std::string previous_line_content = "";
 	bool hyphen_found = false;
 	int previous_parameter_begin_index = -2;
-	for (unsigned int i = 0; i < content.length(); i++)
+	for (int i = 0; (unsigned int)i < content.length(); i++)
 	{
 		error_line_content = error_line_content + content[i];
 		if (content[i] == '(')
