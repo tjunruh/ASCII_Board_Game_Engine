@@ -167,25 +167,33 @@ int board_config_field_parser::get_board_boundary_row(const std::string &content
 
 int board_config_field_parser::get_board_boundary_column(const std::string &content)
 {
+	size_t start_position = content.find(board_config_field_titles::board_begin) + board_config_field_titles::board_begin.length() + 1;
 	size_t stop_position = content.find(board_config_field_titles::board_end);
-	int column = -1;
-	int row = -1;
+
+	int column = 0;
 	std::vector<int> valid_columns;
-	for (unsigned int i = 0; i < stop_position; i++)
+	std::vector<int> invalid_columns;
+	for (unsigned int i = start_position; i < stop_position; i++)
 	{
 		if (content[i] == ' ')
 		{
-			if (row >= 1)
+			if ((find_element(invalid_columns, column) == -1) && (find_element(valid_columns, column) == -1))
 			{
 				valid_columns.push_back(column);
 			}
 		}
 		else
 		{
-			int index = find_element(valid_columns, column);
-			if (index != -1)
+			int valid_index = find_element(valid_columns, column);
+			int invalid_index = find_element(invalid_columns, column);
+			if (invalid_index == -1)
 			{
-				valid_columns.erase(valid_columns.begin() + index);
+				invalid_columns.push_back(column);
+			}
+
+			if (valid_index != -1)
+			{
+				valid_columns.erase(valid_columns.begin() + valid_index);
 			}
 		}
 
@@ -193,7 +201,6 @@ int board_config_field_parser::get_board_boundary_column(const std::string &cont
 
 		if (content[i] == '\n')
 		{
-			row++;
 			column = 0;
 		}
 	}

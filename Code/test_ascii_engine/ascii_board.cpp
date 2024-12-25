@@ -1070,10 +1070,7 @@ protected:
 		bool equivalent = false;
 		if ((tile.array_row == comparision.array_row) &&
 			(tile.array_column == comparision.array_column) &&
-			(tile.board_start_row == comparision.board_start_row) &&
-			(tile.board_stop_row == comparision.board_stop_row) &&
-			(tile.board_start_column == comparision.board_start_column) &&
-			(tile.board_stop_column == comparision.board_stop_column) &&
+			(action_tile_board_sections_equivalent(tile.board_section, comparision.board_section)) &&
 			(tile.value == comparision.value) &&
 			(tile.default_value == comparision.default_value) &&
 			colors_equivalent(tile.colors, comparision.colors, test_num))
@@ -1086,10 +1083,13 @@ protected:
 			std::string log_message = "";
 			log_message = log_message + "array row: " + std::to_string(tile.array_row) + "\n";
 			log_message = log_message + "array column: " + std::to_string(tile.array_column) + "\n";
-			log_message = log_message + "boud start row: " + std::to_string(tile.board_start_row) + "\n";
-			log_message = log_message + "board stop row: " + std::to_string(tile.board_stop_row) + "\n";
-			log_message = log_message + "board start column: " + std::to_string(tile.board_start_column) + "\n";
-			log_message = log_message + "board stop column: " + std::to_string(tile.board_stop_column) + "\n";
+			for (unsigned int i = 0; i < tile.board_section.size(); i++)
+			{
+				log_message = log_message + "boud start row: " + std::to_string(tile.board_section[i].board_start_row) + "\n";
+				log_message = log_message + "board stop row: " + std::to_string(tile.board_section[i].board_stop_row) + "\n";
+				log_message = log_message + "board start column: " + std::to_string(tile.board_section[i].board_start_column) + "\n";
+				log_message = log_message + "board stop column: " + std::to_string(tile.board_section[i].board_stop_column) + "\n";
+			}
 			log_message = log_message + "value: |" + tile.value + "|\n";
 			log_message = log_message + "default_value: |" + tile.default_value + "|\n";
 			ascii_io::print(log_message);
@@ -1174,6 +1174,32 @@ protected:
 		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
 		std::string board = local_test_board.get_board();
 		EXPECT_EQ(board, comparison) << std::to_string(test_num);
+	}
+
+	bool action_tile_board_sections_equivalent(std::vector<ascii_board::action_tile_board_section> section1, std::vector<ascii_board::action_tile_board_section> section2)
+	{
+		bool equivalent = false;
+		for (unsigned int i = 0; i < section1.size(); i++)
+		{
+			for (unsigned int j = 0; j < section2.size(); j++)
+			{
+				if ((section1[i].board_start_row == section2[j].board_start_row) &&
+					(section1[i].board_stop_row == section2[j].board_stop_row) &&
+					(section1[i].board_start_column == section2[j].board_start_column) &&
+					(section1[i].board_stop_column == section2[j].board_stop_column))
+				{
+					section2.erase(section2.begin() + j);
+					break;
+				}
+			}
+		}
+
+		if (section2.size() == 0)
+		{
+			equivalent = true;
+		}
+
+		return equivalent;
 	}
 };
 
@@ -1692,8 +1718,8 @@ TEST_F(ascii_board_test, get_action_tile)
 {
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "default", "none", true);
-	ascii_board::action_tile beginning_empty_tile = {0, 0, 1, 1, 1, 3, "   ", "   ", empty_colors};
-	ascii_board::action_tile beginning_cursor_tile = { 0, 0, 1, 1, 1, 3, "   ", "( )", empty_colors };
+	ascii_board::action_tile beginning_empty_tile = { 0, 0, {{1, 1, 1, 3}}, "   ", "   ", empty_colors };
+	ascii_board::action_tile beginning_cursor_tile = { 0, 0, {{1, 1, 1, 3}}, "   ", "( )", empty_colors };
 	test_get_action_tile(local_test_board, 0, 0, beginning_empty_tile, "ascii_board::get_action_tile", SUCCESS, 0);
 	local_test_board.set_tile(0, 0, "(*)", '*');
 	test_get_action_tile(local_test_board, 0, 0, beginning_cursor_tile, "ascii_board::get_action_tile", SUCCESS, 0);

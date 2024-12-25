@@ -66,10 +66,10 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string name_id, s
 		action_tile tile;
 		tile.array_row = translation.action_tile_skeletons[i].array_row;
 		tile.array_column = translation.action_tile_skeletons[i].array_column;
-		tile.board_start_row = translation.action_tile_skeletons[i].board_start_row;
-		tile.board_stop_row = translation.action_tile_skeletons[i].board_stop_row;
-		tile.board_start_column = translation.action_tile_skeletons[i].board_start_column;
-		tile.board_stop_column = translation.action_tile_skeletons[i].board_stop_column;
+		for (unsigned int j = 0; j < translation.action_tile_skeletons[i].board_section.size(); j++)
+		{
+			tile.board_section.push_back(translation.action_tile_skeletons[i].board_section[j]);
+		}
 		tile.default_value = translation.action_tile_skeletons[i].default_value;
 		tile.value = translation.action_tile_skeletons[i].default_value;
 		action_tiles.push_back(tile);
@@ -854,6 +854,11 @@ std::string ascii_board::load_configuration(std::string path)
 		return "";
 	}
 	log.log_status(SUCCESS, "ascii_board::load_configuration");
+	char format_character = get_format_character(value);
+	if (format_character != '\0')
+	{
+		value = remove_configuration_format_characters(value, format_character);
+	}
 	format_tools::remove_newline_characters(value);
 	return value;
 }
@@ -1202,10 +1207,7 @@ void ascii_board::use_translation(std::string name_id)
 			{
 				if ((translation.action_tile_skeletons[i].array_row == action_tiles[j].array_row) && (translation.action_tile_skeletons[i].array_column == action_tiles[j].array_column))
 				{
-					action_tiles[j].board_start_row = translation.action_tile_skeletons[i].board_start_row;
-					action_tiles[j].board_stop_row = translation.action_tile_skeletons[i].board_stop_row;
-					action_tiles[j].board_start_column = translation.action_tile_skeletons[i].board_start_column;
-					action_tiles[j].board_stop_column = translation.action_tile_skeletons[i].board_stop_column;
+					action_tiles[j].board_section = translation.action_tile_skeletons[i].board_section;
 					for (unsigned int k = 0; k < action_tiles[j].default_value.length(); k++)
 					{
 						if (action_tiles[j].value[k] == action_tiles[j].default_value[k])
@@ -1323,7 +1325,7 @@ void ascii_board::remove_inactive_tiles(std::vector<action_tile_skeleton>& actio
 
 	for (int i = elements; i >= 0; i--)
 	{
-		if ((action_tile_skeletons[i].board_start_row == -1) || (action_tile_skeletons[i].board_stop_row == -1) || (action_tile_skeletons[i].board_start_column == -1) || (action_tile_skeletons[i].board_stop_column == -1))
+		if (action_tile_skeletons[i].board_section.size() == 0)
 		{
 			action_tile_skeletons.erase(action_tile_skeletons.begin() + i);
 		}
@@ -1336,10 +1338,12 @@ void ascii_board::set_tile_range(int array_row, int array_column, int board_star
 	{
 		if ((action_tile_skeletons[i].array_row == array_row) && (action_tile_skeletons[i].array_column == array_column))
 		{
-			action_tile_skeletons[i].board_start_row = board_start_row;
-			action_tile_skeletons[i].board_stop_row = board_stop_row;
-			action_tile_skeletons[i].board_start_column = board_start_column;
-			action_tile_skeletons[i].board_stop_column = board_stop_column;
+			action_tile_board_section board_subsection;
+			board_subsection.board_start_row = board_start_row;
+			board_subsection.board_stop_row = board_stop_row;
+			board_subsection.board_start_column = board_start_column;
+			board_subsection.board_stop_column = board_stop_column;
+			action_tile_skeletons[i].board_section.push_back(board_subsection);
 			break;
 		}
 	}
@@ -1349,30 +1353,35 @@ void ascii_board::set_tile_default_values(const std::string& board_reference, st
 {
 	for (unsigned int i = 0; i < action_tile_skeletons.size(); i++)
 	{
-		action_tile_skeletons[i].default_value = get_board_section(board_reference, action_tile_skeletons[i].board_start_row, action_tile_skeletons[i].board_stop_row, action_tile_skeletons[i].board_start_column, action_tile_skeletons[i].board_stop_column);
+		action_tile_skeletons[i].default_value = get_board_section(board_reference, action_tile_skeletons[i].board_section);
 	}
 }
 
-std::string ascii_board::get_board_section(const std::string& board_reference, int start_row, int stop_row, int start_column, int stop_column)
+std::string ascii_board::get_board_section(const std::string& board_reference, const std::vector<action_tile_board_section>& board_section)
 {
 	int row = 0;
 	int column = 0;
 	std::string section = "";
-	for (unsigned int i = 0; i < board_reference.length(); i++)
+	for (unsigned int i = 0; i < board_section.size(); i++)
 	{
-		if ((row >= start_row) && (row <= stop_row) && (column >= start_column) && (column <= stop_column))
+		row = 0;
+		column = 0;
+		for (unsigned int j = 0; j < board_reference.length(); j++)
 		{
-			section = section + board_reference[i];
-		}
+			if ((row >= board_section[i].board_start_row) && (row <= board_section[i].board_stop_row) && (column >= board_section[i].board_start_column) && (column <= board_section[i].board_stop_column))
+			{
+				section = section + board_reference[j];
+			}
 
-		if (board_reference[i] == '\n')
-		{
-			row++;
-			column = 0;
-		}
-		else
-		{
-			column++;
+			if (board_reference[j] == '\n')
+			{
+				row++;
+				column = 0;
+			}
+			else
+			{
+				column++;
+			}
 		}
 	}
 
@@ -1388,44 +1397,62 @@ void ascii_board::update_board()
 		int column = 0;
 		unsigned int value_position = 0;
 		bool color_active = false;
-		for (unsigned int j = 0; j < board.length(); j++)
+		bool color_wrap = false;
+		format_tools::index_format wrap_color;
+		for (unsigned int m = 0; m < action_tiles[i].board_section.size(); m++)
 		{
-			if ((row >= action_tiles[i].board_start_row) && (row <= action_tiles[i].board_stop_row) && (column >= action_tiles[i].board_start_column) && (column <= action_tiles[i].board_stop_column))
+			row = 0;
+			column = 0;
+			for (unsigned int j = 0; j < board.length(); j++)
 			{
-				if (value_position < get_value_length(action_tiles[i]))
+				if ((row >= action_tiles[i].board_section[m].board_start_row) && (row <= action_tiles[i].board_section[m].board_stop_row) && (column >= action_tiles[i].board_section[m].board_start_column) && (column <= action_tiles[i].board_section[m].board_stop_column))
 				{
-					board[j] = (action_tiles[i].value)[value_position];
-					for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
+					if (value_position < get_value_length(action_tiles[i]))
 					{
-						if (action_tiles[i].colors[k].index == (int)value_position)
+						board[j] = (action_tiles[i].value)[value_position];
+						for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
 						{
-							color_active = true;
-							format_tools::index_format color = action_tiles[i].colors[k];
-							color.index = j;
-							board_colors.push_back(color);
+							if (action_tiles[i].colors[k].index == (int)value_position)
+							{
+								color_active = true;
+								color_wrap = false;
+								format_tools::index_format color = action_tiles[i].colors[k];
+								color.index = j;
+								board_colors.push_back(color);
+								wrap_color = color;
+							}
 						}
-					}
-					value_position++;
-				}
-			}
-			else if (color_active)
-			{
-				format_tools::index_format color;
-				color.index = j;
-				color.format.foreground_format = format_tools::none;
-				color.format.background_format = format_tools::none;
-				board_colors.push_back(color);
-				color_active = false;
-			}
 
-			if (board[j] == '\n')
-			{
-				row++;
-				column = 0;
-			}
-			else
-			{
-				column++;
+						if (!color_active && color_wrap)
+						{
+							wrap_color.index = j;
+							board_colors.push_back(wrap_color);
+							color_wrap = false;
+							color_active = true;
+						}
+						value_position++;
+					}
+				}
+				else if (color_active)
+				{
+					format_tools::index_format color;
+					color.index = j;
+					color.format.foreground_format = format_tools::none;
+					color.format.background_format = format_tools::none;
+					board_colors.push_back(color);
+					color_wrap = true;
+					color_active = false;
+				}
+
+				if (board[j] == '\n')
+				{
+					row++;
+					column = 0;
+				}
+				else
+				{
+					column++;
+				}
 			}
 		}
 	}
@@ -1435,11 +1462,13 @@ unsigned int ascii_board::get_value_length(action_tile tile)
 {
 	unsigned int width = 0;
 	unsigned int height = 0;
-
-	width = (unsigned int)(tile.board_stop_column - tile.board_start_column + 1);
-	height = (unsigned int)(tile.board_stop_row - tile.board_start_row + 1);
-
-	unsigned int length = width * height;
+	unsigned int length = 0;
+	for (unsigned int i = 0; i < tile.board_section.size(); i++)
+	{
+		width = (unsigned int)(tile.board_section[i].board_stop_column - tile.board_section[i].board_start_column + 1);
+		height = (unsigned int)(tile.board_section[i].board_stop_row - tile.board_section[i].board_start_row + 1);
+		length = length + width * height;
+	}
 
 	return length;
 }
@@ -1680,10 +1709,24 @@ int ascii_board::validate_translation(std::vector<action_tile_skeleton> action_t
 			if ((action_tile_skeletons[i].array_row == action_tiles[j].array_row) && (action_tile_skeletons[i].array_column == action_tiles[j].array_column))
 			{
 				action_tile_found = true;
-				int skeleton_row_range = action_tile_skeletons[i].board_stop_row - action_tile_skeletons[i].board_start_row;
-				int skeleton_column_range = action_tile_skeletons[i].board_stop_column - action_tile_skeletons[i].board_start_column;
-				int tile_row_range = action_tiles[j].board_stop_row - action_tiles[j].board_start_row;
-				int tile_column_range = action_tiles[j].board_stop_column - action_tiles[j].board_start_column;
+
+				int skeleton_row_range = 0;
+				int skeleton_column_range = 0;
+				int tile_row_range = 0;
+				int tile_column_range = 0;
+
+				for (unsigned int k = 0; k < action_tile_skeletons[i].board_section.size(); k++)
+				{
+					skeleton_row_range = skeleton_row_range + action_tile_skeletons[i].board_section[k].board_stop_row - action_tile_skeletons[i].board_section[k].board_start_row;
+					skeleton_column_range = skeleton_column_range + action_tile_skeletons[i].board_section[k].board_stop_column - action_tile_skeletons[i].board_section[k].board_start_column;
+				}
+
+				for (unsigned int k = 0; k < action_tiles[j].board_section.size(); k++)
+				{
+					tile_row_range = tile_row_range + action_tiles[j].board_section[k].board_stop_row - action_tiles[j].board_section[k].board_start_row;
+					tile_column_range = tile_column_range + action_tiles[j].board_section[k].board_stop_column - action_tiles[j].board_section[k].board_start_column;
+				}
+
 				if ((skeleton_row_range != tile_row_range) || (skeleton_column_range != tile_column_range))
 				{
 					return INVALID_INDEX;
@@ -1697,4 +1740,41 @@ int ascii_board::validate_translation(std::vector<action_tile_skeleton> action_t
 		}
 	}
 	return status;
+}
+
+std::string ascii_board::remove_configuration_format_characters(std::string content, char format_character)
+{
+	for (int i = content.length() - 1; i >= 0; i--)
+	{
+		if (content[i] == format_character)
+		{
+			content.erase(i, 1);
+		}
+	}
+
+	std::vector<std::string> lines = format_tools::get_lines(content);
+	if (lines.size() > 0)
+	{
+		lines.erase(lines.begin());
+	}
+	
+	content = format_tools::get_string(lines);
+	return content;
+}
+
+char ascii_board::get_format_character(const std::string& content)
+{
+	char format_character = '\0';
+	std::vector<std::string> lines = format_tools::get_lines(content);
+	if (lines.size() > 0)
+	{
+		lines = format_tools::remove_trailing_whitespace(lines);
+		std::string line = lines[0];
+		if ((line.size() == 4) && (line[0] == '<') && (line[2] == '>'))
+		{
+			format_character = line[1];
+		}
+	}
+
+	return format_character;
 }

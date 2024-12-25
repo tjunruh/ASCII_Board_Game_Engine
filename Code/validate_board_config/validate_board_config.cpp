@@ -63,10 +63,10 @@ int validate_board_config::validate_action_tiles_end(const std::string &content)
 	return validity;
 }
 
-int validate_board_config::validate_parenthesis(const std::string &content, int& error_line, std::string& error_line_content)
+int validate_board_config::validate_enclosing_characters(const std::string &content, int& error_line, std::string& error_line_content, char begin_character, char end_character)
 {
-	char previous_parenthesis = ' ';
-	char parenthesis = ')';
+	char previous_enclosement = ' ';
+	char enclosement = end_character;
 	int validity = 0;
 	error_line = 0;
 	error_line_content = "";
@@ -74,21 +74,21 @@ int validate_board_config::validate_parenthesis(const std::string &content, int&
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
 		error_line_content = error_line_content + content[i];
-		if (content[i] == '(')
+		if (content[i] == begin_character)
 		{
-			previous_parenthesis = parenthesis;
-			parenthesis = '(';
-			if (parenthesis == previous_parenthesis)
+			previous_enclosement = enclosement;
+			enclosement = begin_character;
+			if (enclosement == previous_enclosement)
 			{
 				validity = 1;
 				break;
 			}
 		}
-		else if (content[i] == ')')
+		else if (content[i] == end_character)
 		{
-			previous_parenthesis = parenthesis;
-			parenthesis = ')';
-			if (parenthesis == previous_parenthesis)
+			previous_enclosement = enclosement;
+			enclosement = end_character;
+			if (enclosement == previous_enclosement)
 			{
 				validity = 1;
 				break;
@@ -102,7 +102,7 @@ int validate_board_config::validate_parenthesis(const std::string &content, int&
 		}
 	}
 
-	if (parenthesis == '(')
+	if (enclosement == begin_character)
 	{
 		validity = 1;
 	}
@@ -122,7 +122,7 @@ int validate_board_config::validate_parameters(const std::string &content, bool 
 	std::string previous_line_content = "";
 	bool hyphen_found = false;
 	int previous_parameter_begin_index = -2;
-	for (int i = 0; (unsigned int)i < content.length(); i++)
+	for (unsigned int i = 0; i < content.length(); i++)
 	{
 		error_line_content = error_line_content + content[i];
 		if (content[i] == '(')
@@ -235,15 +235,27 @@ int validate_board_config::validate_array_index(const std::string &content, int 
 {
 	int validity = 0;
 	std::vector<row_column> two_dimensional_spaces;
+	std::vector<row_column> single_array_element_values;
 	row_column two_dimensional_space;
 	two_dimensional_space.row = "";
 	two_dimensional_space.column = "";
 	int parameter = -1;
+	bool in_single_array_element_block = false;
 	error_line = 0;
 	error_line_content = "";
 	std::string previous_line_content = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
+		if (content[i] == '{')
+		{
+			in_single_array_element_block = true;
+		}
+		else if (content[i] == '}')
+		{
+			in_single_array_element_block = false;
+			single_array_element_values.clear();
+		}
+
 		error_line_content = error_line_content + content[i];
 		if ((parameter == 2) && isdigit(content[i]))
 		{
@@ -266,10 +278,20 @@ int validate_board_config::validate_array_index(const std::string &content, int 
 		{
 			parameter = -1;
 			two_dimensional_spaces.push_back(two_dimensional_space);
-			if (multiple(two_dimensional_spaces, two_dimensional_space) || (stoi(two_dimensional_space.row) >= max_row) || (stoi(two_dimensional_space.column) >= max_column))
+			if ((multiple(two_dimensional_spaces, two_dimensional_space) && !in_single_array_element_block) || (stoi(two_dimensional_space.row) >= max_row) || (stoi(two_dimensional_space.column) >= max_column))
 			{
 				validity = 1;
 				break;
+			}
+
+			if (in_single_array_element_block)
+			{
+				single_array_element_values.push_back(two_dimensional_space);
+				if (!uniform(single_array_element_values))
+				{
+					validity = 1;
+					break;
+				}
 			}
 			two_dimensional_space.row = "";
 			two_dimensional_space.column = "";
@@ -446,6 +468,26 @@ bool validate_board_config::multiple(std::vector<row_column> storage, row_column
 	return multiple_elements;
 }
 
+bool validate_board_config::uniform(std::vector<row_column> storage)
+{
+	bool is_uniform = true;
+	if (storage.size() > 0)
+	{
+		std::string first_row = storage[0].row;
+		std::string first_column = storage[0].column;
+		for (unsigned int i = 1; i < storage.size(); i++)
+		{
+			if ((storage[i].row != first_row) || (storage[i].column != first_column))
+			{
+				is_uniform = false;
+				break;
+			}
+		}
+	}
+
+	return is_uniform;
+}
+
 bool validate_board_config::is_number(const std::string &number_string)
 {
 	bool number = true;
@@ -584,7 +626,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	int error_line = 0;
 	std::string error_line_content = "";
 
-	if (validate_parenthesis(dimension_field, error_line, error_line_content) == 1)
+	if (validate_enclosing_characters(dimension_field, error_line, error_line_content, '(', ')') == 1)
 	{
 		debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in dimension field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of array dimensions field.\n";
@@ -596,7 +638,7 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 		debug_info = debug_info + "Passed: Parenthesis validation in dimension field.\n";
 	}
 
-	if (validate_parenthesis(action_tiles_field, error_line, error_line_content) == 1)
+	if (validate_enclosing_characters(action_tiles_field, error_line, error_line_content, '(', ')') == 1)
 	{
 		debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in action tiles field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
@@ -606,6 +648,18 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	else
 	{
 		debug_info = debug_info + "Passed: Parenthesis validation in action tiles field.\n";
+	}
+
+	if (validate_enclosing_characters(action_tiles_field, error_line, error_line_content, '{', '}') == 1)
+	{
+		debug_info = debug_info + "Failed: Curly brackets mismatch or data not enclosed in action tiles field.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
+		debug_info = debug_info + error_line_content + " << curly brackets mismatch or data not enclosed\n";
+		return 1;
+	}
+	else
+	{
+		debug_info = debug_info + "Passed: Curley brackets validation in action tiles field.\n";
 	}
 
 	if (validate_number_of_parameters(dimension_field, 2, error_line, error_line_content) == 1)

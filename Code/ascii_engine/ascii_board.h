@@ -31,7 +31,17 @@ struct board_configuration
 
 class ascii_board : public widget
 {
+public:
+	struct action_tile_board_section
+	{
+		int board_start_row = -1;
+		int board_stop_row = -1;
+		int board_start_column = -1;
+		int board_stop_column = -1;
+	};
+
 private:
+	
 	struct sub_tile_configuration
 	{
 		std::string name_id = "";
@@ -43,10 +53,7 @@ private:
 	{
 		int array_row = -1;
 		int array_column = -1;
-		int board_start_row = -1;
-		int board_stop_row = -1;
-		int board_start_column = -1;
-		int board_stop_column = -1;
+		std::vector<action_tile_board_section> board_section;
 		std::string default_value = "";
 	};
 
@@ -62,10 +69,7 @@ public:
 	{
 		int array_row = -1;
 		int array_column = -1;
-		int board_start_row = -1;
-		int board_stop_row = -1;
-		int board_start_column = -1;
-		int board_stop_column = -1;
+		std::vector<action_tile_board_section> board_section;
 		std::string default_value = "";
 		std::string value = "";
 		std::vector<format_tools::index_format> colors;
@@ -126,7 +130,7 @@ private:
 	void set_tile_ranges(std::string content, std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void remove_inactive_tiles(std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void set_tile_default_values(const std::string& board_reference, std::vector<action_tile_skeleton>& action_tile_skeletons);
-	std::string get_board_section(const std::string& board_reference, int start_row, int stop_row, int start_column, int stop_column);
+	std::string get_board_section(const std::string& board_reference, const std::vector<action_tile_board_section>& board_section);
 	void update_board();
 	unsigned int get_value_length(action_tile tile);
 	bool configuration_present(std::string name_id);
@@ -145,4 +149,6 @@ private:
 	void trim_activated_configs(std::vector<sub_tile_configuration>& activated_configurations, std::string tile_value);
 	bool configuration_activated(std::vector <sub_tile_configuration> activated_configurations, std::string name_id);
 	int validate_translation(std::vector<action_tile_skeleton> action_tile_skeletons);
+	std::string remove_configuration_format_characters(std::string content, char format_character);
+	char get_format_character(const std::string& content);
 };
