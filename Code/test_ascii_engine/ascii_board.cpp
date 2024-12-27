@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "single_line_board_definitions.h"
 #ifdef __linux__
 #include <gtest/gtest.h>
 #endif
@@ -37,626 +38,7 @@ protected:
 	ascii_board global_test_board = ascii_board(global_test_frame, board_config_path, "default", "none", true, "global_ascii_board.log");
 	int total_rows = 10;
 	int total_columns = 10;
-	std::string empty_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string full_cursor_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|_-`|`-_|( )|( )|_-`|`-_|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|_-`|`-_|( )|( )|_-`|`-_|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|( )|( )|( )|( )|( )|( )|( )|( )|( )|( )|\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string full_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string full_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|_-`|`-_|(x)|(x)|_-`|`-_|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|_-`|`-_|(x)|(x)|_-`|`-_|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_cursor_board = 
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|( )|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_cursor_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|( )|   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_cursor_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |( )|\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string empty_upside_down_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_cursor_upside_down_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|(,)| , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_cursor_upside_down_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , |(,)|_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_cursor_upside_down_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , |_-`|`-_| , | , |_-`|`-_| , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , | , |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| , | , | , | , | , | , | , | , | , |(,)|\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_| x |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_o_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| o |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_arrow_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|( >|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|(x)|   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |(x)|\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_row_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_row_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|(x)|\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_row_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x |_-`|`-_| x | x |_-`|`-_| x | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_row_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x | x | x | x | x | x | x | x | x | x |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_column_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"| x |   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string beginning_column_cursor_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|(x)|   |   |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string middle_column_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   | x |   |   |   |   |   |   |   |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
-
-	std::string end_column_x_board =
-		".---.---.---.---.---.---.---.---.---.---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |_-`|`-_|   |   |_-`|`-_|   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---+---+---+---+---+---+---+---+---+---.\n"
-		"|   |   |   |   |   |   |   |   |   | x |\n"
-		".---.---.---.---.---.---.---.---.---.---.";
+	
 
 	std::vector<format_tools::index_format> empty_colors;
 	tile_configuration cursor_config_tile{-1, -1, "(*)", '*', empty_colors};
@@ -1212,7 +594,7 @@ TEST_F(ascii_board_test, initialization)
 	ASSERT_EQ(status, 0);
 	EXPECT_NE(log_content.find("ascii_board::ascii_board status: 0"), std::string::npos);
 	EXPECT_NE(log_content.find("All validations passed."), std::string::npos);
-	EXPECT_EQ(local_test_board.get_board(), empty_board);
+	EXPECT_EQ(local_test_board.get_board(), single_line_board_definitions::empty_board);
 	status = file_manager::delete_file("ascii_board.log");
 	ASSERT_EQ(status, 0);
 
@@ -1434,12 +816,12 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_id)
 	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
 	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
 
-	activate_deactivate(local_test_board, "cursor", full_cursor_board, "ascii_board::set_all", SUCCESS, true, 0);
-	activate_deactivate(local_test_board, "x", full_cursor_x_board, "ascii_board::set_all", SUCCESS, true, 1);
-	activate_deactivate(local_test_board, "jibberish", full_cursor_x_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 2);
-	activate_deactivate(local_test_board, "jibberish", full_cursor_x_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 3);
-	activate_deactivate(local_test_board, "cursor", full_x_board, "ascii_board::set_all", SUCCESS, false, 4);
-	activate_deactivate(local_test_board, "x", empty_board, "ascii_board::set_all", SUCCESS, false, 5);
+	activate_deactivate(local_test_board, "cursor", single_line_board_definitions::full_cursor_board, "ascii_board::set_all", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", single_line_board_definitions::full_cursor_x_board, "ascii_board::set_all", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "jibberish", single_line_board_definitions::full_cursor_x_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 2);
+	activate_deactivate(local_test_board, "jibberish", single_line_board_definitions::full_cursor_x_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 3);
+	activate_deactivate(local_test_board, "cursor", single_line_board_definitions::full_x_board, "ascii_board::set_all", SUCCESS, false, 4);
+	activate_deactivate(local_test_board, "x", single_line_board_definitions::empty_board, "ascii_board::set_all", SUCCESS, false, 5);
 
 	delete(local_test_frame);
 }
@@ -1458,44 +840,44 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate)
 	ASSERT_NE(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos);
 	ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(ELEMENT_NOT_FOUND)), std::string::npos);
 
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 1);
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, false, 2);
-	activate_deactivate(local_test_board, "x", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
-	activate_deactivate(local_test_board, "cursor", 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
-	activate_deactivate(local_test_board, "x", 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 5);
-	activate_deactivate(local_test_board, "cursor", 5, 4, middle_x_board, "ascii_board::set_tile", SUCCESS, false, 6);
-	activate_deactivate(local_test_board, "x", 5, 4, empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
-	activate_deactivate(local_test_board, "cursor", 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
-	activate_deactivate(local_test_board, "x", 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 9);
-	activate_deactivate(local_test_board, "cursor", 9, 9, end_x_board, "ascii_board::set_tile", SUCCESS, false, 10);
-	activate_deactivate(local_test_board, "x", 9, 9, empty_board, "ascii_board::set_tile", SUCCESS, false, 11);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_x_board, "ascii_board::set_tile", SUCCESS, false, 2);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
+	activate_deactivate(local_test_board, "cursor", 5, 4, single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	activate_deactivate(local_test_board, "x", 5, 4, single_line_board_definitions::middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 5);
+	activate_deactivate(local_test_board, "cursor", 5, 4, single_line_board_definitions::middle_x_board, "ascii_board::set_tile", SUCCESS, false, 6);
+	activate_deactivate(local_test_board, "x", 5, 4, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
+	activate_deactivate(local_test_board, "cursor", 9, 9, single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	activate_deactivate(local_test_board, "x", 9, 9, single_line_board_definitions::end_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 9);
+	activate_deactivate(local_test_board, "cursor", 9, 9, single_line_board_definitions::end_x_board, "ascii_board::set_tile", SUCCESS, false, 10);
+	activate_deactivate(local_test_board, "x", 9, 9, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 11);
 
-	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 12);
-	activate_deactivate(local_test_board, "jibberish", 0, 0, empty_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 13);
+	activate_deactivate(local_test_board, "jibberish", 0, 0, single_line_board_definitions::empty_board, "ascii_board::activate_configuration", ELEMENT_NOT_FOUND, true, 12);
+	activate_deactivate(local_test_board, "jibberish", 0, 0, single_line_board_definitions::empty_board, "ascii_board::deactivate_configuration", ELEMENT_NOT_FOUND, false, 13);
 
-	activate_deactivate(local_test_board, "cursor", 10, 0, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 14);
-	activate_deactivate(local_test_board, "cursor", 10, 0, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 15);
-	activate_deactivate(local_test_board, "cursor", 0, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 16);
-	activate_deactivate(local_test_board, "cursor", 0, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 17);
-	activate_deactivate(local_test_board, "cursor", 10, 10, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 18);
-	activate_deactivate(local_test_board, "cursor", 10, 10, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 19);
-	activate_deactivate(local_test_board, "cursor", 4, 2, empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 20);
-	activate_deactivate(local_test_board, "cursor", 4, 2, empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
+	activate_deactivate(local_test_board, "cursor", 10, 0, single_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 14);
+	activate_deactivate(local_test_board, "cursor", 10, 0, single_line_board_definitions::empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 15);
+	activate_deactivate(local_test_board, "cursor", 0, 10, single_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 16);
+	activate_deactivate(local_test_board, "cursor", 0, 10, single_line_board_definitions::empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 17);
+	activate_deactivate(local_test_board, "cursor", 10, 10, single_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 18);
+	activate_deactivate(local_test_board, "cursor", 10, 10, single_line_board_definitions::empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 19);
+	activate_deactivate(local_test_board, "cursor", 4, 2, single_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_INDEX, true, 20);
+	activate_deactivate(local_test_board, "cursor", 4, 2, single_line_board_definitions::empty_board, "ascii_board::deactivate_configuration", INVALID_INDEX, false, 21);
 
-	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 22);
-	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 23);
-	activate_deactivate(local_test_board, "x", 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, true, 24);
-	activate_deactivate(local_test_board, "x", 5, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 25);
-	activate_deactivate(local_test_board, "x", 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, true, 26);
-	activate_deactivate(local_test_board, "x", 9, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 27);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 22);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::empty_board, "ascii_board::set_row", SUCCESS, false, 23);
+	activate_deactivate(local_test_board, "x", 5, -1, single_line_board_definitions::middle_row_x_board, "ascii_board::set_row", SUCCESS, true, 24);
+	activate_deactivate(local_test_board, "x", 5, -1, single_line_board_definitions::empty_board, "ascii_board::set_row", SUCCESS, false, 25);
+	activate_deactivate(local_test_board, "x", 9, -1, single_line_board_definitions::end_row_x_board, "ascii_board::set_row", SUCCESS, true, 26);
+	activate_deactivate(local_test_board, "x", 9, -1, single_line_board_definitions::empty_board, "ascii_board::set_row", SUCCESS, false, 27);
 
-	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 28);
-	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 29);
-	activate_deactivate(local_test_board, "x", -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, true, 30);
-	activate_deactivate(local_test_board, "x", -1, 2, empty_board, "ascii_board::set_column", SUCCESS, false, 31);
-	activate_deactivate(local_test_board, "x", -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, true, 32);
-	activate_deactivate(local_test_board, "x", -1, 9, empty_board, "ascii_board::set_column", SUCCESS, false, 33);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 28);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::empty_board, "ascii_board::set_column", SUCCESS, false, 29);
+	activate_deactivate(local_test_board, "x", -1, 2, single_line_board_definitions::middle_column_x_board, "ascii_board::set_column", SUCCESS, true, 30);
+	activate_deactivate(local_test_board, "x", -1, 2, single_line_board_definitions::empty_board, "ascii_board::set_column", SUCCESS, false, 31);
+	activate_deactivate(local_test_board, "x", -1, 9, single_line_board_definitions::end_column_x_board, "ascii_board::set_column", SUCCESS, true, 32);
+	activate_deactivate(local_test_board, "x", -1, 9, single_line_board_definitions::empty_board, "ascii_board::set_column", SUCCESS, false, 33);
 
 	delete(local_test_frame);
 }
@@ -1507,38 +889,38 @@ TEST_F(ascii_board_test, set_or_clear_tiles)
 	int status = local_test_board.start_logging("ascii_board.log");
 	ASSERT_EQ(status, 0);
 	
-	set_or_clear(local_test_board, 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, "(*)", '*');
-	set_or_clear(local_test_board, 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, "*x*", '*');
-	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
-	set_or_clear(local_test_board, 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, "(*)", '*');
-	set_or_clear(local_test_board, 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, "*x*", '*');
-	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
-	set_or_clear(local_test_board, 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, "(*)", '*');
-	set_or_clear(local_test_board, 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, "*x*", '*');
-	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, "(*)", '*');
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, "*x*", '*');
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, "(*)", '*');
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, "*x*", '*');
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, "(*)", '*');
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, "*x*", '*');
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
 
-	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, "(*)", '*');
-	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
-	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, "(*)", '*');
-	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
-	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, "(*)", '*');
-	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
-	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, "(*)", '*');
-	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
+	set_or_clear(local_test_board, 10, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, "(*)", '*');
+	set_or_clear(local_test_board, 10, 0, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
+	set_or_clear(local_test_board, 0, 10, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, "(*)", '*');
+	set_or_clear(local_test_board, 0, 10, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
+	set_or_clear(local_test_board, 10, 10, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, "(*)", '*');
+	set_or_clear(local_test_board, 10, 10, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
+	set_or_clear(local_test_board, 4, 2, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, "(*)", '*');
+	set_or_clear(local_test_board, 4, 2, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
 
-	set_or_clear(local_test_board, 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, "*x*", '*');
-	set_or_clear(local_test_board, 0, -1, empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
-	set_or_clear(local_test_board, 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, "*x*", '*');
-	set_or_clear(local_test_board, 5, -1, empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
-	set_or_clear(local_test_board, 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, "*x*", '*');
-	set_or_clear(local_test_board, 9, -1, empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
+	set_or_clear(local_test_board, 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, "*x*", '*');
+	set_or_clear(local_test_board, 0, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
+	set_or_clear(local_test_board, 5, -1, single_line_board_definitions::middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, "*x*", '*');
+	set_or_clear(local_test_board, 5, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
+	set_or_clear(local_test_board, 9, -1, single_line_board_definitions::end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, "*x*", '*');
+	set_or_clear(local_test_board, 9, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
 
-	set_or_clear(local_test_board, -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, "*x*", '*');
-	set_or_clear(local_test_board, -1, 0, empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
-	set_or_clear(local_test_board, -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, "*x*", '*');
-	set_or_clear(local_test_board, -1, 2, empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
-	set_or_clear(local_test_board, -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, "*x*", '*');
-	set_or_clear(local_test_board, -1, 9, empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
+	set_or_clear(local_test_board, -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 0, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
+	set_or_clear(local_test_board, -1, 2, single_line_board_definitions::middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 2, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
+	set_or_clear(local_test_board, -1, 9, single_line_board_definitions::end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, "*x*", '*');
+	set_or_clear(local_test_board, -1, 9, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
 
 	delete(local_test_frame);
 }
@@ -1568,58 +950,58 @@ TEST_F(ascii_board_test, set_or_clear_tiles_with_color)
 		{2, {format_tools::none, format_tools::none, true, false}, ' '}
 	};
 
-	set_or_clear(local_test_board, 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0, true, cursor_colors, "(*)", '*');
 	colors_equivalent(local_test_board, cursor_colors, 0, 0, 0);
-	set_or_clear(local_test_board, 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, cursor_x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, 1, true, cursor_x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, cursor_x_colors, 0, 0, 1);
-	set_or_clear(local_test_board, 0, 0, empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
+	set_or_clear(local_test_board, 0, 0, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 2, false);
 	colors_equivalent(local_test_board, empty_colors, 0, 0, 2);
-	set_or_clear(local_test_board, 5, 4, middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, 3, true, cursor_colors, "(*)", '*');
 	colors_equivalent(local_test_board, cursor_colors, 5, 4, 3);
-	set_or_clear(local_test_board, 5, 4, middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, cursor_x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::middle_cursor_x_board, "ascii_board::set_tile", SUCCESS, 4, true, cursor_x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, cursor_x_colors, 5, 4, 4);
-	set_or_clear(local_test_board, 5, 4, empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
+	set_or_clear(local_test_board, 5, 4, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 5, false);
 	colors_equivalent(local_test_board, empty_colors, 5, 4, 5);
-	set_or_clear(local_test_board, 9, 9, end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, 6, true, cursor_colors, "(*)", '*');
 	colors_equivalent(local_test_board, cursor_colors, 9, 9, 6);
-	set_or_clear(local_test_board, 9, 9, end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, cursor_x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::end_cursor_x_board, "ascii_board::set_tile", SUCCESS, 7, true, cursor_x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, cursor_x_colors, 9, 9, 7);
-	set_or_clear(local_test_board, 9, 9, empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
+	set_or_clear(local_test_board, 9, 9, single_line_board_definitions::empty_board, "ascii_board::clear_tile", SUCCESS, 8, false);
 	colors_equivalent(local_test_board, empty_colors, 9, 9, 8);
 
-	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, cursor_colors, "(*)", '*');
-	set_or_clear(local_test_board, 10, 0, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
-	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, cursor_colors, "(*)", '*');
-	set_or_clear(local_test_board, 0, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
-	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, cursor_colors, "(*)", '*');
-	set_or_clear(local_test_board, 10, 10, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
-	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, cursor_colors, "(*)", '*');
-	set_or_clear(local_test_board, 4, 2, empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
+	set_or_clear(local_test_board, 10, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 9, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 0, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 10, false);
+	set_or_clear(local_test_board, 0, 10, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 11, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 0, 10, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 12, false);
+	set_or_clear(local_test_board, 10, 10, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 13, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 10, 10, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 14, false);
+	set_or_clear(local_test_board, 4, 2, single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, 15, true, cursor_colors, "(*)", '*');
+	set_or_clear(local_test_board, 4, 2, single_line_board_definitions::empty_board, "ascii_board::clear_tile", INVALID_INDEX, 16, false);
 
-	set_or_clear(local_test_board, 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, 17, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, 0, -1, 9);
-	set_or_clear(local_test_board, 0, -1, empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
+	set_or_clear(local_test_board, 0, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 18, false);
 	colors_equivalent(local_test_board, empty_colors, 0, -1, 10);
-	set_or_clear(local_test_board, 5, -1, middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 5, -1, single_line_board_definitions::middle_row_x_board, "ascii_board::set_row", SUCCESS, 19, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, 5, -1, 11);
-	set_or_clear(local_test_board, 5, -1, empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
+	set_or_clear(local_test_board, 5, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 20, false);
 	colors_equivalent(local_test_board, empty_colors, 5, -1, 12);
-	set_or_clear(local_test_board, 9, -1, end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, 9, -1, single_line_board_definitions::end_row_x_board, "ascii_board::set_row", SUCCESS, 21, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, 9, -1, 13);
-	set_or_clear(local_test_board, 9, -1, empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
+	set_or_clear(local_test_board, 9, -1, single_line_board_definitions::empty_board, "ascii_board::clear_row", SUCCESS, 22, false);
 	colors_equivalent(local_test_board, empty_colors, 9, -1, 14);
 
-	set_or_clear(local_test_board, -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, 23, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, -1, 0, 15);
-	set_or_clear(local_test_board, -1, 0, empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
+	set_or_clear(local_test_board, -1, 0, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 24, false);
 	colors_equivalent(local_test_board, empty_colors, -1, 0, 16);
-	set_or_clear(local_test_board, -1, 2, middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, -1, 2, single_line_board_definitions::middle_column_x_board, "ascii_board::set_column", SUCCESS, 25, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, -1, 2, 17);
-	set_or_clear(local_test_board, -1, 2, empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
+	set_or_clear(local_test_board, -1, 2, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 26, false);
 	colors_equivalent(local_test_board, empty_colors, -1, 2, 18);
-	set_or_clear(local_test_board, -1, 9, end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, x_colors, "*x*", '*');
+	set_or_clear(local_test_board, -1, 9, single_line_board_definitions::end_column_x_board, "ascii_board::set_column", SUCCESS, 27, true, x_colors, "*x*", '*');
 	colors_equivalent(local_test_board, x_colors, -1, 9, 19);
-	set_or_clear(local_test_board, -1, 9, empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
+	set_or_clear(local_test_board, -1, 9, single_line_board_definitions::empty_board, "ascii_board::clear_column", SUCCESS, 28, false);
 	colors_equivalent(local_test_board, empty_colors, -1, 9, 20);
 
 	delete(local_test_frame);
@@ -1648,7 +1030,7 @@ TEST_F(ascii_board_test, get_board)
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "default");
 	std::string board = local_test_board.get_board();
-	EXPECT_EQ(board, empty_board);
+	EXPECT_EQ(board, single_line_board_definitions::empty_board);
 	delete(local_test_frame);
 }
 
@@ -1656,32 +1038,32 @@ TEST_F(ascii_board_test, set_get_tile_character)
 {
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "default", "none", true);
-	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::set_tile_character", SUCCESS, true, 0);
-	set_get_tile_character(local_test_board, 0, 0, 'x', 1, beginning_x_board, "ascii_board::get_tile_character", SUCCESS, false, 1);
-	set_get_tile_character(local_test_board, 0, 0, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 2);
-	set_get_tile_character(local_test_board, 0, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 3);
-	set_get_tile_character(local_test_board, 5, 4, 'x', 1, middle_x_board, "ascii_board::set_tile_character", SUCCESS, true, 4);
-	set_get_tile_character(local_test_board, 5, 4, 'x', 1, middle_x_board, "ascii_board::get_tile_character", SUCCESS, false, 5);
-	set_get_tile_character(local_test_board, 5, 4, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 6);
-	set_get_tile_character(local_test_board, 5, 4, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 7);
-	set_get_tile_character(local_test_board, 9, 9, 'x', 1, end_x_board, "ascii_board::set_tile_character", SUCCESS, true, 8);
-	set_get_tile_character(local_test_board, 9, 9, 'x', 1, end_x_board, "ascii_board::get_tile_character", SUCCESS, false, 9);
-	set_get_tile_character(local_test_board, 9, 9, ' ', 1, empty_board, "ascii_board::set_tile_character", SUCCESS, true, 10);
-	set_get_tile_character(local_test_board, 9, 9, ' ', 1, empty_board, "ascii_board::get_tile_character", SUCCESS, false, 11);
-	set_get_tile_character(local_test_board, -1, 0, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 12);
-	set_get_tile_character(local_test_board, -1, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 13);
-	set_get_tile_character(local_test_board, 10, 0, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 14);
-	set_get_tile_character(local_test_board, 10, 0, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 15);
-	set_get_tile_character(local_test_board, 0, -1, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 16);
-	set_get_tile_character(local_test_board, 0, -1, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 17);
-	set_get_tile_character(local_test_board, 0, 10, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 18);
-	set_get_tile_character(local_test_board, 0, 10, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 19);
-	set_get_tile_character(local_test_board, 4, 2, 'x', 1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 20);
-	set_get_tile_character(local_test_board, 4, 2, ' ', 1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 21);
-	set_get_tile_character(local_test_board, 0, 0, 'x', 3, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 22);
-	set_get_tile_character(local_test_board, 0, 0, ' ', 3, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 23);
-	set_get_tile_character(local_test_board, 0, 0, 'x', -1, empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 24);
-	set_get_tile_character(local_test_board, 0, 0, ' ', -1, empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 25);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 1, single_line_board_definitions::beginning_x_board, "ascii_board::set_tile_character", SUCCESS, true, 0);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 1, single_line_board_definitions::beginning_x_board, "ascii_board::get_tile_character", SUCCESS, false, 1);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", SUCCESS, true, 2);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", SUCCESS, false, 3);
+	set_get_tile_character(local_test_board, 5, 4, 'x', 1, single_line_board_definitions::middle_x_board, "ascii_board::set_tile_character", SUCCESS, true, 4);
+	set_get_tile_character(local_test_board, 5, 4, 'x', 1, single_line_board_definitions::middle_x_board, "ascii_board::get_tile_character", SUCCESS, false, 5);
+	set_get_tile_character(local_test_board, 5, 4, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", SUCCESS, true, 6);
+	set_get_tile_character(local_test_board, 5, 4, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", SUCCESS, false, 7);
+	set_get_tile_character(local_test_board, 9, 9, 'x', 1, single_line_board_definitions::end_x_board, "ascii_board::set_tile_character", SUCCESS, true, 8);
+	set_get_tile_character(local_test_board, 9, 9, 'x', 1, single_line_board_definitions::end_x_board, "ascii_board::get_tile_character", SUCCESS, false, 9);
+	set_get_tile_character(local_test_board, 9, 9, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", SUCCESS, true, 10);
+	set_get_tile_character(local_test_board, 9, 9, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", SUCCESS, false, 11);
+	set_get_tile_character(local_test_board, -1, 0, 'x', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 12);
+	set_get_tile_character(local_test_board, -1, 0, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 13);
+	set_get_tile_character(local_test_board, 10, 0, 'x', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 14);
+	set_get_tile_character(local_test_board, 10, 0, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 15);
+	set_get_tile_character(local_test_board, 0, -1, 'x', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 16);
+	set_get_tile_character(local_test_board, 0, -1, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 17);
+	set_get_tile_character(local_test_board, 0, 10, 'x', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 18);
+	set_get_tile_character(local_test_board, 0, 10, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 19);
+	set_get_tile_character(local_test_board, 4, 2, 'x', 1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 20);
+	set_get_tile_character(local_test_board, 4, 2, ' ', 1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 21);
+	set_get_tile_character(local_test_board, 0, 0, 'x', 3, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 22);
+	set_get_tile_character(local_test_board, 0, 0, ' ', 3, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 23);
+	set_get_tile_character(local_test_board, 0, 0, 'x', -1, single_line_board_definitions::empty_board, "ascii_board::set_tile_character", INVALID_INDEX, true, 24);
+	set_get_tile_character(local_test_board, 0, 0, ' ', -1, single_line_board_definitions::empty_board, "ascii_board::get_tile_character", INVALID_INDEX, false, 25);
 	delete(local_test_frame);
 }
 
@@ -1689,28 +1071,28 @@ TEST_F(ascii_board_test, set_get_tile)
 {
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, board_config_path, "default", "none", true);
-	set_get_tile(local_test_board, 0, 0, "(*)", '*', beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
-	set_get_tile(local_test_board, 0, 0, "( )", '*', beginning_cursor_board, "ascii_board::get_tile", SUCCESS, false, 1);
-	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 2);
-	set_get_tile(local_test_board, 0, 0, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 3);
-	set_get_tile(local_test_board, 5, 4, "(*)", '*', middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
-	set_get_tile(local_test_board, 5, 4, "( )", '*', middle_cursor_board, "ascii_board::get_tile", SUCCESS, false, 5);
-	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 6);
-	set_get_tile(local_test_board, 5, 4, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 7);
-	set_get_tile(local_test_board, 9, 9, "(*)", '*', end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
-	set_get_tile(local_test_board, 9, 9, "( )", '*', end_cursor_board, "ascii_board::get_tile", SUCCESS, false, 9);
-	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::set_tile", SUCCESS, true, 10);
-	set_get_tile(local_test_board, 9, 9, "   ", '*', empty_board, "ascii_board::get_tile", SUCCESS, false, 11);
-	set_get_tile(local_test_board, -1, 0, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
-	set_get_tile(local_test_board, -1, 0, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
-	set_get_tile(local_test_board, 10, 0, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
-	set_get_tile(local_test_board, 10, 0, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
-	set_get_tile(local_test_board, 0, -1, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
-	set_get_tile(local_test_board, 0, -1, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
-	set_get_tile(local_test_board, 0, 10, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
-	set_get_tile(local_test_board, 0, 10, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
-	set_get_tile(local_test_board, 4, 2, "(*)", '*', empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 16);
-	set_get_tile(local_test_board, 4, 2, "", '*', empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 17);
+	set_get_tile(local_test_board, 0, 0, "(*)", '*', single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	set_get_tile(local_test_board, 0, 0, "( )", '*', single_line_board_definitions::beginning_cursor_board, "ascii_board::get_tile", SUCCESS, false, 1);
+	set_get_tile(local_test_board, 0, 0, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, true, 2);
+	set_get_tile(local_test_board, 0, 0, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", SUCCESS, false, 3);
+	set_get_tile(local_test_board, 5, 4, "(*)", '*', single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	set_get_tile(local_test_board, 5, 4, "( )", '*', single_line_board_definitions::middle_cursor_board, "ascii_board::get_tile", SUCCESS, false, 5);
+	set_get_tile(local_test_board, 5, 4, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, true, 6);
+	set_get_tile(local_test_board, 5, 4, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", SUCCESS, false, 7);
+	set_get_tile(local_test_board, 9, 9, "(*)", '*', single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, true, 8);
+	set_get_tile(local_test_board, 9, 9, "( )", '*', single_line_board_definitions::end_cursor_board, "ascii_board::get_tile", SUCCESS, false, 9);
+	set_get_tile(local_test_board, 9, 9, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, true, 10);
+	set_get_tile(local_test_board, 9, 9, "   ", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", SUCCESS, false, 11);
+	set_get_tile(local_test_board, -1, 0, "(*)", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
+	set_get_tile(local_test_board, -1, 0, "", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
+	set_get_tile(local_test_board, 10, 0, "(*)", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
+	set_get_tile(local_test_board, 10, 0, "", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
+	set_get_tile(local_test_board, 0, -1, "(*)", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 12);
+	set_get_tile(local_test_board, 0, -1, "", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 13);
+	set_get_tile(local_test_board, 0, 10, "(*)", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 14);
+	set_get_tile(local_test_board, 0, 10, "", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 15);
+	set_get_tile(local_test_board, 4, 2, "(*)", '*', single_line_board_definitions::empty_board, "ascii_board::set_tile", INVALID_INDEX, true, 16);
+	set_get_tile(local_test_board, 4, 2, "", '*', single_line_board_definitions::empty_board, "ascii_board::get_tile", INVALID_INDEX, false, 17);
 	delete(local_test_frame);
 }
 
@@ -1735,53 +1117,53 @@ TEST_F(ascii_board_test, configuration_set)
 	local_test_board.add_configuration(o_config_board);
 	local_test_board.add_configuration(arrow_config_board);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 0);
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 1);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 2);
 	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 3);
 	test_configuration_activated(local_test_board, "cursor", -1, 0, false, "ascii_board::configuration_activated", INVALID_INDEX, 4);
 	test_configuration_activated(local_test_board, "cursor", 0, -1, false, "ascii_board::configuration_activated", INVALID_INDEX, 5);
 	test_configuration_activated(local_test_board, "cursor", 10, 0, false, "ascii_board::configuration_activated", INVALID_INDEX, 5);
 	test_configuration_activated(local_test_board, "cursor", 0, 10, false, "ascii_board::configuration_activated", INVALID_INDEX, 5);
-	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 7);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 8);
 
-	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 9);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 9);
 	test_configuration_activated(local_test_board, "x", 0, 6, true, "ascii_board::configuration_activated", SUCCESS, 10);
-	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 11);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::empty_board, "ascii_board::set_row", SUCCESS, false, 11);
 	test_configuration_activated(local_test_board, "x", 0, 6, false, "ascii_board::configuration_activated", SUCCESS, 12);
 	
-	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 13);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 13);
 	test_configuration_activated(local_test_board, "x", 9, 0, true, "ascii_board::configuration_activated", SUCCESS, 14);
-	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 15);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::empty_board, "ascii_board::set_column", SUCCESS, false, 15);
 	test_configuration_activated(local_test_board, "x", 9, 0, false, "ascii_board::configuration_activated", SUCCESS, 16);
 
-	activate_deactivate(local_test_board, "x", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, true, 17);
+	activate_deactivate(local_test_board, "x", -1, -1, single_line_board_definitions::full_x_board, "ascii_board::set_all", SUCCESS, true, 17);
 	test_configuration_activated(local_test_board, "x", 9, 0, true, "ascii_board::configuration_activated", SUCCESS, 18);
-	activate_deactivate(local_test_board, "x", -1, -1, empty_board, "ascii_board::set_all", SUCCESS, false, 19);
+	activate_deactivate(local_test_board, "x", -1, -1, single_line_board_definitions::empty_board, "ascii_board::set_all", SUCCESS, false, 19);
 	test_configuration_activated(local_test_board, "x", 9, 0, false, "ascii_board::configuration_activated", SUCCESS, 20);
 
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 21);
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 22);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 21);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_x_board, "ascii_board::set_tile", SUCCESS, true, 22);
 	test_configuration_activated(local_test_board, "x", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 23);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 24);
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 25);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 25);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 26);
 	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 27);
-	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 28);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 28);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 29);
 	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 30);
 
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 31);
-	activate_deactivate(local_test_board, "o", 0, 0, beginning_o_board, "ascii_board::set_tile", SUCCESS, true, 32);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 31);
+	activate_deactivate(local_test_board, "o", 0, 0, single_line_board_definitions::beginning_o_board, "ascii_board::set_tile", SUCCESS, true, 32);
 	test_configuration_activated(local_test_board, "x", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 33);
 	test_configuration_activated(local_test_board, "o", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 34);
-	activate_deactivate(local_test_board, "o", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 35);
+	activate_deactivate(local_test_board, "o", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 35);
 
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 36);
-	activate_deactivate(local_test_board, "arrow", 0, 0, beginning_arrow_board, "ascii_board::set_tile", SUCCESS, true, 37);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 36);
+	activate_deactivate(local_test_board, "arrow", 0, 0, single_line_board_definitions::beginning_arrow_board, "ascii_board::set_tile", SUCCESS, true, 37);
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 38);
 	test_configuration_activated(local_test_board, "arrow", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 39);
-	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 40);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 40);
 
 	delete(local_test_frame);
 }
@@ -1793,32 +1175,32 @@ TEST_F(ascii_board_test, modify_configuration)
 	local_test_board.add_configuration(cursor_config_board);
 	local_test_board.add_configuration(x_config_board);
 	local_test_board.add_configuration(o_config_board);
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
-	test_modify_configuration(local_test_board, "cursor", "x", beginning_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 1);
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 2);
-	activate_deactivate(local_test_board, "cursor", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 0);
+	test_modify_configuration(local_test_board, "cursor", "x", single_line_board_definitions::beginning_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 1);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, false, 2);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 3);
 
-	activate_deactivate(local_test_board, "x", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 4);
-	test_modify_configuration(local_test_board, "x", "cursor", beginning_row_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 5);
-	activate_deactivate(local_test_board, "cursor", 0, -1, beginning_row_x_board, "ascii_board::set_row", SUCCESS, false, 6);
-	activate_deactivate(local_test_board, "x", 0, -1, empty_board, "ascii_board::set_row", SUCCESS, false, 7);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, true, 4);
+	test_modify_configuration(local_test_board, "x", "cursor", single_line_board_definitions::beginning_row_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 5);
+	activate_deactivate(local_test_board, "cursor", 0, -1, single_line_board_definitions::beginning_row_x_board, "ascii_board::set_row", SUCCESS, false, 6);
+	activate_deactivate(local_test_board, "x", 0, -1, single_line_board_definitions::empty_board, "ascii_board::set_row", SUCCESS, false, 7);
 
-	activate_deactivate(local_test_board, "x", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 8);
-	test_modify_configuration(local_test_board, "x", "cursor", beginning_column_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 9);
-	activate_deactivate(local_test_board, "cursor", -1, 0, beginning_column_x_board, "ascii_board::set_column", SUCCESS, false, 10);
-	activate_deactivate(local_test_board, "x", -1, 0, empty_board, "ascii_board::set_column", SUCCESS, false, 11);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, true, 8);
+	test_modify_configuration(local_test_board, "x", "cursor", single_line_board_definitions::beginning_column_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 9);
+	activate_deactivate(local_test_board, "cursor", -1, 0, single_line_board_definitions::beginning_column_x_board, "ascii_board::set_column", SUCCESS, false, 10);
+	activate_deactivate(local_test_board, "x", -1, 0, single_line_board_definitions::empty_board, "ascii_board::set_column", SUCCESS, false, 11);
 
-	activate_deactivate(local_test_board, "x", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, true, 12);
-	test_modify_configuration(local_test_board, "x", "cursor", full_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 13);
-	activate_deactivate(local_test_board, "cursor", -1, -1, full_x_board, "ascii_board::set_all", SUCCESS, false, 14);
-	activate_deactivate(local_test_board, "x", -1, -1, empty_board, "ascii_board::set_all", SUCCESS, false, 15);
+	activate_deactivate(local_test_board, "x", -1, -1, single_line_board_definitions::full_x_board, "ascii_board::set_all", SUCCESS, true, 12);
+	test_modify_configuration(local_test_board, "x", "cursor", single_line_board_definitions::full_cursor_x_board, "ascii_board::modify_configuration", SUCCESS, 13);
+	activate_deactivate(local_test_board, "cursor", -1, -1, single_line_board_definitions::full_x_board, "ascii_board::set_all", SUCCESS, false, 14);
+	activate_deactivate(local_test_board, "x", -1, -1, single_line_board_definitions::empty_board, "ascii_board::set_all", SUCCESS, false, 15);
 	
-	activate_deactivate(local_test_board, "x", 0, 0, beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 16);
-	test_modify_configuration(local_test_board, "x", "o", beginning_o_board, "ascii_board::modify_configuration", SUCCESS, 17);
-	activate_deactivate(local_test_board, "o", 0, 0, empty_board, "ascii_board::set_tile", SUCCESS, false, 18);
+	activate_deactivate(local_test_board, "x", 0, 0, single_line_board_definitions::beginning_x_board, "ascii_board::set_tile", SUCCESS, true, 16);
+	test_modify_configuration(local_test_board, "x", "o", single_line_board_definitions::beginning_o_board, "ascii_board::modify_configuration", SUCCESS, 17);
+	activate_deactivate(local_test_board, "o", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 18);
 
-	test_modify_configuration(local_test_board, "x", "gibberish", empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 19);
-	test_modify_configuration(local_test_board, "gibberish", "x", empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 20);
+	test_modify_configuration(local_test_board, "x", "gibberish", single_line_board_definitions::empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 19);
+	test_modify_configuration(local_test_board, "gibberish", "x", single_line_board_definitions::empty_board, "ascii_board::modify_configuration", ELEMENT_NOT_FOUND, 20);
 
 	delete(local_test_frame);
 }
@@ -1860,15 +1242,15 @@ TEST_F(ascii_board_test, use_translation)
 	local_test_board.add_configuration(cursor_config_board);
 
 	use_translation_test(local_test_board, "gibberish", "ascii_board::use_translation", ELEMENT_NOT_FOUND, 0);
-	activate_deactivate(local_test_board, "cursor", 0, 0, beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 1);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, true, 1);
 	use_translation_test(local_test_board, "upside down", "ascii_board::use_translation", SUCCESS, 2);
-	check_board(local_test_board, end_cursor_upside_down_board, 2);
-	activate_deactivate(local_test_board, "cursor", 0, 0, empty_upside_down_board, "ascii_board::set_tile", SUCCESS, false, 3);
-	activate_deactivate(local_test_board, "cursor", 5, 4, middle_cursor_upside_down_board, "ascii_board::set_tile", SUCCESS, true, 4);
-	activate_deactivate(local_test_board, "cursor", 5, 4, empty_upside_down_board, "ascii_board::set_tile", SUCCESS, false, 5);
-	activate_deactivate(local_test_board, "cursor", 9, 9, beginning_cursor_upside_down_board, "ascii_board::set_tile", SUCCESS, true, 6);
+	check_board(local_test_board, single_line_board_definitions::end_cursor_upside_down_board, 2);
+	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_upside_down_board, "ascii_board::set_tile", SUCCESS, false, 3);
+	activate_deactivate(local_test_board, "cursor", 5, 4, single_line_board_definitions::middle_cursor_upside_down_board, "ascii_board::set_tile", SUCCESS, true, 4);
+	activate_deactivate(local_test_board, "cursor", 5, 4, single_line_board_definitions::empty_upside_down_board, "ascii_board::set_tile", SUCCESS, false, 5);
+	activate_deactivate(local_test_board, "cursor", 9, 9, single_line_board_definitions::beginning_cursor_upside_down_board, "ascii_board::set_tile", SUCCESS, true, 6);
 	use_translation_test(local_test_board, "default", "ascii_board::use_translation", SUCCESS, 7);
-	check_board(local_test_board, end_cursor_board, 8);
+	check_board(local_test_board, single_line_board_definitions::end_cursor_board, 8);
 
 	delete(local_test_frame);
 }
