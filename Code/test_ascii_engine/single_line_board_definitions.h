@@ -1,8 +1,46 @@
 #pragma once
 #include <string>
+#include <vector>
+
+#ifdef _WIN32
+#include "../ascii_engine/ascii_board.h"
+#include "../ascii_engine/format_tools.h"
+#elif __linux__
+#include <ascii_engine/ascii_board.h>
+#include <ascii_engine/format_tools.h>
+#endif
 
 namespace single_line_board_definitions
 {
+#ifdef _WIN32
+	std::string board_config_path = "test_board_config.txt";
+	std::string upside_down_board_config_path = "test_board_config_upside_down.txt";
+	std::string cursor_config_path = "test_cursor_config.txt";
+	std::string x_config_path = "test_x_config.txt";
+#elif __linux__
+	std::string board_config_path = "Code/test_ascii_engine/test_configs/test_board_config.txt";
+	std::string upside_down_board_config_path = "Code/test_ascii_engine/test_configs/test_board_config_upside_down.txt";
+	std::string cursor_config_path = "Code/test_ascii_engine/test_configs/test_cursor_config.txt";
+	std::string x_config_path = "Code/test_ascii_engine/test_configs/test_x_config.txt";
+#endif
+
+	const std::vector<format_tools::index_format> empty_colors;
+	const board_configuration cursor_config_board{ "cursor", {{ -1, -1, "(*)", '*', empty_colors }}};
+
+	const board_configuration x_config_board{ "x", {{ -1, -1, "*x*", '*', empty_colors }} };
+
+	const board_configuration o_config_board{ "o", {{ -1, -1, "*o*", '*', empty_colors }} };
+
+	const board_configuration arrow_config_board{ "arrow", {{ -1, -1, "**>", '*', empty_colors }} };
+
+	const board_configuration duplicate_name_config_board{ "cursor", {{ -1, -1, "*x*", '*', empty_colors }} };
+
+	const board_configuration out_of_bounds_config_board{ "out_of_bounds", {{ 41, 0, "(*)", '*', empty_colors }} };
+
+	const board_configuration overlapping_config_board{ "overlapping", { { -1, -1, "(*)", '*', empty_colors }, { -1, -1, "*x*", '*', empty_colors } } };
+
+	const board_configuration invalid_name_config_board{ "", { { -1, -1, "(*)", '*', empty_colors } } };
+
 	const std::string empty_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
 		"|   |   |   |   |   |   |   |   |   |   |\n"
