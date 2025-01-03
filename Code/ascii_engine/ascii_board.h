@@ -40,14 +40,14 @@ public:
 		int board_stop_column = -1;
 	};
 
-private:
-	
 	struct sub_tile_configuration
 	{
 		std::string name_id = "";
 		std::string value = "";
 		char ignore_character = '\0';
 	};
+
+private:
 
 	struct action_tile_skeleton
 	{

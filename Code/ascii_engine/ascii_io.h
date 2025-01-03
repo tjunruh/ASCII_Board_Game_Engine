@@ -35,7 +35,7 @@ namespace ascii_io
 #ifdef _WIN32
 	void enable_dec();
 	void disable_dec();
-	ASCII_IO_API void fit_console_buffer_to_screen();
+	void fit_console_buffer_to_screen();
 #endif
 
 #ifdef __linux__
