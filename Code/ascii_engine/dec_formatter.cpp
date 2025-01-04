@@ -12,6 +12,28 @@ void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, c
 	_vertical_char = vertical_char;
 	_intersection_char = intersection_char;
 	_endpoint_char = endpoint_char;
+
+	dec_trigger_characters =
+	{
+		_horizontal_char,
+		_vertical_char,
+		_intersection_char,
+		_endpoint_char
+	};
+
+	dec_horizontal_trigger_characters =
+	{
+		_horizontal_char,
+		_intersection_char,
+		_endpoint_char
+	};
+
+	dec_vertical_trigger_characters =
+	{
+		_vertical_char,
+		_intersection_char,
+		_endpoint_char
+	};
 }
 
 std::vector<format_tools::index_format> dec_formatter::format(std::string& format_content, unsigned int line_length)

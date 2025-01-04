@@ -44,7 +44,7 @@ private:
 	char _vertical_char = '|';
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
-	const std::vector<char> dec_trigger_characters =
+	std::vector<char> dec_trigger_characters =
 	{
 		_horizontal_char,
 		_vertical_char,
@@ -52,14 +52,14 @@ private:
 		_endpoint_char
 	};
 
-	const std::vector<char> dec_horizontal_trigger_characters =
+	std::vector<char> dec_horizontal_trigger_characters =
 	{
 		_horizontal_char,
 		_intersection_char,
 		_endpoint_char
 	};
 
-	const std::vector<char> dec_vertical_trigger_characters =
+	std::vector<char> dec_vertical_trigger_characters =
 	{
 		_vertical_char,
 		_intersection_char,
