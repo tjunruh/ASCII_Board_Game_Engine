@@ -357,9 +357,10 @@ std::vector<format_tools::index_format> format_tools::combine(const std::vector<
 		combined_format.push_back(format_2[i]);
 	}
 
-	for (unsigned int i = 0; i < combined_format.size(); i++)
+	int length = (int)combined_format.size() - 1;
+	for (int i = length; i >= 0; i--)
 	{
-		for (unsigned int j = (i + 1); j < combined_format.size(); j++)
+		for (unsigned int j = ((unsigned int)i + 1); j < combined_format.size(); j++)
 		{
 			if (combined_format[i].index == combined_format[j].index)
 			{
