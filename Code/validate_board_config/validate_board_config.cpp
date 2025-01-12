@@ -513,6 +513,11 @@ bool validate_board_config::is_number(const std::string &number_string)
 int validate_board_config::get_rows(const std::string &board)
 {
 	int rows = 0;
+	if (board.length() > 0)
+	{
+		rows++;
+	}
+
 	for (unsigned int i = 0; i < board.length(); i++)
 	{
 		if (board[i] == '\n')
