@@ -1,5 +1,6 @@
 #include "build_board_config.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
+#include <vector>
 
 int build_board_config::get_rows(const std::string &board)
 {
@@ -89,15 +90,16 @@ std::string build_board_config::get_line(const std::string &content, int line_nu
 	return line;
 }
 
-std::string build_board_config::modify_content(const std::string &content)
+std::string build_board_config::modify_content(std::string content)
 {
+	content = equalize_line_lengths(content);
 	int rows = get_rows(content);
 	int columns = get_columns(content);
 	int horizontal_index_space = get_digits(rows);
 	int vertical_index_space = get_digits(columns);
 	int horizontal_margin_length = horizontal_index_space + 1;
 	int vertical_margin_length = vertical_index_space;
-
+	
 	int total_rows_with_margin = rows + vertical_margin_length;
 	std::string horizontal_margin = "";
 	for (int i = 0; i < horizontal_margin_length; i++)
@@ -139,6 +141,57 @@ std::string build_board_config::modify_content(const std::string &content)
 	modified_content = modified_content + board_config_field_titles::action_tiles_begin + "\n";
 	modified_content = modified_content + board_config_field_titles::action_tile_initialization;
 	modified_content = modified_content + board_config_field_titles::action_tiles_end + "\n\n\n";
+
+	return modified_content;
+}
+
+std::string build_board_config::equalize_line_lengths(const std::string& content)
+{
+	std::vector<std::string> lines;
+	std::string line = "";
+	unsigned int max_length = 0;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		line = line + content[i];
+		if (content[i] == '\n')
+		{
+			if (line.length() > max_length)
+			{
+				max_length = line.length();
+			}
+			lines.push_back(line);
+			line = "";
+		}
+	}
+
+	if (line != "")
+	{
+		if (line.length() > max_length)
+		{
+			max_length = line.length();
+		}
+		lines.push_back(line);
+	}
+
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		unsigned int added_characters = max_length - lines[i].length();
+		lines[i].erase(lines[i].begin() + lines[i].length() - 1);
+		for (unsigned int j = 0; j < added_characters; j++)
+		{
+			lines[i] = lines[i] + ' ';
+		}
+		lines[i] = lines[i] + '\n';
+	}
+
+	std::string modified_content = "";
+
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		modified_content = modified_content + lines[i];
+	}
+
+	modified_content.erase(modified_content.begin() + modified_content.length() - 1);
 
 	return modified_content;
 }

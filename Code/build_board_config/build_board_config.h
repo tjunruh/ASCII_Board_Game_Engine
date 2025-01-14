@@ -5,7 +5,7 @@
 class build_board_config 
 {
 public:
-	std::string modify_content(const std::string &content);
+	std::string modify_content(std::string content);
 	
 private:
 	int get_rows(const std::string &board);
@@ -13,4 +13,5 @@ private:
 	int get_digits(int number);
 	std::string get_digit(int number, int digit);
 	std::string get_line(const std::string &content, int line_number);
+	std::string equalize_line_lengths(const std::string& content);
 };

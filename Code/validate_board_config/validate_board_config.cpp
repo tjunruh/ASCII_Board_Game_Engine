@@ -63,6 +63,43 @@ int validate_board_config::validate_action_tiles_end(const std::string &content)
 	return validity;
 }
 
+int validate_board_config::validate_line_length(const std::string& content, int& error_line, std::string& error_line_content)
+{
+	int validity = 0;
+	std::string line = "";
+	unsigned int length = 0;
+	bool compare = false;
+	error_line = 0;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		if (content[i] == '\n')
+		{
+			if (compare && (line.length() != length))
+			{
+				validity = 1;
+				error_line_content = line;
+				break;
+			}
+			length = line.length();
+			compare = true;
+			error_line++;
+			line = "";
+		}
+		else
+		{
+			line = line + content[i];
+		}
+	}
+
+	if ((line.length() != 0) && compare && (line.length() != length))
+	{
+		validity = 1;
+		error_line_content = line;
+	}
+
+	return validity;
+}
+
 int validate_board_config::validate_enclosing_characters(const std::string &content, int& error_line, std::string& error_line_content, char begin_character, char end_character)
 {
 	char previous_enclosement = ' ';
@@ -630,6 +667,18 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	action_tiles_field = parser.remove_spaces(action_tiles_field);
 	int error_line = 0;
 	std::string error_line_content = "";
+
+	if (validate_line_length(board, error_line, error_line_content) == 1)
+	{
+		debug_info = debug_info + "Failed: Lines of board must be the same length.\n";
+		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of board field.\n";
+		debug_info = debug_info + error_line_content + " << line length is not the same as preceding lines\n";
+		return 1;
+	}
+	else
+	{
+		debug_info = debug_info + "Passed: Lines of board are the same length.\n";
+	}
 
 	if (validate_enclosing_characters(dimension_field, error_line, error_line_content, '(', ')') == 1)
 	{
