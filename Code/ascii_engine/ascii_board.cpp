@@ -46,21 +46,22 @@ ascii_board::ascii_board(frame* parent, std::string path, std::string name_id, s
 	std::string array_dimension_field = "";
 	std::string action_tiles_field = "";
 	board_config_field_parser parser;
-	board = parser.get_board(board_config);
+	board_translation translation;
+	translation.board = parser.get_board(board_config);
 	array_dimension_field = parser.get_dimension_field(board_config);
 	action_tiles_field = parser.get_action_tiles_field(board_config);
 
 	parser.get_array_dimensions(array_dimension_field, max_rows, max_columns);
 
-	board_translation translation;
 	translation.name_id = name_id;
-	translation.board = board;
 
 	initialize_tiles(max_rows, max_columns, translation.action_tile_skeletons);
 	set_tile_ranges(action_tiles_field, translation.action_tile_skeletons);
 	remove_inactive_tiles(translation.action_tile_skeletons);
-	set_tile_default_values(board, translation.action_tile_skeletons);
+	set_tile_default_values(translation.board, translation.action_tile_skeletons);
+	newline_guard(translation);
 	board_translations.push_back(translation);
+	board = translation.board;
 	for (unsigned int i = 0; i < translation.action_tile_skeletons.size(); i++)
 	{
 		action_tile tile;
@@ -1177,6 +1178,7 @@ int ascii_board::load_board_translation(std::string name_id, std::string path)
 		return status;
 	}
 	set_tile_default_values(translation.board, translation.action_tile_skeletons);
+	newline_guard(translation);
 	board_translations.push_back(translation);
 	status = SUCCESS;
 	log.log_comment(validation_debug_log);
@@ -1397,7 +1399,6 @@ void ascii_board::update_board()
 	}
 	std::vector<std::string> board_lines = format_tools::get_lines(board);
 	unsigned int line_length = board_lines[0].length();
-	int newline_guard_activated = false;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		unsigned int value_position = 0;
@@ -1775,4 +1776,28 @@ char ascii_board::get_format_character(const std::string& content)
 	}
 
 	return format_character;
+}
+
+void ascii_board::newline_guard(board_translation& translation)
+{
+	unsigned int line_length = format_tools::get_first_line_length(translation.board);
+	for (unsigned int i = 0; i < translation.action_tile_skeletons.size(); i++)
+	{
+		for (unsigned int j = 0; j < translation.action_tile_skeletons[i].board_section.size(); j++)
+		{
+			if ((translation.action_tile_skeletons[i].board_section[j].board_stop_column + 2) == line_length)
+			{
+				std::vector<std::string> lines = format_tools::get_lines(translation.board);
+				lines = format_tools::remove_newline_characters(lines);
+				for (unsigned int k = 0; k < lines.size(); k++)
+				{
+					lines[k] = lines[k] + " ";
+				}
+				lines = format_tools::add_newline_characters(lines);
+				lines.back().erase(lines.back().length() - 1, 1);
+				translation.board = format_tools::get_string(lines);
+				return;
+			}
+		}
+	}
 }

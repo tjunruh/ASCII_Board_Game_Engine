@@ -151,4 +151,5 @@ private:
 	int validate_translation(std::vector<action_tile_skeleton> action_tile_skeletons);
 	std::string remove_configuration_format_characters(std::string content, char format_character);
 	char get_format_character(const std::string& content);
+	void newline_guard(board_translation& translation);
 };
