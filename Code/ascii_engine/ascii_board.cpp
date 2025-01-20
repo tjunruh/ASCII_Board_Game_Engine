@@ -1397,6 +1397,7 @@ void ascii_board::update_board()
 	}
 	std::vector<std::string> board_lines = format_tools::get_lines(board);
 	unsigned int line_length = board_lines[0].length();
+	int newline_guard_activated = false;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		unsigned int value_position = 0;
@@ -1436,12 +1437,16 @@ void ascii_board::update_board()
 
 				if (color_active)
 				{
-					format_tools::index_format color;
-					color.index = column + row * line_length;
-					color.format.foreground_format = format_tools::none;
-					color.format.background_format = format_tools::none;
-					board_colors.push_back(color);
-					color_wrap = true;
+					if ((wrap_color.format.foreground_format != format_tools::none) || (wrap_color.format.background_format != format_tools::none) || wrap_color.format.bold)
+					{
+						format_tools::index_format color;
+						color.index = column + row * line_length;
+						color.format.foreground_format = format_tools::none;
+						color.format.background_format = format_tools::none;
+						board_colors.push_back(color);
+						color_wrap = true;
+					}
+
 					color_active = false;
 				}
 			}
