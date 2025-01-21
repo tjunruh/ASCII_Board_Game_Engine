@@ -1785,7 +1785,7 @@ void ascii_board::newline_guard(board_translation& translation)
 	{
 		for (unsigned int j = 0; j < translation.action_tile_skeletons[i].board_section.size(); j++)
 		{
-			if ((translation.action_tile_skeletons[i].board_section[j].board_stop_column + 2) == line_length)
+			if (((unsigned int)translation.action_tile_skeletons[i].board_section[j].board_stop_column + 2) == line_length)
 			{
 				std::vector<std::string> lines = format_tools::get_lines(translation.board);
 				lines = format_tools::remove_newline_characters(lines);

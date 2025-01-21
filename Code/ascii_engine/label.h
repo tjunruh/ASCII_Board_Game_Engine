@@ -19,6 +19,6 @@ class label : public widget
 public:
 	LABEL_API label(frame* parent, std::string special_operation = "none", bool start_logging=false, std::string logging_file_path="label.log");
 	LABEL_API void set_output(const std::string& output);
-	LABEL_API void set_colors(const std::vector<format_tools::index_format>& colors);
+	LABEL_API void set_colors(std::vector<format_tools::index_format> colors);
 	LABEL_API std::vector<format_tools::index_format> get_colors();
 };
