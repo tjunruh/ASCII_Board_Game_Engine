@@ -580,7 +580,7 @@ TEST_F(format_tools_test, remove_newline_characters_string)
 	EXPECT_EQ(test_string, correct_answer);
 }
 
-TEST_F(format_tools_test, sort)
+TEST_F(format_tools_test, sort_index)
 {
 	format_tools::common_format format;
 	std::vector<format_tools::index_format> index_vec = {
@@ -622,6 +622,51 @@ TEST_F(format_tools_test, sort)
 		EXPECT_EQ(index_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
 		EXPECT_EQ(index_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
 		EXPECT_EQ(index_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
+	}
+}
+
+TEST_F(format_tools_test, sort_coordinate)
+{
+	format_tools::common_format format;
+	std::vector<format_tools::coordinate_format> coordinate_vec = {
+		{5, 2, format},
+		{4, 1, format},
+		{3, 5, format},
+		{2, 2, format},
+		{1, 4, format},
+		{25, 5, format},
+		{0, 4, format},
+		{10, 3, format},
+		{9, 3, format},
+		{8, 6, format},
+		{7, 0, format},
+		{6, 6, format},
+	};
+
+	std::vector<format_tools::coordinate_format> correct_answer = {
+		{7, 0, format},
+		{4, 1, format},
+		{2, 2, format},
+		{5, 2, format},
+		{9, 3, format},
+		{10, 3, format},
+		{0, 4, format},
+		{1, 4, format},
+		{3, 5, format},
+		{25, 5, format},
+		{6, 6, format},
+		{8, 6, format},
+	};
+
+	coordinate_vec = format_tools::sort(coordinate_vec);
+	ASSERT_EQ(coordinate_vec.size(), correct_answer.size());
+	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
+	{
+		EXPECT_EQ(coordinate_vec[i].x_position, correct_answer[i].x_position) << "Index: " + std::to_string(i);
+		EXPECT_EQ(coordinate_vec[i].y_position, correct_answer[i].y_position) << "Index: " + std::to_string(i);
+		EXPECT_EQ(coordinate_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(coordinate_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(coordinate_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
 	}
 }
 
@@ -1554,17 +1599,19 @@ TEST_F(format_tools_test, bound_colors)
 	std::vector<format_tools::coordinate_format> colors_answer =
 	{
 		{1, 0, green_foreground},
-		{0, 1, green_background},
-		{2, 2, green_foreground},
 		{3, 0, empty_format},
+		{0, 1, green_background},
 		{3, 1, empty_format},
 		{0, 2, green_background},
+		{2, 2, green_foreground},
 		{3, 2, empty_format},
 		{0, 3, green_foreground},
 		{3, 3, empty_format}
 	};
 
 	std::vector<format_tools::coordinate_format> formatted_color = format_tools::bound_colors(colors, lines);
+	colors_answer = format_tools::sort(colors_answer);
+	formatted_color = format_tools::sort(formatted_color);
 
 	ASSERT_EQ(formatted_color.size(), colors_answer.size());
 	for (unsigned int i = 0; i < formatted_color.size(); i++)

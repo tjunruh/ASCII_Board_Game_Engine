@@ -311,6 +311,19 @@ std::vector<format_tools::index_format> format_tools::sort(std::vector<index_for
 	return sorted_format;
 }
 
+std::vector<format_tools::coordinate_format> format_tools::sort(std::vector<coordinate_format>& coordinate_colors)
+{
+	std::vector<coordinate_format> sorted_format;
+	unsigned int length = coordinate_colors.size();
+	for (unsigned int i = 0; i < length; i++)
+	{
+		int index = get_min_format_index(coordinate_colors);
+		sorted_format.push_back(coordinate_colors[index]);
+		coordinate_colors.erase(coordinate_colors.begin() + index);
+	}
+	return sorted_format;
+}
+
 int format_tools::calculate_flag_number(const std::vector<index_format>& index_colors, int index)
 {
 	int number = 0;
@@ -407,6 +420,35 @@ int format_tools::get_min_format_index(const std::vector<index_format>& format_v
 			{
 				min_vec_index = i;
 				min_index = format_vec[min_vec_index].index;
+			}
+		}
+	}
+	return min_vec_index;
+}
+
+int format_tools::get_min_format_index(const std::vector<coordinate_format>& format_vec)
+{
+	int min_vec_index = 0;
+	int min_x = 0;
+	int min_y = 0;
+	if (format_vec.size() > 0)
+	{
+		min_vec_index = 0;
+		min_x = format_vec[min_vec_index].x_position;
+		min_y = format_vec[min_vec_index].y_position;
+		for (unsigned int i = 1; i < format_vec.size(); i++)
+		{
+			if (format_vec[i].y_position < min_y)
+			{
+				min_vec_index = i;
+				min_x = format_vec[min_vec_index].x_position;
+				min_y = format_vec[min_vec_index].y_position;
+			}
+			else if ((format_vec[i].y_position == min_y) && (format_vec[i].x_position < min_x))
+			{
+				min_vec_index = i;
+				min_x = format_vec[min_vec_index].x_position;
+				min_y = format_vec[min_vec_index].y_position;
 			}
 		}
 	}
@@ -669,67 +711,62 @@ std::vector<format_tools::index_format> format_tools::shift_index(std::vector<in
 
 std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vector<coordinate_format> colors, const std::vector<std::string>& lines)
 {
-	std::vector<int> rows;
-	std::vector<int> format_at_beginning_of_line_flags;
-	for (unsigned int i = 0; i < colors.size(); i++)
-	{
-		if (std::count(rows.begin(), rows.end(), colors[i].y_position) == 0)
-		{
-			rows.push_back(colors[i].y_position);
-		}
-
-		if (colors[i].x_position == 0)
-		{
-			format_at_beginning_of_line_flags.push_back(colors[i].y_position);
-		}
-	}
-
-	std::vector<coordinate_format> last_format_in_line_collection;
-	for (unsigned int i = 0; i < rows.size(); i++)
-	{
-		coordinate_format last_format_in_line;
-		last_format_in_line.x_position = -1;
-		for (unsigned int j = 0; j < colors.size(); j++)
-		{
-			if ((colors[j].y_position == rows[i]) && (colors[j].x_position > last_format_in_line.x_position))
-			{
-				last_format_in_line = colors[j];
-			}
-		}
-		last_format_in_line_collection.push_back(last_format_in_line);
-	}
-
-	for (unsigned int i = 0; i < last_format_in_line_collection.size(); i++)
-	{
-		if ((last_format_in_line_collection[i].format.background_format != none) || (last_format_in_line_collection[i].format.foreground_format != none))
-		{
-			coordinate_format temp_format;
-			temp_format.y_position = last_format_in_line_collection[i].y_position;
-			temp_format.x_position = lines[temp_format.y_position].length();
-			colors.push_back(temp_format);
-			if ((((unsigned int)(temp_format.y_position + 1)) < lines.size()) && (std::count(format_at_beginning_of_line_flags.begin(), format_at_beginning_of_line_flags.end(), temp_format.y_position + 1) == 0))
-			{
-				temp_format.y_position = temp_format.y_position + 1;
-				temp_format.x_position = 0;
-				temp_format.format.background_format = last_format_in_line_collection[i].format.background_format;
-				temp_format.format.foreground_format = last_format_in_line_collection[i].format.foreground_format;
-				temp_format.format.bold = last_format_in_line_collection[i].format.bold;
-				colors.push_back(temp_format);
-			}
-		}
-	}
-
 	if (colors.size() > 0)
 	{
-		coordinate_format cap_format;
-		int bottom_line = lines.size() - 1;
-		if (bottom_line < 0)
+		colors = sort(colors);
+		coordinate_format last_color = colors[0];
+		unsigned int colors_length = colors.size();
+		for (unsigned int i = 0; i < colors_length; i++)
 		{
-			bottom_line = 0;
+			bool non_empty_format = ((last_color.format.foreground_format != format_tools::none) || (last_color.format.background_format != format_tools::none) || last_color.format.bold);
+			if ((colors[i].y_position != last_color.y_position) && non_empty_format)
+			{
+				coordinate_format cap_format;
+				cap_format.y_position = last_color.y_position;
+				cap_format.x_position = lines[last_color.y_position].length();
+				colors.push_back(cap_format);
+				coordinate_format wrap_format;
+				wrap_format.format = last_color.format;
+				wrap_format.x_position = 0;
+
+				for (int j = last_color.y_position + 1; j < colors[i].y_position; j++)
+				{
+					wrap_format.y_position = j;
+					colors.push_back(wrap_format);
+					cap_format.x_position = lines[colors[j].y_position].length();
+					cap_format.y_position = j;
+					colors.push_back(cap_format);
+				}
+				
+				if (colors[i].x_position != 0)
+				{
+					wrap_format.y_position = colors[i].y_position;
+					colors.push_back(wrap_format);
+				}
+			}
+
+			non_empty_format = ((colors[i].format.foreground_format != format_tools::none) || (colors[i].format.background_format != format_tools::none) || colors[i].format.bold);
+			if ((i == colors_length - 1) && non_empty_format)
+			{
+				coordinate_format cap_format;
+				cap_format.y_position = colors[i].y_position;
+				cap_format.x_position = lines[colors[i].y_position].length();
+				colors.push_back(cap_format);
+				coordinate_format wrap_format;
+				wrap_format.format = colors[i].format;
+				wrap_format.x_position = 0;
+
+				for (unsigned int j = colors[i].y_position + 1; j < lines.size(); j++)
+				{
+					wrap_format.y_position = j;
+					colors.push_back(wrap_format);
+					cap_format.x_position = lines[colors[j].y_position].length();
+					cap_format.y_position = j;
+					colors.push_back(cap_format);
+				}
+			}
+			last_color = colors[i];
 		}
-		cap_format.y_position = bottom_line;
-		cap_format.x_position = lines[cap_format.y_position].length();
-		colors.push_back(cap_format);
 	}
 	
 	return colors;
