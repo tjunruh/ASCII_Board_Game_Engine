@@ -1,6 +1,6 @@
 CXX := g++
 
-EXECUTABLE ?= introduction
+EXECUTABLE ?= build/introduction
 
 SRC_DIR ?= 
 BLD_DIR ?= build
@@ -11,9 +11,9 @@ SRCS := $(shell find $(SRC_DIR) -name *.cpp)
 OBJS := $(SRCS:%=$(BLD_DIR)/%.o)
 DEPS := $(OCJS:.o=.d)
 
-LDFLAGS := -lncurses -L external_libraries/$(ASCII_ENGINE_DIR)/Linux/ -lascii_engine
+LDFLAGS := -lncurses -L $(ASCII_ENGINE_DIR) -lascii_engine
 INC_FLAGS := $(addprefix -I,$(INC_DIR))
-CXXFLAGS := -std=c++17 $(LDFLAGS) -O2 $(INC_FLAGS) -Wall -MMD -MP -I external_libraries/$(ASCII_ENGINE_DIR)/Linux/headers/ascii_engine
+CXXFLAGS := -std=c++17 $(LDFLAGS) -O2 $(INC_FLAGS) -Wall -MMD -MP -I $(ASCII_ENGINE_DIR)/headers/ascii_engine
 
 .PHONY: all clean
 
