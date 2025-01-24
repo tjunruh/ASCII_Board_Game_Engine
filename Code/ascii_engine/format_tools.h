@@ -109,8 +109,8 @@ namespace format_tools
 	FORMAT_TOOLS_API std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
 	FORMAT_TOOLS_API void mask_string(std::string& new_string, const std::string& old_string);
 	FORMAT_TOOLS_API void remove_newline_characters(std::string& text);
-	FORMAT_TOOLS_API std::vector<index_format> sort(std::vector<index_format>& index_colors);
-	FORMAT_TOOLS_API std::vector<coordinate_format> sort(std::vector<coordinate_format>& coordinate_colors);
+	FORMAT_TOOLS_API std::vector<index_format> sort(std::vector<index_format> index_colors);
+	FORMAT_TOOLS_API std::vector<coordinate_format> sort(std::vector<coordinate_format> coordinate_colors);
 	FORMAT_TOOLS_API int calculate_flag_number(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API bool index_found(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API std::vector<index_format> combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2);

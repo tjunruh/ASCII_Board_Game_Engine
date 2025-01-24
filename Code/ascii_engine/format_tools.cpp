@@ -298,7 +298,7 @@ void format_tools::remove_newline_characters(std::string& text)
 	}
 }
 
-std::vector<format_tools::index_format> format_tools::sort(std::vector<index_format>& index_colors)
+std::vector<format_tools::index_format> format_tools::sort(std::vector<index_format> index_colors)
 {
 	std::vector<index_format> sorted_format;
 	unsigned int combined_format_length = index_colors.size();
@@ -311,7 +311,7 @@ std::vector<format_tools::index_format> format_tools::sort(std::vector<index_for
 	return sorted_format;
 }
 
-std::vector<format_tools::coordinate_format> format_tools::sort(std::vector<coordinate_format>& coordinate_colors)
+std::vector<format_tools::coordinate_format> format_tools::sort(std::vector<coordinate_format> coordinate_colors)
 {
 	std::vector<coordinate_format> sorted_format;
 	unsigned int length = coordinate_colors.size();

@@ -201,7 +201,7 @@ int frame::get_selection()
 			log.log_comment("select action");
 			widget_info item;
 			get_widget(selected_row, selected_column, selected_level, item);
-			if (std::count(selectable_widgets.begin(), selectable_widgets.end(), item.widget_type) != 0)
+			if (item.selectable)
 			{
 				selected_id = item.id;
 				log.log_comment("Selected row: " + std::to_string(selected_row) + " Selected column: " + std::to_string(selected_column) + " Selected level: " + std::to_string(selected_level));

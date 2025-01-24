@@ -175,7 +175,6 @@ private:
 	bool display_stale = true;
 	int last_screen_x_size_displayed = 0;
 	int last_screen_y_size_displayed = 0;
-	const std::vector<int> selectable_widgets = { MENU, BOARD, TEXTBOX };
 	std::vector<unsigned int> row_heights;
 	logger log;
 	char spacer_character = '-';
