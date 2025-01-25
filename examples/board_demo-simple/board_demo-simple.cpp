@@ -9,6 +9,8 @@ int main()
 {
 	ascii_io::ascii_engine_init();
 	frame* my_frame = new frame();
+	// uncomment below for line drawing
+	// my_frame->enable_dec(true);
 	label my_label(my_frame);
 	ascii_board my_board(my_frame, "board_configs/single_line_test_board_config.txt", "default", "new line");
 	menu my_menu(my_frame, "new line");

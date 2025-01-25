@@ -25,6 +25,7 @@ $(EXECUTABLE): $(OBJS)
 $(BLD_DIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+	cp -r board_configs/ build/
 
 clean:
 	-rm -r $(BLD_DIR)
