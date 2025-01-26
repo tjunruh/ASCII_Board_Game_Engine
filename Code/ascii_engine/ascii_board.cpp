@@ -237,7 +237,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 			}
 			else
 			{
-				action_tiles[action_tile_index].colors.clear();
+				action_tiles[action_tile_index].colors = format_tools::remove(action_tiles[action_tile_index].colors, configuration.colors);
 			}
 
 			sub_tile_configuration temp_sub_config;
@@ -348,7 +348,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 				}
 				else
 				{
-					action_tiles[i].colors.clear();
+					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 				}
 
 				sub_tile_configuration temp_sub_config;
@@ -457,7 +457,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 				}
 				else
 				{
-					action_tiles[i].colors.clear();
+					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 				}
 
 				sub_tile_configuration temp_sub_config;
@@ -551,7 +551,7 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, std::
 			}
 			else
 			{
-				action_tiles[i].colors.clear();
+				action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 			}
 
 			sub_tile_configuration temp_sub_config;

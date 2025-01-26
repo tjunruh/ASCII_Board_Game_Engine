@@ -114,6 +114,7 @@ namespace format_tools
 	FORMAT_TOOLS_API int calculate_flag_number(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API bool index_found(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API std::vector<index_format> combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2);
+	FORMAT_TOOLS_API std::vector<index_format> remove(std::vector<index_format> main_format, const std::vector<index_format>& removal_format);
 	FORMAT_TOOLS_API int get_min_format_index(const std::vector<index_format>& format_vec);
 	FORMAT_TOOLS_API int get_min_format_index(const std::vector<coordinate_format>& format_vec);
 	FORMAT_TOOLS_API std::vector<content_format> convert(std::vector<index_format> index_vec, const std::string& content);

@@ -866,6 +866,84 @@ TEST_F(format_tools_test, combine)
 	}
 }
 
+TEST_F(format_tools_test, remove)
+{
+	format_tools::common_format empty_format;
+
+	format_tools::common_format full_format;
+	full_format.background_format = format_tools::white;
+	full_format.foreground_format = format_tools::black;
+	full_format.dec = true;
+
+	std::vector<format_tools::index_format> index_vec1 = {
+		{0, empty_format, ' '},
+		{1, empty_format, ' '},
+		{2, empty_format, ' '},
+		{3, empty_format, ' '},
+		{4, empty_format, ' '},
+		{5, empty_format, ' '},
+		{6, empty_format, ' '},
+		{7, empty_format, ' '},
+		{8, empty_format, ' '},
+		{9, empty_format, ' '},
+		{10, empty_format, ' '},
+		{11, full_format, ' '},
+		{12, full_format, ' '},
+		{13, full_format, ' '},
+		{14, full_format, ' '},
+		{15, full_format, ' '},
+		{16, full_format, ' '},
+		{17, full_format, ' '},
+		{18, full_format, ' '},
+		{19, full_format, ' '},
+		{20, full_format, ' '},
+		{22, full_format, ' '},
+		{24, full_format, ' '},
+		{25, empty_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> index_vec2 = {
+		{15, full_format, ' '},
+		{14, full_format, ' '},
+		{13, full_format, ' '},
+		{12, full_format, ' '},
+		{11, full_format, ' '},
+		{24, full_format, ' '},
+		{22, full_format, ' '},
+		{20, full_format, ' '},
+		{19, full_format, ' '},
+		{18, full_format, ' '},
+		{17, full_format, ' '},
+		{16, full_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> correct_answer = {
+		{0, empty_format, ' '},
+		{1, empty_format, ' '},
+		{2, empty_format, ' '},
+		{3, empty_format, ' '},
+		{4, empty_format, ' '},
+		{5, empty_format, ' '},
+		{6, empty_format, ' '},
+		{7, empty_format, ' '},
+		{8, empty_format, ' '},
+		{9, empty_format, ' '},
+		{10, empty_format, ' '},
+		{25, empty_format, ' '},
+	};
+
+	std::vector<format_tools::index_format> stripped_vec = format_tools::remove(index_vec1, index_vec2);
+	ASSERT_EQ(stripped_vec.size(), correct_answer.size());
+	for (unsigned int i = 0; i < stripped_vec.size(); i++)
+	{
+		EXPECT_EQ(stripped_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
+		EXPECT_EQ(stripped_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
+		EXPECT_EQ(stripped_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(stripped_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
+		EXPECT_EQ(stripped_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
+	}
+}
+
 TEST_F(format_tools_test, get_min_format_index)
 {
 	format_tools::common_format empty_format;

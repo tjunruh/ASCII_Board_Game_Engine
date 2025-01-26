@@ -406,6 +406,28 @@ std::vector<format_tools::index_format> format_tools::combine(const std::vector<
 	return sorted_format;
 }
 
+std::vector<format_tools::index_format> format_tools::remove(std::vector<index_format> main_format, const std::vector<index_format>& removal_format)
+{
+	for (unsigned int i = 0; i < removal_format.size(); i++)
+	{
+		for (unsigned int j = 0; j < main_format.size(); j++)
+		{
+			bool index_same = (main_format[j].index == removal_format[i].index);
+			bool foreground_same = (main_format[j].format.foreground_format == removal_format[i].format.foreground_format);
+			bool background_same = (main_format[j].format.background_format == removal_format[i].format.background_format);
+			bool bold_same = (main_format[j].format.bold == removal_format[i].format.bold);
+			bool dec_same = (main_format[j].format.dec == removal_format[i].format.dec);
+			if (index_same && foreground_same && background_same && bold_same && dec_same)
+			{
+				main_format.erase(main_format.begin() + j);
+				break;
+			}
+		}
+	}
+
+	return main_format;
+}
+
 int format_tools::get_min_format_index(const std::vector<index_format>& format_vec)
 {
 	int min_vec_index = 0;
