@@ -3,7 +3,7 @@
 #include "widget_types.h"
 #include "error_codes.h"
 
-label::label(frame* parent, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
+label::label(frame* parent, const std::string& special_operation, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{

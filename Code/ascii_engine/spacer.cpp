@@ -3,7 +3,7 @@
 #include "logger.h"
 #include "error_codes.h"
 
-spacer::spacer(frame* parent, float multiplier, std::string special_operation, bool start_logging, std::string logging_file_path)
+spacer::spacer(frame* parent, float multiplier, const std::string& special_operation, bool start_logging, const std::string& logging_file_path)
 {
 	int id = parent->add_widget();
 	logger log;

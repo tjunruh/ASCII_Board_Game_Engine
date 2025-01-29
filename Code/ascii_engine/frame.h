@@ -23,7 +23,7 @@ class frame
 public:
 	friend class widget;
 	friend class spacer;
-	FRAME_API frame(bool start_logger=false, std::string logging_file_path="frame.log");
+	FRAME_API frame(bool start_logger=false, const std::string& logging_file_path="frame.log");
 	FRAME_API void display();
 	FRAME_API bool stale();
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
@@ -90,9 +90,9 @@ private:
 	const std::string special_operation_none = "none";
 	int add_widget();
 	int set_position(int id, int row, int column, int level);
-	int append(int id, std::string special_operation="none");
+	int append(int id, const std::string& special_operation="none");
 	int set_output(int id, const std::string& output);
-	int set_alignment(int id, std::string alignment);
+	int set_alignment(int id, const std::string& alignment);
 	int set_spacing(int id, int top, int bottom, int left, int right);
 	int set_border_spacing(int id, int top, int bottom, int left, int right);
 	int set_widget_type(int id, int type);

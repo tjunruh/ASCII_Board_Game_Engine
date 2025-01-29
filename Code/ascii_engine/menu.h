@@ -17,12 +17,12 @@
 class menu : public widget
 {
 public:
-	MENU_API menu(frame* parent, std::string special_operation="none", unsigned int lines_count=0, bool start_logging=false, std::string logging_file_path="menu.log");
-	MENU_API int append_item(std::string item);
-	MENU_API int remove_item(std::string item);
+	MENU_API menu(frame* parent, const std::string& special_operation="none", unsigned int lines_count=0, bool start_logging=false, const std::string& logging_file_path="menu.log");
+	MENU_API int append_item(const std::string& item);
+	MENU_API int remove_item(const std::string& item);
 	MENU_API void remove_all_items();
 	MENU_API void set_lines_count(unsigned int lines_count);
-	MENU_API int set_item_label(std::string item, const std::string& label);
+	MENU_API int set_item_label(const std::string& item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
 	MENU_API void set_cursor_line(unsigned int line);
@@ -63,7 +63,7 @@ private:
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
 	std::string build_output();
-	bool item_exists(std::string item);
+	bool item_exists(const std::string& item);
 	bool label_exists();
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
