@@ -146,68 +146,7 @@ void ascii_board::clear_column(int column)
 	log.log_status(status, "ascii_board::clear_column");
 }
 
-void ascii_board::set_tile(int row, int column, const std::string& value, char ignore_character)
-{
-	int status = UNDEFINED;
-	int action_tile_index = get_action_tile_index(row, column);
-	if (action_tile_index != -1)
-	{
-		if (value.length() == get_value_length(action_tiles[action_tile_index]))
-		{
-			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
-			{
-				if (((value[i] != ignore_character) || (ignore_character == '\0')))
-				{
-					(action_tiles[action_tile_index].value)[i] = value[i];
-				}
-			}
-			status = SUCCESS;
-		}
-		else
-		{
-			status = INVALID_LENGTH;
-		}
-	}
-	else
-	{
-		status = INVALID_INDEX;
-	}
-	
-	log.log_status(status, "ascii_board::set_tile");
-}
-
-void ascii_board::set_tile(int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)
-{
-	int status = UNDEFINED;
-	int action_tile_index = get_action_tile_index(row, column);
-	if (action_tile_index != -1)
-	{
-		if (value.length() == get_value_length(action_tiles[action_tile_index]))
-		{
-			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
-			{
-				if (((value[i] != ignore_character) || (ignore_character == '\0')))
-				{
-					(action_tiles[action_tile_index].value)[i] = value[i];
-				}
-			}
-			action_tiles[action_tile_index].colors = format_tools::combine(colors, action_tiles[action_tile_index].colors);
-			status = SUCCESS;
-		}
-		else
-		{
-			status = INVALID_LENGTH;
-		}
-	}
-	else
-	{
-		status = INVALID_INDEX;
-	}
-
-	log.log_status(status, "ascii_board::set_tile");
-}
-
-void ascii_board::set_tile(tile_configuration configuration, bool activate, const std::string& name_id)
+void ascii_board::set_tile(tile_configuration configuration, bool activate, std::string name_id)
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(configuration.row, configuration.column);
@@ -260,64 +199,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, cons
 	log.log_status(status, "ascii_board::set_tile");
 }
 
-void ascii_board::set_row(int row, const std::string& value, char ignore_character)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_row == row)
-		{
-			status = SUCCESS;
-			if (get_value_length(action_tiles[i]) == value.length())
-			{
-				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-				{
-					if (((value[j] != ignore_character) || (ignore_character == '\0')))
-					{
-						(action_tiles[i].value)[j] = value[j];
-					}
-				}
-			}
-			else
-			{
-				log.log_status(INVALID_LENGTH, "ascii_board::set_row");
-			}
-		}
-	}
-	
-	log.log_status(status, "ascii_board::set_row");
-}
-
-void ascii_board::set_row(int row, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_row == row)
-		{
-			status = SUCCESS;
-			if (get_value_length(action_tiles[i]) == value.length())
-			{
-				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-				{
-					if (((value[j] != ignore_character) || (ignore_character == '\0')))
-					{
-						(action_tiles[i].value)[j] = value[j];
-					}
-				}
-				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
-			}
-			else
-			{
-				log.log_status(INVALID_LENGTH, "ascii_board::set_row");
-			}
-		}
-	}
-
-	log.log_status(status, "ascii_board::set_row");
-}
-
-void ascii_board::set_row(tile_configuration configuration, bool activate, const std::string& name_id)
+void ascii_board::set_row(tile_configuration configuration, bool activate, std::string name_id)
 {
 	int status = INVALID_INDEX;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -368,64 +250,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, const
 	log.log_status(status, "ascii_board::set_row");
 }
 
-void ascii_board::set_column(int column, const std::string& value, char ignore_character)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_column == column)
-		{
-			status = SUCCESS;
-			if (get_value_length(action_tiles[i]) == value.length())
-			{
-				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-				{
-					if (((value[j] != ignore_character) || (ignore_character == '\0')))
-					{
-						(action_tiles[i].value)[j] = value[j];
-					}
-				}
-			}
-			else
-			{
-				log.log_status(INVALID_LENGTH, "ascii_board::set_column");
-			}
-		}
-	}
-	
-	log.log_status(status, "ascii_board::set_column");
-}
-
-void ascii_board::set_column(int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_column == column)
-		{
-			status = SUCCESS;
-			if (get_value_length(action_tiles[i]) == value.length())
-			{
-				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-				{
-					if (((value[j] != ignore_character) || (ignore_character == '\0')))
-					{
-						(action_tiles[i].value)[j] = value[j];
-					}
-				}
-				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
-			}
-			else
-			{
-				log.log_status(INVALID_LENGTH, "ascii_board::set_column");
-			}
-		}
-	}
-
-	log.log_status(status, "ascii_board::set_column");
-}
-
-void ascii_board::set_column(tile_configuration configuration, bool activate, const std::string& name_id)
+void ascii_board::set_column(tile_configuration configuration, bool activate, std::string name_id)
 {
 	int status = INVALID_INDEX;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -453,7 +278,6 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, co
 				if (activate)
 				{
 					action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
-					
 				}
 				else
 				{
@@ -477,54 +301,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, co
 	log.log_status(status, "ascii_board::set_column");
 }
 
-void ascii_board::set_all(const std::string& value, char ignore_character)
-{
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (get_value_length(action_tiles[i]) == value.length())
-		{
-			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-			{
-				if ((value[j] != ignore_character) || (ignore_character == '\0'))
-				{
-					(action_tiles[i].value)[j] = value[j];
-				}
-			}
-		}
-		else
-		{
-			log.log_status(INVALID_INDEX, "ascii_board::set_all");
-		}
-	}
-	
-	log.log_status(SUCCESS, "ascii_board::set_all");
-}
-
-void ascii_board::set_all(const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)
-{
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (get_value_length(action_tiles[i]) == value.length())
-		{
-			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
-			{
-				if ((value[j] != ignore_character) || (ignore_character == '\0'))
-				{
-					(action_tiles[i].value)[j] = value[j];
-				}
-				action_tiles[i].colors = format_tools::combine(colors, action_tiles[i].colors);
-			}
-		}
-		else
-		{
-			log.log_status(INVALID_INDEX, "ascii_board::set_all");
-		}
-	}
-
-	log.log_status(SUCCESS, "ascii_board::set_all");
-}
-
-void ascii_board::set_all(tile_configuration configuration, bool activate, const std::string& name_id)
+void ascii_board::set_all(tile_configuration configuration, bool activate, std::string name_id)
 {
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
@@ -568,24 +345,6 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, const
 	}
 	
 	log.log_status(SUCCESS, "ascii_board::set_all");
-}
-
-void ascii_board::set_tile_character(int row, int column, char character, unsigned int character_index)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if ((action_tiles[i].array_row == row) && (action_tiles[i].array_column == column))
-		{
-			if ((character_index >= 0) && (character_index < get_value_length(action_tiles[i])))
-			{
-				(action_tiles[i].value)[character_index] = character;
-				status = SUCCESS;
-			}
-		}
-	}
-	
-	log.log_status(status, "ascii_board::set_tile_character");
 }
 
 std::string ascii_board::get_tile(int row, int column)
