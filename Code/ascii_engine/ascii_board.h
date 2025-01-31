@@ -81,15 +81,6 @@ public:
 	ASCII_BOARD_API void clear_row(int row);
 	ASCII_BOARD_API void clear_column(int column);
 	ASCII_BOARD_API void clear_all();
-	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character);
-	ASCII_BOARD_API void set_tile(int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void set_row(int row, std::string value, char ignore_character);
-	ASCII_BOARD_API void set_row(int row, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void set_column(int column, std::string value, char ignore_character);
-	ASCII_BOARD_API void set_column(int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void set_all(std::string value, char ignore_character);
-	ASCII_BOARD_API void set_all(std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void set_tile_character(int row, int column, char character, unsigned int character_index);
 	ASCII_BOARD_API std::string get_tile(int row, int column);
 	ASCII_BOARD_API char get_tile_character(int row, int column, unsigned int character_index);
 	ASCII_BOARD_API std::string get_board();
