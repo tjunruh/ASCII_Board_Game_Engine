@@ -137,7 +137,7 @@ private:
 	void set_column(tile_configuration configuration, bool activate, const std::string& name_id = "");
 	void set_all(tile_configuration configuration, bool activate, const std::string& name_id = "");
 	std::string fill_default_value_with_ignore_character(std::string config_value, std::string default_value, char ignore_character);
-	void trim_activated_configs(std::vector<sub_tile_configuration>& activated_configurations, const std::string& tile_value);
+	void trim_action_tile(action_tile& tile);
 	bool configuration_activated(std::vector <sub_tile_configuration> activated_configurations, std::string name_id);
 	int validate_translation(std::vector<action_tile_skeleton> action_tile_skeletons);
 	std::string remove_configuration_format_characters(std::string content, char format_character);
