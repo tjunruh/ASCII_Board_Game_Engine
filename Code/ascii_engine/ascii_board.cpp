@@ -173,18 +173,18 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 			if (activate)
 			{
 				action_tiles[action_tile_index].colors = format_tools::combine(configuration.colors, action_tiles[action_tile_index].colors);
+				sub_tile_configuration temp_sub_config;
+				temp_sub_config.name_id = name_id;
+				temp_sub_config.value = configuration.value;
+				temp_sub_config.ignore_character = configuration.ignore_character;
+				action_tiles[action_tile_index].activated_configs.push_back(temp_sub_config);
 			}
 			else
 			{
 				action_tiles[action_tile_index].colors = format_tools::remove(action_tiles[action_tile_index].colors, configuration.colors);
 			}
 
-			sub_tile_configuration temp_sub_config;
-			temp_sub_config.name_id = name_id;
-			temp_sub_config.value = configuration.value;
-			temp_sub_config.ignore_character = configuration.ignore_character;
-			action_tiles[action_tile_index].activated_configs.push_back(temp_sub_config);
-			trim_activated_configs(action_tiles[action_tile_index].activated_configs, action_tiles[action_tile_index].value);
+			trim_action_tile(action_tiles[action_tile_index]);
 		}
 		else
 		{
@@ -227,18 +227,18 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 				if (activate)
 				{
 					action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
+					sub_tile_configuration temp_sub_config;
+					temp_sub_config.name_id = name_id;
+					temp_sub_config.value = configuration.value;
+					temp_sub_config.ignore_character = configuration.ignore_character;
+					action_tiles[i].activated_configs.push_back(temp_sub_config);
 				}
 				else
 				{
 					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 				}
 
-				sub_tile_configuration temp_sub_config;
-				temp_sub_config.name_id = name_id;
-				temp_sub_config.value = configuration.value;
-				temp_sub_config.ignore_character = configuration.ignore_character;
-				action_tiles[i].activated_configs.push_back(temp_sub_config);
-				trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
+				trim_action_tile(action_tiles[i]);
 			}
 			else
 			{
@@ -278,18 +278,18 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 				if (activate)
 				{
 					action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
+					sub_tile_configuration temp_sub_config;
+					temp_sub_config.name_id = name_id;
+					temp_sub_config.value = configuration.value;
+					temp_sub_config.ignore_character = configuration.ignore_character;
+					action_tiles[i].activated_configs.push_back(temp_sub_config);
 				}
 				else
 				{
 					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 				}
 
-				sub_tile_configuration temp_sub_config;
-				temp_sub_config.name_id = name_id;
-				temp_sub_config.value = configuration.value;
-				temp_sub_config.ignore_character = configuration.ignore_character;
-				action_tiles[i].activated_configs.push_back(temp_sub_config);
-				trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
+				trim_action_tile(action_tiles[i]);
 			}
 			else
 			{
@@ -325,18 +325,18 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, std::
 			if (activate)
 			{
 				action_tiles[i].colors = format_tools::combine(configuration.colors, action_tiles[i].colors);
+				sub_tile_configuration temp_sub_config;
+				temp_sub_config.name_id = name_id;
+				temp_sub_config.value = configuration.value;
+				temp_sub_config.ignore_character = configuration.ignore_character;
+				action_tiles[i].activated_configs.push_back(temp_sub_config);
 			}
 			else
 			{
 				action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
 			}
 
-			sub_tile_configuration temp_sub_config;
-			temp_sub_config.name_id = name_id;
-			temp_sub_config.value = configuration.value;
-			temp_sub_config.ignore_character = configuration.ignore_character;
-			action_tiles[i].activated_configs.push_back(temp_sub_config);
-			trim_activated_configs(action_tiles[i].activated_configs, action_tiles[i].value);
+			trim_action_tile(action_tiles[i]);
 		}
 		else
 		{
@@ -1414,24 +1414,35 @@ std::string ascii_board::fill_default_value_with_ignore_character(std::string co
 	return default_value;
 }
 
-void ascii_board::trim_activated_configs(std::vector<sub_tile_configuration>& activated_configurations, std::string tile_value)
+void ascii_board::trim_action_tile(action_tile& tile)
 {
-	for (int i = (activated_configurations.size() - 1); i >= 0; i--)
+	for (int i = (tile.activated_configs.size() - 1); i >= 0; i--)
 	{
-		if (activated_configurations[i].value.length() == tile_value.length())
+		if (tile.activated_configs[i].value.length() == tile.value.length())
 		{
-			for (unsigned int j = 0; j < tile_value.length(); j++)
+			for (unsigned int j = 0; j < tile.value.length(); j++)
 			{
-				if ((activated_configurations[i].value[j] != activated_configurations[i].ignore_character) && (activated_configurations[i].value[j] != tile_value[j]))
+				if ((tile.activated_configs[i].value[j] != tile.activated_configs[i].ignore_character) && (tile.activated_configs[i].value[j] != tile.value[j]))
 				{
-					activated_configurations.erase(activated_configurations.begin() + i);
+					int board_config_index = get_board_config_index(tile.activated_configs[i].name_id);
+					int tile_config_index = get_tile_config_index(tile.activated_configs[i].name_id, tile.array_row, tile.array_column);
+					if (tile_config_index != -1 && board_config_index != -1)
+					{
+						tile.colors = format_tools::remove(tile.colors, board_configurations[board_config_index].tile_configurations[tile_config_index].colors);
+					}
+					else
+					{
+						log.log_comment("ascii_board::trim_action_tile: Failed to find tile config colors to trim");
+					}
+					
+					tile.activated_configs.erase(tile.activated_configs.begin() + i);
 					break;
 				}
 			}
 		}
 		else
 		{
-			log.log_comment("ascii_board::trim_activated_config: " + activated_configurations[i].value + " is not the same length as " + tile_value);
+			log.log_comment("ascii_board::trim_action_tile: " + tile.activated_configs[i].value + " is not the same length as " + tile.value);
 		}
 		
 	}
