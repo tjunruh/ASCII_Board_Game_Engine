@@ -406,26 +406,47 @@ std::vector<format_tools::index_format> format_tools::combine(const std::vector<
 	return sorted_format;
 }
 
-std::vector<format_tools::index_format> format_tools::remove(std::vector<index_format> main_format, const std::vector<index_format>& removal_format)
+bool format_tools::present(const std::vector<index_format>& main_format, const std::vector<index_format>& check_format)
 {
-	for (unsigned int i = 0; i < removal_format.size(); i++)
+	bool present = true;
+	for (unsigned int i = 0; i < check_format.size(); i++)
 	{
+		present = false;
 		for (unsigned int j = 0; j < main_format.size(); j++)
 		{
-			bool index_same = (main_format[j].index == removal_format[i].index);
-			bool foreground_same = (main_format[j].format.foreground_format == removal_format[i].format.foreground_format);
-			bool background_same = (main_format[j].format.background_format == removal_format[i].format.background_format);
-			bool bold_same = (main_format[j].format.bold == removal_format[i].format.bold);
-			bool dec_same = (main_format[j].format.dec == removal_format[i].format.dec);
-			if (index_same && foreground_same && background_same && bold_same && dec_same)
+			bool index_same = (main_format[j].index == check_format[i].index);
+			bool foreground_same = true;
+			bool background_same = true;
+			bool bold_same = true;
+			if (check_format[i].format.foreground_format != none)
 			{
-				main_format.erase(main_format.begin() + j);
+				foreground_same = (main_format[j].format.foreground_format == check_format[i].format.foreground_format);
+			}
+
+			if (check_format[i].format.background_format != none)
+			{
+				background_same = (main_format[j].format.background_format == check_format[i].format.background_format);
+			}
+
+			if (check_format[i].format.bold)
+			{
+				bold_same = (main_format[j].format.bold == check_format[i].format.bold);
+			}
+
+			if (index_same && foreground_same && background_same && bold_same)
+			{
+				present = true;
 				break;
 			}
 		}
+
+		if (!present)
+		{
+			break;
+		}
 	}
 
-	return main_format;
+	return present;
 }
 
 int format_tools::get_min_format_index(const std::vector<index_format>& format_vec)
@@ -791,5 +812,37 @@ std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vec
 		}
 	}
 	
+	return colors;
+}
+
+std::vector<format_tools::index_format> format_tools::build_color_for_value(std::string value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces)
+{
+	index_format color_struct;
+	index_format empty_struct;
+
+	color_struct.format.foreground_format = foreground_format;
+	color_struct.format.background_format = background_format;
+	color_struct.format.bold = bold;
+
+	bool coloring = false;
+
+	std::vector<index_format> colors;
+
+	for (unsigned int i = 0; i < value.length(); i++)
+	{
+		if (((value[i] != ignore_character) && ((value[i] != ' ') || include_spaces)) && !coloring)
+		{
+			color_struct.index = i;
+			colors.push_back(color_struct);
+			coloring = true;
+		}
+		else if (((value[i] == ignore_character) || ((value[i] == ' ') && !include_spaces)) && coloring)
+		{
+			empty_struct.index = i;
+			colors.push_back(empty_struct);
+			coloring = false;
+		}
+	}
+
 	return colors;
 }

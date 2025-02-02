@@ -866,14 +866,24 @@ TEST_F(format_tools_test, combine)
 	}
 }
 
-TEST_F(format_tools_test, remove)
+TEST_F(format_tools_test, present)
 {
 	format_tools::common_format empty_format;
 
 	format_tools::common_format full_format;
 	full_format.background_format = format_tools::white;
 	full_format.foreground_format = format_tools::black;
-	full_format.dec = true;
+	full_format.bold = true;
+
+	format_tools::common_format foreground_format;
+	foreground_format.foreground_format = format_tools::black;
+
+	format_tools::common_format background_format;
+	background_format.background_format = format_tools::white;
+
+	format_tools::common_format bold_format;
+	bold_format.bold = true;
+
 
 	std::vector<format_tools::index_format> index_vec1 = {
 		{0, empty_format, ' '},
@@ -903,7 +913,7 @@ TEST_F(format_tools_test, remove)
 	};
 
 	std::vector<format_tools::index_format> index_vec2 = {
-		{15, full_format, ' '},
+		{16, full_format, ' '},
 		{14, full_format, ' '},
 		{13, full_format, ' '},
 		{12, full_format, ' '},
@@ -917,7 +927,7 @@ TEST_F(format_tools_test, remove)
 		{16, full_format, ' '}
 	};
 
-	std::vector<format_tools::index_format> correct_answer = {
+	std::vector<format_tools::index_format> index_vec3 = {
 		{0, empty_format, ' '},
 		{1, empty_format, ' '},
 		{2, empty_format, ' '},
@@ -929,19 +939,30 @@ TEST_F(format_tools_test, remove)
 		{8, empty_format, ' '},
 		{9, empty_format, ' '},
 		{10, empty_format, ' '},
-		{25, empty_format, ' '},
+		{21, empty_format, ' '},
 	};
 
-	std::vector<format_tools::index_format> stripped_vec = format_tools::remove(index_vec1, index_vec2);
-	ASSERT_EQ(stripped_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < stripped_vec.size(); i++)
-	{
-		EXPECT_EQ(stripped_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(stripped_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
-		EXPECT_EQ(stripped_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(stripped_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(stripped_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	std::vector<format_tools::index_format> index_vec4 = {
+		{0, full_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> index_vec5 = {
+		{0, foreground_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> index_vec6 = {
+		{0, background_format, ' '}
+	};
+
+	std::vector<format_tools::index_format> index_vec7 = {
+		{0, bold_format, ' '}
+	};
+
+	EXPECT_EQ(true, format_tools::present(index_vec1, index_vec2));
+	EXPECT_EQ(false, format_tools::present(index_vec1, index_vec3));
+	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec5));
+	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec6));
+	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec7));
 }
 
 TEST_F(format_tools_test, get_min_format_index)
