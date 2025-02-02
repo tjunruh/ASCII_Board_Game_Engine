@@ -181,10 +181,13 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 			}
 			else
 			{
-				action_tiles[action_tile_index].colors = format_tools::remove(action_tiles[action_tile_index].colors, configuration.colors);
+				remove_activated_config(action_tiles[action_tile_index].activated_configs, name_id);
 			}
 
-			trim_action_tile(action_tiles[action_tile_index]);
+			if (trim_activated_configs(action_tiles[action_tile_index]) || !activate)
+			{
+				refresh_action_tile_colors(action_tiles[action_tile_index]);
+			}
 		}
 		else
 		{
@@ -235,10 +238,13 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 				}
 				else
 				{
-					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
+					remove_activated_config(action_tiles[i].activated_configs, name_id);
 				}
 
-				trim_action_tile(action_tiles[i]);
+				if (trim_activated_configs(action_tiles[i]) || !activate)
+				{
+					refresh_action_tile_colors(action_tiles[i]);
+				}
 			}
 			else
 			{
@@ -286,10 +292,13 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 				}
 				else
 				{
-					action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
+					remove_activated_config(action_tiles[i].activated_configs, name_id);
 				}
 
-				trim_action_tile(action_tiles[i]);
+				if (trim_activated_configs(action_tiles[i]) || !activate)
+				{
+					refresh_action_tile_colors(action_tiles[i]);
+				}
 			}
 			else
 			{
@@ -333,10 +342,13 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, std::
 			}
 			else
 			{
-				action_tiles[i].colors = format_tools::remove(action_tiles[i].colors, configuration.colors);
+				remove_activated_config(action_tiles[i].activated_configs, name_id);
 			}
 
-			trim_action_tile(action_tiles[i]);
+			if (trim_activated_configs(action_tiles[i]) || !activate)
+			{
+				refresh_action_tile_colors(action_tiles[i]);
+			}
 		}
 		else
 		{
@@ -543,19 +555,19 @@ void ascii_board::deactivate_configuration(std::string name_id, int row, int col
 		temp_tile_config.column = column;
 		if ((row != -1) && (column != -1))
 		{
-			set_tile(temp_tile_config, false);
+			set_tile(temp_tile_config, false, name_id);
 		}
 		else if ((row == -1) && (column == -1))
 		{
-			set_all(temp_tile_config, false);
+			set_all(temp_tile_config, false, name_id);
 		}
 		else if (column == -1)
 		{
-			set_row(temp_tile_config, false);
+			set_row(temp_tile_config, false, name_id);
 		}
 		else if (row == -1)
 		{
-			set_column(temp_tile_config, false);
+			set_column(temp_tile_config, false, name_id);
 		}
 	}
 	else if (config_index == -1)
@@ -580,19 +592,19 @@ void ascii_board::deactivate_configuration(std::string name_id)
 		{
 			if ((board_configurations[config_index].tile_configurations[i].row != -1) && (board_configurations[config_index].tile_configurations[i].column != -1))
 			{
-				set_tile(board_configurations[config_index].tile_configurations[i], false);
+				set_tile(board_configurations[config_index].tile_configurations[i], false, name_id);
 			}
 			else if ((board_configurations[config_index].tile_configurations[i].row == -1) && (board_configurations[config_index].tile_configurations[i].column == -1))
 			{
-				set_all(board_configurations[config_index].tile_configurations[i], false);
+				set_all(board_configurations[config_index].tile_configurations[i], false, name_id);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].column == -1)
 			{
-				set_row(board_configurations[config_index].tile_configurations[i], false);
+				set_row(board_configurations[config_index].tile_configurations[i], false, name_id);
 			}
 			else if (board_configurations[config_index].tile_configurations[i].row == -1)
 			{
-				set_column(board_configurations[config_index].tile_configurations[i], false);
+				set_column(board_configurations[config_index].tile_configurations[i], false, name_id);
 			}
 		}
 	}
@@ -1414,37 +1426,79 @@ std::string ascii_board::fill_default_value_with_ignore_character(std::string co
 	return default_value;
 }
 
-void ascii_board::trim_action_tile(action_tile& tile)
+void ascii_board::remove_activated_config(std::vector<sub_tile_configuration>& activated_configs, std::string name_id)
 {
+	for (unsigned int i = 0; i < activated_configs.size(); i++)
+	{
+		if (name_id == activated_configs[i].name_id)
+		{
+			activated_configs.erase(activated_configs.begin() + i);
+			break;
+		}
+	}
+}
+
+bool ascii_board::trim_activated_configs(action_tile& tile)
+{
+	bool trimmed = false;
 	for (int i = (tile.activated_configs.size() - 1); i >= 0; i--)
 	{
 		if (tile.activated_configs[i].value.length() == tile.value.length())
 		{
+			bool trimmed_by_value = false;
 			for (unsigned int j = 0; j < tile.value.length(); j++)
 			{
 				if ((tile.activated_configs[i].value[j] != tile.activated_configs[i].ignore_character) && (tile.activated_configs[i].value[j] != tile.value[j]))
 				{
-					int board_config_index = get_board_config_index(tile.activated_configs[i].name_id);
-					int tile_config_index = get_tile_config_index(tile.activated_configs[i].name_id, tile.array_row, tile.array_column);
-					if (tile_config_index != -1 && board_config_index != -1)
-					{
-						tile.colors = format_tools::remove(tile.colors, board_configurations[board_config_index].tile_configurations[tile_config_index].colors);
-					}
-					else
-					{
-						log.log_comment("ascii_board::trim_action_tile: Failed to find tile config colors to trim");
-					}
-					
 					tile.activated_configs.erase(tile.activated_configs.begin() + i);
+					trimmed = true;
+					trimmed_by_value = true;
 					break;
+				}
+			}
+
+			if (!trimmed_by_value)
+			{
+				int board_config_index = get_board_config_index(tile.activated_configs[i].name_id);
+				int tile_config_index = get_tile_config_index(tile.activated_configs[i].name_id, tile.array_row, tile.array_column);
+				if (board_config_index != -1 && tile_config_index != -1)
+				{
+					if (!format_tools::present(tile.colors, board_configurations[board_config_index].tile_configurations[tile_config_index].colors))
+					{
+						tile.activated_configs.erase(tile.activated_configs.begin() + i);
+						trimmed = true;
+					}
+				}
+				else
+				{
+					log.log_comment("ascii_board::trim_activated_config: Failed to retrieve board or tile config index");
 				}
 			}
 		}
 		else
 		{
-			log.log_comment("ascii_board::trim_action_tile: " + tile.activated_configs[i].value + " is not the same length as " + tile.value);
+			log.log_comment("ascii_board::trim_activated_config: " + tile.activated_configs[i].value + " is not the same length as " + tile.value);
 		}
-		
+	}
+
+	return trimmed;
+}
+
+void ascii_board::refresh_action_tile_colors(action_tile& tile)
+{
+	tile.colors.clear();
+	for (unsigned int i = 0; i < tile.activated_configs.size(); i++)
+	{
+		int board_config_index = get_board_config_index(tile.activated_configs[i].name_id);
+		int tile_config_index = get_tile_config_index(tile.activated_configs[i].name_id, tile.array_row, tile.array_column);
+		if (board_config_index != -1 && tile_config_index != -1)
+		{
+			tile.colors = format_tools::combine(tile.colors, board_configurations[board_config_index].tile_configurations[tile_config_index].colors);
+		}
+		else
+		{
+			log.log_comment("ascii_board::refresh_action_tile_colors: Failed to fetch board config index or tile config index");
+		}
 	}
 }
 
