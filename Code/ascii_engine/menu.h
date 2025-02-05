@@ -21,7 +21,7 @@ public:
 	MENU_API int append_item(const std::string& item);
 	MENU_API int remove_item(const std::string& item);
 	MENU_API void remove_all_items();
-	MENU_API void set_lines_count(unsigned int lines_count);
+	MENU_API void set_lines_count(int lines_count);
 	MENU_API int set_item_label(const std::string& item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
