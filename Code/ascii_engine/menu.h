@@ -17,7 +17,7 @@
 class menu : public widget
 {
 public:
-	MENU_API menu(frame* parent, const std::string& special_operation="none", unsigned int lines_count=0, bool start_logging=false, const std::string& logging_file_path="menu.log");
+	MENU_API menu(frame* parent, const std::string& special_operation="none", int lines_count=0, bool start_logging=false, const std::string& logging_file_path="menu.log");
 	MENU_API int append_item(const std::string& item);
 	MENU_API int remove_item(const std::string& item);
 	MENU_API void remove_all_items();
@@ -56,6 +56,7 @@ private:
 	bool quit_enabled = false;
 	bool no_lines_constraint = false;
 	unsigned int displayed_lines = 0;
+	int line_subtraction_from_terminal_height = 0;
 	unsigned int top_line = 0;
 	bool _separate_items = false;
 	char _horizontal_char = '-';
@@ -68,4 +69,5 @@ private:
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
 	unsigned int get_stop_line();
+	unsigned int dynamic_displayed_line_adjustment(int line_subtraction);
 };

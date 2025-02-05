@@ -8,7 +8,8 @@
 #include <algorithm>
 #endif
 
-menu::menu(frame* parent, const std::string& special_operation, unsigned int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+menu::menu(frame* parent, const std::string& special_operation, int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+
 {
 	if (start_logging)
 	{
@@ -24,7 +25,16 @@ menu::menu(frame* parent, const std::string& special_operation, unsigned int lin
 	selectable();
 	if (lines_count != 0)
 	{
-		displayed_lines = lines_count;
+		if (lines_count > 0)
+		{
+			displayed_lines = lines_count;
+			line_subtraction_from_terminal_height = 0;
+		}
+		else if (lines_count < 0)
+		{
+			line_subtraction_from_terminal_height = lines_count;
+			displayed_lines = dynamic_displayed_line_adjustment(line_subtraction_from_terminal_height);
+		}
 	}
 	else
 	{
@@ -98,9 +108,8 @@ int menu::remove_item(const std::string& item)
 	return status;
 }
 
-void menu::set_lines_count(unsigned int lines_count)
+void menu::set_lines_count(int lines_count)
 {
-	displayed_lines = lines_count;
 	if (lines_count == 0)
 	{
 		no_lines_constraint = true;
@@ -109,6 +118,16 @@ void menu::set_lines_count(unsigned int lines_count)
 	}
 	else
 	{
+		if (lines_count > 0)
+		{
+			displayed_lines = lines_count;
+			line_subtraction_from_terminal_height = 0;
+		}
+		else if (lines_count < 0)
+		{
+			line_subtraction_from_terminal_height = lines_count;
+			displayed_lines = dynamic_displayed_line_adjustment(line_subtraction_from_terminal_height);
+		}
 		no_lines_constraint = false;
 
 		if ((menu_items.size() - top_line) < displayed_lines)
@@ -437,6 +456,10 @@ void menu::display()
 {
 	if (frame_stale())
 	{
+		if (line_subtraction_from_terminal_height != 0)
+		{
+			displayed_lines = dynamic_displayed_line_adjustment(line_subtraction_from_terminal_height);
+		}
 		sync();
 		frame_display();
 	}
@@ -572,4 +595,22 @@ unsigned int menu::get_stop_line()
 	}
 
 	return stop_line;
+}
+
+unsigned int menu::dynamic_displayed_line_adjustment(int line_subtraction)
+{
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	unsigned int lines = 0;
+	if ((y + line_subtraction) > 0)
+	{
+		lines = (unsigned int)(y + line_subtraction);
+	}
+	else
+	{
+		lines = 1;
+	}
+
+	return lines;
 }
