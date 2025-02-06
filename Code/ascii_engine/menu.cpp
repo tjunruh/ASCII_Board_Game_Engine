@@ -129,6 +129,11 @@ void menu::set_lines_count(int lines_count)
 		}
 		no_lines_constraint = false;
 
+		if (_separate_items)
+		{
+			displayed_lines = (displayed_lines / 2) - 1;
+		}
+
 		if ((menu_items.size() - top_line) < displayed_lines)
 		{
 			if ((int)(menu_items.size() - displayed_lines) >= 0)
@@ -458,6 +463,20 @@ void menu::display()
 		if (line_subtraction_from_terminal_height != 0)
 		{
 			displayed_lines = dynamic_displayed_line_adjustment(line_subtraction_from_terminal_height);
+			if (_separate_items)
+			{
+				displayed_lines = (displayed_lines / 2) - 1;
+			}
+
+			if (((menu_items.size() - displayed_lines) > 0) && (top_line > (menu_items.size() - displayed_lines)))
+			{
+				top_line = menu_items.size() - displayed_lines;
+			}
+
+			if (cursor_line >= (top_line + displayed_lines))
+			{
+				cursor_line = top_line + displayed_lines - 1;
+			}
 		}
 		sync();
 		frame_display();
@@ -538,6 +557,17 @@ void menu::sync()
 
 void menu::separate_items(bool separate)
 {
+	if (separate != _separate_items)
+	{
+		if (_separate_items)
+		{
+			displayed_lines = (displayed_lines / 2) - 1;
+		}
+		else if (!_separate_items)
+		{
+			displayed_lines = (displayed_lines * 2) + 1;
+		}
+	}
 	_separate_items = separate;
 }
 
