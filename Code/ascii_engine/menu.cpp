@@ -8,7 +8,8 @@
 #include <algorithm>
 #endif
 
-menu::menu(frame* parent, std::string special_operation, int lines_count, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
+menu::menu(frame* parent, const std::string& special_operation, int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+
 {
 	if (start_logging)
 	{
@@ -42,7 +43,7 @@ menu::menu(frame* parent, std::string special_operation, int lines_count, bool s
 
 }
 
-int menu::append_item(std::string item)
+int menu::append_item(const std::string& item)
 {
 	int status = DUPLICATE_ELEMENT;
 	if (!item_exists(item))
@@ -60,7 +61,7 @@ int menu::append_item(std::string item)
 	return status;
 }
 
-int menu::remove_item(std::string item)
+int menu::remove_item(const std::string& item)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
@@ -173,7 +174,7 @@ void menu::remove_all_items()
 	}
 }
 
-int menu::set_item_label(std::string item, const std::string& label)
+int menu::set_item_label(const std::string& item, const std::string& label)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
@@ -237,7 +238,7 @@ unsigned int menu::get_cursor_line()
 	return cursor_line;
 }
 
-bool menu::item_exists(std::string item)
+bool menu::item_exists(const std::string& item)
 {
 	bool exists = false;
 	for (unsigned int i = 0; i < menu_items.size(); i++)

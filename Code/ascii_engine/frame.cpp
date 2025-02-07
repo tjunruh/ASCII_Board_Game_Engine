@@ -7,7 +7,7 @@
 #include <algorithm>
 #endif
 
-frame::frame(bool start_logger, std::string logging_file_path)
+frame::frame(bool start_logger, const std::string& logging_file_path)
 {
 	if (start_logger)
 	{
@@ -441,7 +441,7 @@ int frame::add_widget()
 	return id;
 }
 
-int frame::append(int id, std::string special_operation)
+int frame::append(int id, const std::string& special_operation)
 {
 	if (special_operation == special_operation_new_line)
 	{
@@ -501,7 +501,7 @@ int frame::set_output(int id, const std::string& output)
 	return status;
 }
 
-int frame::set_alignment(int id, std::string alignment)
+int frame::set_alignment(int id, const std::string& alignment)
 {
 	if ((alignment != format_tools::right_alignment_keyword) && (alignment != format_tools::left_alignment_keyword) && (alignment != format_tools::center_alignment_keyword) && (alignment != format_tools::center_block_alignment_keyword))
 	{

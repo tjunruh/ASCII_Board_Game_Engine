@@ -10,7 +10,7 @@
 #include <algorithm>
 #endif
 
-ascii_board::ascii_board(frame* parent, std::string path, std::string name_id, std::string special_operation, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
+ascii_board::ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -146,7 +146,7 @@ void ascii_board::clear_column(int column)
 	log.log_status(status, "ascii_board::clear_column");
 }
 
-void ascii_board::set_tile(tile_configuration configuration, bool activate, std::string name_id)
+void ascii_board::set_tile(tile_configuration configuration, bool activate, const std::string& name_id)
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(configuration.row, configuration.column);
@@ -202,7 +202,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, std:
 	log.log_status(status, "ascii_board::set_tile");
 }
 
-void ascii_board::set_row(tile_configuration configuration, bool activate, std::string name_id)
+void ascii_board::set_row(tile_configuration configuration, bool activate, const std::string& name_id)
 {
 	int status = INVALID_INDEX;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -256,7 +256,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, std::
 	log.log_status(status, "ascii_board::set_row");
 }
 
-void ascii_board::set_column(tile_configuration configuration, bool activate, std::string name_id)
+void ascii_board::set_column(tile_configuration configuration, bool activate, const std::string& name_id)
 {
 	int status = INVALID_INDEX;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
@@ -310,7 +310,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, st
 	log.log_status(status, "ascii_board::set_column");
 }
 
-void ascii_board::set_all(tile_configuration configuration, bool activate, std::string name_id)
+void ascii_board::set_all(tile_configuration configuration, bool activate, const std::string& name_id)
 {
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
@@ -439,7 +439,7 @@ void ascii_board::add_configuration(board_configuration configuration)
 	log.log_status(status, "ascii_board::add_configuration");
 }
 
-void ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character)
+void ascii_board::add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character)
 {
 	board_configuration board_config;
 	tile_configuration tile_config;
@@ -452,7 +452,7 @@ void ascii_board::add_configuration(std::string name_id, int row, int column, st
 	add_configuration(board_config);
 }
 
-void ascii_board::add_configuration(std::string name_id, int row, int column, std::string value, char ignore_character, const std::vector<format_tools::index_format>& colors)
+void ascii_board::add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)
 {
 	board_configuration board_config;
 	tile_configuration tile_config;
@@ -466,7 +466,7 @@ void ascii_board::add_configuration(std::string name_id, int row, int column, st
 	add_configuration(board_config);
 }
 
-void ascii_board::activate_configuration(std::string name_id, int row, int column)
+void ascii_board::activate_configuration(const std::string& name_id, int row, int column)
 {
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
@@ -506,7 +506,7 @@ void ascii_board::activate_configuration(std::string name_id, int row, int colum
 	log.log_end("ascii_board::activate_configuration");
 }
 
-void ascii_board::activate_configuration(std::string name_id)
+void ascii_board::activate_configuration(const std::string& name_id)
 {
 	int config_index = get_board_config_index(name_id);
 	log.log_begin("ascii_board::activate_configuration");
@@ -541,7 +541,7 @@ void ascii_board::activate_configuration(std::string name_id)
 	log.log_end("ascii_board::activate_configuration");
 }
 
-void ascii_board::deactivate_configuration(std::string name_id, int row, int column)
+void ascii_board::deactivate_configuration(const std::string& name_id, int row, int column)
 {
 	int config_index = get_board_config_index(name_id);
 	int config_tile_index = get_tile_config_index(name_id, row, column);
@@ -582,7 +582,7 @@ void ascii_board::deactivate_configuration(std::string name_id, int row, int col
 	log.log_end("ascii_board::deactivate_configuration");
 }
 
-void ascii_board::deactivate_configuration(std::string name_id)
+void ascii_board::deactivate_configuration(const std::string& name_id)
 {
 	int config_index = get_board_config_index(name_id);
 	log.log_begin("ascii_board::deactivate_configuration");
@@ -616,7 +616,7 @@ void ascii_board::deactivate_configuration(std::string name_id)
 	log.log_end("ascii_board::deactivate_configuration");
 }
 
-std::string ascii_board::load_configuration(std::string path)
+std::string ascii_board::load_configuration(const std::string& path)
 {
 	std::string value = "";
 	int file_status = file_manager::read_file(path, value);
@@ -635,7 +635,7 @@ std::string ascii_board::load_configuration(std::string path)
 	return value;
 }
 
-void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character)
+void ascii_board::load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character)
 {
 	log.log_begin("ascii_board::load_configuration");
 	std::string value = load_configuration(path);
@@ -647,7 +647,7 @@ void ascii_board::load_configuration(std::string path, std::string name_id, int 
 	log.log_end("ascii_board::load_configuration");
 }
 
-void ascii_board::load_configuration(std::string path, std::string name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)
+void ascii_board::load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)
 {
 	log.log_begin("ascii_board::load_configuration");
 	std::string value = load_configuration(path);
@@ -659,7 +659,7 @@ void ascii_board::load_configuration(std::string path, std::string name_id, int 
 	log.log_end("ascii_board::load_configuration");
 }
 
-void ascii_board::set_sub_configuration_color(std::string name_id, std::string value_match, const std::vector<format_tools::index_format>& colors)
+void ascii_board::set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < colors.size(); i++)
@@ -843,7 +843,7 @@ ascii_board::action_tile ascii_board::get_action_tile(int row, int column)
 	return tile;
 }
 
-bool ascii_board::configuration_activated(std::string name_id, int row, int column)
+bool ascii_board::configuration_activated(const std::string& name_id, int row, int column)
 {
 	bool activated = false;
 	int status = UNDEFINED;
@@ -872,7 +872,7 @@ bool ascii_board::configuration_activated(std::string name_id, int row, int colu
 	return activated;
 }
 
-void ascii_board::modify_configuration(std::string target_name_id, std::string modification_name_id)
+void ascii_board::modify_configuration(const std::string& target_name_id, const std::string& modification_name_id)
 {
 	int status = UNDEFINED;
 	if (!configuration_present(target_name_id) || !configuration_present(modification_name_id))
@@ -894,7 +894,7 @@ void ascii_board::modify_configuration(std::string target_name_id, std::string m
 	log.log_status(status, "ascii_board::modify_configuration");
 }
 
-int ascii_board::load_board_translation(std::string name_id, std::string path)
+int ascii_board::load_board_translation(const std::string& name_id, const std::string& path)
 {
 	log.log_begin("ascii_board::load_board_translation");
 	board_translation translation;
@@ -958,7 +958,7 @@ int ascii_board::load_board_translation(std::string name_id, std::string path)
 	return status;
 }
 
-void ascii_board::use_translation(std::string name_id)
+void ascii_board::use_translation(const std::string& name_id)
 {
 	int status = ELEMENT_NOT_FOUND;
 	board_translation translation;
@@ -1012,7 +1012,7 @@ void ascii_board::initialize_tiles(int rows, int columns, std::vector<action_til
 	}
 }
 
-void ascii_board::set_tile_ranges(std::string content, std::vector<action_tile_skeleton>& action_tile_skeletons)
+void ascii_board::set_tile_ranges(const std::string& content, std::vector<action_tile_skeleton>& action_tile_skeletons)
 {
 	int parameter = 0;
 	bool range_end = false;
@@ -1243,7 +1243,7 @@ unsigned int ascii_board::get_value_length(action_tile tile)
 	return length;
 }
 
-bool ascii_board::configuration_present(std::string name_id)
+bool ascii_board::configuration_present(const std::string& name_id)
 {
 	bool duplicate = false;
 	for (unsigned int i = 0; i < board_configurations.size(); i++)
@@ -1256,7 +1256,7 @@ bool ascii_board::configuration_present(std::string name_id)
 	return duplicate;
 }
 
-board_configuration ascii_board::get_configuration(std::string name_id)
+board_configuration ascii_board::get_configuration(const std::string& name_id)
 {
 	board_configuration configuration;
 	for (unsigned int i = 0; i < board_configurations.size(); i++)
@@ -1379,7 +1379,7 @@ int ascii_board::get_action_tile_index(int row, int column)
 	return index;
 }
 
-int ascii_board::get_board_config_index(std::string name_id)
+int ascii_board::get_board_config_index(const std::string& name_id)
 {
 	int index = -1;
 	for (unsigned int i = 0; i < board_configurations.size(); i++)
@@ -1393,7 +1393,7 @@ int ascii_board::get_board_config_index(std::string name_id)
 	return index;
 }
 
-int ascii_board::get_tile_config_index(std::string name_id, int row, int column)
+int ascii_board::get_tile_config_index(const std::string& name_id, int row, int column)
 {
 	int board_config_index = get_board_config_index(name_id);
 	int index = -1;
