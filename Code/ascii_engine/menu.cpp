@@ -469,9 +469,16 @@ void menu::display()
 				displayed_lines = (displayed_lines / 2) - 1;
 			}
 
-			if (((menu_items.size() - displayed_lines) > 0) && (top_line > (menu_items.size() - displayed_lines)))
+			if ((int)top_line > ((int)menu_items.size() - (int)displayed_lines))
 			{
-				top_line = menu_items.size() - displayed_lines;
+				if (((int)menu_items.size() - (int)displayed_lines) >= 0)
+				{
+					top_line = menu_items.size() - displayed_lines;
+				}
+				else
+				{
+					top_line = 0;
+				}
 			}
 
 			if (cursor_line >= (top_line + displayed_lines))
