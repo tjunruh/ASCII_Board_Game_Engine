@@ -815,7 +815,7 @@ std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vec
 	return colors;
 }
 
-std::vector<format_tools::index_format> format_tools::build_color_for_value(std::string value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces)
+std::vector<format_tools::index_format> format_tools::build_color_for_value(const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces)
 {
 	index_format color_struct;
 	index_format empty_struct;

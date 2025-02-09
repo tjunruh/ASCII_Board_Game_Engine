@@ -129,5 +129,5 @@ namespace format_tools
 	FORMAT_TOOLS_API std::string get_color_name(int color);
 	FORMAT_TOOLS_API std::vector<index_format> shift_index(std::vector<index_format> index_colors, int shift_amount);
 	FORMAT_TOOLS_API std::vector<coordinate_format> bound_colors(std::vector<coordinate_format> colors, const std::vector<std::string>& lines);
-	FORMAT_TOOLS_API std::vector<index_format> build_color_for_value(std::string value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
+	FORMAT_TOOLS_API std::vector<index_format> build_color_for_value(const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
 }
