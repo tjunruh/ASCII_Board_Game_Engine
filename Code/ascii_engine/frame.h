@@ -29,8 +29,6 @@ public:
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
 	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
 	FRAME_API int get_selection();
-	FRAME_API void set_coordinate_width_multiplier(float multiplier, int row, int column);
-	FRAME_API float get_coordinate_width_multiplier(int row, int column);
 	FRAME_API void set_spacer_character(char character);
 	FRAME_API char get_spacer_character();
 	FRAME_API void enable_dec(bool enable);
@@ -124,6 +122,7 @@ private:
 	int get_horizontal_border(int id, char& border);
 	int get_corner_border(int id, char& border);
 	int get_highlight_character(int id, char& highlight_character);
+	int get_width_multiplier(int id, float& multiplier);
 	int get_selectability(int id, bool& selectable);
 	float get_width_weight(widget_info item);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);

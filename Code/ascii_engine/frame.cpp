@@ -236,43 +236,6 @@ int frame::get_selection()
 	return selected_id;
 }
 
-void frame::set_coordinate_width_multiplier(float multiplier, int row, int column)
-{
-	if ((multiplier < 0) || (row < 0) || (column < 0))
-	{
-		log.log_status(INVALID_VALUE, "frame::set_coordinate_width_multiplier");
-		return;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if ((widgets[i].row == row) && (widgets[i].column == column))
-		{
-			widgets[i].width_multiplier = multiplier;
-			status = SUCCESS;
-		}
-	}
-	log.log_status(status, "frame::set_coordinate_width_multiplier");
-}
-
-float frame::get_coordinate_width_multiplier(int row, int column)
-{
-	int status = ELEMENT_NOT_FOUND;
-	float multiplier = 0.0;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if ((widgets[i].row == row) && (widgets[i].column == column))
-		{
-			multiplier = widgets[i].width_multiplier;
-			status = SUCCESS;
-			break;
-		}
-	}
-	log.log_status(status, "frame::get_coordinate_width_multiplier");
-	return multiplier;
-}
-
 void frame::set_spacer_character(char character)
 {
 	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
@@ -1085,6 +1048,21 @@ int frame::get_corner_border(int id, char& border)
 	return status;
 }
 
+int frame::get_width_multiplier(int id, float& multiplier)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			multiplier = widgets[i].width_multiplier;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::get_highlight_character(int id, char& highlight_character)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1161,7 +1139,7 @@ int frame::set_lines_count(int id, int lines_count)
 
 int frame::set_width_multiplier(int id, float multiplier)
 {
-	if (multiplier < 0)
+	if (multiplier <= 0)
 	{
 		return INVALID_VALUE;
 	}

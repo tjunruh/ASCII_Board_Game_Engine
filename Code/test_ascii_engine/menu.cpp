@@ -538,14 +538,14 @@ TEST_F(menu_test, test_spacer)
 	local_test_menu_2.add_border(true);
 	local_test_menu_2.sync();
 	menus.push_back(local_test_menu_2);
-	spacer local_test_spacer_1(local_test_frame, 1, "new line");
+	spacer local_test_spacer_1(local_test_frame, "new line");
 	menu local_test_menu_3(local_test_frame);
 	local_test_menu_3.append_item("First option");
 	local_test_menu_3.append_item("Second option");
 	local_test_menu_3.add_border(true);
 	local_test_menu_3.sync();
 	menus.push_back(local_test_menu_3);
-	spacer local_test_spacer_2(local_test_frame, 1);
+	spacer local_test_spacer_2(local_test_frame);
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");

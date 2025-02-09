@@ -64,6 +64,12 @@ void widget::set_highlight_character(char character)
 	log.log_status(status, "widget::set_highlight_character");
 }
 
+void widget::set_width_multiplier(float multiplier)
+{
+	int status = parent_frame->set_width_multiplier(widget_id, multiplier);
+	log.log_status(status, "widget::set_width_multiplier");
+}
+
 void widget::add_border(bool border)
 {
 	int status = parent_frame->add_border(widget_id, border);
@@ -137,6 +143,14 @@ char widget::get_highlight_character()
 	int status = parent_frame->get_highlight_character(widget_id, highlight_character);
 	log.log_status(status, "widget::get_highlight_character");
 	return highlight_character;
+}
+
+float widget::get_width_multiplier()
+{
+	float multiplier = 0.0;
+	int status = parent_frame->get_width_multiplier(widget_id, multiplier);
+	log.log_status(status, "widget::get_width_multiplier");
+	return multiplier;
 }
 
 unsigned int widget::get_width(bool include_spacing)

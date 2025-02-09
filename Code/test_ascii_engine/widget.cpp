@@ -165,6 +165,32 @@ protected:
 		ASSERT_EQ(status, 0) << std::to_string(test_num);
 		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << std::to_string(test_num);
 	}
+
+	void set_get_width_multiplier(widget& local_test_widget, float multiplier, std::string expected_status_function, int expected_status_code, bool set, int test_num)
+	{
+		std::string log_content = "";
+		if (set)
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			local_test_widget.set_width_multiplier(multiplier);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		}
+		else
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			float returned_multiplier = local_test_widget.get_width_multiplier();
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+			EXPECT_EQ(multiplier, returned_multiplier) << std::to_string(test_num);
+		}
+	}
 };
 
 TEST_F(widget_test, set_get_alignment)
@@ -377,6 +403,21 @@ TEST_F(widget_test, set_get_highlight_character)
 	status = file_manager::delete_file("widget.log");
 	ASSERT_EQ(status, 0);
 
+	delete(local_test_frame);
+}
+
+TEST_F(widget_test, set_get_coordinate_width_multiplier_test)
+{
+	frame* local_test_frame = new frame();
+	widget local_test_widget(local_test_frame);
+	local_test_widget.start_logging("widget.log");
+	std::string log_content = "";
+	int status = file_manager::read_file("widget.log", log_content);
+	ASSERT_EQ(status, 0);
+	set_get_width_multiplier(local_test_widget, 1.5, "widget::set_width_multiplier", SUCCESS, true, 0);
+	set_get_width_multiplier(local_test_widget, 0, "widget::set_width_multiplier", INVALID_VALUE, true, 1);
+	set_get_width_multiplier(local_test_widget, -1, "widget::set_width_multiplier", INVALID_VALUE, true, 2);
+	set_get_width_multiplier(local_test_widget, 1.5, "widget::get_width_multiplier", SUCCESS, false, 3);
 	delete(local_test_frame);
 }
 

@@ -469,12 +469,12 @@ TEST_F(label_test, test_spacer)
 	local_test_label_2.set_output("This\nis\nwidget\n2");
 	local_test_label_2.add_border(true);
 	labels.push_back(local_test_label_2);
-	spacer local_test_spacer_1(local_test_frame, 1, "new line");
+	spacer local_test_spacer_1(local_test_frame, "new line");
 	label local_test_label_3(local_test_frame);
 	local_test_label_3.set_output("This is widget\n3");
 	local_test_label_3.add_border(true);
 	labels.push_back(local_test_label_3);
-	spacer local_test_spacer_2(local_test_frame, 1);
+	spacer local_test_spacer_2(local_test_frame);
 	label local_test_label_4(local_test_frame, "new line");
 	local_test_label_4.set_output("This is\nwidget\n4");
 	local_test_label_4.add_border(true);
