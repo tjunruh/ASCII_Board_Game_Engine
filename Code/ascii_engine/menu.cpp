@@ -576,7 +576,7 @@ void menu::sync()
 
 void menu::separate_items(bool separate)
 {
-	if (separate != _separate_items)
+	if ((separate != _separate_items) && !no_lines_constraint)
 	{
 		if (separate)
 		{
