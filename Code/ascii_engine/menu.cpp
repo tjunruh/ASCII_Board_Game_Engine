@@ -132,7 +132,18 @@ void menu::set_lines_count(int lines_count)
 
 		if (_separate_items)
 		{
-			displayed_lines = (displayed_lines / 2) - 1;
+			displayed_lines_division_remainder = displayed_lines % 2;
+			displayed_lines_subtraction_amount = 0;
+			displayed_lines = displayed_lines / 2;
+			if (displayed_lines == 0)
+			{
+				displayed_lines = 1;
+			}
+			else if (displayed_lines > 1)
+			{
+				displayed_lines = displayed_lines - 1;
+				displayed_lines_subtraction_amount = 1;
+			}
 		}
 
 		if ((menu_items.size() - top_line) < displayed_lines)
@@ -567,13 +578,26 @@ void menu::separate_items(bool separate)
 {
 	if (separate != _separate_items)
 	{
-		if (_separate_items)
+		if (separate)
 		{
-			displayed_lines = (displayed_lines / 2) - 1;
+			displayed_lines_division_remainder = displayed_lines % 2;
+			displayed_lines_subtraction_amount = 0;
+			displayed_lines = displayed_lines / 2;
+			if (displayed_lines == 0)
+			{
+				displayed_lines = 1;
+			}
+			else if (displayed_lines > 1)
+			{
+				displayed_lines = displayed_lines - 1;
+				displayed_lines_subtraction_amount = 1;
+			}
 		}
-		else if (!_separate_items)
+		else if (!separate)
 		{
-			displayed_lines = (displayed_lines * 2) + 1;
+			displayed_lines = displayed_lines + displayed_lines_division_remainder;
+			displayed_lines = displayed_lines * 2;
+			displayed_lines = displayed_lines + displayed_lines_subtraction_amount;
 		}
 	}
 	_separate_items = separate;

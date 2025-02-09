@@ -56,6 +56,8 @@ private:
 	bool quit_enabled = false;
 	bool no_lines_constraint = false;
 	unsigned int displayed_lines = 0;
+	int displayed_lines_division_remainder = 0;
+	int displayed_lines_subtraction_amount = 0;
 	int line_subtraction_from_terminal_height = 0;
 	unsigned int top_line = 0;
 	bool _separate_items = false;
