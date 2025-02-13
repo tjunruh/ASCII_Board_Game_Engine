@@ -124,6 +124,7 @@ private:
 	int get_highlight_character(int id, char& highlight_character);
 	int get_width_multiplier(int id, float& multiplier);
 	int get_selectability(int id, bool& selectable);
+	float get_greatest_width_multiplier_at_coordinate(int row, int column);
 	float get_width_weight(widget_info item);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int generate_widget_id();
@@ -136,6 +137,7 @@ private:
 	int get_widget(int id, widget_info& return_value);
 	int get_widget(int row, int column, int level, widget_info& return_value);
 	unsigned int get_widget_width(const widget_info& item, bool include_spacing);
+	unsigned int get_greatest_widget_width_at_coordinate(const widget_info& item, bool include_spacing);
 	int get_widget_width(int id, unsigned int& width, bool include_spacing);
 	unsigned int get_widget_height(const widget_info& item, bool include_spacing);
 	int get_widget_height(int id, unsigned int& width, bool include_spacing);
@@ -154,8 +156,9 @@ private:
 	void down_handle(int& selected_row, int& selected_column, int& selected_level);
 	void right_handle(int& selected_row, int& selected_column, int& selected_level);
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
-	void generate_border(widget_info item, std::vector<std::string>& lines);
-	bool only_widget_in_row(widget_info item);
+	void generate_border(const widget_info& item, std::vector<std::string>& lines);
+	bool only_widget_in_row(const widget_info& item);
+	bool only_widget_at_coordinate(const widget_info& item);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__
 	void dec_print(const std::string& input);

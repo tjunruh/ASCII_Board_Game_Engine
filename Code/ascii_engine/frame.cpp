@@ -1093,14 +1093,32 @@ int frame::get_selectability(int id, bool& selectable)
 	return status;
 }
 
-float frame::get_width_weight(widget_info item)
+float frame::get_greatest_width_multiplier_at_coordinate(int row, int column)
 {
-	float total_width_multiplier = item.width_multiplier;
+	float greatest_width_multiplier = 0.0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == item.row) && (widgets[i].level == 0) && (widgets[i].column != item.column))
+		if ((widgets[i].row == row) && (widgets[i].column == column))
 		{
-			total_width_multiplier = total_width_multiplier + widgets[i].width_multiplier;
+			if (widgets[i].width_multiplier > greatest_width_multiplier)
+			{
+				greatest_width_multiplier = widgets[i].width_multiplier;
+			}
+		}
+	}
+	return greatest_width_multiplier;
+}
+
+float frame::get_width_weight(widget_info item)
+{
+	float total_width_multiplier = 0.0;
+	std::vector<int> columns_completed;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].row == item.row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i].column) == 0))
+		{
+			total_width_multiplier = total_width_multiplier + get_greatest_width_multiplier_at_coordinate(widgets[i].row, widgets[i].column);
+			columns_completed.push_back(widgets[i].column);
 		}
 	}
 
@@ -1408,6 +1426,23 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	return width;
 }
 
+unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info& item, bool include_spacing)
+{
+	unsigned int greatest_widget_width = 0;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == item.row) && (widgets[i].column == item.column))
+		{
+			unsigned int widget_width = get_widget_width(widgets[i], include_spacing);
+			if (widget_width > greatest_widget_width)
+			{
+				greatest_widget_width = widget_width;
+			}
+		}
+	}
+	return greatest_widget_width;
+}
+
 int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1646,6 +1681,12 @@ std::string frame::generate_frame_output()
 				{
 					generate_border(item, widget_lines);
 				}
+
+				if (!only_widget_at_coordinate(item))
+				{
+					widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
+				}
+
 				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
@@ -1725,7 +1766,7 @@ void frame::set_widget_origins()
 			} while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND);
 			level = 0;
 			column++;
-			x = x + get_widget_width(item, true);
+			x = x + get_greatest_widget_width_at_coordinate(item, true);
 		}
 		y = y + row_heights[row];
 	}
@@ -1994,7 +2035,7 @@ void frame::left_handle(int& selected_row, int& selected_column, int& selected_l
 	} while (!is_selectable(selected_row, selected_column, selected_level));
 }
 
-void frame::generate_border(widget_info item, std::vector<std::string>& lines)
+void frame::generate_border(const widget_info& item, std::vector<std::string>& lines)
 {
 	int top_spacing = item.top_spacing - item.top_border_spacing;
 	int left_spacing = item.left_spacing - item.left_border_spacing;
@@ -2018,11 +2059,30 @@ void frame::generate_border(widget_info item, std::vector<std::string>& lines)
 	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 }
 
-bool frame::only_widget_in_row(widget_info item)
+bool frame::only_widget_in_row(const widget_info& item)
 {
 	int row = item.row;
 	std::vector<int> ids = get_row_ids(row);
 	if (ids.size() == 1)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool frame::only_widget_at_coordinate(const widget_info& item)
+{
+	unsigned int widgets_at_coordinate = 0;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if ((widgets[i].row == item.row) && (widgets[i].column == item.column))
+		{
+			widgets_at_coordinate = widgets_at_coordinate + 1;
+		}
+	}
+
+	if (widgets_at_coordinate == 1)
 	{
 		return true;
 	}
