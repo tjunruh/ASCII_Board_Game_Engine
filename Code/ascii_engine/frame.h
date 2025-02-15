@@ -63,11 +63,16 @@ private:
 		int bottom_spacing = 0;
 		int right_spacing = 0;
 		int left_spacing = 0;
+		float right_width_multiplier = 0.0;
+		float left_width_multiplier = 0.0;
 		int top_border_spacing = 0;
 		int bottom_border_spacing = 0;
 		int right_border_spacing = 0;
 		int left_border_spacing = 0;
+		float right_border_width_multiplier = 0.0;
+		float left_border_width_multiplier = 0.0;
 		bool add_border = false;
+		bool use_spacing_width_multipliers = false;
 		char highlight_character = '#';
 		char vertical_border = '|';
 		char horizontal_border = '-';
@@ -102,10 +107,13 @@ private:
 	int set_y_origin(int id, int y_origin);
 	int set_lines_count(int id, int lines_count);
 	int set_width_multiplier(int id, float multiplier);
+	int set_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier);
+	int set_border_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier);
 	int set_selectable(int id, bool selectable);
 	int set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors);
 	int set_index_colors(int id, std::vector<format_tools::index_format> index_colors);
 	int add_border(int id, bool border);
+	int use_spacing_width_multipliers(int id, bool use);
 	void highlight(int row, int column, int level);
 	void unhighlight(int row, int column, int level);
 	void keep_point_in_console_bounds(int& x, int& y);
@@ -123,9 +131,11 @@ private:
 	int get_corner_border(int id, char& border);
 	int get_highlight_character(int id, char& highlight_character);
 	int get_width_multiplier(int id, float& multiplier);
+	int get_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier);
+	int get_border_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier);
 	int get_selectability(int id, bool& selectable);
 	float get_greatest_width_multiplier_at_coordinate(int row, int column);
-	float get_width_weight(widget_info item);
+	float get_width_weight(const widget_info& item, float multiplier);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
@@ -159,6 +169,7 @@ private:
 	void generate_border(const widget_info& item, std::vector<std::string>& lines);
 	bool only_widget_in_row(const widget_info& item);
 	bool only_widget_at_coordinate(const widget_info& item);
+	void record_terminal_dimensions();
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__
 	void dec_print(const std::string& input);
@@ -175,8 +186,6 @@ private:
 	int append_column = -1;
 	int append_level = 0;
 	bool display_stale = true;
-	int last_screen_x_size_displayed = 0;
-	int last_screen_y_size_displayed = 0;
 	std::vector<unsigned int> row_heights;
 	logger log;
 	char spacer_character = '-';
@@ -188,9 +197,11 @@ private:
 	int default_foreground_color = format_tools::white;
 	int default_background_color = format_tools::black;
 	std::vector<format_tools::coordinate_format> color_regions;
+	int terminal_x = -1;
+	int terminal_y = -1;
+	int previous_x = -2;
+	int previous_y = -2;
 #ifdef WIN32
 	std::string previous_output = "";
-	int previous_x = 0;
-	int previous_y = 0;
 #endif
 };

@@ -566,6 +566,97 @@ TEST_F(label_test, test_spacing)
 	delete(local_test_frame);
 }
 
+TEST_F(label_test, test_width_multiplier)
+{
+	expected_display_data correct_answer =
+	{
+		"                                                                 .-------------------------------.  \n"
+		"                .-------------------------------.                | This                          |  \n"
+		"                | This is widget 1.             |                | is                            |  \n"
+		"                .-------------------------------.                | widget                        |  \n"
+		"                                                                 | 2                             |  \n"
+		"                                                                 .-------------------------------.  \n"
+		"                                                                                                    \n"
+		"                                 .-------------------------------.                                  \n"
+		"                                 | This is widget                |                                  \n"
+		"                                 | 3                             |                                  \n"
+		"                                 .-------------------------------.                                  \n"
+		"                                                                                                    \n"
+		"                                                                                                    \n"
+		"                           .----------------.         .-------------------------------------------. \n"
+		".----------------.         | This           |         | This is widget 6                          | \n"
+		"| This is        |         | is             |         .-------------------------------------------. \n"
+		"| widget         |         | widget         |                                                       \n"
+		"| 4              |         | 5              |                                                       \n"
+		".----------------.         .----------------.                                                       \n"
+		"                                                                                                    ",
+		{ 18, 67, 35, 2, 29, 56 },
+		{ 2, 1, 8, 15, 14, 14 },
+		{ 29, 29, 29, 14, 14, 41 },
+		{ 1, 4, 2, 3, 4, 1 },
+		{ 57, 41, 99, 27, 27, 45 },
+		{ 5, 6, 7, 7, 6, 3 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("This is widget 1.");
+	local_test_label_1.add_border(true);
+	local_test_label_1.set_spacing(1, 1, 0, 1);
+	local_test_label_1.use_spacing_width_multipliers(true);
+	local_test_label_1.set_width_multiplier(2);
+	local_test_label_1.set_spacing_width_multipliers(1, 0.5);
+	labels.push_back(local_test_label_1);
+	label local_test_label_2(local_test_frame);
+	local_test_label_2.set_output("This\nis\nwidget\n2");
+	local_test_label_2.add_border(true);
+	local_test_label_2.set_spacing(0, 0, 0, 1);
+	local_test_label_2.use_spacing_width_multipliers(true);
+	local_test_label_2.set_width_multiplier(2);
+	local_test_label_2.set_spacing_width_multipliers(0.5, 0);
+	labels.push_back(local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("This is widget\n3");
+	local_test_label_3.add_border(true);
+	local_test_label_3.set_spacing(1, 2, 5, 5);
+	local_test_label_3.use_spacing_width_multipliers(true);
+	local_test_label_3.set_width_multiplier(1);
+	local_test_label_3.set_spacing_width_multipliers(1, 1);
+	labels.push_back(local_test_label_3);
+	label local_test_label_4(local_test_frame, "new line");
+	local_test_label_4.set_output("This is\nwidget\n4");
+	local_test_label_4.add_border(true);
+	local_test_label_4.set_spacing(1, 1, 0, 0);
+	local_test_label_4.use_spacing_width_multipliers(true);
+	local_test_label_4.set_width_multiplier(1);
+	local_test_label_4.set_spacing_width_multipliers(0, 0.5);
+	labels.push_back(local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("This\nis\nwidget\n5");
+	local_test_label_5.add_border(true);
+	local_test_label_5.use_spacing_width_multipliers(true);
+	local_test_label_5.set_width_multiplier(1);
+	local_test_label_5.set_spacing_width_multipliers(0, 0.5);
+	labels.push_back(local_test_label_5);
+	label local_test_label_6(local_test_frame);
+	local_test_label_6.set_output("This is widget 6");
+	local_test_label_6.add_border(true);
+	local_test_label_6.set_spacing(0, 0, 1, 1);
+	local_test_label_6.use_spacing_width_multipliers(true);
+	local_test_label_6.set_width_multiplier(2.5);
+	local_test_label_6.set_spacing_width_multipliers(0, 0);
+	labels.push_back(local_test_label_6);
+	std::string output = local_test_frame->get_frame_output();
+
+	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}
+
 TEST_F(label_test, right_alignment)
 {
 	expected_display_data correct_answer =

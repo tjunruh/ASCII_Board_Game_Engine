@@ -70,10 +70,28 @@ void widget::set_width_multiplier(float multiplier)
 	log.log_status(status, "widget::set_width_multiplier");
 }
 
+void widget::set_spacing_width_multipliers(float left_multiplier, float right_multiplier)
+{
+	int status = parent_frame->set_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	log.log_status(status, "widget::set_spacing_width_multipliers");
+}
+
+void widget::set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier)
+{
+	int status = parent_frame->set_border_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	log.log_status(status, "widget::set_border_spacing_width_multipliers");
+}
+
 void widget::add_border(bool border)
 {
 	int status = parent_frame->add_border(widget_id, border);
 	log.log_status(status, "widget::add_border");
+}
+
+void widget::use_spacing_width_multipliers(bool use)
+{
+	int status = parent_frame->use_spacing_width_multipliers(widget_id, use);
+	log.log_status(status, "widget::use_spacing_width_multipliers");
 }
 
 void widget::refresh()
@@ -151,6 +169,18 @@ float widget::get_width_multiplier()
 	int status = parent_frame->get_width_multiplier(widget_id, multiplier);
 	log.log_status(status, "widget::get_width_multiplier");
 	return multiplier;
+}
+
+void widget::get_spacing_width_multipliers(float& left_multiplier, float& right_multiplier)
+{
+	int status = parent_frame->get_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	log.log_status(status, "widget::get_spacing_width_multipliers");
+}
+
+void widget::get_border_spacing_width_multipliers(float& left_multiplier, float& right_multiplier)
+{
+	int status = parent_frame->get_border_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	log.log_status(status, "widget::get_border_spacing_width_multipliers");
 }
 
 unsigned int widget::get_width(bool include_spacing)

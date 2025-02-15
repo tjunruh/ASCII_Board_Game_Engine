@@ -191,6 +191,64 @@ protected:
 			EXPECT_EQ(multiplier, returned_multiplier) << std::to_string(test_num);
 		}
 	}
+
+	void set_get_spacing_width_multipliers(widget& local_test_widget, float left_multiplier, float right_multiplier, std::string expected_status_function, int expected_status_code, bool set, int test_num)
+	{
+		std::string log_content = "";
+		if (set)
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			local_test_widget.set_spacing_width_multipliers(left_multiplier, right_multiplier);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		}
+		else
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			float returned_left_multiplier = 0.0;
+			float returned_right_multiplier = 0.0;
+			local_test_widget.get_spacing_width_multipliers(returned_left_multiplier, returned_right_multiplier);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+			EXPECT_EQ(left_multiplier, returned_left_multiplier) << std::to_string(test_num);
+			EXPECT_EQ(right_multiplier, returned_right_multiplier) << std::to_string(test_num);
+		}
+	}
+
+	void set_get_border_spacing_width_multipliers(widget& local_test_widget, float left_multiplier, float right_multiplier, std::string expected_status_function, int expected_status_code, bool set, int test_num)
+	{
+		std::string log_content = "";
+		if (set)
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			local_test_widget.set_border_spacing_width_multipliers(left_multiplier, right_multiplier);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		}
+		else
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			float returned_left_multiplier = 0.0;
+			float returned_right_multiplier = 0.0;
+			local_test_widget.get_border_spacing_width_multipliers(returned_left_multiplier, returned_right_multiplier);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+			EXPECT_EQ(left_multiplier, returned_left_multiplier) << std::to_string(test_num);
+			EXPECT_EQ(right_multiplier, returned_right_multiplier) << std::to_string(test_num);
+		}
+	}
 };
 
 TEST_F(widget_test, set_get_alignment)
@@ -272,6 +330,11 @@ TEST_F(widget_test, set_get_border_spacing)
 	set_get_border_spacing(local_test_widget, 0, 0, 0, 0, SUCCESS, "widget::get_border_spacing", true, 18);
 	set_get_border_spacing(local_test_widget, 5, 5, 10, 21, INVALID_VALUE, "widget::set_border_spacing", false, 19);
 	set_get_border_spacing(local_test_widget, 0, 0, 0, 0, SUCCESS, "widget::get_border_spacing", true, 20);
+	set_get_border_spacing(local_test_widget, 9, 9, 19, 19, SUCCESS, "widget::set_border_spacing", false, 21);
+	set_get_spacing(local_test_widget, 3, 3, 6, 6, SUCCESS, "widget::set_spacing", false, 22);
+	set_get_border_spacing(local_test_widget, 3, 3, 6, 6, SUCCESS, "widget::get_border_spacing", true, 23);
+	set_get_border_spacing(local_test_widget, 0, 0, 0, 0, SUCCESS, "widget::set_border_spacing", false, 24);
+	set_get_border_spacing(local_test_widget, 0, 0, 0, 0, SUCCESS, "widget::get_border_spacing", true, 25);
 	status = file_manager::delete_file("widget.log");
 	ASSERT_EQ(status, 0);
 
@@ -418,6 +481,48 @@ TEST_F(widget_test, set_get_coordinate_width_multiplier_test)
 	set_get_width_multiplier(local_test_widget, 0, "widget::set_width_multiplier", INVALID_VALUE, true, 1);
 	set_get_width_multiplier(local_test_widget, -1, "widget::set_width_multiplier", INVALID_VALUE, true, 2);
 	set_get_width_multiplier(local_test_widget, 1.5, "widget::get_width_multiplier", SUCCESS, false, 3);
+	delete(local_test_frame);
+}
+
+TEST_F(widget_test, set_get_spacing_width_multiplier_test)
+{
+	frame* local_test_frame = new frame();
+	widget local_test_widget(local_test_frame);
+	local_test_widget.start_logging("widget.log");
+	std::string log_content = "";
+	int status = file_manager::read_file("widget.log", log_content);
+	ASSERT_EQ(status, 0);
+	set_get_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::set_spacing_width_multipliers", SUCCESS, true, 0);
+	set_get_spacing_width_multipliers(local_test_widget, 0, 0, "widget::set_spacing_width_multipliers", SUCCESS, true, 1);
+	set_get_spacing_width_multipliers(local_test_widget, 3.25, 0.78, "widget::set_spacing_width_multipliers", SUCCESS, true, 2);
+	set_get_spacing_width_multipliers(local_test_widget, -0.001, 10.2, "widget::set_spacing_width_multipliers", INVALID_VALUE, true, 3);
+	set_get_spacing_width_multipliers(local_test_widget, 6.54, -3.4, "widget::set_spacing_width_multipliers", INVALID_VALUE, true, 4);
+	set_get_spacing_width_multipliers(local_test_widget, 3.25, 0.78, "widget::get_spacing_width_multipliers", SUCCESS, false, 5);
+	delete(local_test_frame);
+}
+
+TEST_F(widget_test, set_get_border_spacing_width_multiplier_test)
+{
+	frame* local_test_frame = new frame();
+	widget local_test_widget(local_test_frame);
+	local_test_widget.start_logging("widget.log");
+	std::string log_content = "";
+	int status = file_manager::read_file("widget.log", log_content);
+	ASSERT_EQ(status, 0);
+	set_get_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::set_spacing_width_multipliers", SUCCESS, true, 0);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.2, 1.2, "widget::set_border_spacing_width_multipliers", SUCCESS, true, 1);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::set_border_spacing_width_multipliers", SUCCESS, true, 2);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.51, 1.5, "widget::set_border_spacing_width_multipliers", INVALID_VALUE, true, 3);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::get_border_spacing_width_multipliers", SUCCESS, false, 5);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.5, 1.51, "widget::set_border_spacing_width_multipliers", INVALID_VALUE, true, 6);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::get_border_spacing_width_multipliers", SUCCESS, false, 7);
+	set_get_border_spacing_width_multipliers(local_test_widget, -0.5, 1.6, "widget::set_border_spacing_width_multipliers", INVALID_VALUE, true, 8);
+	set_get_border_spacing_width_multipliers(local_test_widget, 5.765, -4.21, "widget::set_border_spacing_width_multipliers", INVALID_VALUE, true, 9);
+	set_get_border_spacing_width_multipliers(local_test_widget, 1.5, 1.5, "widget::get_border_spacing_width_multipliers", SUCCESS, false, 10);
+	set_get_spacing_width_multipliers(local_test_widget, 0.5, 0.5, "widget::set_spacing_width_multipliers", SUCCESS, true, 11);
+	set_get_border_spacing_width_multipliers(local_test_widget, 0.5, 0.5, "widget::get_border_spacing_width_multipliers", SUCCESS, false, 12);
+	set_get_border_spacing_width_multipliers(local_test_widget, 0, 0, "widget::set_border_spacing_width_multipliers", SUCCESS, true, 13);
+	set_get_border_spacing_width_multipliers(local_test_widget, 0, 0, "widget::get_border_spacing_width_multipliers", SUCCESS, false, 14);
 	delete(local_test_frame);
 }
 

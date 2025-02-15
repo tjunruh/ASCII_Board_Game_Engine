@@ -27,7 +27,10 @@ public:
 	WIDGET_API void set_corner_border(char border);
 	WIDGET_API void set_highlight_character(char character);
 	WIDGET_API void set_width_multiplier(float multiplier);
+	WIDGET_API void set_spacing_width_multipliers(float left_multiplier, float right_multiplier);
+	WIDGET_API void set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void add_border(bool border);
+	WIDGET_API void use_spacing_width_multipliers(bool use);
 	WIDGET_API void refresh();
 	WIDGET_API void selectable();
 	WIDGET_API void unselectable();
@@ -39,6 +42,8 @@ public:
 	WIDGET_API char get_corner_border();
 	WIDGET_API char get_highlight_character();
 	WIDGET_API float get_width_multiplier();
+	WIDGET_API void get_spacing_width_multipliers(float& left_multiplier, float& right_multiplier);
+	WIDGET_API void get_border_spacing_width_multipliers(float& left_multiplier, float& right_multiplier);
 	WIDGET_API unsigned int get_width(bool include_spacing=false);
 	WIDGET_API unsigned int get_height(bool include_spacing=false);
 	WIDGET_API int get_x_origin();
