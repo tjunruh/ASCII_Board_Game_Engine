@@ -1,7 +1,6 @@
 #include <ascii_io.h>
 #include <frame.h>
 #include <menu.h>
-#include <spacer.h>
 #include <label.h>
 #include <string>
 
@@ -14,10 +13,11 @@ int main()
 	// - "merge" will place the widget below the preceding widget while still being in the same line
 	// - "new line" will place the widget below on a new line
 	frame* my_frame = new frame();
-	spacer left_spacer(my_frame);
 	menu my_menu(my_frame);
-	spacer right_spacer(my_frame);
 	label my_label(my_frame, "new line");
+
+	my_menu.use_spacing_width_multipliers(true);
+	my_menu.set_spacing_width_multipliers(1, 1);
 
 	// uncomment below to enable line drawing
 	//my_frame->enable_dec(true);
