@@ -36,7 +36,6 @@
     <ClCompile Include="..\label.cpp" />
     <ClCompile Include="..\logger.cpp" />
     <ClCompile Include="..\menu.cpp" />
-    <ClCompile Include="..\spacer.cpp" />
     <ClCompile Include="..\text_box.cpp" />
     <ClCompile Include="..\widget.cpp" />
   </ItemGroup>
@@ -57,7 +56,6 @@
     <ClInclude Include="..\label.h" />
     <ClInclude Include="..\logger.h" />
     <ClInclude Include="..\menu.h" />
-    <ClInclude Include="..\spacer.h" />
     <ClInclude Include="..\text_box.h" />
     <ClInclude Include="..\widget.h" />
     <ClInclude Include="..\widget_types.h" />
@@ -118,7 +116,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;SPACER_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;_DEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;_DEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>..\ascii_engine_dll_files\pch.h</PrecompiledHeaderFile>
@@ -136,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;SPACER_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;NDEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;NDEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>..\ascii_engine_dll_files\pch.h</PrecompiledHeaderFile>
@@ -154,7 +152,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;SPACER_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;_DEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;_DEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -172,7 +170,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;SPACER_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;NDEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ASCII_BOARD_EXPORTS;ASCII_IO_EXPORTS;CONTROLS_EXPORTS;DEC_FORMATTER_EXPORTS;ERROR_CODES_EXPORTS;FILE_MANAGER_EXPORTS;FORMAT_TOOLS_EXPORTS;FRAME_EXPORTS;LABEL_EXPORTS;LOGGER_EXPORTS;MENU_EXPORTS;TEXT_BOX_EXPORTS;WIDGET_EXPORTS;WIDGET_TYPES_EXPORTS;NDEBUG;ASCIIENGINE2022_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>..\ascii_engine_dll_files\pch.h</PrecompiledHeaderFile>

@@ -1813,14 +1813,6 @@ std::string frame::generate_frame_output()
 				widget_lines = get_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
 
-				if (item.widget_type == SPACER)
-				{
-					if (only_widget_in_row(item))
-					{
-						widget_lines[0] = format_tools::get_spacing(get_widget_width(item, false), spacer_character);
-					}
-				}
-
 				if (item.add_border)
 				{
 					generate_border(item, widget_lines);
@@ -2218,18 +2210,6 @@ void frame::generate_border(const widget_info& item, std::vector<std::string>& l
 	}
 	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
 	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
-}
-
-bool frame::only_widget_in_row(const widget_info& item)
-{
-	int row = item.row;
-	std::vector<int> ids = get_row_ids(row);
-	if (ids.size() == 1)
-	{
-		return true;
-	}
-
-	return false;
 }
 
 bool frame::only_widget_at_coordinate(const widget_info& item)

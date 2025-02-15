@@ -8,14 +8,12 @@
 #include "../ascii_engine/error_codes.h"
 #include "../ascii_engine/frame.h"
 #include "../ascii_engine/format_tools.h"
-#include "../ascii_engine/spacer.h"
 #elif __linux__
 #include <ascii_engine/label.h>
 #include <ascii_engine/file_manager.h>
 #include <ascii_engine/error_codes.h>
 #include <ascii_engine/frame.h>
 #include <ascii_engine/format_tools.h>
-#include <ascii_engine/spacer.h>
 #endif
 
 #include "expected_display_data.h"
@@ -425,71 +423,6 @@ TEST_F(label_test, test_merge)
 	
 	run_test(output, labels, correct_answer_2);
 
-	delete(local_test_frame);
-}
-
-TEST_F(label_test, test_spacer)
-{
-	expected_display_data correct_answer =
-	{
-		".------------------------------------------------..------------------------------------------------.\n"
-		"| This is widget 1.                              || This                                           |\n"
-		".------------------------------------------------.| is                                             |\n"
-		"                                                  | widget                                         |\n"
-		"                                                  | 2                                              |\n"
-		"                                                  .------------------------------------------------.\n"
-		"                                 .-------------------------------.                                  \n"
-		"                                 | This is widget                |                                  \n"
-		"                                 | 3                             |                                  \n"
-		"                                 .-------------------------------.                                  \n"
-		".-------------------------------..-------------------------------..-------------------------------. \n"
-		"| This is                       || This                          || This is widget 6              | \n"
-		"| widget                        || is                            |.-------------------------------. \n"
-		"| 4                             || widget                        |                                  \n"
-		".-------------------------------.| 5                             |                                  \n"
-		"                                 .-------------------------------.                                  ",
-		{ 2, 52, 35, 2, 35, 68 },
-		{ 1, 1, 7, 11, 11, 11 },
-		{ 46, 46, 29, 29, 29, 29 },
-		{ 1, 4, 2, 3, 4, 1 },
-		{ 50, 50, 33, 33, 33, 33 },
-		{ 3, 6, 4, 5, 6, 3 }
-	};
-
-	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
-	local_test_frame->set_fake_console_height(16);
-	local_test_frame->set_fake_console_width(100);
-	std::vector<label> labels;
-	label local_test_label_1(local_test_frame);
-	local_test_label_1.set_output("This is widget 1.");
-	local_test_label_1.add_border(true);
-	labels.push_back(local_test_label_1);
-	label local_test_label_2(local_test_frame);
-	local_test_label_2.set_output("This\nis\nwidget\n2");
-	local_test_label_2.add_border(true);
-	labels.push_back(local_test_label_2);
-	spacer local_test_spacer_1(local_test_frame, "new line");
-	label local_test_label_3(local_test_frame);
-	local_test_label_3.set_output("This is widget\n3");
-	local_test_label_3.add_border(true);
-	labels.push_back(local_test_label_3);
-	spacer local_test_spacer_2(local_test_frame);
-	label local_test_label_4(local_test_frame, "new line");
-	local_test_label_4.set_output("This is\nwidget\n4");
-	local_test_label_4.add_border(true);
-	labels.push_back(local_test_label_4);
-	label local_test_label_5(local_test_frame);
-	local_test_label_5.set_output("This\nis\nwidget\n5");
-	local_test_label_5.add_border(true);
-	labels.push_back(local_test_label_5);
-	label local_test_label_6(local_test_frame);
-	local_test_label_6.set_output("This is widget 6");
-	local_test_label_6.add_border(true);
-	labels.push_back(local_test_label_6);
-	std::string output = local_test_frame->get_frame_output();
-	
-	run_test(output, labels, correct_answer);
 	delete(local_test_frame);
 }
 
