@@ -241,6 +241,11 @@ bool widget::frame_stale()
 	return parent_frame->stale();
 }
 
+void widget::mark_frame_as_stale()
+{
+	parent_frame->mark_as_stale();
+}
+
 void widget::frame_display()
 {
 	parent_frame->display();

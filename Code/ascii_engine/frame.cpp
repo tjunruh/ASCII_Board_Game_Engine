@@ -2257,6 +2257,11 @@ void frame::record_terminal_dimensions()
 	}
 }
 
+void frame::mark_as_stale()
+{
+	display_stale = true;
+}
+
 #ifdef __linux__
 void frame::dec_print(const std::string& input)
 {

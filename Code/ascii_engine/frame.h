@@ -169,6 +169,7 @@ private:
 	void generate_border(const widget_info& item, std::vector<std::string>& lines);
 	bool only_widget_at_coordinate(const widget_info& item);
 	void record_terminal_dimensions();
+	void mark_as_stale();
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__
 	void dec_print(const std::string& input);

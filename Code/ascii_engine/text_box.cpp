@@ -38,12 +38,31 @@ unsigned int text_box::write()
 	height = get_height();
 	if ((saved_cursor_x > 0) && (saved_cursor_y > 0))
 	{
+		if (saved_cursor_x < x_origin)
+		{
+			saved_cursor_x = x_origin;
+		}
+		else if (saved_cursor_x >= (x_origin + width))
+		{
+			saved_cursor_x = x_origin + width - 1;
+		}
+
+		if (saved_cursor_y < y_origin)
+		{
+			saved_cursor_y = y_origin;
+		}
+		else if (saved_cursor_y >= (y_origin + height))
+		{
+			saved_cursor_y = y_origin + height - 1;
+		}
+
 		ascii_io::move_cursor_to_position(saved_cursor_x, saved_cursor_y);
 	}
 	else
 	{
 		ascii_io::move_cursor_to_position(x_origin, y_origin);
 	}
+	update_lines();
 	ascii_io::show_cursor();
 	int input = ascii_io::undefined;
 	do
@@ -173,6 +192,48 @@ void text_box::clear()
 std::string text_box::get_text()
 {
 	return editable_content;
+}
+
+void text_box::set_lines_count(unsigned int lines_count)
+{
+	displayed_lines = lines_count;
+	if ((editable_lines.size() > displayed_lines) && (top_line > (editable_lines.size() - displayed_lines)))
+	{
+		top_line = editable_lines.size() - displayed_lines;
+	}
+	update_lines();
+	set_output();
+	mark_frame_as_stale();
+}
+
+void text_box::set_spacing(int top, int bottom, int left, int right)
+{
+	widget::set_spacing(top, bottom, left, right);
+	x_origin = get_x_origin();
+	y_origin = get_y_origin();
+	width = get_width();
+	height = get_height();
+	update_lines();
+	if ((editable_lines.size() > displayed_lines) && (top_line > (editable_lines.size() - displayed_lines)))
+	{
+		top_line = editable_lines.size() - displayed_lines;
+	}
+	set_output();
+}
+
+void text_box::set_spacing_width_multipliers(float left_multiplier, float right_multiplier)
+{
+	widget::set_spacing_width_multipliers(left_multiplier, right_multiplier);
+	x_origin = get_x_origin();
+	y_origin = get_y_origin();
+	width = get_width();
+	height = get_height();
+	update_lines();
+	if ((editable_lines.size() > displayed_lines) && (top_line > (editable_lines.size() - displayed_lines)))
+	{
+		top_line = editable_lines.size() - displayed_lines;
+	}
+	set_output();
 }
 
 bool text_box::cursor_on_top_border()
@@ -397,6 +458,29 @@ void text_box::fit_cursor_to_line()
 	}
 }
 
+void text_box::fill_empty_lines(std::string& output, unsigned int stop_line)
+{
+	if (displayed_lines > 1)
+	{
+		unsigned int first_incomplete_line = 0;
+		if (stop_line > 1)
+		{
+			first_incomplete_line = stop_line - 1;
+		}
+
+		unsigned int required_newlines = 1;
+		if (displayed_lines > 1)
+		{
+			required_newlines = displayed_lines - 1;
+		}
+
+		for (unsigned int i = first_incomplete_line; i < required_newlines; i++)
+		{
+			output = output + "\n";
+		}
+	}
+}
+
 void text_box::set_output()
 {
 	unsigned int stop_line = 0;
@@ -415,22 +499,7 @@ void text_box::set_output()
 		output = output + editable_lines[i];
 	}
 
-	unsigned int first_incomplete_line = 0;
-	if (stop_line > 1)
-	{
-		first_incomplete_line = stop_line - 1;
-	}
-
-	unsigned int required_newlines = 1;
-	if (displayed_lines > 1)
-	{
-		required_newlines = displayed_lines - 1;
-	}
+	fill_empty_lines(output, stop_line);
 	
-	for (unsigned int i = first_incomplete_line; i < required_newlines; i++)
-	{
-		output = output + "\n";
-	}
-
 	set_output_to_frame(output);
 }

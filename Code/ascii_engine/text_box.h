@@ -23,6 +23,9 @@ public:
 	TEXT_BOX_API void set_max_characters(int characters);
 	TEXT_BOX_API void clear();
 	TEXT_BOX_API std::string get_text();
+	TEXT_BOX_API void set_lines_count(unsigned int lines_count);
+	TEXT_BOX_API void set_spacing(int top, int bottom, int left, int right) override;
+	TEXT_BOX_API void set_spacing_width_multipliers(float left_multiplier, float right_multiplier) override;
 private:
 	bool cursor_on_top_border();
 	bool cursor_on_bottom_border();
@@ -35,6 +38,7 @@ private:
 	unsigned int get_line_of_position(unsigned int position);
 	void move_cursor_to_linear_position(unsigned int position);
 	void fit_cursor_to_line();
+	void fill_empty_lines(std::string& output, unsigned int stop_line);
 	void set_output();
 	unsigned int top_line = 0;
 	unsigned int displayed_lines = 0;

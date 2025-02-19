@@ -20,14 +20,14 @@ class widget
 public:
 	WIDGET_API widget(frame* parent, std::string special_operation="none");
 	WIDGET_API void set_alignment(std::string alignment);
-	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
+	WIDGET_API virtual void set_spacing(int top, int bottom, int left, int right);
 	WIDGET_API void set_border_spacing(int top, int bottom, int left, int right);
 	WIDGET_API void set_vertical_border(char border);
 	WIDGET_API void set_horizontal_border(char border);
 	WIDGET_API void set_corner_border(char border);
 	WIDGET_API void set_highlight_character(char character);
 	WIDGET_API void set_width_multiplier(float multiplier);
-	WIDGET_API void set_spacing_width_multipliers(float left_multiplier, float right_multiplier);
+	WIDGET_API virtual void set_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void add_border(bool border);
 	WIDGET_API void use_spacing_width_multipliers(bool use);
@@ -59,6 +59,7 @@ protected:
 	void set_output_to_frame(const std::string& text);
 	void set_widget_type(int type);
 	bool frame_stale();
+	void mark_frame_as_stale();
 	void frame_display();
 	bool dec_enabled();
 	bool color_enabled();
