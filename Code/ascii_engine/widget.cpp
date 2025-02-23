@@ -1,6 +1,10 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "widget.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 widget::widget(frame* parent, std::string special_operation)
 {
 	parent_frame = parent;

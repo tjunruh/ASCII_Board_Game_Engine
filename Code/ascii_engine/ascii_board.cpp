@@ -6,10 +6,6 @@
 #include "error_codes.h"
 #include "format_tools.h"
 
-#ifdef __linux__
-#include <algorithm>
-#endif
-
 ascii_board::ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
