@@ -68,6 +68,7 @@ protected:
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 	int get_default_foreground_color();
 	int get_default_background_color();
+	void widget_display(std::string output, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

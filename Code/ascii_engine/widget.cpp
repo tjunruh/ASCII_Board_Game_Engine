@@ -307,6 +307,138 @@ int widget::reset_logging(const std::string& file_path)
 	return status;
 }
 
+void widget::widget_display(std::string output, bool can_use_dec, bool can_use_color, const std::vector<format_tools::index_format>& colors)
+{
+	unsigned int width = get_width();
+	int x_origin = get_x_origin();
+	int y_origin = get_y_origin();
+	int cursor_x = 0;
+	int cursor_y = 0;
+	ascii_io::get_cursor_position(cursor_x, cursor_y);
+	if (frame_stale())
+	{
+		set_output_to_frame(output);
+		set_index_colors(colors);
+		frame_display();
+	}
+	else if ((can_use_dec && dec_enabled()) || (can_use_color && color_enabled()))
+	{
+		std::vector<format_tools::index_format> index_regions;
+		std::vector<std::string> lines;
+		bool newline_character_at_end = false;
+		if (output.length() > 0 && output.back() == '\n')
+		{
+			newline_character_at_end = true;
+		}
+
+		if (can_use_color && color_enabled())
+		{
+			index_regions = colors;
+			std::vector<int> ignore_flags = format_tools::set_flags(index_regions, output, '*');
+			lines = format_tools::get_lines(output);
+			lines = format_tools::remove_newline_characters(lines);
+			if (newline_character_at_end)
+			{
+				lines.push_back(" ");
+			}
+			lines = format_tools::fill_lines(lines, width, get_alignment());
+			std::vector<format_tools::coordinate_format> coordinate_colors;
+			format_tools::convert_flags(coordinate_colors, index_regions, ignore_flags, lines, '*');
+			index_regions = format_tools::convert(coordinate_colors, width);
+		}
+		else
+		{
+			lines = format_tools::get_lines(output);
+			lines = format_tools::remove_newline_characters(lines);
+			if (newline_character_at_end)
+			{
+				lines.push_back(" ");
+			}
+			lines = format_tools::fill_lines(lines, width, get_alignment());
+		}
+
+		std::string adjusted_board = format_tools::get_string(lines);
+
+		if (can_use_dec && dec_enabled())
+		{
+			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_board, get_width());
+			if (index_regions.size() > 0)
+			{
+				index_regions = format_tools::combine(index_regions, dec_regions);
+			}
+			else
+			{
+				index_regions = dec_regions;
+			}
+		}
+
+		int line = 0;
+		unsigned int line_length = 0;
+		ascii_io::move_cursor_to_position(x_origin, y_origin);
+		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
+		regions = format_tools::fit_to_width(regions, width);
+		for (unsigned int i = 0; i < regions.size(); i++)
+		{
+			int foreground_color = get_default_foreground_color();
+			int background_color = get_default_background_color();
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
+			{
+				foreground_color = regions[i].format.foreground_format;
+			}
+
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
+			{
+				background_color = regions[i].format.background_format;
+			}
+
+			ascii_io::set_color(foreground_color, background_color, regions[i].format.bold);
+
+			if (regions[i].format.dec)
+			{
+#ifdef _WIN32
+				ascii_io::enable_dec();
+				ascii_io::print(regions[i].content);
+#elif __linux__
+				dec_print(regions[i].content);
+#endif
+			}
+			else
+			{
+#ifdef _WIN32
+				ascii_io::disable_dec();
+#endif
+				ascii_io::print(regions[i].content);
+			}
+			line_length = line_length + regions[i].content.length();
+			if (line_length >= width)
+			{
+				line++;
+				line_length = 0;
+				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
+			}
+		}
+#ifdef _WIN32
+		ascii_io::disable_dec();
+#endif
+	}
+	else
+	{
+		std::vector<std::string> lines = format_tools::get_lines(output);
+		lines = format_tools::remove_newline_characters(lines);
+		if (output.length() > 0 && output.back() == '\n')
+		{
+			lines.push_back(" ");
+		}
+		lines = format_tools::fill_lines(lines, width, get_alignment());
+		for (unsigned int i = 0; i < lines.size(); i++)
+		{
+			ascii_io::move_cursor_to_position(x_origin, y_origin + i);
+			ascii_io::print(lines[i]);
+		}
+	}
+	ascii_io::move_cursor_to_position(cursor_x, cursor_y);
+}
+
 #ifdef __linux__
 void widget::dec_print(const std::string& input)
 {

@@ -39,7 +39,7 @@ private:
 	void move_cursor_to_linear_position(unsigned int position);
 	void fit_cursor_to_line();
 	void fill_empty_lines(std::string& output, unsigned int stop_line);
-	void set_output();
+	std::string build_output(bool add_newlines_chars = false);
 	unsigned int top_line = 0;
 	unsigned int displayed_lines = 0;
 	std::string editable_content = "";

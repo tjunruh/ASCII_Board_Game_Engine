@@ -497,76 +497,8 @@ void menu::display()
 				cursor_line = top_line + displayed_lines - 1;
 			}
 		}
-		sync();
-		frame_display();
 	}
-	else if (dec_enabled())
-	{
-		unsigned int width = get_width();
-		int x_origin = get_x_origin();
-		int y_origin = get_y_origin();
-		int cursor_x = 0;
-		int cursor_y = 0;
-		ascii_io::get_cursor_position(cursor_x, cursor_y);
-		std::string menu_output = build_output();
-		std::vector<std::string> lines = format_tools::get_lines(menu_output);
-		lines = format_tools::remove_newline_characters(lines);
-		lines = format_tools::fill_lines(lines, width, get_alignment());
-		std::string adjusted_menu_output = format_tools::get_string(lines);
-		std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_menu_output, width);
-		std::vector<format_tools::content_format> regions = format_tools::convert(dec_regions, adjusted_menu_output);
-		regions = format_tools::fit_to_width(regions, width);
-		int line = 0;
-		unsigned int line_length = 0;
-		ascii_io::move_cursor_to_position(x_origin, y_origin);
-		for (unsigned int i = 0; i < regions.size(); i++)
-		{
-			if (regions[i].format.dec)
-			{
-#ifdef _WIN32
-				ascii_io::enable_dec();
-				ascii_io::print(regions[i].content);
-#elif __linux__
-				dec_print(regions[i].content);
-#endif
-			}
-			else
-			{
-#ifdef _WIN32
-				ascii_io::disable_dec();
-#endif
-				ascii_io::print(regions[i].content);
-			}
-			line_length = line_length + regions[i].content.length();
-			if (line_length >= width)
-			{
-				line++;
-				line_length = 0;
-				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
-			}
-		}
-#ifdef _WIN32
-		ascii_io::disable_dec();
-#endif
-		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
-	}
-	else
-	{
-		std::vector<std::string> lines = format_tools::get_lines(build_output());
-		lines = format_tools::remove_newline_characters(lines);
-		lines = format_tools::fill_lines(lines, get_width(), get_alignment());
-		int x_origin = get_x_origin();
-		int y_origin = get_y_origin();
-		int cursor_x = 0;
-		int cursor_y = 0;
-		ascii_io::get_cursor_position(cursor_x, cursor_y);
-		for (unsigned int i = 0; i < lines.size(); i++)
-		{
-			ascii_io::move_cursor_to_position(x_origin, y_origin + i);
-			ascii_io::print(lines[i]);
-		}
-		ascii_io::move_cursor_to_position(cursor_x, cursor_y);
-	}
+	widget_display(build_output(), true);
 }
 
 void menu::sync()
