@@ -50,6 +50,7 @@ public:
 	WIDGET_API int get_y_origin();
 	WIDGET_API int get_widget_type();
 	WIDGET_API std::string get_output();
+	WIDGET_API std::string get_displayed_output();
 	WIDGET_API std::string get_alignment();
 	WIDGET_API int start_logging(const std::string& file_path);
 	WIDGET_API void stop_logging();
@@ -65,10 +66,19 @@ protected:
 	bool color_enabled();
 	void set_index_colors(const std::vector<format_tools::index_format>& index_colors);
 	std::vector<format_tools::index_format> get_index_colors();
+	std::vector<format_tools::index_format> get_displayed_index_colors();
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 	int get_default_foreground_color();
 	int get_default_background_color();
 	void widget_display(std::string output, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
+	void set_line_constraint(bool line_constraint);
+	void set_displayed_lines(unsigned int displayed_lines);
+	void set_top_line(unsigned int top_line);
+	void get_displayed_output(std::string& displayed_output);
+	void get_displayed_output(std::string& displayed_output, std::vector<format_tools::index_format>& colors);
+	unsigned int get_displayed_lines();
+	unsigned int get_top_line();
+	unsigned int get_lines_count(bool only_displayed = true);
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

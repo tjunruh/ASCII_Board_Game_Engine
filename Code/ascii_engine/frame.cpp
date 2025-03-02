@@ -19,6 +19,8 @@ frame::frame(bool start_logger, const std::string& logging_file_path)
 			ascii_io::getchar();
 		}
 	}
+
+	ascii_io::get_terminal_size(terminal_x, terminal_y);
 }
 
 void frame::display()
@@ -922,14 +924,26 @@ int frame::get_levels(int row, int column)
 	return count;
 }
 
-int frame::get_lines_count(int id, int& lines_count)
+int frame::get_lines_count(int id, unsigned int& lines_count, bool only_displayed)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
-			lines_count = widgets[i].lines_count;
+			if (!widgets[i].line_constraint)
+			{
+				lines_count = widgets[i].lines_count;
+			}
+			else if (only_displayed)
+			{
+				lines_count = widgets[i].displayed_lines;
+			}
+			else
+			{
+				lines_count = widgets[i].lines.size();
+			}
+
 			status = SUCCESS;
 			break;
 		}
@@ -1154,6 +1168,36 @@ int frame::get_selectability(int id, bool& selectable)
 	return status;
 }
 
+int frame::get_top_line(int id, unsigned int& top_line)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			top_line = widgets[i].top_line;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_displayed_lines(int id, unsigned int& displayed_lines)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			displayed_lines = widgets[i].displayed_lines;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 float frame::get_greatest_width_multiplier_at_coordinate(int row, int column)
 {
 	float greatest_width_multiplier = 0.0;
@@ -1211,7 +1255,7 @@ int frame::get_index_colors(int id, std::vector<format_tools::index_format>& ind
 	return status;
 }
 
-int frame::set_lines_count(int id, int lines_count)
+int frame::set_lines_count(int id, unsigned int lines_count)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
@@ -1345,6 +1389,68 @@ int frame::set_index_colors(int id, std::vector<format_tools::index_format> inde
 		if (widgets[i].id == id)
 		{
 			widgets[i].index_colors = index_colors;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_line_constraint(int id, bool line_constraint)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].line_constraint = line_constraint;
+			status = SUCCESS;
+			display_stale = true;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_top_line(int id, unsigned int top_line)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].top_line = top_line;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_displayed_lines(int id, unsigned int displayed_lines)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].displayed_lines = displayed_lines;
+			status = SUCCESS;
+			display_stale = true;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_lines(int id, const std::vector <std::string>& lines)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].lines = lines;
 			status = SUCCESS;
 			break;
 		}
@@ -1588,31 +1694,17 @@ int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
 
 unsigned int frame::get_widget_height(const widget_info& item, bool include_spacing)
 {
-	int raw_height = 0;
-	if (!include_spacing)
+	unsigned int height = 0;
+	get_lines_count(item.id, height);
+	if (include_spacing)
 	{
-		raw_height = item.lines_count - item.top_spacing - item.bottom_spacing;
+		height = height + item.top_spacing + item.bottom_spacing;
 		if (item.add_border)
 		{
-			raw_height = raw_height - 2;
+			height = height + 2;
 		}
 	}
-	else
-	{
-		raw_height = item.lines_count;
-	}
 
-	unsigned int height = 0;
-	if (raw_height >= 0)
-	{
-		height = (unsigned int)raw_height;
-	}
-	else
-	{
-		log.log_begin("frame::get_widget_height");
-		log.log_comment("Widget id: " + std::to_string(item.id) + " has zero height.");
-		log.log_end("frame::get_widget_height");
-	}
 	return height;
 }
 
@@ -1627,6 +1719,66 @@ int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
 	}
 	return status;
 }
+
+void frame::constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines)
+{
+	unsigned int stop_line = 0;
+	std::string empty_line = format_tools::get_spacing(get_widget_width(item, false), ' ');
+	if (!item.line_constraint || widget_lines.size() < (item.displayed_lines + item.top_line))
+	{
+		stop_line = widget_lines.size();
+	}
+	else
+	{
+		stop_line = item.displayed_lines + item.top_line;
+	}
+
+	int last_widget_line = widget_lines.size() - 1;
+	for (int i = last_widget_line; i >= 0; i--)
+	{
+		if ((unsigned int)i >= stop_line || (unsigned int)i < item.top_line)
+		{
+			widget_lines.erase(widget_lines.begin() + i);
+		}
+	}
+
+	for (unsigned int i = widget_lines.size(); i < item.displayed_lines; i++)
+	{
+		widget_lines.push_back(empty_line);
+	}
+}
+
+void frame::constrain_colors(const widget_info& item, std::vector<format_tools::coordinate_format>& colors)
+{
+	if (item.coordinate_colors.size() > 0)
+	{
+		unsigned int stop_line = 0;
+		if (!item.line_constraint || item.lines.size() < (item.displayed_lines + item.top_line))
+		{
+			stop_line = item.lines.size();
+		}
+		else
+		{
+			stop_line = item.displayed_lines + item.top_line;
+		}
+
+		int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
+		for (int i = number_of_coordinate_colors; i >= 0; i--)
+		{
+			if (item.coordinate_colors[i].y_position < (int)item.top_line || item.coordinate_colors[i].y_position >= (int)stop_line)
+			{
+				colors.erase(item.coordinate_colors.begin() + i);
+			}
+		}
+
+		for (unsigned int i = 0; i < colors.size(); i++)
+		{
+			colors[i].y_position = colors[i].y_position - item.top_line;
+		}
+	}
+}
+
+
 
 std::vector<std::string> frame::get_widget_lines(int id)
 {
@@ -1732,6 +1884,17 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		set_coordinate_colors(item.id, item.coordinate_colors);
 	}
 
+	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
+	{
+		set_lines(item.id, widget_lines);
+		if (item.line_constraint)
+		{
+			constrain_lines(item, widget_lines);
+		}
+	}
+
+	set_lines_count(item.id, widget_lines.size());
+
 	for (int i = 0; i < item.top_spacing; i++)
 	{
 		widget_lines.insert(widget_lines.begin(), active_spacing);
@@ -1748,6 +1911,30 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		widget_lines[i] = widget_lines[i] + right_spacing_string;
 	}
 	return widget_lines;
+}
+
+int frame::get_displayed_output(int id, std::string& displayed_output)
+{
+	widget_info item;
+	int status = get_widget(id, item);
+	if (status == SUCCESS)
+	{
+		constrain_lines(item, item.lines);
+		displayed_output = format_tools::get_string(item.lines);
+	}
+	return status;
+}
+
+int frame::get_displayed_colors(int id, std::vector<format_tools::index_format>& colors)
+{
+	widget_info item;
+	int status = get_widget(id, item);
+	if (_color_enabled && (status == SUCCESS))
+	{
+		constrain_colors(item, item.coordinate_colors);
+		colors = format_tools::convert(item.coordinate_colors, get_widget_width(item, false));
+	}
+	return status;
 }
 
 bool frame::element_exists(const std::vector<int>& storage, int element)
@@ -1823,7 +2010,6 @@ std::string frame::generate_frame_output()
 					widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
 				}
 
-				set_lines_count(item.id, widget_lines.size());
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			column_data.text.push_back(accumulated_widget_lines);
@@ -1913,11 +2099,22 @@ void frame::translate_coordinate_colors_to_frame()
 	{
 		for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
 		{
-			format_tools::coordinate_format color_region;
-			color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
-			color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
-			color_region.format = widgets[i].coordinate_colors[j].format;
-			color_regions.push_back(color_region);
+			if (!widgets[i].line_constraint)
+			{
+				format_tools::coordinate_format color_region;
+				color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
+				color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
+				color_region.format = widgets[i].coordinate_colors[j].format;
+				color_regions.push_back(color_region);
+			}
+			else if (widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines))
+			{
+				format_tools::coordinate_format color_region;
+				color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
+				color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
+				color_region.format = widgets[i].coordinate_colors[j].format;
+				color_regions.push_back(color_region);
+			}
 		}
 	}
 }

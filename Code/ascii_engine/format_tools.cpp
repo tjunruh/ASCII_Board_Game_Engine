@@ -555,11 +555,23 @@ std::vector<format_tools::index_format> format_tools::convert(const std::vector<
 {
 	index_format converted_format;
 	std::vector<index_format> index_vec;
-	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
+	std::vector<coordinate_format> sorted_coordinate_vec = sort(coordinate_vec);
+	for (unsigned int i = 0; i < sorted_coordinate_vec.size(); i++)
 	{
-		converted_format.format = coordinate_vec[i].format;
-		converted_format.index = (coordinate_vec[i].y_position * width) + coordinate_vec[i].x_position;
-		index_vec.push_back(converted_format);
+		converted_format.format = sorted_coordinate_vec[i].format;
+		converted_format.index = (sorted_coordinate_vec[i].y_position * width) + sorted_coordinate_vec[i].x_position;
+		if (index_vec.size() > 0 && index_vec[index_vec.size() - 1].index == converted_format.index)
+		{
+			if (format_empty(index_vec[index_vec.size() - 1].format))
+			{
+				index_vec.erase(index_vec.end() - 1);
+				index_vec.push_back(converted_format);
+			}
+		}
+		else
+		{
+			index_vec.push_back(converted_format);
+		}
 	}
 	return index_vec;
 }
@@ -845,4 +857,32 @@ std::vector<format_tools::index_format> format_tools::build_color_for_value(cons
 	}
 
 	return colors;
+}
+
+int format_tools::get_color_line(const index_format& color, const std::vector<std::string>& lines)
+{
+	int line = -1;
+	if (color.index >= 0)
+	{
+		int accumulated_index = 0;
+		for (unsigned int i = 0; i < lines.size(); i++)
+		{
+			if ((color.index >= accumulated_index) && ((unsigned int)color.index < (accumulated_index + lines[i].length())))
+			{
+				line = i;
+				break;
+			}
+		}
+	}
+	return line;
+}
+
+bool format_tools::format_empty(const common_format& format)
+{
+	if (format.background_format == none && format.foreground_format == none && format.dec == false && format.bold == false)
+	{
+		return true;
+	}
+
+	return false;
 }

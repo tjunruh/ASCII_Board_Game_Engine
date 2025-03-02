@@ -3,7 +3,7 @@
 #include "widget_types.h"
 #include "error_codes.h"
 
-label::label(frame* parent, const std::string& special_operation, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+label::label(frame* parent, const std::string& special_operation, unsigned int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -17,6 +17,11 @@ label::label(frame* parent, const std::string& special_operation, bool start_log
 	}
 	set_widget_type(LABEL);
 	unselectable();
+	if (lines_count != 0)
+	{
+		set_line_constraint(true);
+		set_displayed_lines(lines_count);
+	}
 }
 
 void label::set_output(const std::string& output)
@@ -49,7 +54,7 @@ void label::set_output(const std::string& output)
 		}
 		set_index_colors(colors);
 	}
-	
+
 	set_output_to_frame(output);
 }
 
@@ -83,7 +88,7 @@ void label::set_colors(std::vector<format_tools::index_format> colors)
 			}
 		}
 	}
-	
+
 
 	log.log_status(SUCCESS, "label::set_colors");
 	set_index_colors(colors);
@@ -92,4 +97,106 @@ void label::set_colors(std::vector<format_tools::index_format> colors)
 std::vector<format_tools::index_format> label::get_colors()
 {
 	return get_index_colors();
+}
+
+std::vector<format_tools::index_format> label::get_displayed_colors()
+{
+	return get_displayed_index_colors();
+}
+
+void label::display()
+{
+	std::string displayed_output = "";
+	std::vector<format_tools::index_format> colors;
+	get_displayed_output(displayed_output, colors);
+	widget_display(displayed_output, true, true, colors);
+}
+
+void label::scroll()
+{
+	int input = ascii_io::undefined;
+	do
+	{
+		input = ascii_io::getchar();
+		if (input == _up)
+		{
+			scroll_up();
+		}
+		else if (input == _down)
+		{
+			scroll_down();
+		}
+
+	} while (input != _quit);
+}
+
+void label::scroll_up(unsigned int amount, bool render)
+{
+	unsigned int top_line = get_top_line();
+	if (amount >= top_line)
+	{
+		top_line = 0;
+	}
+	else
+	{
+		top_line = top_line - amount;
+	}
+	set_top_line(top_line);
+	if (render)
+	{
+		display();
+	}
+}
+
+void label::scroll_down(unsigned int amount, bool render)
+{
+	unsigned int top_line = get_top_line();
+	unsigned int displayed_lines = get_displayed_lines();
+	unsigned int total_lines = get_lines_count(false);
+	unsigned int bottom_line = 0;
+	if (displayed_lines < total_lines)
+	{
+		bottom_line = total_lines - displayed_lines;
+	}
+
+	if ((top_line + amount) > bottom_line)
+	{
+		top_line = bottom_line;
+	}
+	else
+	{
+		top_line = top_line + amount;
+	}
+	set_top_line(top_line);
+	if (render)
+	{
+		display();
+	}
+}
+
+void label::set_controls(unsigned int up, unsigned int down, unsigned int quit)
+{
+	_up = up;
+	_down = down;
+	_quit = quit;
+}
+
+void label::get_controls(unsigned int& up, unsigned int& down, unsigned int& quit)
+{
+	up = _up;
+	down = _down;
+	quit = _quit;
+}
+
+void label::set_lines_count(unsigned int lines_count)
+{
+	set_displayed_lines(lines_count);
+	if (lines_count == 0)
+	{
+		set_line_constraint(false);
+	}
+	else
+	{
+		set_line_constraint(true);
+	}
 }

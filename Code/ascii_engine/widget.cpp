@@ -232,6 +232,14 @@ std::string widget::get_output()
 	return output;
 }
 
+std::string widget::get_displayed_output()
+{
+	std::string output = "";
+	int status = parent_frame->get_displayed_output(widget_id, output);
+	log.log_status(status, "widget::get_displayed_output");
+	return output;
+}
+
 std::string widget::get_alignment()
 {
 	std::string alignment = "";
@@ -276,6 +284,14 @@ std::vector<format_tools::index_format> widget::get_index_colors()
 	std::vector<format_tools::index_format> index_colors;
 	int status = parent_frame->get_index_colors(widget_id, index_colors);
 	log.log_status(status, "widget::get_index_colors");
+	return index_colors;
+}
+
+std::vector<format_tools::index_format> widget::get_displayed_index_colors()
+{
+	std::vector<format_tools::index_format> index_colors;
+	int status = parent_frame->get_displayed_colors(widget_id, index_colors);
+	log.log_status(status, "widget::get_displayed_index_colors");
 	return index_colors;
 }
 
@@ -361,11 +377,11 @@ void widget::widget_display(std::string output, bool can_use_dec, bool can_use_c
 			lines = format_tools::fill_lines(lines, width, get_alignment());
 		}
 
-		std::string adjusted_board = format_tools::get_string(lines);
+		std::string adjusted_output = format_tools::get_string(lines);
 
 		if (can_use_dec && dec_enabled())
 		{
-			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_board, get_width());
+			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_output, get_width());
 			if (index_regions.size() > 0)
 			{
 				index_regions = format_tools::combine(index_regions, dec_regions);
@@ -379,7 +395,7 @@ void widget::widget_display(std::string output, bool can_use_dec, bool can_use_c
 		int line = 0;
 		unsigned int line_length = 0;
 		ascii_io::move_cursor_to_position(x_origin, y_origin);
-		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_board);
+		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_output);
 		regions = format_tools::fit_to_width(regions, width);
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
@@ -421,6 +437,7 @@ void widget::widget_display(std::string output, bool can_use_dec, bool can_use_c
 				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
 			}
 		}
+		ascii_io::set_color(get_default_foreground_color(), get_default_background_color());
 #ifdef _WIN32
 		ascii_io::disable_dec();
 #endif
@@ -441,6 +458,62 @@ void widget::widget_display(std::string output, bool can_use_dec, bool can_use_c
 		}
 	}
 	ascii_io::move_cursor_to_position(cursor_x, cursor_y);
+}
+
+void widget::set_line_constraint(bool line_constraint)
+{
+	int status = parent_frame->set_line_constraint(widget_id, line_constraint);
+	log.log_status(status, "widget::set_line_constraint");
+}
+
+void widget::set_displayed_lines(unsigned int displayed_lines)
+{
+	int status = parent_frame->set_displayed_lines(widget_id, displayed_lines);
+	log.log_status(status, "widget::set_displayed_lines");
+}
+
+void widget::set_top_line(unsigned int top_line)
+{
+	int status = parent_frame->set_top_line(widget_id, top_line);
+	log.log_status(status, "widget::set_top_line");
+}
+
+void widget::get_displayed_output(std::string& displayed_output)
+{
+	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
+	log.log_status(status, "widget::get_displayed_output");
+}
+
+void widget::get_displayed_output(std::string& displayed_output, std::vector<format_tools::index_format>& colors)
+{
+	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
+	log.log_status(status, "widget::get_displayed_output");
+	status = parent_frame->get_displayed_colors(widget_id, colors);
+	log.log_status(status, "widget::get_displayed_output");
+}
+
+unsigned int widget::get_displayed_lines()
+{
+	unsigned int displayed_lines = 0;
+	int status = parent_frame->get_displayed_lines(widget_id, displayed_lines);
+	log.log_status(status, "widget::get_displayed_lines");
+	return displayed_lines;
+}
+
+unsigned int widget::get_top_line()
+{
+	unsigned int top_line = 0;
+	int status = parent_frame->get_top_line(widget_id, top_line);
+	log.log_status(status, "widget::get_top_line");
+	return top_line;
+}
+
+unsigned int widget::get_lines_count(bool only_displayed)
+{
+	unsigned int lines_count = 0;
+	int status = parent_frame->get_lines_count(widget_id, lines_count, only_displayed);
+	log.log_status(status, "widget::get_lines_count");
+	return lines_count;
 }
 
 #ifdef __linux__

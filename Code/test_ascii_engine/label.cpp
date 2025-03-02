@@ -82,6 +82,7 @@ protected:
 		ASSERT_EQ(status, 0) << std::to_string(test_num);
 		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
 		std::vector<format_tools::index_format> returned_colors = local_test_label.get_colors();
+
 		ASSERT_EQ(colors_match.size(), returned_colors.size()) << "Test Number: " + std::to_string(test_num);
 		for (unsigned int i = 0; i < colors_match.size(); i++)
 		{
@@ -109,6 +110,21 @@ TEST_F(label_test, is_selectable)
 	delete(local_test_frame);
 }
 
+TEST_F(label_test, set_get_controls_test)
+{
+	frame* local_test_frame = new frame();
+	label local_test_label_1(local_test_frame, "none", 0, true);
+	local_test_label_1.set_controls(ascii_io::w, ascii_io::s, ascii_io::ESC);
+	unsigned int up = ascii_io::undefined;
+	unsigned int down = ascii_io::undefined;
+	unsigned int quit = ascii_io::undefined;
+	local_test_label_1.get_controls(up, down, quit);
+	EXPECT_EQ(up, ascii_io::w);
+	EXPECT_EQ(down, ascii_io::s);
+	EXPECT_EQ(quit, ascii_io::ESC);
+	delete(local_test_frame);
+}
+
 TEST_F(label_test, set_color)
 {
 	format_tools::common_format empty_format;
@@ -129,7 +145,7 @@ TEST_F(label_test, set_color)
 	};
 
 	frame* local_test_frame = new frame();
-	label local_test_label_1(local_test_frame, "none", true);
+	label local_test_label_1(local_test_frame, "none", 0, true);
 	set_color_test(local_test_label_1, color2, empty_color, "label::set_colors", INVALID_INDEX, 0);
 	local_test_label_1.set_output("012345678");
 	set_color_test(local_test_label_1, color1, empty_color, "label::set_colors", INVALID_INDEX, 1);
@@ -137,6 +153,7 @@ TEST_F(label_test, set_color)
 	set_color_test(local_test_label_1, color3, color2, "label::set_colors", INVALID_INDEX, 3);
 	local_test_label_1.set_output("0123456789");
 	set_color_test(local_test_label_1, color3, color3, "label::set_colors", SUCCESS, 4);
+
 	delete(local_test_frame);
 }
 
@@ -795,6 +812,211 @@ TEST_F(label_test, center_block_alignment)
 	labels.push_back(local_test_label_6);
 	std::string output = local_test_frame->get_frame_output();
 	
+	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}
+
+TEST_F(label_test, test_line_constraint)
+{
+	const expected_display_data correct_answer =
+	{
+		".------------------------------------------------..------------------------------------------------.\n"
+		"| This is widget 1.                              || This                                           |\n"
+		"|                                                |.------------------------------------------------.\n"
+		"|                                                |                                                  \n"
+		"|                                                |                                                  \n"
+		".------------------------------------------------.                                                  \n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		"| This is widget                                                                                   |\n"
+		"| 3                                                                                                |\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| This is                       || This                          || This is widget 6              | \n"
+		"| widget                        || is                            ||                               | \n"
+		".-------------------------------.| widget                        ||                               | \n"
+		"                                 .-------------------------------.|                               | \n"
+		"                                                                  .-------------------------------. ",
+		{ 2, 52, 2, 2, 35, 68 },
+		{ 1, 1, 7, 11, 11, 11 },
+		{ 46, 46, 96, 29, 29, 29 },
+		{ 4, 1, 2, 2, 3, 4 },
+		{ 50, 50, 100, 33, 33, 33 },
+		{ 6, 3, 4, 4, 5, 6 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("This is widget 1.\n\n\n");
+	local_test_label_1.add_border(true);
+	labels.push_back(local_test_label_1);
+	label local_test_label_2(local_test_frame, "none", 1);
+	local_test_label_2.set_output("This\nis\nwidget\n2");
+	local_test_label_2.add_border(true);
+	labels.push_back(local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("This is widget\n3");
+	local_test_label_3.add_border(true);
+	labels.push_back(local_test_label_3);
+	label local_test_label_4(local_test_frame, "new line", 2);
+	local_test_label_4.set_output("This is\nwidget\n4\n");
+	local_test_label_4.add_border(true);
+	labels.push_back(local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("This\nis\nwidget\n5");
+	local_test_label_5.add_border(true);
+	local_test_label_5.set_lines_count(3);
+	labels.push_back(local_test_label_5);
+	label local_test_label_6(local_test_frame);
+	local_test_label_6.set_output("This is widget 6\n\n\n");
+	local_test_label_6.add_border(true);
+	labels.push_back(local_test_label_6);
+	std::string output = local_test_frame->get_frame_output();
+
+	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}
+
+TEST_F(label_test, test_scroll)
+{
+	const expected_display_data correct_answer =
+	{
+		".------------------------------------------------..------------------------------------------------.\n"
+		"| This is widget 1.                              || 2                                              |\n"
+		"|                                                |.------------------------------------------------.\n"
+		"|                                                |                                                  \n"
+		"|                                                |                                                  \n"
+		".------------------------------------------------.                                                  \n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		"| This is widget                                                                                   |\n"
+		"| 3                                                                                                |\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| widget                        || is                            || This is widget 6              | \n"
+		"| 4                             || widget                        ||                               | \n"
+		".-------------------------------.| 5                             ||                               | \n"
+		"                                 .-------------------------------.|                               | \n"
+		"                                                                  .-------------------------------. ",
+		{ 2, 52, 2, 2, 35, 68 },
+		{ 1, 1, 7, 11, 11, 11 },
+		{ 46, 46, 96, 29, 29, 29 },
+		{ 4, 1, 2, 2, 3, 4 },
+		{ 50, 50, 100, 33, 33, 33 },
+		{ 6, 3, 4, 4, 5, 6 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("This is widget 1.\n\n\n");
+	local_test_label_1.add_border(true);
+	labels.push_back(local_test_label_1);
+	label local_test_label_2(local_test_frame, "none", 1);
+	local_test_label_2.set_output("This\nis\nwidget\n2");
+	local_test_label_2.add_border(true);
+	labels.push_back(local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("This is widget\n3");
+	local_test_label_3.add_border(true);
+	labels.push_back(local_test_label_3);
+	label local_test_label_4(local_test_frame, "new line", 2);
+	local_test_label_4.set_output("This is\nwidget\n4\n");
+	local_test_label_4.add_border(true);
+	labels.push_back(local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("This\nis\nwidget\n5");
+	local_test_label_5.add_border(true);
+	local_test_label_5.set_lines_count(3);
+	labels.push_back(local_test_label_5);
+	label local_test_label_6(local_test_frame);
+	local_test_label_6.set_output("This is widget 6\n\n\n");
+	local_test_label_6.add_border(true);
+	labels.push_back(local_test_label_6);
+	std::string output = local_test_frame->get_frame_output();
+	local_test_label_2.scroll_down(3, false);
+	local_test_label_4.scroll_down(2, false);
+	local_test_label_4.scroll_up(1, false);
+	local_test_label_5.scroll_down(1, false);
+	output = local_test_frame->get_frame_output();
+
+	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}
+
+TEST_F(label_test, test_scroll_out_of_bounds)
+{
+	const expected_display_data correct_answer =
+	{
+		".------------------------------------------------..------------------------------------------------.\n"
+		"| This is widget 1.                              || 2                                              |\n"
+		"|                                                |.------------------------------------------------.\n"
+		"|                                                |                                                  \n"
+		"|                                                |                                                  \n"
+		".------------------------------------------------.                                                  \n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		"| This is widget                                                                                   |\n"
+		"| 3                                                                                                |\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| This is                       || is                            || This is widget 6              | \n"
+		"| widget                        || widget                        ||                               | \n"
+		".-------------------------------.| 5                             ||                               | \n"
+		"                                 .-------------------------------.|                               | \n"
+		"                                                                  .-------------------------------. ",
+		{ 2, 52, 2, 2, 35, 68 },
+		{ 1, 1, 7, 11, 11, 11 },
+		{ 46, 46, 96, 29, 29, 29 },
+		{ 4, 1, 2, 2, 3, 4 },
+		{ 50, 50, 100, 33, 33, 33 },
+		{ 6, 3, 4, 4, 5, 6 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("This is widget 1.\n\n\n");
+	local_test_label_1.add_border(true);
+	labels.push_back(local_test_label_1);
+	label local_test_label_2(local_test_frame, "none", 1);
+	local_test_label_2.set_output("This\nis\nwidget\n2");
+	local_test_label_2.add_border(true);
+	labels.push_back(local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("This is widget\n3");
+	local_test_label_3.add_border(true);
+	labels.push_back(local_test_label_3);
+	label local_test_label_4(local_test_frame, "new line", 2);
+	local_test_label_4.set_output("This is\nwidget\n4\n");
+	local_test_label_4.add_border(true);
+	labels.push_back(local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("This\nis\nwidget\n5");
+	local_test_label_5.add_border(true);
+	local_test_label_5.set_lines_count(3);
+	labels.push_back(local_test_label_5);
+	label local_test_label_6(local_test_frame);
+	local_test_label_6.set_output("This is widget 6\n\n\n");
+	local_test_label_6.add_border(true);
+	labels.push_back(local_test_label_6);
+	std::string output = local_test_frame->get_frame_output();
+	local_test_label_2.scroll_down(100, false);
+	local_test_label_4.scroll_down(100, false);
+	local_test_label_4.scroll_up(100, false);
+	local_test_label_5.scroll_down(100, false);
+	output = local_test_frame->get_frame_output();
+
 	run_test(output, labels, correct_answer);
 
 	delete(local_test_frame);

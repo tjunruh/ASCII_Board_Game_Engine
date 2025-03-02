@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 #ifdef _WIN32
 #ifdef WIDGET_TYPES_EXPORTS
@@ -16,3 +17,8 @@
 #define BOARD 3
 #define LABEL 4
 #define FRAME 5
+
+namespace widget_types
+{
+	const std::vector<int> lince_constraint_widgets = { TEXTBOX, MENU, LABEL };
+}

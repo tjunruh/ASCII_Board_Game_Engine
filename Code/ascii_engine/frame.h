@@ -80,12 +80,16 @@ private:
 		int widget_type = WIDGET;
 		int x_origin = -1;
 		int y_origin = -1;
-		int lines_count = 0;
+		unsigned int lines_count = 0;
 		int level = 0;
 		float width_multiplier = 1.0;
 		bool selectable = false;
+		unsigned int top_line = 0;
+		unsigned int displayed_lines = 0;
+		bool line_constraint = false;
 		std::vector<format_tools::coordinate_format> coordinate_colors;
 		std::vector<format_tools::index_format> index_colors;
+		std::vector<std::string> lines;
 	};
 
 	const std::string special_operation_new_line = "new line";
@@ -105,13 +109,17 @@ private:
 	int set_highlight_character(int id, char character);
 	int set_x_origin(int id, int x_origin);
 	int set_y_origin(int id, int y_origin);
-	int set_lines_count(int id, int lines_count);
+	int set_lines_count(int id, unsigned int lines_count);
 	int set_width_multiplier(int id, float multiplier);
 	int set_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier);
 	int set_border_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier);
 	int set_selectable(int id, bool selectable);
 	int set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors);
 	int set_index_colors(int id, std::vector<format_tools::index_format> index_colors);
+	int set_line_constraint(int id, bool line_constraint);
+	int set_top_line(int id, unsigned int top_line);
+	int set_displayed_lines(int id, unsigned int displayed_lines);
+	int set_lines(int id, const std::vector<std::string>& lines);
 	int add_border(int id, bool border);
 	int use_spacing_width_multipliers(int id, bool use);
 	void highlight(int row, int column, int level);
@@ -120,7 +128,7 @@ private:
 	bool widget_exists(int id);
 	bool widget_exists(int row, int column);
 	int get_levels(int row, int column);
-	int get_lines_count(int id, int& lines_count);
+	int get_lines_count(int id, unsigned int& lines_count, bool only_displayed=true);
 	int get_x_origin(int id, int& x_origin);
 	int get_y_origin(int id, int& y_origin);
 	int get_alignment(int id, std::string& allignment);
@@ -134,6 +142,8 @@ private:
 	int get_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier);
 	int get_border_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier);
 	int get_selectability(int id, bool& selectable);
+	int get_top_line(int id, unsigned int& top_line);
+	int get_displayed_lines(int id, unsigned int& displayed_lines);
 	float get_greatest_width_multiplier_at_coordinate(int row, int column);
 	float get_width_weight(const widget_info& item, float multiplier);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
@@ -151,7 +161,11 @@ private:
 	int get_widget_width(int id, unsigned int& width, bool include_spacing);
 	unsigned int get_widget_height(const widget_info& item, bool include_spacing);
 	int get_widget_height(int id, unsigned int& width, bool include_spacing);
+	void constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines);
+	void constrain_colors(const widget_info& item, std::vector<format_tools::coordinate_format>& colors);
 	std::vector<std::string> get_widget_lines(int id);
+	int get_displayed_output(int id, std::string& displayed_output);
+	int get_displayed_colors(int id, std::vector<format_tools::index_format>& colors);
 	bool element_exists(const std::vector<int>& storage, int element);
 	unsigned int get_total_rows();
 	unsigned int get_columns_in_row(int row);
