@@ -71,14 +71,17 @@ protected:
 	int get_default_foreground_color();
 	int get_default_background_color();
 	void widget_display(std::string output, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
+	void widget_display(std::vector<std::string> output_lines, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 	void set_line_constraint(bool line_constraint);
 	void set_displayed_lines(unsigned int displayed_lines);
 	void set_top_line(unsigned int top_line);
-	void get_displayed_output(std::string& displayed_output);
-	void get_displayed_output(std::string& displayed_output, std::vector<format_tools::index_format>& colors);
+	void get_displayed_output(std::vector<std::string>& displayed_output);
+	void get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors);
+	bool get_line_constraint();
 	unsigned int get_displayed_lines();
 	unsigned int get_top_line();
 	unsigned int get_lines_count(bool only_displayed = true);
+	void set_line_character(char character, unsigned int line, unsigned int character_index);
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

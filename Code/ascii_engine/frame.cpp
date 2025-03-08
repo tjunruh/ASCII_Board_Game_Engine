@@ -118,6 +118,8 @@ void frame::display()
 		ascii_io::print(output);
 	}
 
+	previous_x = terminal_x;
+	previous_y = terminal_y;
 	display_stale = false;
 }
 
@@ -1255,6 +1257,21 @@ int frame::get_index_colors(int id, std::vector<format_tools::index_format>& ind
 	return status;
 }
 
+int frame::get_line_constraint(int id, bool& line_constraint)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			line_constraint = widgets[i].line_constraint;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::set_lines_count(int id, unsigned int lines_count)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1436,7 +1453,6 @@ int frame::set_displayed_lines(int id, unsigned int displayed_lines)
 		{
 			widgets[i].displayed_lines = displayed_lines;
 			status = SUCCESS;
-			display_stale = true;
 			break;
 		}
 	}
@@ -1451,6 +1467,51 @@ int frame::set_lines(int id, const std::vector <std::string>& lines)
 		if (widgets[i].id == id)
 		{
 			widgets[i].lines = lines;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_line_character(int id, char character, unsigned int line, unsigned int character_index)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (line < widgets[i].lines.size())
+			{
+				if (character_index < widgets[i].lines[line].length())
+				{
+					(widgets[i].lines[line])[character_index] = character;
+					widgets[i].line_edited = true;
+					status = SUCCESS;
+				}
+				else
+				{
+					status = INVALID_INDEX;
+				}
+			}
+			else
+			{
+				status = INVALID_INDEX;
+			}
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_line_edited(int id, bool line_edited)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].line_edited = line_edited;
 			status = SUCCESS;
 			break;
 		}
@@ -1778,12 +1839,43 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 	}
 }
 
+void frame::update_widget_output_from_lines(widget_info& item)
+{
+	unsigned int output_index = 0;
+	for (unsigned int i = 0; i < item.lines.size(); i++)
+	{
+		for (unsigned int j = 0; j < item.lines[i].length(); j++)
+		{
+			while (output_index < item.output.length() && item.output[output_index] == '\n')
+			{
+				output_index++;
+			}
 
+			if (output_index < item.output.length())
+			{
+				item.output[output_index] = (item.lines[i])[j];
+				output_index++;
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+}
 
 std::vector<std::string> frame::get_widget_lines(int id)
 {
 	widget_info item;
 	get_widget(id, item);
+
+	if (item.line_edited)
+	{
+		update_widget_output_from_lines(item);
+		set_line_edited(id, false);
+		widgets[id].output = item.output;
+	}
+
 	if (item.output == "")
 	{
 		item.output = " ";
@@ -1867,12 +1959,17 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		line = "";
 	}
 
-	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
-
 	if (user_lines.back() == "\n")
 	{
 		widget_lines.push_back(active_spacing);
 	}
+
+	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
+	{
+		set_lines(item.id, format_tools::remove_flags(item.index_colors, ignore_flags, widget_lines, '*'));
+	}
+
+	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
 
 	if (_color_enabled)
 	{
@@ -1886,7 +1983,6 @@ std::vector<std::string> frame::get_widget_lines(int id)
 
 	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
 	{
-		set_lines(item.id, widget_lines);
 		if (item.line_constraint)
 		{
 			constrain_lines(item, widget_lines);
@@ -1913,14 +2009,14 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	return widget_lines;
 }
 
-int frame::get_displayed_output(int id, std::string& displayed_output)
+int frame::get_displayed_output(int id, std::vector<std::string>& displayed_output)
 {
 	widget_info item;
 	int status = get_widget(id, item);
 	if (status == SUCCESS)
 	{
 		constrain_lines(item, item.lines);
-		displayed_output = format_tools::get_string(item.lines);
+		displayed_output = item.lines;
 	}
 	return status;
 }
@@ -1982,7 +2078,16 @@ unsigned int frame::get_columns_in_row(int row)
 
 std::string frame::generate_frame_output()
 {
-	record_terminal_dimensions();
+	if (!_use_fake_console_dimensions)
+	{
+		ascii_io::get_terminal_size(terminal_x, terminal_y);
+	}
+	else
+	{
+		terminal_x = _fake_console_width;
+		terminal_y = _fake_console_height;
+	}
+
 	std::string frame_output = "";
 	int total_rows = get_total_rows();
 	row_heights.clear();
@@ -2431,27 +2536,6 @@ bool frame::only_widget_at_coordinate(const widget_info& item)
 std::vector<format_tools::index_format> frame::dec_format(std::string& format_content, unsigned int line_length)
 {
 	return dec.format(format_content, line_length);
-}
-
-void frame::record_terminal_dimensions()
-{
-	previous_x = terminal_x;
-	previous_y = terminal_y;
-	if (!_use_fake_console_dimensions)
-	{
-		ascii_io::get_terminal_size(terminal_x, terminal_y);
-	}
-	else
-	{
-		terminal_x = _fake_console_width;
-		terminal_y = _fake_console_height;
-	}
-
-	if ((previous_x == -1) || (previous_y == -1))
-	{
-		previous_x = terminal_x;
-		previous_y = terminal_y;
-	}
 }
 
 void frame::mark_as_stale()

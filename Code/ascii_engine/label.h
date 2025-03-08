@@ -28,11 +28,11 @@ public:
 	LABEL_API void scroll();
 	LABEL_API void scroll_up(unsigned int amount = 1, bool render=true);
 	LABEL_API void scroll_down(unsigned int amount = 1, bool render=true);
-	LABEL_API void set_controls(unsigned int up, unsigned int down, unsigned int quit);
-	LABEL_API void get_controls(unsigned int& up, unsigned int& down, unsigned int& quit);
+	LABEL_API void set_controls(int up, int down, int quit);
+	LABEL_API void get_controls(int& up, int& down, int& quit);
 	LABEL_API void set_lines_count(unsigned int lines_count);
 private:
-	unsigned int _up = ascii_io::up;
-	unsigned int _down = ascii_io::down;
-	unsigned int _quit = ascii_io::q;
+	int _up = ascii_io::up;
+	int _down = ascii_io::down;
+	int _quit = ascii_io::q;
 };

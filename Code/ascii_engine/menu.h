@@ -25,8 +25,8 @@ public:
 	MENU_API int set_item_label(const std::string& item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
-	MENU_API void set_cursor_line(unsigned int line);
-	MENU_API unsigned int get_cursor_line();
+	MENU_API void set_cursor_item(unsigned int item);
+	MENU_API unsigned int get_cursor_item();
 	MENU_API void set_controls(std::vector<int> select, int up, int down, int quit);
 	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
@@ -35,7 +35,7 @@ public:
 	MENU_API void enable_quit();
 	MENU_API void disable_quit();
 	MENU_API void display();
-	MENU_API void sync();
+	MENU_API void build();
 	MENU_API void separate_items(bool separate);
 private:
 	struct item_structure
@@ -45,7 +45,9 @@ private:
 	};
 	std::vector<item_structure> menu_items;
 	char _cursor = '*';
-	unsigned int cursor_line = 0;
+	unsigned int _cursor_item = 0;
+	unsigned int last_cursor_item = 0;
+	unsigned int last_cursor_line_remainder = 0;
 	std::vector<int> _select =
 	{
 		ascii_io::enter
@@ -54,12 +56,8 @@ private:
 	int _down = ascii_io::down;
 	int _quit = ascii_io::q;
 	bool quit_enabled = false;
-	bool no_lines_constraint = false;
-	unsigned int displayed_lines = 0;
-	int displayed_lines_division_remainder = 0;
-	int displayed_lines_subtraction_amount = 0;
 	int line_subtraction_from_terminal_height = 0;
-	unsigned int top_line = 0;
+	unsigned int non_separated_lines_count = 0;
 	bool _separate_items = false;
 	char _horizontal_char = '-';
 	char _vertical_char = '|';
@@ -70,6 +68,12 @@ private:
 	bool label_exists();
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
-	unsigned int get_stop_line();
+	unsigned int get_stop_item(unsigned int top_item, unsigned int displayed_items);
 	unsigned int dynamic_displayed_line_adjustment(int line_subtraction);
+	void set_cursor_line(unsigned int line);
+	unsigned int line_to_item(unsigned int line, unsigned int& remainder);
+	unsigned int item_to_line(unsigned int item, unsigned int remainder);
+	unsigned int bound_top_item(unsigned int top_item, unsigned int displayed_items);
+	unsigned int bound_cursor_item(unsigned int cursor_item, unsigned int top_item, unsigned int stop_item);
+	unsigned int fit_displayed_lines_for_separated_items(unsigned int displayed_lines);
 };

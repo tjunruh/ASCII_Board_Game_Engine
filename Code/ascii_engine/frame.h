@@ -87,6 +87,7 @@ private:
 		unsigned int top_line = 0;
 		unsigned int displayed_lines = 0;
 		bool line_constraint = false;
+		bool line_edited = false;
 		std::vector<format_tools::coordinate_format> coordinate_colors;
 		std::vector<format_tools::index_format> index_colors;
 		std::vector<std::string> lines;
@@ -120,6 +121,8 @@ private:
 	int set_top_line(int id, unsigned int top_line);
 	int set_displayed_lines(int id, unsigned int displayed_lines);
 	int set_lines(int id, const std::vector<std::string>& lines);
+	int set_line_character(int id, char character, unsigned int line, unsigned int character_index);
+	int set_line_edited(int id, bool line_edited);
 	int add_border(int id, bool border);
 	int use_spacing_width_multipliers(int id, bool use);
 	void highlight(int row, int column, int level);
@@ -147,6 +150,7 @@ private:
 	float get_greatest_width_multiplier_at_coordinate(int row, int column);
 	float get_width_weight(const widget_info& item, float multiplier);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
+	int get_line_constraint(int id, bool& line_constraint);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
@@ -163,8 +167,9 @@ private:
 	int get_widget_height(int id, unsigned int& width, bool include_spacing);
 	void constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines);
 	void constrain_colors(const widget_info& item, std::vector<format_tools::coordinate_format>& colors);
+	void update_widget_output_from_lines(widget_info& item);
 	std::vector<std::string> get_widget_lines(int id);
-	int get_displayed_output(int id, std::string& displayed_output);
+	int get_displayed_output(int id, std::vector<std::string>& displayed_output);
 	int get_displayed_colors(int id, std::vector<format_tools::index_format>& colors);
 	bool element_exists(const std::vector<int>& storage, int element);
 	unsigned int get_total_rows();
@@ -182,7 +187,6 @@ private:
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(const widget_info& item, std::vector<std::string>& lines);
 	bool only_widget_at_coordinate(const widget_info& item);
-	void record_terminal_dimensions();
 	void mark_as_stale();
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__

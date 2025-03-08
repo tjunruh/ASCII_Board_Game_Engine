@@ -110,7 +110,24 @@ std::vector<std::string> format_tools::fill_lines(std::vector<std::string> input
 		{
 			if (input[i].length() > largest_width)
 			{
-				largest_width = input[i].length();
+				bool empty_line = true;
+				for (unsigned int j = 0; j < input[i].length(); j++)
+				{
+					if ((input[i])[j] != ' ')
+					{
+						empty_line = false;
+						break;
+					}
+				}
+
+				if (!empty_line)
+				{
+					largest_width = input[i].length();
+				}
+				else
+				{
+					input[i] = "";
+				}
 			}
 		}
 
@@ -630,6 +647,36 @@ std::vector<int> format_tools::set_flags(std::vector<index_format>& index_colors
 	return ignore_flags;
 }
 
+std::vector<std::string> format_tools::remove_flags(const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string> lines, char flag)
+{
+	unsigned int color_index = 0;
+	unsigned int flag_characters_found = 0;
+	for (unsigned int i = 0; i < lines.size(); i++)
+	{
+		for (unsigned int j = 0; j < lines[i].length(); j++)
+		{
+			if ((lines[i])[j] == flag)
+			{
+				if (std::count(ignore_flags.begin(), ignore_flags.end(), flag_characters_found) == 0)
+				{
+					if (color_index < index_colors.size())
+					{
+						(lines[i])[j] = index_colors[color_index].flag_replacement;
+						color_index++;
+					}
+					else
+					{
+						return lines;
+					}
+				}
+				flag_characters_found++;
+			}
+		}
+	}
+
+	return lines;
+}
+
 void format_tools::convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag)
 {
 	coordinate_colors.clear();
@@ -857,24 +904,6 @@ std::vector<format_tools::index_format> format_tools::build_color_for_value(cons
 	}
 
 	return colors;
-}
-
-int format_tools::get_color_line(const index_format& color, const std::vector<std::string>& lines)
-{
-	int line = -1;
-	if (color.index >= 0)
-	{
-		int accumulated_index = 0;
-		for (unsigned int i = 0; i < lines.size(); i++)
-		{
-			if ((color.index >= accumulated_index) && ((unsigned int)color.index < (accumulated_index + lines[i].length())))
-			{
-				line = i;
-				break;
-			}
-		}
-	}
-	return line;
 }
 
 bool format_tools::format_empty(const common_format& format)

@@ -234,8 +234,10 @@ std::string widget::get_output()
 
 std::string widget::get_displayed_output()
 {
+	std::vector<std::string> output_lines;
 	std::string output = "";
-	int status = parent_frame->get_displayed_output(widget_id, output);
+	int status = parent_frame->get_displayed_output(widget_id, output_lines);
+	output = format_tools::get_string(output_lines);
 	log.log_status(status, "widget::get_displayed_output");
 	return output;
 }
@@ -460,6 +462,105 @@ void widget::widget_display(std::string output, bool can_use_dec, bool can_use_c
 	ascii_io::move_cursor_to_position(cursor_x, cursor_y);
 }
 
+void widget::widget_display(std::vector<std::string> output_lines, bool can_use_dec, bool can_use_color, const std::vector<format_tools::index_format>& colors)
+{
+	unsigned int width = get_width();
+	int x_origin = get_x_origin();
+	int y_origin = get_y_origin();
+	int cursor_x = 0;
+	int cursor_y = 0;
+	ascii_io::get_cursor_position(cursor_x, cursor_y);
+	if (frame_stale())
+	{
+		frame_display();
+	}
+	else if ((can_use_dec && dec_enabled()) || (can_use_color && color_enabled()))
+	{
+		std::vector<format_tools::index_format> index_regions;
+		if (can_use_color && color_enabled())
+		{
+			index_regions = colors;
+		}
+
+		output_lines = format_tools::fill_lines(output_lines, width, get_alignment());
+
+		std::string adjusted_output = format_tools::get_string(output_lines);
+
+		if (can_use_dec && dec_enabled())
+		{
+			std::vector<format_tools::index_format> dec_regions = dec_format(adjusted_output, get_width());
+			if (index_regions.size() > 0)
+			{
+				index_regions = format_tools::combine(index_regions, dec_regions);
+			}
+			else
+			{
+				index_regions = dec_regions;
+			}
+		}
+
+		int line = 0;
+		unsigned int line_length = 0;
+		ascii_io::move_cursor_to_position(x_origin, y_origin);
+		std::vector<format_tools::content_format> regions = format_tools::convert(index_regions, adjusted_output);
+		regions = format_tools::fit_to_width(regions, width);
+		for (unsigned int i = 0; i < regions.size(); i++)
+		{
+			int foreground_color = get_default_foreground_color();
+			int background_color = get_default_background_color();
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
+			{
+				foreground_color = regions[i].format.foreground_format;
+			}
+
+			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.background_format) != 0)
+			{
+				background_color = regions[i].format.background_format;
+			}
+
+			ascii_io::set_color(foreground_color, background_color, regions[i].format.bold);
+
+			if (regions[i].format.dec)
+			{
+#ifdef _WIN32
+				ascii_io::enable_dec();
+				ascii_io::print(regions[i].content);
+#elif __linux__
+				dec_print(regions[i].content);
+#endif
+			}
+			else
+			{
+#ifdef _WIN32
+				ascii_io::disable_dec();
+#endif
+				ascii_io::print(regions[i].content);
+			}
+			line_length = line_length + regions[i].content.length();
+			if (line_length >= width)
+			{
+				line++;
+				line_length = 0;
+				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
+			}
+		}
+		ascii_io::set_color(get_default_foreground_color(), get_default_background_color());
+#ifdef _WIN32
+		ascii_io::disable_dec();
+#endif
+	}
+	else
+	{
+		output_lines = format_tools::fill_lines(output_lines, width, get_alignment());
+		for (unsigned int i = 0; i < output_lines.size(); i++)
+		{
+			ascii_io::move_cursor_to_position(x_origin, y_origin + i);
+			ascii_io::print(output_lines[i]);
+		}
+	}
+	ascii_io::move_cursor_to_position(cursor_x, cursor_y);
+}
+
 void widget::set_line_constraint(bool line_constraint)
 {
 	int status = parent_frame->set_line_constraint(widget_id, line_constraint);
@@ -478,18 +579,26 @@ void widget::set_top_line(unsigned int top_line)
 	log.log_status(status, "widget::set_top_line");
 }
 
-void widget::get_displayed_output(std::string& displayed_output)
+void widget::get_displayed_output(std::vector<std::string>& displayed_output)
 {
 	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
 	log.log_status(status, "widget::get_displayed_output");
 }
 
-void widget::get_displayed_output(std::string& displayed_output, std::vector<format_tools::index_format>& colors)
+void widget::get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors)
 {
 	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
 	log.log_status(status, "widget::get_displayed_output");
 	status = parent_frame->get_displayed_colors(widget_id, colors);
 	log.log_status(status, "widget::get_displayed_output");
+}
+
+bool widget::get_line_constraint()
+{
+	bool line_constraint = false;
+	int status = parent_frame->get_line_constraint(widget_id, line_constraint);
+	log.log_status(status, "widget::get_line_constraint");
+	return line_constraint;
 }
 
 unsigned int widget::get_displayed_lines()
@@ -514,6 +623,12 @@ unsigned int widget::get_lines_count(bool only_displayed)
 	int status = parent_frame->get_lines_count(widget_id, lines_count, only_displayed);
 	log.log_status(status, "widget::get_lines_count");
 	return lines_count;
+}
+
+void widget::set_line_character(char character, unsigned int line, unsigned int character_index)
+{
+	int status = parent_frame->set_line_character(widget_id, character, line, character_index);
+	log.log_status(status, "widget::set_line_character");
 }
 
 #ifdef __linux__

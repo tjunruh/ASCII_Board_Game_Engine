@@ -106,7 +106,7 @@ std::vector<format_tools::index_format> label::get_displayed_colors()
 
 void label::display()
 {
-	std::string displayed_output = "";
+	std::vector<std::string> displayed_output;
 	std::vector<format_tools::index_format> colors;
 	get_displayed_output(displayed_output, colors);
 	widget_display(displayed_output, true, true, colors);
@@ -174,14 +174,14 @@ void label::scroll_down(unsigned int amount, bool render)
 	}
 }
 
-void label::set_controls(unsigned int up, unsigned int down, unsigned int quit)
+void label::set_controls(int up, int down, int quit)
 {
 	_up = up;
 	_down = down;
 	_quit = quit;
 }
 
-void label::get_controls(unsigned int& up, unsigned int& down, unsigned int& quit)
+void label::get_controls(int& up, int& down, int& quit)
 {
 	up = _up;
 	down = _down;

@@ -32,7 +32,6 @@ int main()
 	my_menu.append_item("Exit");
 	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
 	my_menu.set_alignment("center");
-	my_menu.sync();
 
 	my_label.add_border(true);
 	my_label.set_alignment("center");
@@ -46,7 +45,7 @@ int main()
 		                         // (0 will cause the menu to use however many lines required to display all items)
 	
 	my_menu.separate_items(true); // Causes menu items to be separated by lines inside menu
-	my_menu.sync();
+	my_menu.build();
 
 	my_frame->display();
 	while (1)
@@ -54,7 +53,6 @@ int main()
 		std::string selection = "";
 		int key = ascii_io::undefined;
 		my_menu.get_selection(selection, key);
-		my_menu.sync();
 		if (selection == "Exit")
 		{
 			break;

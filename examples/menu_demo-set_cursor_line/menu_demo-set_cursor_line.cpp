@@ -32,14 +32,13 @@ int main()
 	my_menu.append_item("Exit");
 	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
 	my_menu.set_alignment("center");
-	my_menu.sync();
 
 	my_label.add_border(true);
 	my_label.set_alignment("center");
 	my_label.set_output("Select an Item.");
 
 	ascii_io::hide_cursor();
-	my_menu.sync();
+	my_menu.build();
 
 	my_frame->display();
 	while (1)
@@ -47,7 +46,6 @@ int main()
 		std::string selection = "";
 		int key = ascii_io::undefined;
 		my_menu.get_selection(selection, key);
-		my_menu.sync();
 		if (selection == "Exit")
 		{
 			break;
@@ -56,7 +54,7 @@ int main()
 		{
 			my_label.set_output(selection + " was selected.");
 			my_label.refresh();
-			my_menu.set_cursor_line(stoi(selection));
+			my_menu.set_cursor_item(stoi(selection));
 		}
 
 	}
