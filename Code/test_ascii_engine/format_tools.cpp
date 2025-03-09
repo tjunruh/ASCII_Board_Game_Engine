@@ -14,17 +14,44 @@
 class format_tools_test : public testing::Test
 {
 protected:
-	void colors_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_colors, int test_num)
+	void format_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_format, int test_num)
 	{
 		correct_answer = format_tools::sort(correct_answer);
-		test_colors = format_tools::sort(test_colors);
-		ASSERT_EQ(test_colors.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
+		test_format = format_tools::sort(test_format);
+		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
 		for (unsigned int i = 0; i < correct_answer.size(); i++)
 		{
-			EXPECT_EQ(test_colors[i].index, correct_answer[i].index) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
-			EXPECT_EQ(test_colors[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
-			EXPECT_EQ(test_colors[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
-			EXPECT_EQ(test_colors[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].index, correct_answer[i].index) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+		}
+	}
+
+	void format_equivalent_test(std::vector<format_tools::coordinate_format> correct_answer, std::vector<format_tools::coordinate_format> test_format, int test_num)
+	{
+		correct_answer = format_tools::sort(correct_answer);
+		test_format = format_tools::sort(test_format);
+		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
+		for (unsigned int i = 0; i < correct_answer.size(); i++)
+		{
+			EXPECT_EQ(test_format[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].x_position, correct_answer[i].x_position) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].y_position, correct_answer[i].y_position) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+		}
+	}
+
+	void format_equivalent_test(std::vector<format_tools::content_format> correct_answer, std::vector<format_tools::content_format> test_format, int test_num)
+	{
+		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
+		for (unsigned int i = 0; i < correct_answer.size(); i++)
+		{
+			EXPECT_EQ(test_format[i].content, correct_answer[i].content) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
 		}
 	}
 };
@@ -625,16 +652,7 @@ TEST_F(format_tools_test, sort_index)
 		{25, format, ' '},
 	};
 
-	index_vec = format_tools::sort(index_vec);
-	ASSERT_EQ(index_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < index_vec.size(); i++)
-	{
-		EXPECT_EQ(index_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(index_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
-		EXPECT_EQ(index_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(index_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(index_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::sort(index_vec), 0);
 }
 
 TEST_F(format_tools_test, sort_coordinate)
@@ -670,16 +688,7 @@ TEST_F(format_tools_test, sort_coordinate)
 		{8, 6, format},
 	};
 
-	coordinate_vec = format_tools::sort(coordinate_vec);
-	ASSERT_EQ(coordinate_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
-	{
-		EXPECT_EQ(coordinate_vec[i].x_position, correct_answer[i].x_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].y_position, correct_answer[i].y_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::sort(coordinate_vec), 0);
 }
 
 TEST_F(format_tools_test, calculate_flag_number)
@@ -815,16 +824,7 @@ TEST_F(format_tools_test, combine)
 		{25, empty_format, ' '}
 	};
 
-	std::vector<format_tools::index_format> combined_vec = format_tools::combine(index_vec1, index_vec2);
-	ASSERT_EQ(combined_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < combined_vec.size(); i++)
-	{
-		EXPECT_EQ(combined_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::combine(index_vec1, index_vec2), 0);
 
 	index_vec2 = {
 		{15, full_format, ' '},
@@ -866,16 +866,7 @@ TEST_F(format_tools_test, combine)
 		{25, full_format, ' '}
 	};
 
-	combined_vec = format_tools::combine(index_vec1, index_vec2);
-	ASSERT_EQ(combined_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < combined_vec.size(); i++)
-	{
-		EXPECT_EQ(combined_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(combined_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::combine(index_vec1, index_vec2), 1);
 }
 
 TEST_F(format_tools_test, present)
@@ -1048,15 +1039,7 @@ TEST_F(format_tools_test, convert_index_to_content)
 		{"  11", full_format}
 	};
 
-	std::vector<format_tools::content_format> content_vec = format_tools::convert(index_vec, test_string);
-	ASSERT_EQ(content_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < content_vec.size(); i++)
-	{
-		EXPECT_EQ(content_vec[i].content, correct_answer[i].content) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(index_vec, test_string), 0);
 
 	// out of order
 	index_vec = {
@@ -1073,15 +1056,7 @@ TEST_F(format_tools_test, convert_index_to_content)
 		{40, full_format, ' '}
 	};
 
-	content_vec = format_tools::convert(index_vec, test_string);
-	ASSERT_EQ(content_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < content_vec.size(); i++)
-	{
-		EXPECT_EQ(content_vec[i].content, correct_answer[i].content) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(index_vec, test_string), 1);
 
 	// index out of range
 	index_vec = {
@@ -1099,15 +1074,7 @@ TEST_F(format_tools_test, convert_index_to_content)
 		{75, full_format, ' '}
 	};
 
-	content_vec = format_tools::convert(index_vec, test_string);
-	ASSERT_EQ(content_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < content_vec.size(); i++)
-	{
-		EXPECT_EQ(content_vec[i].content, correct_answer[i].content) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(index_vec, test_string), 2);
 
 	// 0 index missing
 	format_tools::common_format empty_format;
@@ -1138,15 +1105,7 @@ TEST_F(format_tools_test, convert_index_to_content)
 		{"  11", full_format}
 	};
 
-	content_vec = format_tools::convert(index_vec, test_string);
-	ASSERT_EQ(content_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < content_vec.size(); i++)
-	{
-		EXPECT_EQ(content_vec[i].content, correct_answer[i].content) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(content_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(index_vec, test_string), 3);
 }
 
 TEST_F(format_tools_test, convert_coordinate_to_index)
@@ -1180,16 +1139,7 @@ TEST_F(format_tools_test, convert_coordinate_to_index)
 		{40, empty_format, ' '}
 	};
 
-	std::vector<format_tools::index_format> converted_vec = format_tools::convert(coordinate_vec, 4);
-	ASSERT_EQ(converted_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < converted_vec.size(); i++)
-	{
-		EXPECT_EQ(converted_vec[i].index, correct_answer[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].flag_replacement, correct_answer[i].flag_replacement) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(coordinate_vec, 4), 0);
 }
 
 TEST_F(format_tools_test, convert_index_to_coordinate)
@@ -1237,18 +1187,8 @@ TEST_F(format_tools_test, convert_index_to_coordinate)
 		"1010",
 		"  11"
 	};
-		
 
-	std::vector<format_tools::coordinate_format> converted_vec = format_tools::convert(index_vec, lines);
-	ASSERT_EQ(converted_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < converted_vec.size(); i++)
-	{
-		EXPECT_EQ(converted_vec[i].x_position, correct_answer[i].x_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].y_position, correct_answer[i].y_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(converted_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::convert(index_vec, lines), 0);
 }
 
 TEST_F(format_tools_test, set_flags)
@@ -1380,15 +1320,8 @@ TEST_F(format_tools_test, convert_flags)
 	};
 
 	format_tools::convert_flags(coordinate_vec, index_vec, ignore_flags, lines, '*');
-	ASSERT_EQ(coordinate_vec.size(), correct_coordinate_vec.size());
-	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
-	{
-		EXPECT_EQ(coordinate_vec[i].x_position, correct_coordinate_vec[i].x_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].y_position, correct_coordinate_vec[i].y_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.background_format, correct_coordinate_vec[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.foreground_format, correct_coordinate_vec[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.dec, correct_coordinate_vec[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_coordinate_vec, coordinate_vec, 0);
+
 	ASSERT_EQ(lines.size(), correct_lines.size());
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{
@@ -1426,15 +1359,8 @@ TEST_F(format_tools_test, convert_flags)
 	ignore_flags.push_back(5);
 
 	format_tools::convert_flags(coordinate_vec, index_vec, ignore_flags, lines, '*');
-	ASSERT_EQ(coordinate_vec.size(), correct_coordinate_vec.size());
-	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
-	{
-		EXPECT_EQ(coordinate_vec[i].x_position, correct_coordinate_vec[i].x_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].y_position, correct_coordinate_vec[i].y_position) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.background_format, correct_coordinate_vec[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.foreground_format, correct_coordinate_vec[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(coordinate_vec[i].format.dec, correct_coordinate_vec[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_coordinate_vec, coordinate_vec, 1);
+
 	ASSERT_EQ(lines.size(), correct_lines.size());
 	for (unsigned int i = 0; i < lines.size(); i++)
 	{
@@ -1488,15 +1414,7 @@ TEST_F(format_tools_test, fit_to_width)
 		{"11", empty_format}
 	};
 
-	std::vector<format_tools::content_format> modified_vec = format_tools::fit_to_width(content_vec, 3);
-	ASSERT_EQ(modified_vec.size(), correct_answer.size());
-	for (unsigned int i = 0; i < modified_vec.size(); i++)
-	{
-		EXPECT_EQ(modified_vec[i].content, correct_answer[i].content) << "Index: " + std::to_string(i);
-		EXPECT_EQ(modified_vec[i].format.background_format, correct_answer[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(modified_vec[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(modified_vec[i].format.dec, correct_answer[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer, format_tools::fit_to_width(content_vec, 3), 0);
 }
 
 TEST_F(format_tools_test, remove_newline_characters_vector)
@@ -1651,37 +1569,10 @@ TEST_F(format_tools_test, shift_index)
 		{8, empty_format, ' '}
 	};
 
-	std::vector<format_tools::index_format> result;
 
-	result = format_tools::shift_index(colors, 2);
-	ASSERT_EQ(result.size(), correct_answer_shift_right.size());
-	for (unsigned int i = 0; i < result.size(); i++)
-	{
-		EXPECT_EQ(result[i].index, correct_answer_shift_right[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_right[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_right[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.dec, correct_answer_shift_right[i].format.dec) << "Index: " + std::to_string(i);
-	}
-
-	result = format_tools::shift_index(colors, -2);
-	ASSERT_EQ(result.size(), correct_answer_shift_left.size());
-	for (unsigned int i = 0; i < result.size(); i++)
-	{
-		EXPECT_EQ(result[i].index, correct_answer_shift_left[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_left[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_left[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.dec, correct_answer_shift_left[i].format.dec) << "Index: " + std::to_string(i);
-	}
-
-	result = format_tools::shift_index(colors, -7);
-	ASSERT_EQ(result.size(), correct_answer_shift_left_far.size());
-	for (unsigned int i = 0; i < result.size(); i++)
-	{
-		EXPECT_EQ(result[i].index, correct_answer_shift_left_far[i].index) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.background_format, correct_answer_shift_left_far[i].format.background_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.foreground_format, correct_answer_shift_left_far[i].format.foreground_format) << "Index: " + std::to_string(i);
-		EXPECT_EQ(result[i].format.dec, correct_answer_shift_left_far[i].format.dec) << "Index: " + std::to_string(i);
-	}
+	format_equivalent_test(correct_answer_shift_right, format_tools::shift_index(colors, 2), 0);
+	format_equivalent_test(correct_answer_shift_left, format_tools::shift_index(colors, -2), 1);
+	format_equivalent_test(correct_answer_shift_left_far, format_tools::shift_index(colors, -7), 2);
 }
 
 TEST_F(format_tools_test, bound_colors)
@@ -1720,18 +1611,7 @@ TEST_F(format_tools_test, bound_colors)
 		{3, 3, empty_format}
 	};
 
-	std::vector<format_tools::coordinate_format> formatted_color = format_tools::bound_colors(colors, lines);
-	colors_answer = format_tools::sort(colors_answer);
-	formatted_color = format_tools::sort(formatted_color);
-
-	ASSERT_EQ(formatted_color.size(), colors_answer.size());
-	for (unsigned int i = 0; i < formatted_color.size(); i++)
-	{
-		EXPECT_EQ(formatted_color[i].format.foreground_format, colors_answer[i].format.foreground_format) << "color number: " + std::to_string(i);
-		EXPECT_EQ(formatted_color[i].format.background_format, colors_answer[i].format.background_format) << "color number: " + std::to_string(i);
-		EXPECT_EQ(formatted_color[i].x_position, colors_answer[i].x_position) << "color number: " + std::to_string(i);
-		EXPECT_EQ(formatted_color[i].y_position, colors_answer[i].y_position) << "color number: " + std::to_string(i);
-	}
+	format_equivalent_test(colors_answer, format_tools::bound_colors(colors, lines), 0);
 }
 
 TEST_F(format_tools_test, build_color_for_value_test)
@@ -1829,15 +1709,15 @@ TEST_F(format_tools_test, build_color_for_value_test)
 		{0, green_foreground_color, ' '}
 	};
 
-	colors_equivalent_test(o_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false), 0);
-	colors_equivalent_test(o_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::none, format_tools::red, false), 1);
-	colors_equivalent_test(o_green_foreground_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::red, false), 2);
-	colors_equivalent_test(o_bold_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, true), 3);
-	colors_equivalent_test(o_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false, true), 4);
-	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false), 5);
-	colors_equivalent_test(edge_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false, true), 6);
-	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false), 7);
-	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false, true), 8);
+	format_equivalent_test(o_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false), 0);
+	format_equivalent_test(o_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::none, format_tools::red, false), 1);
+	format_equivalent_test(o_green_foreground_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::red, false), 2);
+	format_equivalent_test(o_bold_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, true), 3);
+	format_equivalent_test(o_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false, true), 4);
+	format_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false), 5);
+	format_equivalent_test(edge_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false, true), 6);
+	format_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false), 7);
+	format_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false, true), 8);
 }
 
 TEST_F(format_tools_test, empty_format_test)
