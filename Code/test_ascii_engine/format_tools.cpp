@@ -14,7 +14,19 @@
 class format_tools_test : public testing::Test
 {
 protected:
-
+	void colors_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_colors, int test_num)
+	{
+		correct_answer = format_tools::sort(correct_answer);
+		test_colors = format_tools::sort(test_colors);
+		ASSERT_EQ(test_colors.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
+		for (unsigned int i = 0; i < correct_answer.size(); i++)
+		{
+			EXPECT_EQ(test_colors[i].index, correct_answer[i].index) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_colors[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_colors[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_colors[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+		}
+	}
 };
 
 TEST_F(format_tools_test, split_string)
@@ -1720,4 +1732,125 @@ TEST_F(format_tools_test, bound_colors)
 		EXPECT_EQ(formatted_color[i].x_position, colors_answer[i].x_position) << "color number: " + std::to_string(i);
 		EXPECT_EQ(formatted_color[i].y_position, colors_answer[i].y_position) << "color number: " + std::to_string(i);
 	}
+}
+
+TEST_F(format_tools_test, build_color_for_value_test)
+{
+	std::string o_value = "**//'\\\\**"
+						  "**|   |**"
+						  "**\\\\.//**";
+
+	std::string edge_value = "||     ||"
+							 "||     ||"
+							 "||     ||";
+
+	std::string edge_value_2 = "||*****||"
+							   "||*****||"
+							   "||*****||";
+
+
+	format_tools::common_format empty_color;
+	format_tools::common_format green_foreground_color = { format_tools::green, format_tools::none, false, false };
+	format_tools::common_format red_background_color = { format_tools::none, format_tools::red, false, false };
+	format_tools::common_format green_foreground_red_background_color = { format_tools::green, format_tools::red, false, false };
+	format_tools::common_format bold_green_foreground_color = { format_tools::green, format_tools::none, true, false };
+
+	std::vector<format_tools::index_format> o_green_foreground_correct_answer =
+	{
+		{2, green_foreground_color, ' '},
+		{7, empty_color, ' '},
+		{11, green_foreground_color, ' '},
+		{12, empty_color, ' '},
+		{15, green_foreground_color, ' '},
+		{16, empty_color, ' '},
+		{20, green_foreground_color, ' '},
+		{25, empty_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> o_red_background_correct_answer =
+	{
+		{2, red_background_color, ' '},
+		{7, empty_color, ' '},
+		{11, red_background_color, ' '},
+		{12, empty_color, ' '},
+		{15, red_background_color, ' '},
+		{16, empty_color, ' '},
+		{20, red_background_color, ' '},
+		{25, empty_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> o_green_foreground_red_background_correct_answer =
+	{
+		{2, green_foreground_red_background_color, ' '},
+		{7, empty_color, ' '},
+		{11, green_foreground_red_background_color, ' '},
+		{12, empty_color, ' '},
+		{15, green_foreground_red_background_color, ' '},
+		{16, empty_color, ' '},
+		{20, green_foreground_red_background_color, ' '},
+		{25, empty_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> o_bold_green_foreground_correct_answer =
+	{
+		{2, bold_green_foreground_color, ' '},
+		{7, empty_color, ' '},
+		{11, bold_green_foreground_color, ' '},
+		{12, empty_color, ' '},
+		{15, bold_green_foreground_color, ' '},
+		{16, empty_color, ' '},
+		{20, bold_green_foreground_color, ' '},
+		{25, empty_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> o_green_foreground_include_spaces_correct_answer =
+	{
+		{2, green_foreground_color, ' '},
+		{7, empty_color, ' '},
+		{11, green_foreground_color, ' '},
+		{16, empty_color, ' '},
+		{20, green_foreground_color, ' '},
+		{25, empty_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> edge_green_foreground_correct_answer =
+	{
+		{0, green_foreground_color, ' '},
+		{2, empty_color, ' '},
+		{7, green_foreground_color, ' '},
+		{11, empty_color, ' '},
+		{16, green_foreground_color, ' '},
+		{20, empty_color, ' '},
+		{25, green_foreground_color, ' '}
+	};
+
+	std::vector<format_tools::index_format> edge_green_foreground_include_spaces_correct_answer =
+	{
+		{0, green_foreground_color, ' '}
+	};
+
+	colors_equivalent_test(o_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false), 0);
+	colors_equivalent_test(o_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::none, format_tools::red, false), 1);
+	colors_equivalent_test(o_green_foreground_red_background_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::red, false), 2);
+	colors_equivalent_test(o_bold_green_foreground_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, true), 3);
+	colors_equivalent_test(o_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(o_value, '*', format_tools::green, format_tools::none, false, true), 4);
+	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false), 5);
+	colors_equivalent_test(edge_green_foreground_include_spaces_correct_answer, format_tools::build_color_for_value(edge_value, '*', format_tools::green, format_tools::none, false, true), 6);
+	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false), 7);
+	colors_equivalent_test(edge_green_foreground_correct_answer, format_tools::build_color_for_value(edge_value_2, '*', format_tools::green, format_tools::none, false, true), 8);
+}
+
+TEST_F(format_tools_test, empty_format_test)
+{
+	format_tools::common_format empty_format;
+	format_tools::common_format foreground_format = { format_tools::green, format_tools::none, false, false };
+	format_tools::common_format background_format = { format_tools::none, format_tools::green, false, false };
+	format_tools::common_format bold_format = { format_tools::none, format_tools::none, true, false };
+	format_tools::common_format dec_format = { format_tools::none, format_tools::none, false, true };
+
+	EXPECT_EQ(true, format_tools::format_empty(empty_format));
+	EXPECT_EQ(false, format_tools::format_empty(foreground_format));
+	EXPECT_EQ(false, format_tools::format_empty(background_format));
+	EXPECT_EQ(false, format_tools::format_empty(bold_format));
+	EXPECT_EQ(false, format_tools::format_empty(dec_format));
 }
