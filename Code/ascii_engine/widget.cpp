@@ -21,7 +21,7 @@ void widget::set_alignment(std::string alignment)
 
 void widget::set_output_to_frame(const std::string& text)
 {
-	int status = parent_frame->set_output(widget_id, text);
+	int status = parent_frame->set_output(widget_id, text, true);
 	log.log_status(status, "widget::set_output_to_frame");
 }
 
@@ -629,6 +629,42 @@ void widget::set_line_character(char character, unsigned int line, unsigned int 
 {
 	int status = parent_frame->set_line_character(widget_id, character, line, character_index);
 	log.log_status(status, "widget::set_line_character");
+}
+
+void widget::update_lines()
+{
+	frame::widget_info item;
+	int status = parent_frame->get_widget(widget_id, item);
+	log.log_status(status, "widget::update_lines");
+	parent_frame->build_core_widget_lines(item);
+}
+
+unsigned int widget::get_line_length(unsigned int line)
+{
+	unsigned int length = 0;
+	int status = parent_frame->get_line_length(widget_id, line, length);
+	log.log_status(status, "widget::get_line_length");
+	return length;
+}
+
+void widget::insert_character_in_output(unsigned int index, char character)
+{
+	int status = parent_frame->insert_character_in_output(widget_id, index, character);
+	log.log_status(status, "widget::insert_line_in_output");
+}
+
+void widget::erase_character_in_output(unsigned int index)
+{
+	int status = parent_frame->erase_character_in_output(widget_id, index);
+	log.log_status(status, "widget::erase_character_in_output");
+}
+
+unsigned int widget::get_output_length()
+{
+	unsigned int length = 0;
+	int status = parent_frame->get_output_length(widget_id, length);
+	log.log_status(status, "widget::get_output_length");
+	return length;
 }
 
 #ifdef __linux__

@@ -99,7 +99,7 @@ private:
 	int add_widget();
 	int set_position(int id, int row, int column, int level);
 	int append(int id, const std::string& special_operation="none");
-	int set_output(int id, const std::string& output);
+	int set_output(int id, const std::string& output, bool mark_frame_stale);
 	int set_alignment(int id, const std::string& alignment);
 	int set_spacing(int id, int top, int bottom, int left, int right);
 	int set_border_spacing(int id, int top, int bottom, int left, int right);
@@ -151,6 +151,7 @@ private:
 	float get_width_weight(const widget_info& item, float multiplier);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int get_line_constraint(int id, bool& line_constraint);
+	int get_line_length(int id, unsigned int line, unsigned int& length);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
@@ -168,7 +169,8 @@ private:
 	void constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines);
 	void constrain_colors(const widget_info& item, std::vector<format_tools::coordinate_format>& colors);
 	void update_widget_output_from_lines(widget_info& item);
-	std::vector<std::string> get_widget_lines(int id);
+	std::vector<std::string> build_core_widget_lines(widget_info& item);
+	std::vector<std::string> build_widget_lines(int id);
 	int get_displayed_output(int id, std::vector<std::string>& displayed_output);
 	int get_displayed_colors(int id, std::vector<format_tools::index_format>& colors);
 	bool element_exists(const std::vector<int>& storage, int element);
@@ -188,6 +190,9 @@ private:
 	void generate_border(const widget_info& item, std::vector<std::string>& lines);
 	bool only_widget_at_coordinate(const widget_info& item);
 	void mark_as_stale();
+	int insert_character_in_output(int id, unsigned int index, char character);
+	int erase_character_in_output(int id, unsigned int index);
+	int get_output_length(int id, unsigned int& length);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 #ifdef __linux__
 	void dec_print(const std::string& input);

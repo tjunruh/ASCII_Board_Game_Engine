@@ -442,7 +442,7 @@ int frame::set_position(int id, int row, int column, int level)
 	return status;
 }
 
-int frame::set_output(int id, const std::string& output)
+int frame::set_output(int id, const std::string& output, bool mark_frame_stale)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
@@ -450,7 +450,8 @@ int frame::set_output(int id, const std::string& output)
 		if (widgets[i].id == id)
 		{
 			widgets[i].output = output;
-			display_stale = true;
+			display_stale = mark_frame_stale;
+			widgets[i].line_edited = false;
 			status = SUCCESS;
 			break;
 		}
@@ -1272,6 +1273,30 @@ int frame::get_line_constraint(int id, bool& line_constraint)
 	return status;
 }
 
+int frame::get_line_length(int id, unsigned int line, unsigned int& length)
+{
+	int status = ELEMENT_NOT_FOUND;
+	length = 0;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].lines.size() > line)
+			{
+				length = widgets[i].lines[line].length();
+				status = SUCCESS;
+				break;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+				break;
+			}
+		}
+	}
+	return status;
+}
+
 int frame::set_lines_count(int id, unsigned int lines_count)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1864,39 +1889,11 @@ void frame::update_widget_output_from_lines(widget_info& item)
 	}
 }
 
-std::vector<std::string> frame::get_widget_lines(int id)
+std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 {
-	widget_info item;
-	get_widget(id, item);
-
-	if (item.line_edited)
-	{
-		update_widget_output_from_lines(item);
-		set_line_edited(id, false);
-		widgets[id].output = item.output;
-	}
-
-	if (item.output == "")
-	{
-		item.output = " ";
-	}
-	int left_spacing = 0;
-	int right_spacing = 0;
-	if (item.use_spacing_width_multipliers)
-	{
-		left_spacing = int(terminal_x * get_width_weight(item, item.left_width_multiplier));
-		right_spacing = int(terminal_x * get_width_weight(item, item.right_width_multiplier));
-	}
-	else
-	{
-		left_spacing = item.left_spacing;
-		right_spacing = item.right_spacing;
-	}
-	std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
-	std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
-	unsigned int width = get_widget_width(item, false);
-	std::string active_spacing = format_tools::get_spacing(width, ' ');
 	std::vector<std::string> widget_lines;
+	unsigned int width = get_widget_width(item, false);
+
 	std::vector<int> ignore_flags;
 
 	if (_color_enabled)
@@ -1939,14 +1936,31 @@ std::vector<std::string> frame::get_widget_lines(int id)
 				}
 				else
 				{
-					widget_lines.push_back(line);
-					if (words[j] != " ")
+					if (item.widget_type == TEXTBOX)
 					{
-						line = words[j];
+						if (words[j] == " ")
+						{
+							line = line + words[j];
+							widget_lines.push_back(line);
+							line = "";
+						}
+						else
+						{
+							widget_lines.push_back(line);
+							line = words[j];
+						}
 					}
 					else
 					{
-						line = "";
+						widget_lines.push_back(line);
+						if (words[j] != " ")
+						{
+							line = words[j];
+						}
+						else
+						{
+							line = "";
+						}
 					}
 				}
 			}
@@ -1959,9 +1973,9 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		line = "";
 	}
 
-	if (user_lines.back() == "\n")
+	if (user_lines.size() > 0 && user_lines.back() == "\n")
 	{
-		widget_lines.push_back(active_spacing);
+		widget_lines.push_back(format_tools::get_spacing(width, ' '));
 	}
 
 	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
@@ -1985,11 +1999,73 @@ std::vector<std::string> frame::get_widget_lines(int id)
 	{
 		if (item.line_constraint)
 		{
+			if (item.top_line >= widget_lines.size())
+			{
+				if (widget_lines.size() > 0)
+				{
+					item.top_line = widget_lines.size() - 1;
+				}
+				else
+				{
+					item.top_line = 0;
+				}
+				set_top_line(item.id, item.top_line);
+			}
+
 			constrain_lines(item, widget_lines);
 		}
 	}
 
 	set_lines_count(item.id, widget_lines.size());
+
+	if (item.widget_type == TEXTBOX)
+	{
+		for (unsigned int i = 0; i < widget_lines.size(); i++)
+		{
+			if (widget_lines[i].length() > width)
+			{
+				widget_lines[i].erase(widget_lines[i].begin() + widget_lines[i].length() - 1);
+			}
+		}
+	}
+
+	return widget_lines;
+}
+
+std::vector<std::string> frame::build_widget_lines(int id)
+{
+	widget_info item;
+	get_widget(id, item);
+
+	if (item.line_edited)
+	{
+		update_widget_output_from_lines(item);
+		set_line_edited(id, false);
+		set_output(id, item.output, false);
+	}
+
+	if (item.output == "")
+	{
+		item.output = " ";
+	}
+	int left_spacing = 0;
+	int right_spacing = 0;
+	if (item.use_spacing_width_multipliers)
+	{
+		left_spacing = int(terminal_x * get_width_weight(item, item.left_width_multiplier));
+		right_spacing = int(terminal_x * get_width_weight(item, item.right_width_multiplier));
+	}
+	else
+	{
+		left_spacing = item.left_spacing;
+		right_spacing = item.right_spacing;
+	}
+	std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
+	std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
+	unsigned int width = get_widget_width(item, false);
+	std::string active_spacing = format_tools::get_spacing(width, ' ');
+
+	std::vector<std::string> widget_lines = build_core_widget_lines(item);
 
 	for (int i = 0; i < item.top_spacing; i++)
 	{
@@ -2006,6 +2082,7 @@ std::vector<std::string> frame::get_widget_lines(int id)
 		widget_lines[i].insert(0, left_spacing_string);
 		widget_lines[i] = widget_lines[i] + right_spacing_string;
 	}
+
 	return widget_lines;
 }
 
@@ -2102,7 +2179,7 @@ std::string frame::generate_frame_output()
 			for (unsigned int m = 0; m < row_ids[j].size(); m++)
 			{
 				std::vector<std::string> widget_lines;
-				widget_lines = get_widget_lines((row_ids[j])[m]);
+				widget_lines = build_widget_lines((row_ids[j])[m]);
 				get_widget((row_ids[j])[m], item);
 
 				if (item.add_border)
@@ -2118,7 +2195,7 @@ std::string frame::generate_frame_output()
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			column_data.text.push_back(accumulated_widget_lines);
-			column_data.width.push_back(get_widget_width(item, true));
+			column_data.width.push_back(get_greatest_widget_width_at_coordinate(item, true));
 		}
 		unsigned int row_lines = 0;
 		frame_output = frame_output + format_tools::fuse_columns_into_row(column_data, row_lines);
@@ -2541,6 +2618,67 @@ std::vector<format_tools::index_format> frame::dec_format(std::string& format_co
 void frame::mark_as_stale()
 {
 	display_stale = true;
+}
+
+int frame::insert_character_in_output(int id, unsigned int index, char character)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].output.length() >= index)
+			{
+				widgets[i].output.insert(index, std::string(1, character));
+				status = SUCCESS;
+				break;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+				break;
+			}
+		}
+	}
+	return status;
+}
+
+int frame::erase_character_in_output(int id, unsigned int index)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			if (widgets[i].output.length() > index)
+			{
+				widgets[i].output.erase(widgets[i].output.begin() + index);
+				status = SUCCESS;
+				break;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+				break;
+			}
+		}
+	}
+	return status;
+}
+
+int frame::get_output_length(int id, unsigned int& length)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			length = widgets[i].output.length();
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
 }
 
 #ifdef __linux__

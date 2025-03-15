@@ -20,14 +20,14 @@ class widget
 public:
 	WIDGET_API widget(frame* parent, std::string special_operation="none");
 	WIDGET_API void set_alignment(std::string alignment);
-	WIDGET_API virtual void set_spacing(int top, int bottom, int left, int right);
+	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
 	WIDGET_API void set_border_spacing(int top, int bottom, int left, int right);
 	WIDGET_API void set_vertical_border(char border);
 	WIDGET_API void set_horizontal_border(char border);
 	WIDGET_API void set_corner_border(char border);
 	WIDGET_API void set_highlight_character(char character);
 	WIDGET_API void set_width_multiplier(float multiplier);
-	WIDGET_API virtual void set_spacing_width_multipliers(float left_multiplier, float right_multiplier);
+	WIDGET_API void set_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void add_border(bool border);
 	WIDGET_API void use_spacing_width_multipliers(bool use);
@@ -82,6 +82,11 @@ protected:
 	unsigned int get_top_line();
 	unsigned int get_lines_count(bool only_displayed = true);
 	void set_line_character(char character, unsigned int line, unsigned int character_index);
+	void update_lines();
+	unsigned int get_line_length(unsigned int line);
+	void insert_character_in_output(unsigned int index, char character);
+	void erase_character_in_output(unsigned int index);
+	unsigned int get_output_length();
 
 #ifdef __linux__
 	void dec_print(const std::string& input);
