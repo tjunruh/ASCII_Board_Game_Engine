@@ -35,7 +35,7 @@ int main()
 	my_menu.append_item("exit");
 	my_menu.set_alignment("center");
 	my_menu.enable_quit();
-	my_menu.sync();
+	my_menu.build();
 
 	ascii_io::hide_cursor();
 
@@ -111,7 +111,6 @@ int main()
 					break;
 				}
 			}
-			my_menu.sync();
 		}
 	}
 

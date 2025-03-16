@@ -41,7 +41,7 @@ int main()
 	my_menu.append_item("exit");
 	my_menu.set_alignment("center");
 	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
-	my_menu.sync();
+	my_menu.build();
 
 	ascii_io::hide_cursor();
 
@@ -74,7 +74,6 @@ int main()
 			std::string menu_selection = "";
 			int menu_exit_key = ascii_io::undefined;
 			my_menu.get_selection(menu_selection, menu_exit_key);
-			my_menu.sync(); // menu data has changed, but changes are not made known to the frame until synced
 			if (menu_exit_key == ascii_io::enter)
 			{
 				if (menu_selection == "play")
