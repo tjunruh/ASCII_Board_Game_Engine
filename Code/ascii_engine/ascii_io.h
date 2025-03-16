@@ -22,6 +22,7 @@ namespace ascii_io
 	ASCII_IO_API void get_cursor_position(int& x, int& y);
 	ASCII_IO_API void hide_cursor();
 	ASCII_IO_API void show_cursor();
+	ASCII_IO_API int maximize_terminal();
 	ASCII_IO_API void move_cursor_up(unsigned int amount=1);
 	ASCII_IO_API void move_cursor_down(unsigned int amount=1);
 	ASCII_IO_API void move_cursor_right(unsigned int amount=1);

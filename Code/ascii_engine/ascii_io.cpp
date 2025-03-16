@@ -7,7 +7,27 @@
 #include <windows.h>
 #elif __linux__
 #include <ncurses.h>
+#include <memory>
+#include <chrono>
+#include <thread>
 #include "format_tools.h"
+#endif
+
+#ifdef __linux__
+std::string system_call_with_feedback(const char* command)
+{
+	char buffer[128];
+	std::string result = "";
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+	if (pipe)
+	{
+		while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr)
+		{
+			result = result + buffer;
+		}
+	}
+	return result;
+}
 #endif
 
 void ascii_io::print(const std::string& output) {
@@ -114,6 +134,28 @@ void ascii_io::show_cursor()
 #elif __linux__
    curs_set(1);
 #endif
+}
+
+int ascii_io::maximize_terminal()
+{
+	int status = 0;
+#ifdef _WIN32
+	ShowWindow(GetForegroundWindow(), SW_MAXIMIZE);
+#elif __linux__
+	status = system("which wmctrl > /dev/null");
+	if (status == 0)
+	{
+		std::string window_id = system_call_with_feedback("xprop -root | awk \'/_NET_ACTIVE_WINDOW\\(WINDOW\\)/{print $NF}\'");
+		if (window_id.length() > 0)
+		{
+			window_id.erase(window_id.length() - 1);
+		}
+		std::string maximize_command = "wmctrl -ir " + window_id + " -b add,maximized_vert,maximized_horz";
+		status = system(maximize_command.c_str());
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+#endif
+	return status;
 }
 
 void ascii_io::move_cursor_up(unsigned int amount)

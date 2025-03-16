@@ -198,7 +198,7 @@ bool text_box::cursor_on_bottom_border()
 	int x = 0;
 	int y = 0;
 	ascii_io::get_cursor_position(x, y);
-	if (y == (y_origin + get_height() - 1))
+	if ((unsigned int)y == ((unsigned int)y_origin + get_height() - 1))
 	{
 		return true;
 	}
@@ -333,7 +333,6 @@ void text_box::fit_cursor_to_line()
 	x = x - x_origin;
 	y = y - y_origin;
 	unsigned int line = get_cursor_line();
-	unsigned int total_lines = get_lines_count();
 	int line_length = (int)get_line_length(line);
 	if (x > line_length)
 	{
