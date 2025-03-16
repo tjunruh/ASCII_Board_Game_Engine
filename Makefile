@@ -26,13 +26,12 @@ TEST_ASCII_ENGINE := test_ascii_engine.out
 
 EXECUTABLES := \
 	build_board_config.out \
-	validate_board_config.out \
-	$(TEST_ASCII_ENGINE)
+	validate_board_config.out
 EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 
 .PHONY: all clean engine test test-headless
 
-all: $(EXECUTABLES) engine
+all: $(EXECUTABLES) $(addprefix $(BLD_DIR)/, $(TEST_ASCII_ENGINE)) engine
 
 clean:
 	-rm -rf $(BLD_DIR)
@@ -104,14 +103,14 @@ $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXT
 ### ASCII Engine Test
 TEST_ASCII_ENGINE_OBJS := \
 	main.o \
-        ascii_board.o \
+	ascii_board.o \
 	ascii_io.o \
 	controls.o \
 	format_tools.o \
-        frame.o \
-        label.o \
-        menu.o \
-        widget.o
+	frame.o \
+	label.o \
+	menu.o \
+	widget.o
 TEST_ASCII_ENGINE_OBJS := $(addprefix $(BLD_DIR)/test_ascii_engine/, $(TEST_ASCII_ENGINE_OBJS))
 ALL_OBJS += $(TEST_ASCII_ENGINE_OBJS)
 
@@ -184,7 +183,7 @@ test: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
 test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
 	env LD_LIBRARY_PATH="./$(BLD_DIR)" $< --gtest_filter=-ascii_io.*
 
-engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY))
+engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY)) $(EXECUTABLES)
 ### End PHONY targets
 
 
