@@ -1,7 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "controls.h"
 #include "../../external_libraries/json.hpp"
-#include <fstream>
+#include "../file_manager/file_manager.h"
 
 int controls::bind(const std::string& control_name, const int key)
 {
@@ -39,15 +39,16 @@ int controls::get_key(const std::string& control_name)
 
 int controls::load_controls(const std::string& file_path)
 {
-   std::ifstream file{file_path};
+   std::string content = "";
+   int status = file_manager::read_file(file_path, content);
 
-   if ( !file.is_open() )
+   if (status != 0)
    {
       return INVALID_PATH;
    }
 
    // Parse without exceptions
-   nlohmann::json controls_data = nlohmann::json::parse(file, nullptr, false);
+   nlohmann::json controls_data = nlohmann::json::parse(content, nullptr, false);
 
    if ( controls_data.is_discarded() )
    {
@@ -130,13 +131,12 @@ int controls::save_controls(const std::string& file_path)
 
    controls_data["mapping"] = controls;
 
-   std::ofstream output_file{file_path, std::ios::out | std::ios::trunc};
+   int status = file_manager::write_file(file_path, controls_data.dump(3));
 
-   if ( !output_file.is_open() )
+   if (status != 0)
    {
       return INVALID_PATH;
    }
 
-   output_file << controls_data.dump(3) << std::endl;
    return SUCCESS;
 }
