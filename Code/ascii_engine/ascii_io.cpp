@@ -30,6 +30,43 @@ std::string system_call_with_feedback(const char* command)
 }
 #endif
 
+int maximize_terminal()
+{
+	int status = 0;
+#ifdef _WIN32
+	ShowWindow(GetForegroundWindow(), SW_MAXIMIZE);
+#elif __linux__
+	status = system("which wmctrl > /dev/null");
+	if (status == 0)
+	{
+		std::string window_id = system_call_with_feedback("xprop -root | awk \'/_NET_ACTIVE_WINDOW\\(WINDOW\\)/{print $NF}\'");
+		if (window_id.length() > 0)
+		{
+			window_id.erase(window_id.length() - 1);
+		}
+		std::string maximize_command = "wmctrl -ir " + window_id + " -b add,maximized_vert,maximized_horz";
+		status = system(maximize_command.c_str());
+	}
+	else
+	{
+		status = system("which xdotool > /dev/null");
+		if (status == 0)
+		{
+			std::string window_id = system_call_with_feedback("xprop -root | awk \'/_NET_ACTIVE_WINDOW\\(WINDOW\\)/{print $NF}\'");
+			if (window_id.length() > 0)
+			{
+				window_id.erase(window_id.length() -1);
+			}
+			std::string place_command = "xdotool windowmove " + window_id + " 0 0";
+			std::string maximize_command = "xdotool windowsize " + window_id + " 100% 100%";
+			status = system(place_command.c_str());
+			status |= system(maximize_command.c_str());
+		}
+	}
+#endif
+	return status;
+}
+
 void ascii_io::print(const std::string& output) {
 #ifdef _WIN32
 	std::cout << output;
@@ -134,28 +171,6 @@ void ascii_io::show_cursor()
 #elif __linux__
    curs_set(1);
 #endif
-}
-
-int ascii_io::maximize_terminal()
-{
-	int status = 0;
-#ifdef _WIN32
-	ShowWindow(GetForegroundWindow(), SW_MAXIMIZE);
-#elif __linux__
-	status = system("which wmctrl > /dev/null");
-	if (status == 0)
-	{
-		std::string window_id = system_call_with_feedback("xprop -root | awk \'/_NET_ACTIVE_WINDOW\\(WINDOW\\)/{print $NF}\'");
-		if (window_id.length() > 0)
-		{
-			window_id.erase(window_id.length() - 1);
-		}
-		std::string maximize_command = "wmctrl -ir " + window_id + " -b add,maximized_vert,maximized_horz";
-		status = system(maximize_command.c_str());
-	}
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-#endif
-	return status;
 }
 
 void ascii_io::move_cursor_up(unsigned int amount)
@@ -309,8 +324,13 @@ std::string ascii_io::get_key_name(int key)
 	return name;
 }
 
-void ascii_io::ascii_engine_init()
+void ascii_io::ascii_engine_init(bool maximize)
 {
+	if (maximize)
+	{
+		maximize_terminal();
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	}
 #ifdef _WIN32
 	fit_console_buffer_to_screen();
 #elif __linux__
