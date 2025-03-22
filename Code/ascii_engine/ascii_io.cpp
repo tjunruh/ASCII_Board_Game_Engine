@@ -329,7 +329,9 @@ void ascii_io::ascii_engine_init(bool maximize)
 	if (maximize)
 	{
 		maximize_terminal();
+#ifdef __linux__
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+#endif
 	}
 #ifdef _WIN32
 	fit_console_buffer_to_screen();
