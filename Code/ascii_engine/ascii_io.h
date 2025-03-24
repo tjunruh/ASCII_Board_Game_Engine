@@ -17,7 +17,6 @@ namespace ascii_io
 	ASCII_IO_API void print(const std::string& output);
 	ASCII_IO_API int getchar();
 	ASCII_IO_API void clear();
-	ASCII_IO_API std::string getline();
 	ASCII_IO_API void get_terminal_size(int& x, int& y);
 	ASCII_IO_API void get_cursor_position(int& x, int& y);
 	ASCII_IO_API void hide_cursor();
