@@ -16,31 +16,13 @@
 #include "format_tools.h"
 #endif
 
+int console_zoom_amount = 0;
+
 #ifdef _WIN32
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
 const int font_size_increment = 1;
-int console_zoom_amount = 0;
-#endif
-
-#ifdef __linux__
-std::string system_call_with_feedback(const char* command)
-{
-	char buffer[128];
-	std::string result = "";
-	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
-	if (pipe)
-	{
-		while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr)
-		{
-			result = result + buffer;
-		}
-	}
-	return result;
-}
-#endif
-
 
 std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 {
@@ -58,6 +40,22 @@ std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 	return std::string(lptstr);
 #endif
 }
+#elif __linux__
+std::string system_call_with_feedback(const char* command)
+{
+	char buffer[128];
+	std::string result = "";
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+	if (pipe)
+	{
+		while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr)
+		{
+			result = result + buffer;
+		}
+	}
+	return result;
+}
+#endif
 
 int maximize_terminal()
 {
@@ -370,12 +368,13 @@ int ascii_io::zoom_in(unsigned int amount)
 		}
 	}
 #elif __linux__
-	int status = system("which xdotool > /dev/null");
+	status = system("which xdotool > /dev/null");
 	if (status == 0)
 	{
 		for (unsigned int i = 0; i < amount; i++)
 		{
 			status = system("xdotool key Ctrl+plus");
+			console_zoom_amount = console_zoom_amount + 1;
 		}
 	}
 #endif
@@ -458,6 +457,7 @@ int ascii_io::zoom_out(unsigned int amount)
 		for (unsigned int i = 0; i < amount; i++)
 		{
 			status = system("xdotool key Ctrl+minus");
+			console_zoom_amount = console_zoom_amount - 1;
 		}
 	}
 #endif
