@@ -22,7 +22,7 @@ int console_zoom_amount = 0;
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
-const int font_size_increment = 1;
+const int font_size_increment = 2;
 
 std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 {
