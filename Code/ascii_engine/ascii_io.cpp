@@ -5,12 +5,23 @@
 #ifdef _WIN32
 #include <conio.h>
 #include <windows.h>
+#include "../../external_libraries/json.hpp"
+#include <tchar.h>
+#include "../file_manager/file_manager.h"
 #elif __linux__
 #include <ncurses.h>
 #include <memory>
 #include <chrono>
 #include <thread>
 #include "format_tools.h"
+#endif
+
+#ifdef _WIN32
+const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
+const std::string console_settings_file = "settings.json";
+const int default_font_size = 12;
+const int font_size_increment = 1;
+int console_zoom_amount = 0;
 #endif
 
 #ifdef __linux__
@@ -29,6 +40,24 @@ std::string system_call_with_feedback(const char* command)
 	return result;
 }
 #endif
+
+
+std::string convert_LPTSTR_to_string(LPTSTR lptstr)
+{
+#ifdef UNICODE
+	int size = WideCharToMultiByte(CP_UTF8, 0, lptstr, -1, nullptr, 0, nullptr, nullptr);
+	if (size == 0)
+	{
+		return "";
+	}
+	std::string result(size, 0);
+	WideCharToMultiByte(CP_UTF8, 0, lptstr, -1, &result[0], size, nullptr, nullptr);
+	result.pop_back();
+	return result;
+#else
+	return std::string(lptstr);
+#endif
+}
 
 int maximize_terminal()
 {
@@ -285,6 +314,156 @@ void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
 #endif
 }
 
+int ascii_io::zoom_in(unsigned int amount)
+{
+	int status = 0;
+#ifdef _WIN32
+	LPTSTR raw_home_directory;
+	const unsigned int buffer_size = 4096;
+
+	raw_home_directory = (LPTSTR)malloc(buffer_size * sizeof(TCHAR));
+	if (NULL == raw_home_directory)
+	{
+		status = 1;
+		return status;
+	}
+
+	DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
+	if (return_value == buffer_size || return_value == 0)
+	{
+		status = 1;
+		return status;
+	}
+	std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
+	std::string content = "";
+	status = file_manager::read_file(home_directory + console_settings_path + console_settings_file, content);
+	if (status == 0)
+	{
+		nlohmann::json console_settings = nlohmann::json::parse(content, nullptr, false);
+		if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults"))
+		{
+			if (console_settings["profiles"]["defaults"].contains("fontSize") && console_settings["profiles"]["defaults"]["fontSize"].is_number())
+			{
+				int font_size = console_settings["profiles"]["defaults"]["fontSize"].template get<int>();
+				for (unsigned int i = 0; i < amount; i++)
+				{
+					font_size = font_size + font_size_increment;
+					console_zoom_amount = console_zoom_amount + 1;
+				}
+				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
+			}
+			else
+			{
+				int font_size = default_font_size;
+				for (unsigned int i = 0; i < amount; i++)
+				{
+					font_size = font_size + font_size_increment;
+					console_zoom_amount = console_zoom_amount + 1;
+				}
+				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
+			}
+			status = file_manager::write_file(home_directory + console_settings_path + console_settings_file, console_settings.dump(3));
+		}
+		else
+		{
+			status = 1;
+		}
+	}
+#elif __linux__
+	int status = system("which xdotool > /dev/null");
+	if (status == 0)
+	{
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			status = system("xdotool key Ctrl+plus");
+		}
+	}
+#endif
+	return status;
+}
+
+int ascii_io::zoom_out(unsigned int amount)
+{
+	int status = 0;
+#ifdef _WIN32
+	LPTSTR raw_home_directory;
+	const unsigned int buffer_size = 4096;
+
+	raw_home_directory = (LPTSTR)malloc(buffer_size * sizeof(TCHAR));
+	if (NULL == raw_home_directory)
+	{
+		status = 1;
+		return status;
+	}
+
+	DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
+	if (return_value == buffer_size || return_value == 0)
+	{
+		status = 1;
+		return status;
+	}
+	std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
+	std::string content = "";
+	status = file_manager::read_file(home_directory + console_settings_path + console_settings_file, content);
+	if (status == 0)
+	{
+		nlohmann::json console_settings = nlohmann::json::parse(content, nullptr, false);
+		if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults"))
+		{
+			if (console_settings["profiles"]["defaults"].contains("fontSize") && console_settings["profiles"]["defaults"]["fontSize"].is_number())
+			{
+				int font_size = console_settings["profiles"]["defaults"]["fontSize"].template get<int>();
+				for (unsigned int i = 0; i < amount; i++)
+				{
+					if ((font_size - font_size_increment) > 0)
+					{
+						font_size = font_size - font_size_increment;
+						console_zoom_amount = console_zoom_amount - 1;
+					}
+					else
+					{
+						break;
+					}
+				}
+				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
+			}
+			else
+			{
+				int font_size = default_font_size;
+				for (unsigned int i = 0; i < amount; i++)
+				{
+					if ((font_size - font_size_increment) > 0)
+					{
+						font_size = font_size - font_size_increment;
+						console_zoom_amount = console_zoom_amount - 1;
+					}
+					else
+					{
+						break;
+					}
+				}
+				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
+			}
+			status = file_manager::write_file(home_directory + console_settings_path + console_settings_file, console_settings.dump(3));
+		}
+		else
+		{
+			status = 1;
+		}
+	}
+#elif __linux__
+	status = system("which xdotool > /dev/null");
+	if (status == 0)
+	{
+		for (unsigned int i = 0; i < amount; i++)
+		{
+			status = system("xdotool key Ctrl+minus");
+		}
+	}
+#endif
+	return status;
+}
+
 void ascii_io::set_color(int foreground, int background, bool bold)
 {
 #ifdef _WIN32
@@ -342,7 +521,45 @@ void ascii_io::ascii_engine_init(bool maximize)
 
 void ascii_io::ascii_engine_end()
 {
-#ifdef __linux__
+#ifdef _WIN32
+	if (console_zoom_amount != 0)
+	{
+		LPTSTR raw_home_directory;
+		const unsigned int buffer_size = 4096;
+
+		raw_home_directory = (LPTSTR)malloc(buffer_size * sizeof(TCHAR));
+		if (NULL == raw_home_directory)
+		{
+			return;
+		}
+
+		DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
+		if (return_value == buffer_size || return_value == 0)
+		{
+			return;
+		}
+		std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
+		std::string content = "";
+		int status = file_manager::read_file(home_directory + console_settings_path + console_settings_file, content);
+		if (status == 0)
+		{
+			nlohmann::json console_settings = nlohmann::json::parse(content, nullptr, false);
+			if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults") && console_settings["profiles"]["defaults"].contains("fontSize"))
+			{
+				console_settings["profiles"]["defaults"].erase("fontSize");
+				status = file_manager::write_file(home_directory + console_settings_path + console_settings_file, console_settings.dump(3));
+			}
+		}
+	}
+#elif __linux__
+	if (console_zoom_amount > 0)
+	{
+		zoom_out(console_zoom_amount);
+	}
+	else if(console_zoom_amount < 0)
+	{
+		zoom_in(console_zoom_amount * -1);
+	}
 	ncurses_end();
 #endif
 }
