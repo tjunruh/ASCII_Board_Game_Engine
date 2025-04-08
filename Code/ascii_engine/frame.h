@@ -4,7 +4,6 @@
 #include "ascii_io.h"
 #include "widget_types.h"
 #include "format_tools.h"
-#include <unordered_map>
 #include "logger.h"
 #include "dec_formatter.h"
 
@@ -86,7 +85,11 @@ private:
 		bool selectable = false;
 		unsigned int top_line = 0;
 		unsigned int displayed_lines = 0;
+		unsigned int line_subtraction_from_terminal_height = 0;
+		unsigned int line_compression_amount = 0;
+		unsigned int left_column = 0;
 		bool line_constraint = false;
+		bool column_constraint = false;
 		bool line_edited = false;
 		std::vector<format_tools::coordinate_format> coordinate_colors;
 		std::vector<format_tools::index_format> index_colors;
@@ -119,7 +122,11 @@ private:
 	int set_index_colors(int id, std::vector<format_tools::index_format> index_colors);
 	int set_line_constraint(int id, bool line_constraint);
 	int set_top_line(int id, unsigned int top_line);
+	int set_column_constraint(int id, bool column_constraint);
+	int set_left_column(int id, unsigned int left_column);
 	int set_displayed_lines(int id, unsigned int displayed_lines);
+	int set_line_subtraction_from_terminal_height(int id, unsigned int line_subtraction_from_terminal_height);
+	int set_line_compression_amount(int id, unsigned int line_compression_amount);
 	int set_lines(int id, const std::vector<std::string>& lines);
 	int set_line_character(int id, char character, unsigned int line, unsigned int character_index);
 	int set_line_edited(int id, bool line_edited);
@@ -146,11 +153,15 @@ private:
 	int get_border_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier);
 	int get_selectability(int id, bool& selectable);
 	int get_top_line(int id, unsigned int& top_line);
+	int get_left_column(int id, unsigned int& left_column);
 	int get_displayed_lines(int id, unsigned int& displayed_lines);
+	int get_line_subtraction_from_terminal_height(int id, unsigned int& line_subtraction_from_terminal_height);
+	int get_line_compression_amount(int id, unsigned int& line_compression_amount);
 	float get_greatest_width_multiplier_at_coordinate(int row, int column);
 	float get_width_weight(const widget_info& item, float multiplier);
 	int get_index_colors(int id, std::vector<format_tools::index_format>& index_colors);
 	int get_line_constraint(int id, bool& line_constraint);
+	int get_column_constraint(int id, bool& column_constraint);
 	int get_line_length(int id, unsigned int line, unsigned int& length);
 	int generate_widget_id();
 	std::vector<int> get_row_ids(int row);
@@ -193,7 +204,10 @@ private:
 	int insert_character_in_output(int id, unsigned int index, char character);
 	int erase_character_in_output(int id, unsigned int index);
 	int get_output_length(int id, unsigned int& length);
+	void bound_top_line(widget_info& item);
+	void dynamically_adjust_displayed_lines(widget_info& item);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
+
 #ifdef __linux__
 	void dec_print(const std::string& input);
 #endif

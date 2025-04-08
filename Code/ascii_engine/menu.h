@@ -56,9 +56,7 @@ private:
 	int _down = ascii_io::down;
 	int _quit = ascii_io::q;
 	bool quit_enabled = false;
-	int line_subtraction_from_terminal_height = 0;
 	unsigned int non_separated_lines_count = 0;
-	bool _separate_items = false;
 	char _horizontal_char = '-';
 	char _vertical_char = '|';
 	char _intersection_char = '+';
@@ -69,11 +67,7 @@ private:
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
 	unsigned int get_stop_item(unsigned int top_item, unsigned int displayed_items);
-	unsigned int dynamic_displayed_line_adjustment(int line_subtraction);
 	void set_cursor_line(unsigned int line);
-	unsigned int line_to_item(unsigned int line, unsigned int& remainder);
-	unsigned int item_to_line(unsigned int item, unsigned int remainder);
-	unsigned int bound_top_item(unsigned int top_item, unsigned int displayed_items);
 	unsigned int bound_cursor_item(unsigned int cursor_item, unsigned int top_item, unsigned int stop_item);
 	unsigned int fit_displayed_lines_for_separated_items(unsigned int displayed_lines);
 };

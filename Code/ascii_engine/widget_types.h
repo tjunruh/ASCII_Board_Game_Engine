@@ -20,5 +20,5 @@
 
 namespace widget_types
 {
-	const std::vector<int> lince_constraint_widgets = { TEXTBOX, MENU, LABEL };
+	const std::vector<int> line_constraint_widgets = { BOARD, TEXTBOX, MENU, LABEL };
 }

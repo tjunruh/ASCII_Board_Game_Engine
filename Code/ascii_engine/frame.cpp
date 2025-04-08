@@ -1186,6 +1186,21 @@ int frame::get_top_line(int id, unsigned int& top_line)
 	return status;
 }
 
+int frame::get_left_column(int id, unsigned int& left_column)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			left_column = widgets[i].left_column;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::get_displayed_lines(int id, unsigned int& displayed_lines)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1194,6 +1209,36 @@ int frame::get_displayed_lines(int id, unsigned int& displayed_lines)
 		if (widgets[i].id == id)
 		{
 			displayed_lines = widgets[i].displayed_lines;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_line_subtraction_from_terminal_height(int id, unsigned int& line_subtraction_from_terminal_height)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			line_subtraction_from_terminal_height = widgets[i].line_subtraction_from_terminal_height;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_line_compression_amount(int id, unsigned int& line_compression_amount)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			line_compression_amount = widgets[i].line_compression_amount;
 			status = SUCCESS;
 			break;
 		}
@@ -1266,6 +1311,21 @@ int frame::get_line_constraint(int id, bool& line_constraint)
 		if (widgets[i].id == id)
 		{
 			line_constraint = widgets[i].line_constraint;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::get_column_constraint(int id, bool& column_constraint)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			column_constraint = widgets[i].column_constraint;
 			status = SUCCESS;
 			break;
 		}
@@ -1469,6 +1529,37 @@ int frame::set_top_line(int id, unsigned int top_line)
 	return status;
 }
 
+int frame::set_column_constraint(int id, bool column_constraint)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].column_constraint = column_constraint;
+			status = SUCCESS;
+			display_stale = true;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_left_column(int id, unsigned int left_column)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].left_column = left_column;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::set_displayed_lines(int id, unsigned int displayed_lines)
 {
 	int status = ELEMENT_NOT_FOUND;
@@ -1477,6 +1568,36 @@ int frame::set_displayed_lines(int id, unsigned int displayed_lines)
 		if (widgets[i].id == id)
 		{
 			widgets[i].displayed_lines = displayed_lines;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_line_subtraction_from_terminal_height(int id, unsigned int line_subtraction_from_terminal_height)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].line_subtraction_from_terminal_height = line_subtraction_from_terminal_height;
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
+int frame::set_line_compression_amount(int id, unsigned int line_compression_amount)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			widgets[i].line_compression_amount = line_compression_amount;
 			status = SUCCESS;
 			break;
 		}
@@ -1808,29 +1929,45 @@ int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
 
 void frame::constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines)
 {
-	unsigned int stop_line = 0;
-	std::string empty_line = format_tools::get_spacing(get_widget_width(item, false), ' ');
-	if (!item.line_constraint || widget_lines.size() < (item.displayed_lines + item.top_line))
+	if (item.line_constraint)
 	{
-		stop_line = widget_lines.size();
-	}
-	else
-	{
-		stop_line = item.displayed_lines + item.top_line;
-	}
-
-	int last_widget_line = widget_lines.size() - 1;
-	for (int i = last_widget_line; i >= 0; i--)
-	{
-		if ((unsigned int)i >= stop_line || (unsigned int)i < item.top_line)
+		unsigned int stop_line = 0;
+		std::string empty_line = format_tools::get_spacing(get_widget_width(item, false), ' ');
+		if (widget_lines.size() < (item.displayed_lines + item.top_line))
 		{
-			widget_lines.erase(widget_lines.begin() + i);
+			stop_line = widget_lines.size();
+		}
+		else
+		{
+			stop_line = item.displayed_lines + item.top_line;
+		}
+
+		int last_widget_line = widget_lines.size() - 1;
+		for (int i = last_widget_line; i >= 0; i--)
+		{
+			if ((unsigned int)i >= stop_line || (unsigned int)i < item.top_line)
+			{
+				widget_lines.erase(widget_lines.begin() + i);
+			}
+		}
+
+		for (unsigned int i = widget_lines.size(); i < item.displayed_lines; i++)
+		{
+			widget_lines.push_back(empty_line);
 		}
 	}
 
-	for (unsigned int i = widget_lines.size(); i < item.displayed_lines; i++)
+	if (item.column_constraint)
 	{
-		widget_lines.push_back(empty_line);
+		unsigned int width = get_widget_width(item, false);
+		for (unsigned int i = 0; i < widget_lines.size(); i++)
+		{
+			if (widget_lines[i].length() > (item.left_column + width))
+			{
+				widget_lines[i].erase(item.left_column + width, widget_lines[i].length() - (item.left_column + width));
+			}
+			widget_lines[i].erase(0, item.left_column);
+		}
 	}
 }
 
@@ -1838,28 +1975,49 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 {
 	if (item.coordinate_colors.size() > 0)
 	{
-		unsigned int stop_line = 0;
-		if (!item.line_constraint || item.lines.size() < (item.displayed_lines + item.top_line))
+		if (item.line_constraint)
 		{
-			stop_line = item.lines.size();
-		}
-		else
-		{
-			stop_line = item.displayed_lines + item.top_line;
-		}
-
-		int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
-		for (int i = number_of_coordinate_colors; i >= 0; i--)
-		{
-			if (item.coordinate_colors[i].y_position < (int)item.top_line || item.coordinate_colors[i].y_position >= (int)stop_line)
+			unsigned int stop_line = 0;
+			if (item.lines.size() < (item.displayed_lines + item.top_line))
 			{
-				colors.erase(item.coordinate_colors.begin() + i);
+				stop_line = item.lines.size();
+			}
+			else
+			{
+				stop_line = item.displayed_lines + item.top_line;
+			}
+
+			int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
+			for (int i = number_of_coordinate_colors; i >= 0; i--)
+			{
+				if (item.coordinate_colors[i].y_position < (int)item.top_line || item.coordinate_colors[i].y_position >= (int)stop_line)
+				{
+					colors.erase(item.coordinate_colors.begin() + i);
+				}
+			}
+
+			for (unsigned int i = 0; i < colors.size(); i++)
+			{
+				colors[i].y_position = colors[i].y_position - item.top_line;
 			}
 		}
 
-		for (unsigned int i = 0; i < colors.size(); i++)
+		if (item.column_constraint)
 		{
-			colors[i].y_position = colors[i].y_position - item.top_line;
+			int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
+			unsigned int width = get_widget_width(item, false);
+			for (int i = number_of_coordinate_colors; i >= 0; i--)
+			{
+				if (item.coordinate_colors[i].x_position < (int)item.left_column || item.coordinate_colors[i].x_position >= ((int)item.left_column + (int)width))
+				{
+					colors.erase(item.coordinate_colors.begin() + i);
+				}
+			}
+
+			for (unsigned int i = 0; i < colors.size(); i++)
+			{
+				colors[i].x_position = colors[i].x_position - item.left_column;
+			}
 		}
 	}
 }
@@ -1904,65 +2062,78 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
 	std::string line = "";
 
-	for (unsigned int i = 0; i < user_lines.size(); i++)
+	if (!item.column_constraint)
 	{
-		if (user_lines[i] == "\n")
+		for (unsigned int i = 0; i < user_lines.size(); i++)
 		{
-			widget_lines.push_back(line);
-			line = "";
-		}
-		else
-		{
-			std::vector<std::string> words = format_tools::split_string(user_lines[i], ' ');
-			for (unsigned int j = 0; j < words.size(); j++)
+			if (user_lines[i] == "\n")
 			{
-				if ((((line + words[j]).length())) <= width)
+				widget_lines.push_back(line);
+				line = "";
+			}
+			else
+			{
+				std::vector<std::string> words = format_tools::split_string(user_lines[i], ' ');
+				for (unsigned int j = 0; j < words.size(); j++)
 				{
-					line = line + words[j];
-				}
-				else if (words[j].length() >= width)
-				{
-					std::string first_section = "";
-					std::string second_section = "";
-					format_tools::cut_word(words[j], width - line.length(), first_section, second_section);
-					line = line + first_section;
-					widget_lines.push_back(line);
-					line = "";
-					if (item.widget_type == LABEL)
+					if ((((line + words[j]).length())) <= width)
 					{
-						second_section.insert(0, "-");
+						line = line + words[j];
 					}
-					words.insert(words.begin() + (j + 1), second_section);
-				}
-				else
-				{
-					if (item.widget_type == TEXTBOX)
+					else if (words[j].length() >= width)
 					{
-						if (words[j] == " ")
+						std::string first_section = "";
+						std::string second_section = "";
+						format_tools::cut_word(words[j], width - line.length(), first_section, second_section);
+						line = line + first_section;
+						widget_lines.push_back(line);
+						line = "";
+						if (item.widget_type == LABEL)
 						{
-							line = line + words[j];
-							widget_lines.push_back(line);
-							line = "";
+							second_section.insert(0, "-");
 						}
-						else
-						{
-							widget_lines.push_back(line);
-							line = words[j];
-						}
+						words.insert(words.begin() + (j + 1), second_section);
 					}
 					else
 					{
-						widget_lines.push_back(line);
-						if (words[j] != " ")
+						if (item.widget_type == TEXTBOX)
 						{
-							line = words[j];
+							if (words[j] == " ")
+							{
+								line = line + words[j];
+								widget_lines.push_back(line);
+								line = "";
+							}
+							else
+							{
+								widget_lines.push_back(line);
+								line = words[j];
+							}
 						}
 						else
 						{
-							line = "";
+							widget_lines.push_back(line);
+							if (words[j] != " ")
+							{
+								line = words[j];
+							}
+							else
+							{
+								line = "";
+							}
 						}
 					}
 				}
+			}
+		}
+	}
+	else
+	{
+		for (unsigned int i = 0; i < user_lines.size(); i++)
+		{
+			if (user_lines[i] != "\n")
+			{
+				widget_lines.push_back(user_lines[i]);
 			}
 		}
 	}
@@ -1978,12 +2149,27 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 		widget_lines.push_back(format_tools::get_spacing(width, ' '));
 	}
 
-	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
+	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item.widget_type) != 0)
 	{
 		set_lines(item.id, format_tools::remove_flags(item.index_colors, ignore_flags, widget_lines, '*'));
 	}
 
-	widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
+	if (!item.column_constraint)
+	{
+		widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
+	}
+	else
+	{
+		unsigned int longest_line_length = width;
+		for (unsigned int i = 0; i < widget_lines.size(); i++)
+		{
+			if (widget_lines[i].length() > longest_line_length)
+			{
+				longest_line_length = widget_lines[i].length();
+			}
+		}
+		widget_lines = format_tools::fill_lines(widget_lines, longest_line_length, item.alignment);
+	}
 
 	if (_color_enabled)
 	{
@@ -1995,21 +2181,28 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 		set_coordinate_colors(item.id, item.coordinate_colors);
 	}
 
-	if (std::count(widget_types::lince_constraint_widgets.begin(), widget_types::lince_constraint_widgets.end(), item.widget_type) != 0)
+	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item.widget_type) != 0)
 	{
-		if (item.line_constraint)
+		if (item.line_constraint || item.column_constraint)
 		{
-			if (item.top_line >= widget_lines.size())
+			if (item.line_constraint)
 			{
-				if (widget_lines.size() > 0)
+				if (item.line_subtraction_from_terminal_height != 0)
 				{
-					item.top_line = widget_lines.size() - 1;
+					dynamically_adjust_displayed_lines(item);
 				}
-				else
+				else if (item.top_line >= widget_lines.size())
 				{
-					item.top_line = 0;
+					if (widget_lines.size() > 0)
+					{
+						item.top_line = widget_lines.size() - 1;
+					}
+					else
+					{
+						item.top_line = 0;
+					}
+					set_top_line(item.id, item.top_line);
 				}
-				set_top_line(item.id, item.top_line);
 			}
 
 			constrain_lines(item, widget_lines);
@@ -2279,9 +2472,9 @@ void frame::translate_coordinate_colors_to_frame()
 	color_regions.clear();
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+		if (!widgets[i].line_constraint && !widgets[i].column_constraint)
 		{
-			if (!widgets[i].line_constraint)
+			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
 			{
 				format_tools::coordinate_format color_region;
 				color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
@@ -2289,13 +2482,51 @@ void frame::translate_coordinate_colors_to_frame()
 				color_region.format = widgets[i].coordinate_colors[j].format;
 				color_regions.push_back(color_region);
 			}
-			else if (widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines))
+		}
+		else if (widgets[i].line_constraint && !widgets[i].column_constraint)
+		{
+			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
 			{
-				format_tools::coordinate_format color_region;
-				color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
-				color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
-				color_region.format = widgets[i].coordinate_colors[j].format;
-				color_regions.push_back(color_region);
+				if (widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines))
+				{
+					format_tools::coordinate_format color_region;
+					color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
+					color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
+					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_regions.push_back(color_region);
+				}
+			}
+		}
+		else if (!widgets[i].line_constraint && widgets[i].column_constraint)
+		{
+			unsigned int width = get_widget_width(widgets[i], false);
+			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			{
+				if (widgets[i].coordinate_colors[j].x_position >= (int)widgets[i].left_column && widgets[i].coordinate_colors[j].x_position < ((int)widgets[i].left_column + (int)width))
+				{
+					format_tools::coordinate_format color_region;
+					color_region.x_position = widgets[i].coordinate_colors[j].x_position - widgets[i].left_column + widgets[i].x_origin;
+					color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
+					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_regions.push_back(color_region);
+				}
+			}
+		}
+		else
+		{
+			unsigned int width = get_widget_width(widgets[i], false);
+			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			{
+				bool in_line_bound = widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines);
+				bool in_column_bound = widgets[i].coordinate_colors[j].x_position >= (int)widgets[i].left_column && widgets[i].coordinate_colors[j].x_position < ((int)widgets[i].left_column + (int)width);
+				if (in_line_bound && in_column_bound)
+				{
+					format_tools::coordinate_format color_region;
+					color_region.x_position = widgets[i].coordinate_colors[j].x_position - widgets[i].left_column + widgets[i].x_origin;
+					color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
+					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_regions.push_back(color_region);
+				}
 			}
 		}
 	}
@@ -2679,6 +2910,69 @@ int frame::get_output_length(int id, unsigned int& length)
 		}
 	}
 	return status;
+}
+
+void frame::bound_top_line(widget_info& item)
+{
+	if (item.widget_type == MENU)
+	{
+		unsigned int top_line_remainder = 0;
+		unsigned int top_item = format_tools::compress(item.top_line, item.line_compression_amount, top_line_remainder);
+		unsigned int displayed_lines_remainder = 0;
+		unsigned int displayed_items = format_tools::compress(item.displayed_lines, item.line_compression_amount, displayed_lines_remainder);
+		unsigned int line_count_remainder = 0;
+		unsigned int item_count = format_tools::compress(item.lines.size(), item.line_compression_amount, line_count_remainder);
+		if ((int)top_item > ((int)item_count - (int)displayed_items))
+		{
+			if (((int)item_count - (int)displayed_items) >= 0)
+			{
+				top_item = item_count - displayed_items;
+				item.top_line = format_tools::expand(top_item, item.line_compression_amount, top_line_remainder);
+				set_top_line(item.id, item.top_line);
+			}
+			else
+			{
+				top_item = 0;
+				item.top_line = format_tools::expand(top_item, item.line_compression_amount, top_line_remainder);
+				set_top_line(item.id, item.top_line);
+			}
+		}
+	}
+	else if (item.widget_type == BOARD)
+	{
+		if ((int)item.top_line > ((int)item.lines.size() - (int)item.displayed_lines))
+		{
+			if (((int)item.lines.size() - (int)item.displayed_lines) >= 0)
+			{
+				item.top_line = item.lines.size() - item.displayed_lines;
+				set_top_line(item.id, item.top_line);
+			}
+			else
+			{
+				item.top_line = 0;
+				set_top_line(item.id, item.top_line);
+			}
+		}
+	}
+}
+
+void frame::dynamically_adjust_displayed_lines(widget_info& item)
+{
+	int x = 0;
+	int y = 0;
+	ascii_io::get_terminal_size(x, y);
+	if ((y - item.line_subtraction_from_terminal_height) > 0)
+	{
+		item.displayed_lines = (unsigned int)(y - item.line_subtraction_from_terminal_height);
+		set_displayed_lines(item.id, item.displayed_lines);
+		bound_top_line(item);
+	}
+	else
+	{
+		item.displayed_lines = 1;
+		set_displayed_lines(item.id, item.displayed_lines);
+		bound_top_line(item);
+	}
 }
 
 #ifdef __linux__

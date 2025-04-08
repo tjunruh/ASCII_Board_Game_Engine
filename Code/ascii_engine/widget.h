@@ -57,7 +57,7 @@ public:
 	WIDGET_API int reset_logging(const std::string& file_path);
 	operator int() { return widget_id; }
 protected:
-	void set_output_to_frame(const std::string& text);
+	void set_output_to_frame(const std::string& text, bool mark_stale = true);
 	void set_widget_type(int type);
 	bool frame_stale();
 	void mark_frame_as_stale();
@@ -70,16 +70,23 @@ protected:
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 	int get_default_foreground_color();
 	int get_default_background_color();
-	void widget_display(std::string output, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 	void widget_display(std::vector<std::string> output_lines, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 	void set_line_constraint(bool line_constraint);
+	void set_column_constraint(bool column_constraint);
 	void set_displayed_lines(unsigned int displayed_lines);
+	void set_line_subtraction_from_terminal_height(unsigned int line_subtraction_from_terminal_height);
+	void set_line_compression_amount(unsigned int line_compression_amount);
 	void set_top_line(unsigned int top_line);
+	void set_left_column(unsigned int left_column);
 	void get_displayed_output(std::vector<std::string>& displayed_output);
 	void get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors);
 	bool get_line_constraint();
+	bool get_column_constraint();
 	unsigned int get_displayed_lines();
+	unsigned int get_line_subtraction_from_terminal_height();
+	unsigned int get_line_compression_amount();
 	unsigned int get_top_line();
+	unsigned int get_left_column();
 	unsigned int get_lines_count(bool only_displayed = true);
 	void set_line_character(char character, unsigned int line, unsigned int character_index);
 	void update_lines();
@@ -87,6 +94,8 @@ protected:
 	void insert_character_in_output(unsigned int index, char character);
 	void erase_character_in_output(unsigned int index);
 	unsigned int get_output_length();
+	void dynamically_adjust_displayed_lines();
+	void bound_top_line();
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

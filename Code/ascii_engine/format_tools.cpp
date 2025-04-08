@@ -915,3 +915,24 @@ bool format_tools::format_empty(const common_format& format)
 
 	return false;
 }
+
+unsigned int format_tools::compress(unsigned int value, unsigned int compression, unsigned int& remainder)
+{
+	unsigned int compressed_value = value;
+	if (compression > 0)
+	{
+		compressed_value = value / compression;
+		remainder = value % compression;
+	}
+	return compressed_value;
+}
+
+unsigned int format_tools::expand(unsigned int value, unsigned int expansion, unsigned int remainder)
+{
+	unsigned int expanded_value = value;
+	if (expansion > 0)
+	{
+		expanded_value = value * expansion + remainder;
+	}
+	return expanded_value;
+}

@@ -6,7 +6,7 @@
 #include "error_codes.h"
 #include "format_tools.h"
 
-ascii_board::ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+ascii_board::ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation, int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -57,7 +57,9 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 	set_tile_default_values(translation.board, translation.action_tile_skeletons);
 	newline_guard(translation);
 	board_translations.push_back(translation);
-	board = translation.board;
+	board_lines_count = format_tools::get_lines(translation.board).size();
+	board_characters_in_line = format_tools::get_first_line_length(translation.board);
+	set_output_to_frame(translation.board);
 	for (unsigned int i = 0; i < translation.action_tile_skeletons.size(); i++)
 	{
 		action_tile tile;
@@ -74,6 +76,23 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 
 	set_widget_type(BOARD);
 	selectable();
+	set_column_constraint(true);
+
+	if (lines_count != 0)
+	{
+		if (lines_count > 0)
+		{
+			set_line_subtraction_from_terminal_height(0);
+			set_displayed_lines(lines_count);
+		}
+		else if (lines_count < 0)
+		{
+			set_line_subtraction_from_terminal_height(lines_count * -1);
+		}
+
+		set_line_constraint(true);
+	}
+
 	status = SUCCESS;
 	log.log_status(status, "ascii_board::ascii_board");
 	log.log_comment(validation_debug_log);
@@ -391,21 +410,36 @@ char ascii_board::get_tile_character(int row, int column, unsigned int character
 
 std::string ascii_board::get_board()
 {
-	update_board();
-	return board;
+	std::string board = "";
+	std::vector<format_tools::index_format> board_colors;
+	build_board(board, board_colors);
+	set_output_to_frame(board, false);
+	set_index_colors(board_colors);
+	update_lines();
+	return get_output();
 }
 
 std::vector<format_tools::index_format> ascii_board::get_colors()
 {
-	update_board();
-	return board_colors;
+	std::string board = "";
+	std::vector<format_tools::index_format> board_colors;
+	build_board(board, board_colors);
+	set_output_to_frame(board, false);
+	set_index_colors(board_colors);
+	update_lines();
+	return get_displayed_index_colors();
 }
 
 void ascii_board::get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors)
 {
-	update_board();
-	game_board = board;
-	colors = board_colors;
+	std::string board = "";
+	std::vector<format_tools::index_format> board_colors;
+	build_board(board, board_colors);
+	set_output_to_frame(board, false);
+	set_index_colors(board_colors);
+	update_lines();
+	game_board = get_output();
+	colors = get_displayed_index_colors();
 }
 
 void ascii_board::add_configuration(board_configuration configuration)
@@ -696,15 +730,24 @@ int ascii_board::get_number_of_rows()
 
 void ascii_board::display()
 {
-	update_board();
+	if (frame_stale() && (get_line_subtraction_from_terminal_height() != 0))
+	{
+		dynamically_adjust_displayed_lines();
+	}
+	std::vector<std::string> board;
+	std::vector<format_tools::index_format> board_colors;
+	get_displayed_output(board, board_colors);
 	widget_display(board, true, true, board_colors);
 }
 
-void ascii_board::sync()
+void ascii_board::build()
 {
-	update_board();
-	set_output_to_frame(board);
+	std::string board = "";
+	std::vector<format_tools::index_format> board_colors;
+	build_board(board, board_colors);
+	set_output_to_frame(board, false);
 	set_index_colors(board_colors);
+	update_lines();
 }
 
 ascii_board::action_tile ascii_board::get_action_tile(int row, int column)
@@ -877,6 +920,106 @@ void ascii_board::use_translation(const std::string& name_id)
 	log.log_status(status, "ascii_board::use_translation");
 }
 
+void ascii_board::set_lines_count(int lines_count)
+{
+	if (lines_count == 0)
+	{
+		set_line_constraint(false);
+		set_top_line(0);
+		set_displayed_lines(board_lines_count);
+	}
+	else
+	{
+		if (lines_count > 0)
+		{
+			set_line_subtraction_from_terminal_height(0);
+			set_displayed_lines(lines_count);
+		}
+		else if (lines_count < 0)
+		{
+			set_line_subtraction_from_terminal_height(lines_count * -1);
+		}
+		set_line_constraint(true);
+		bound_top_line();
+	}
+}
+
+void ascii_board::set_top_display_index(unsigned int index)
+{
+	if ((index + get_displayed_lines()) <= board_lines_count)
+	{
+		set_top_line(index);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::set_top_display_index");
+	}
+}
+
+void ascii_board::set_left_display_index(unsigned int index)
+{
+	if ((index + get_width()) <= board_characters_in_line)
+	{
+		set_left_column(index);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::set_left_display_index");
+	}
+}
+
+void ascii_board::scroll_up(unsigned int amount)
+{
+	unsigned int top_line = get_top_line();
+	if (amount <= top_line)
+	{
+		set_top_line(top_line - amount);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::scroll_up");
+	}
+}
+
+void ascii_board::scroll_down(unsigned int amount)
+{
+	unsigned int top_line = get_top_line();
+	if ((top_line + amount + get_displayed_lines()) <= board_lines_count)
+	{
+		set_top_line(top_line + amount);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::scroll_down");
+	}
+}
+
+void ascii_board::scroll_left(unsigned int amount)
+{
+	unsigned int left_column = get_left_column();
+	if (left_column >= amount)
+	{
+		set_left_column(left_column - amount);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::scroll_left");
+	}
+}
+
+void ascii_board::scroll_right(unsigned int amount)
+{
+	unsigned int left_column = get_left_column();
+	if ((left_column + amount + get_width()) < board_characters_in_line)
+	{
+		set_left_column(left_column + amount);
+	}
+	else
+	{
+		log.log_status(INVALID_INDEX, "ascii_board::scroll_right");
+	}
+}
+
 void ascii_board::initialize_tiles(int rows, int columns, std::vector<action_tile_skeleton>& action_tile_skeletons)
 {
 	action_tile_skeletons.clear();
@@ -1041,9 +1184,10 @@ std::string ascii_board::get_board_section(const std::string& board_reference, c
 	return section;
 }
 
-void ascii_board::update_board()
+void ascii_board::build_board(std::string& board, std::vector<format_tools::index_format>& board_colors)
 {
 	board_colors.clear();
+	board = get_output();
 	if (board.length() == 0)
 	{
 		return;
@@ -1460,7 +1604,7 @@ std::string ascii_board::remove_configuration_format_characters(std::string cont
 	{
 		lines.erase(lines.begin());
 	}
-	
+
 	content = format_tools::get_string(lines);
 	return content;
 }

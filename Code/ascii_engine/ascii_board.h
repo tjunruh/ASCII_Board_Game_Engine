@@ -76,7 +76,7 @@ public:
 		std::vector<sub_tile_configuration> activated_configs;
 	};
 
-	ASCII_BOARD_API ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation = "none", bool start_logging=false, const std::string& logging_file_path="ascii_board.log");
+	ASCII_BOARD_API ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation = "none", int lines_count = 0, bool start_logging = false, const std::string& logging_file_path = "ascii_board.log");
 	ASCII_BOARD_API void clear_tile(int row, int column);
 	ASCII_BOARD_API void clear_row(int row);
 	ASCII_BOARD_API void clear_column(int column);
@@ -100,18 +100,26 @@ public:
 	ASCII_BOARD_API int get_number_of_columns();
 	ASCII_BOARD_API int get_number_of_rows();
 	ASCII_BOARD_API void display();
-	ASCII_BOARD_API void sync();
+	ASCII_BOARD_API void build();
 	ASCII_BOARD_API action_tile get_action_tile(int row, int column);
 	ASCII_BOARD_API bool configuration_activated(const std::string& name_id, int row, int column);
 	ASCII_BOARD_API void modify_configuration(const std::string& target_name_id, const std::string& modification_name_id);
 	ASCII_BOARD_API int load_board_translation(const std::string& name_id, const std::string& path);
 	ASCII_BOARD_API void use_translation(const std::string& name_id);
-private:
-	std::string board = "";
-	std::vector<format_tools::index_format> board_colors;
+	ASCII_BOARD_API void set_lines_count(int lines_count);
+	ASCII_BOARD_API void set_top_display_index(unsigned int index);
+	ASCII_BOARD_API void set_left_display_index(unsigned int index);
+	ASCII_BOARD_API void scroll_up(unsigned int amount = 1);
+	ASCII_BOARD_API void scroll_down(unsigned int amount = 1);
+	ASCII_BOARD_API void scroll_left(unsigned int amount = 1);
+	ASCII_BOARD_API void scroll_right(unsigned int amount = 1);
 
+private:
 	int max_rows = 0;
 	int max_columns = 0;
+
+	unsigned int board_lines_count = 0;
+	unsigned int board_characters_in_line = 0;
 
 	std::vector<action_tile> action_tiles;
 	std::vector<board_configuration> board_configurations;
@@ -122,7 +130,7 @@ private:
 	void remove_inactive_tiles(std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void set_tile_default_values(const std::string& board_reference, std::vector<action_tile_skeleton>& action_tile_skeletons);
 	std::string get_board_section(const std::string& board_reference, const std::vector<action_tile_board_section>& board_section);
-	void update_board();
+	void build_board(std::string& board, std::vector<format_tools::index_format>& board_colors);
 	unsigned int get_value_length(action_tile tile);
 	bool configuration_present(const std::string& name_id);
 	board_configuration get_configuration(const std::string& name_id);
