@@ -53,7 +53,24 @@ std::vector<format_tools::index_format> dec_formatter::format(std::string& forma
 	{
 		if (std::count(dec_trigger_characters.begin(), dec_trigger_characters.end(), format_content[0]) != 0)
 		{
-			dec_or_ascii_region.format.dec = true;
+			char top = '\0';
+			char bottom = '\0';
+			char right = '\0';
+			char left = '\0';
+			if ((format_lines.size() > 1) && (0 < format_lines[1].length()))
+			{
+				bottom = (format_lines[1])[0];
+			}
+
+			if (format_lines[0].length() > 1)
+			{
+				right = (format_lines[0])[1];
+			}
+
+			if (std::count(dec_characters.begin(), dec_characters.end(), determine_dec_character(top, bottom, left, right, (format_lines[0])[0])) != 0)
+			{
+				dec_or_ascii_region.format.dec = true;
+			}
 		}
 		else
 		{
