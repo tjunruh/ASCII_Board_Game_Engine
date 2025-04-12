@@ -2019,6 +2019,12 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 				colors[i].x_position = colors[i].x_position - item.left_column;
 			}
 		}
+
+		colors = format_tools::sort(colors);
+		if ((colors.size() > 0) && format_tools::format_empty(colors[0].format))
+		{
+			colors.erase(colors.begin());
+		}
 	}
 }
 

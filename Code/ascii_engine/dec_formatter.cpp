@@ -179,34 +179,48 @@ char dec_formatter::determine_dec_character(char top, char bottom, char left, ch
 		defined_count++;
 	}
 
-	if (defined_count == 2)
+	if (defined_count == 1)
 	{
-		if ((top == _vertical_char) && (right == _horizontal_char) && (center == _endpoint_char))
-		{
-			character = bottom_left_corner;
-		}
-		else if ((top == _vertical_char) && (left == _horizontal_char) && (center == _endpoint_char))
-		{
-			character = bottom_right_corner;
-		}
-		else if ((bottom == _vertical_char) && (right == _horizontal_char) && (center == _endpoint_char))
-		{
-			character = top_left_corner;
-		}
-		else if ((bottom == _vertical_char) && (left == _horizontal_char) && (center == _endpoint_char))
-		{
-			character = top_right_corner;
-		}
-		else if ((std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), top) != 0) && (std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), bottom) != 0) && (center == _vertical_char))
+		if ((center == _vertical_char) && ((std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), top) != 0) || (std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), bottom) != 0)))
 		{
 			character = vertical_line;
 		}
-		else if ((std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), right) != 0) && (std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), left) != 0) && (center == _horizontal_char))
+		else if ((center == _horizontal_char) && ((std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), right) != 0) || (std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), left) != 0)))
 		{
 			character = horizontal_line;
 		}
 	}
-	else if ((defined_count == 3) && (center == _endpoint_char))
+	else if (defined_count == 2)
+	{
+		if ((center == _endpoint_char) || (center == _intersection_char))
+		{
+			if ((top == _vertical_char) && (right == _horizontal_char))
+			{
+				character = bottom_left_corner;
+			}
+			else if ((top == _vertical_char) && (left == _horizontal_char))
+			{
+				character = bottom_right_corner;
+			}
+			else if ((bottom == _vertical_char) && (right == _horizontal_char))
+			{
+				character = top_left_corner;
+			}
+			else if ((bottom == _vertical_char) && (left == _horizontal_char))
+			{
+				character = top_right_corner;
+			}
+		}
+		else if ((center == _vertical_char) && (std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), top) != 0) && (std::count(dec_vertical_trigger_characters.begin(), dec_vertical_trigger_characters.end(), bottom) != 0))
+		{
+			character = vertical_line;
+		}
+		else if ((center == _horizontal_char) && (std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), right) != 0) && (std::count(dec_horizontal_trigger_characters.begin(), dec_horizontal_trigger_characters.end(), left) != 0))
+		{
+			character = horizontal_line;
+		}
+	}
+	else if ((defined_count == 3) && ((center == _endpoint_char) || (center == _intersection_char)))
 	{
 		if ((top == _vertical_char) && (bottom == _vertical_char) && (right == _horizontal_char))
 		{
