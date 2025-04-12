@@ -1843,3 +1843,45 @@ TEST_F(format_tools_test, empty_format_test)
 	EXPECT_EQ(false, format_tools::format_empty(bold_format));
 	EXPECT_EQ(false, format_tools::format_empty(dec_format));
 }
+
+TEST_F(format_tools_test, compress)
+{
+	unsigned int value = 17;
+	unsigned int remainder = 0;
+
+	unsigned int correct_compressed_value = 5;
+	unsigned int correct_remainder = 2;
+
+	unsigned int compressed_value = format_tools::compress(value, 3, remainder);
+
+	EXPECT_EQ(compressed_value, correct_compressed_value);
+	EXPECT_EQ(remainder, correct_remainder);
+
+	correct_compressed_value = 17;
+	correct_remainder = 0;
+
+	remainder = 0;
+
+	compressed_value = format_tools::compress(value, 0, remainder);
+
+	EXPECT_EQ(compressed_value, correct_compressed_value);
+	EXPECT_EQ(remainder, correct_remainder);
+}
+
+TEST_F(format_tools_test, expand)
+{
+	unsigned int value = 5;
+	unsigned int remainder = 2;
+
+	unsigned int correct_expanded_value = 17;
+
+	unsigned int expanded_value = format_tools::expand(value, 3, remainder);
+
+	EXPECT_EQ(expanded_value, correct_expanded_value);
+
+	correct_expanded_value = 5;
+
+	expanded_value = format_tools::expand(value, 0, remainder);
+
+	EXPECT_EQ(expanded_value, correct_expanded_value);
+}
