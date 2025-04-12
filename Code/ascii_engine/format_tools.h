@@ -121,7 +121,7 @@ namespace format_tools
 	FORMAT_TOOLS_API std::vector<index_format> convert(const std::vector<coordinate_format>& coordinate_vec, int width);
 	FORMAT_TOOLS_API std::vector<coordinate_format> convert(const std::vector<index_format>& index_vec, const std::vector<std::string>& lines);
 	FORMAT_TOOLS_API std::vector<int> set_flags(std::vector<index_format>& index_colors, std::string& content, char flag);
-	FORMAT_TOOLS_API std::vector<std::string> remove_flags(const std::vector<index_format>& index_colors, std::vector<int> flags, std::vector<std::string> lines, char flag);
+	FORMAT_TOOLS_API std::vector<std::string> remove_flags(const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string> lines, char flag);
 	FORMAT_TOOLS_API void convert_flags(std::vector<coordinate_format>& coordinate_colors, const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string>& lines, char flag);
 	FORMAT_TOOLS_API std::vector<content_format> fit_to_width(const std::vector<content_format>& content_vec, unsigned int width);
 	FORMAT_TOOLS_API std::vector<std::string> remove_newline_characters(std::vector<std::string> lines);

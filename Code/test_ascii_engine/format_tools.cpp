@@ -1258,6 +1258,115 @@ TEST_F(format_tools_test, set_flags)
 	EXPECT_EQ(test_string, correct_answer);
 }
 
+TEST_F(format_tools_test, remove_flags)
+{
+	std::vector<std::string> test_lines =
+	{
+		"* 1 ",
+		"* 2 ",
+		"* 3 ",
+		"* 4 ",
+		"* 5 ",
+		"* 6 ",
+		"* 7 ",
+		"* 8 ",
+		"* 9 ",
+		"*010",
+		"* 11"
+	};
+
+	format_tools::common_format empty_format;
+	std::vector<format_tools::index_format> index_vec = {
+		{0, empty_format, '1'},
+		{4, empty_format, '2'},
+		{8, empty_format, '3'},
+		{12, empty_format, '4'},
+		{16, empty_format, '5'},
+		{20, empty_format, '6'},
+		{24, empty_format, '7'},
+		{28, empty_format, '8'},
+		{32, empty_format, '9'},
+		{36, empty_format, '1'},
+		{40, empty_format, ' '}
+	};
+
+	std::vector<std::string> correct_answer =
+	{
+		"1 1 ",
+		"2 2 ",
+		"3 3 ",
+		"4 4 ",
+		"5 5 ",
+		"6 6 ",
+		"7 7 ",
+		"8 8 ",
+		"9 9 ",
+		"1010",
+		"  11"
+	};
+
+	std::vector<int> ignore_flags;
+
+	test_lines = format_tools::remove_flags(index_vec, ignore_flags, test_lines, '*');
+	ASSERT_EQ(correct_answer.size(), test_lines.size());
+	for (unsigned int i = 0; i < correct_answer.size(); i++)
+	{
+		EXPECT_EQ(correct_answer[i], test_lines[i]) << "Index: " + std::to_string(i);
+	}
+
+	test_lines =
+	{
+		"* 1 ",
+		"* 2 ",
+		"* 3 ",
+		"* 4 ",
+		"* 5 ",
+		"* 6 ",
+		"* 7 ",
+		"* 8 ",
+		"* 9 ",
+		"*010",
+		"* 11"
+	};
+
+	index_vec = {
+		{0, empty_format, '1'},
+		{4, empty_format, '2'},
+		{8, empty_format, '3'},
+		{12, empty_format, '4'},
+		{20, empty_format, '6'},
+		{24, empty_format, '7'},
+		{28, empty_format, '8'},
+		{32, empty_format, '9'},
+		{36, empty_format, '1'},
+		{40, empty_format, ' '}
+	};
+
+	correct_answer =
+	{
+		"1 1 ",
+		"2 2 ",
+		"3 3 ",
+		"4 4 ",
+		"* 5 ",
+		"6 6 ",
+		"7 7 ",
+		"8 8 ",
+		"9 9 ",
+		"1010",
+		"  11"
+	};
+
+	ignore_flags.push_back(4);
+
+	test_lines = format_tools::remove_flags(index_vec, ignore_flags, test_lines, '*');
+	ASSERT_EQ(correct_answer.size(), test_lines.size());
+	for (unsigned int i = 0; i < correct_answer.size(); i++)
+	{
+		EXPECT_EQ(correct_answer[i], test_lines[i]) << "Index: " + std::to_string(i);
+	}
+}
+
 TEST_F(format_tools_test, convert_flags)
 {
 	std::vector<std::string> lines = {
