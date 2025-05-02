@@ -26,7 +26,7 @@ int main()
 	int cursor_row = 4;
 	int cursor_column = 5;
 	my_board.activate_configuration("cursor", cursor_row, cursor_column);
-	my_board.sync();
+	my_board.build();
 
 	my_menu.set_spacing(2, 0, 0, 0);
 	my_menu.add_border(true);
@@ -87,11 +87,12 @@ int main()
 				else if (input == ascii_io::q)
 				{
 					my_board.activate_configuration("cursor", cursor_row, cursor_column);
-					my_board.sync();
+					my_board.build();
 					break;
 				}
 
 				my_board.activate_configuration("cursor", cursor_row, cursor_column);
+				my_board.build();
 				my_board.display();
 			}
 		}

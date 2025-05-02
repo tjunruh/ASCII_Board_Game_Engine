@@ -95,6 +95,8 @@ int main()
 			}
 		}
 	}
+
+	ascii_io::show_cursor();
 	
 	delete(my_frame);
 	ascii_io::ascii_engine_end(); // This function should always be called at the end of the program to properly shut ascii engine down
