@@ -24,34 +24,42 @@ label::label(frame* parent, const std::string& special_operation, unsigned int l
 	}
 }
 
-void label::set_output(const std::string& output)
+void label::set_output(std::string output)
 {
-	std::vector<format_tools::index_format> colors = get_index_colors();
-	if (colors.size() > 0)
+	std::vector<format_tools::index_format> colors = convert_color_tags(output);
+	if (colors.size() == 0)
 	{
-		int color_elements = (int)colors.size() - 1;
-		for (int i = color_elements; i >= 0; i--)
+		colors = get_index_colors();
+		if (colors.size() > 0)
 		{
-			if ((unsigned int)colors[i].index >= output.length())
+			int color_elements = (int)colors.size() - 1;
+			for (int i = color_elements; i >= 0; i--)
 			{
-				colors.erase(colors.begin() + i);
-			}
-			else if (output[colors[i].index] == '\n')
-			{
-				if (((unsigned int)colors[i].index + 1) < output.length())
-				{
-					colors[i].index = colors[i].index + 1;
-				}
-				else if ((colors[i].index - 1) >= 0)
-				{
-					colors[i].index = colors[i].index - 1;
-				}
-				else
+				if ((unsigned int)colors[i].index >= output.length())
 				{
 					colors.erase(colors.begin() + i);
 				}
+				else if (output[colors[i].index] == '\n')
+				{
+					if (((unsigned int)colors[i].index + 1) < output.length())
+					{
+						colors[i].index = colors[i].index + 1;
+					}
+					else if ((colors[i].index - 1) >= 0)
+					{
+						colors[i].index = colors[i].index - 1;
+					}
+					else
+					{
+						colors.erase(colors.begin() + i);
+					}
+				}
 			}
+			set_index_colors(colors);
 		}
+	}
+	else
+	{
 		set_index_colors(colors);
 	}
 
@@ -199,4 +207,55 @@ void label::set_lines_count(unsigned int lines_count)
 	{
 		set_line_constraint(true);
 	}
+}
+
+std::vector<format_tools::index_format> label::convert_color_tags(std::string& content)
+{
+	bool start_reading = false;
+	std::string tag = "";
+	std::vector<format_tools::index_format> foreground_colors;
+	std::vector<format_tools::index_format> background_colors;
+	std::vector<format_tools::index_format> colors;
+	for (int i = 0; i < (int)content.length(); i++)
+	{
+		if (start_reading)
+		{
+			tag = tag + content[i];
+		}
+
+		if (content[i] == '<')
+		{
+			start_reading = true;
+			tag = content[i];
+		}
+		else if (content[i] == '>')
+		{
+			start_reading = false;
+			auto foreground_color_code = foreground_color_tags.find(tag);
+			auto background_color_code = background_color_tags.find(tag);
+			if (foreground_color_code != foreground_color_tags.end())
+			{
+				content.erase(i - tag.length() + 1, tag.length());
+				format_tools::index_format color;
+				i = i - tag.length();
+				color.index = i + 1;
+				color.format.foreground_format = foreground_color_code->second;
+				foreground_colors.push_back(color);
+			}
+			else if (background_color_code != background_color_tags.end())
+			{
+				content.erase(i - tag.length() + 1, tag.length());
+				format_tools::index_format color;
+				i = i - tag.length();
+				color.index = i + 1;
+				color.format.background_format = background_color_code->second;
+				background_colors.push_back(color);
+			}
+			tag = "";
+		}
+	}
+
+	colors = format_tools::combine(foreground_colors, background_colors);
+
+	return colors;
 }
