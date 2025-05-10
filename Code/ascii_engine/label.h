@@ -48,7 +48,7 @@ private:
 		{"<magenta_foreground>", format_tools::magenta},
 		{"<cyan_foreground>", format_tools::cyan},
 		{"<white_foreground>", format_tools::white},
-		{"<no_foreground>", format_tools::none}
+		{"<no_color>", format_tools::none}
 	};
 
 	const std::unordered_map<std::string, int> background_color_tags =
@@ -61,6 +61,6 @@ private:
 		{"<magenta_background>", format_tools::magenta},
 		{"<cyan_background>", format_tools::cyan},
 		{"<white_background>", format_tools::white},
-		{"<no_background>", format_tools::none}
+		{"<no_color>", format_tools::none}
 	};
 };

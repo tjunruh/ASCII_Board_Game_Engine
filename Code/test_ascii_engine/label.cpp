@@ -92,6 +92,20 @@ protected:
 			EXPECT_EQ(colors_match[i].format.dec, returned_colors[i].format.dec) << "Test Number: " + std::to_string(test_num) + "\nIndex: " + std::to_string(i);
 		}
 	}
+
+	void format_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_format, int test_num)
+	{
+		correct_answer = format_tools::sort(correct_answer);
+		test_format = format_tools::sort(test_format);
+		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
+		for (unsigned int i = 0; i < correct_answer.size(); i++)
+		{
+			EXPECT_EQ(test_format[i].index, correct_answer[i].index) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.background_format, correct_answer[i].format.background_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.foreground_format, correct_answer[i].format.foreground_format) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+			EXPECT_EQ(test_format[i].format.dec, correct_answer[i].format.dec) << "Test num: " + std::to_string(test_num) + "\nIndex of colors not equivalent: " + std::to_string(i);
+		}
+	}
 };
 
 TEST_F(label_test, get_widget_type)
@@ -1018,6 +1032,229 @@ TEST_F(label_test, test_scroll_out_of_bounds)
 	output = local_test_frame->get_frame_output();
 
 	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}
+
+TEST_F(label_test, embedded_color_test)
+{
+	const expected_display_data correct_answer =
+	{
+		".------------------------------------------------..------------------------------------------------.\n"
+		"| This is widget 1                               || This is widget 2                               |\n"
+		".------------------------------------------------..------------------------------------------------.\n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| This is widget 3              || This is widget 4              || This is widget 5              | \n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		".-------------------------------..-------------------------------..-------------------------------. \n"
+		"| This is widget 6              || This is widget 7              || This is widget 8              | \n"
+		".-------------------------------..-------------------------------..-------------------------------. ",
+		{ 2, 52, 2, 35, 68, 2, 35, 68 },
+		{ 1, 1, 4, 4, 4, 7, 7, 7 },
+		{ 46, 46, 29, 29, 29, 29, 29, 29 },
+		{ 1, 1, 1, 1, 1, 1, 1, 1 },
+		{ 50, 50, 33, 33, 33, 33, 33, 33 },
+		{ 3, 3, 3, 3, 3, 3, 3, 3 }
+	};
+
+	// foreground colors
+	format_tools::common_format black_foreground;
+	black_foreground.foreground_format = format_tools::black;
+
+	format_tools::common_format red_foreground;
+	red_foreground.foreground_format = format_tools::red;
+
+	format_tools::common_format green_foreground;
+	green_foreground.foreground_format = format_tools::green;
+
+	format_tools::common_format yellow_foreground;
+	yellow_foreground.foreground_format = format_tools::yellow;
+
+	format_tools::common_format blue_foreground;
+	blue_foreground.foreground_format = format_tools::blue;
+
+	format_tools::common_format magenta_foreground;
+	magenta_foreground.foreground_format = format_tools::magenta;
+
+	format_tools::common_format cyan_foreground;
+	cyan_foreground.foreground_format = format_tools::cyan;
+
+	format_tools::common_format white_foreground;
+	white_foreground.foreground_format = format_tools::white;
+
+	// background colors
+	format_tools::common_format black_background;
+	black_background.background_format = format_tools::black;
+
+	format_tools::common_format red_background;
+	red_background.background_format = format_tools::red;
+
+	format_tools::common_format green_background;
+	green_background.background_format = format_tools::green;
+
+	format_tools::common_format yellow_background;
+	yellow_background.background_format = format_tools::yellow;
+
+	format_tools::common_format blue_background;
+	blue_background.background_format = format_tools::blue;
+
+	format_tools::common_format magenta_background;
+	magenta_background.background_format = format_tools::magenta;
+
+	format_tools::common_format cyan_background;
+	cyan_background.background_format = format_tools::cyan;
+
+	format_tools::common_format white_background;
+	white_background.background_format = format_tools::white;
+
+	// mixed colors
+	format_tools::common_format black_foreground_white_background;
+	black_foreground_white_background.foreground_format = format_tools::black;
+	black_foreground_white_background.background_format = format_tools::white;
+
+	format_tools::common_format red_foreground_cyan_background;
+	red_foreground_cyan_background.foreground_format = format_tools::red;
+	red_foreground_cyan_background.background_format = format_tools::cyan;
+
+	format_tools::common_format green_foreground_magenta_background;
+	green_foreground_magenta_background.foreground_format = format_tools::green;
+	green_foreground_magenta_background.background_format = format_tools::magenta;
+
+	format_tools::common_format yellow_foreground_blue_background;
+	yellow_foreground_blue_background.foreground_format = format_tools::yellow;
+	yellow_foreground_blue_background.background_format = format_tools::blue;
+
+	format_tools::common_format blue_foreground_yellow_background;
+	blue_foreground_yellow_background.foreground_format = format_tools::blue;
+	blue_foreground_yellow_background.background_format = format_tools::yellow;
+
+	format_tools::common_format magenta_foreground_green_background;
+	magenta_foreground_green_background.foreground_format = format_tools::magenta;
+	magenta_foreground_green_background.background_format = format_tools::green;
+
+	format_tools::common_format cyan_foreground_red_background;
+	cyan_foreground_red_background.foreground_format = format_tools::cyan;
+	cyan_foreground_red_background.background_format = format_tools::red;
+
+	format_tools::common_format white_foreground_black_background;
+	white_foreground_black_background.foreground_format = format_tools::white;
+	white_foreground_black_background.background_format = format_tools::black;
+
+	format_tools::common_format no_format;
+
+	const std::vector<format_tools::index_format> format_1 =
+	{
+		{0, black_foreground, ' '},
+		{5, black_foreground_white_background, ' '},
+		{8, white_background, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_2 =
+	{
+		{0, cyan_background, ' '},
+		{5, red_foreground_cyan_background, ' '},
+		{8, red_foreground, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_3 =
+	{
+		{0, green_foreground, ' '},
+		{5, green_foreground_magenta_background, ' '},
+		{8, magenta_background, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_4 =
+	{
+		{0, blue_background, ' '},
+		{5, yellow_foreground_blue_background, ' '},
+		{8, yellow_foreground, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_5 =
+	{
+		{0, blue_foreground, ' '},
+		{5, blue_foreground_yellow_background, ' '},
+		{8, yellow_background, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_6 =
+	{
+		{0, green_background, ' '},
+		{5, magenta_foreground_green_background, ' '},
+		{8, magenta_foreground, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_7 =
+	{
+		{0, cyan_foreground, ' '},
+		{5, cyan_foreground_red_background, ' '},
+		{8, red_background, ' '},
+		{15, no_format, ' '}
+	};
+
+	const std::vector<format_tools::index_format> format_8 =
+	{
+		{0, black_background, ' '},
+		{5, white_foreground_black_background, ' '},
+		{8, white_foreground, ' '},
+		{15, no_format, ' '}
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->set_fake_console_height(9);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("<black_foreground>This <black_foreground><white_background>is <white_background>widget <no_color>1");
+	local_test_label_1.add_border(true);
+	labels.push_back(local_test_label_1);
+	label local_test_label_2(local_test_frame);
+	local_test_label_2.set_output("<cyan_background>This <cyan_background><red_foreground>is <red_foreground>widget <no_color>2");
+	local_test_label_2.add_border(true);
+	labels.push_back(local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("<green_foreground>This <green_foreground><magenta_background>is <magenta_background>widget <no_color>3");
+	local_test_label_3.add_border(true);
+	labels.push_back(local_test_label_3);
+	label local_test_label_4(local_test_frame);
+	local_test_label_4.set_output("<blue_background>This <blue_background><yellow_foreground>is <yellow_foreground>widget <no_color>4");
+	local_test_label_4.add_border(true);
+	labels.push_back(local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("<blue_foreground>This <blue_foreground><yellow_background>is <yellow_background>widget <no_color>5");
+	local_test_label_5.add_border(true);
+	labels.push_back(local_test_label_5);
+	label local_test_label_6(local_test_frame, "new line");
+	local_test_label_6.set_output("<green_background>This <green_background><magenta_foreground>is <magenta_foreground>widget <no_color>6");
+	local_test_label_6.add_border(true);
+	labels.push_back(local_test_label_6);
+	label local_test_label_7(local_test_frame);
+	local_test_label_7.set_output("<cyan_foreground>This <cyan_foreground><red_background>is <red_background>widget <no_color>7");
+	local_test_label_7.add_border(true);
+	labels.push_back(local_test_label_7);
+	label local_test_label_8(local_test_frame);
+	local_test_label_8.set_output("<black_background>This <black_background><white_foreground>is <white_foreground>widget <no_color>8");
+	local_test_label_8.add_border(true);
+	labels.push_back(local_test_label_8);
+	std::string output = local_test_frame->get_frame_output();
+
+	run_test(output, labels, correct_answer);
+
+	format_equivalent_test(format_1, local_test_label_1.get_colors(), 0);
+	format_equivalent_test(format_2, local_test_label_2.get_colors(), 1);
+	format_equivalent_test(format_3, local_test_label_3.get_colors(), 2);
+	format_equivalent_test(format_4, local_test_label_4.get_colors(), 3);
+	format_equivalent_test(format_5, local_test_label_5.get_colors(), 4);
+	format_equivalent_test(format_6, local_test_label_6.get_colors(), 5);
+	format_equivalent_test(format_7, local_test_label_7.get_colors(), 6);
+	format_equivalent_test(format_8, local_test_label_8.get_colors(), 7);
 
 	delete(local_test_frame);
 }
