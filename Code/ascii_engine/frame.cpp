@@ -129,7 +129,16 @@ bool frame::stale()
 	{
 		int x = 0;
 		int y = 0;
-		ascii_io::get_terminal_size(x, y);
+		if (!_use_fake_console_dimensions)
+		{
+			ascii_io::get_terminal_size(x, y);
+		}
+		else
+		{
+			x = _fake_console_width;
+			y = _fake_console_height;
+		}
+
 		if ((x != previous_x) || (y != previous_y))
 		{
 			display_stale = true;
@@ -2964,12 +2973,9 @@ void frame::bound_top_line(widget_info& item)
 
 void frame::dynamically_adjust_displayed_lines(widget_info& item)
 {
-	int x = 0;
-	int y = 0;
-	ascii_io::get_terminal_size(x, y);
-	if ((y - item.line_subtraction_from_terminal_height) > 0)
+	if ((terminal_y - item.line_subtraction_from_terminal_height) > 0)
 	{
-		item.displayed_lines = (unsigned int)(y - item.line_subtraction_from_terminal_height);
+		item.displayed_lines = (unsigned int)(terminal_y - item.line_subtraction_from_terminal_height);
 		set_displayed_lines(item.id, item.displayed_lines);
 		bound_top_line(item);
 	}
