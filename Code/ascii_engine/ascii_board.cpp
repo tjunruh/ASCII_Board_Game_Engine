@@ -410,36 +410,18 @@ char ascii_board::get_tile_character(int row, int column, unsigned int character
 
 std::string ascii_board::get_board()
 {
-	std::string board = "";
-	std::vector<format_tools::index_format> board_colors;
-	build_board(board, board_colors);
-	set_output_to_frame(board, false);
-	set_index_colors(board_colors);
-	update_lines();
 	return get_output();
 }
 
 std::vector<format_tools::index_format> ascii_board::get_colors()
 {
-	std::string board = "";
-	std::vector<format_tools::index_format> board_colors;
-	build_board(board, board_colors);
-	set_output_to_frame(board, false);
-	set_index_colors(board_colors);
-	update_lines();
-	return get_displayed_index_colors();
+	return get_index_colors();
 }
 
 void ascii_board::get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors)
 {
-	std::string board = "";
-	std::vector<format_tools::index_format> board_colors;
-	build_board(board, board_colors);
-	set_output_to_frame(board, false);
-	set_index_colors(board_colors);
-	update_lines();
 	game_board = get_output();
-	colors = get_displayed_index_colors();
+	colors = get_index_colors();
 }
 
 void ascii_board::add_configuration(board_configuration configuration)
