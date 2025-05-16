@@ -2,7 +2,7 @@
 #include "text_box.h"
 #include "widget_types.h"
 
-text_box::text_box(frame* parent, std::string special_operation, unsigned int lines_count, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
+text_box::text_box(frame* parent, std::string special_operation, int lines_count, bool start_logging, std::string logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -17,7 +17,20 @@ text_box::text_box(frame* parent, std::string special_operation, unsigned int li
 	set_widget_type(TEXTBOX);
 	selectable();
 	set_line_constraint(true);
-	set_displayed_lines(lines_count);
+	if (lines_count > 0)
+	{
+		set_displayed_lines(lines_count);
+		set_line_subtraction_from_terminal_height(0);
+	}
+	else if (lines_count < 0)
+	{
+		set_line_subtraction_from_terminal_height(lines_count * -1);
+	}
+	else
+	{
+		set_displayed_lines(1);
+		set_line_subtraction_from_terminal_height(0);
+	}
 }
 
 unsigned int text_box::write()
@@ -40,11 +53,34 @@ unsigned int text_box::write()
 	update_lines();
 	ascii_io::show_cursor();
 	int input = ascii_io::undefined;
-	unsigned int displayed_lines = get_displayed_lines();
+
 	do
 	{
-		unsigned int top_line = get_top_line();
+		saved_cursor_linear_position = get_linear_cursor_position();
 		input = ascii_io::getchar();
+		if (frame_stale())
+		{
+			refresh();
+
+			x_origin = get_x_origin();
+			y_origin = get_y_origin();
+
+			move_cursor_to_linear_position(saved_cursor_linear_position);
+
+			if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines() + get_top_line()))
+			{
+				int x = 0;
+				int y = 0;
+				ascii_io::get_cursor_position(x, y);
+				y = y_origin - 1 + get_displayed_lines();
+				ascii_io::move_cursor_to_position(x, y);
+				fit_cursor_to_line();
+			}
+		}
+
+		unsigned int top_line = get_top_line();
+		unsigned int displayed_lines = get_displayed_lines();
+
 		if (input == ascii_io::up)
 		{
 			if (cursor_on_top_border())
@@ -173,9 +209,23 @@ std::string text_box::get_text()
 	return get_output();
 }
 
-void text_box::set_lines_count(unsigned int lines_count)
+void text_box::set_lines_count(int lines_count)
 {
-	set_displayed_lines(lines_count);
+	if (lines_count > 0)
+	{
+		set_displayed_lines(lines_count);
+		set_line_subtraction_from_terminal_height(0);
+	}
+	else if (lines_count < 0)
+	{
+		set_line_subtraction_from_terminal_height(lines_count * -1);
+		dynamically_adjust_displayed_lines();
+	}
+	else
+	{
+		set_displayed_lines(1);
+		set_line_subtraction_from_terminal_height(0);
+	}
 }
 
 bool text_box::cursor_on_top_border()

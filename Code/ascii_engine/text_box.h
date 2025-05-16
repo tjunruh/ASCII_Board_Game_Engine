@@ -18,12 +18,12 @@
 class text_box : public widget
 {
 public:
-	TEXT_BOX_API text_box(frame* parent, std::string special_operation = "none", unsigned int lines_count = 1, bool start_logging = false, std::string logging_file_path="text_box.log");
+	TEXT_BOX_API text_box(frame* parent, std::string special_operation = "none", int lines_count = 1, bool start_logging = false, std::string logging_file_path="text_box.log");
 	TEXT_BOX_API unsigned int write();
 	TEXT_BOX_API void set_max_characters(int characters);
 	TEXT_BOX_API void clear();
 	TEXT_BOX_API std::string get_text();
-	TEXT_BOX_API void set_lines_count(unsigned int lines_count);
+	TEXT_BOX_API void set_lines_count(int lines_count);
 private:
 	bool cursor_on_top_border();
 	bool cursor_on_bottom_border();

@@ -2166,7 +2166,8 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 
 	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item.widget_type) != 0)
 	{
-		set_lines(item.id, format_tools::remove_flags(item.index_colors, ignore_flags, widget_lines, '*'));
+		item.lines = format_tools::remove_flags(item.index_colors, ignore_flags, widget_lines, '*');
+		set_lines(item.id, item.lines);
 	}
 
 	if (!item.column_constraint)
@@ -2953,7 +2954,7 @@ void frame::bound_top_line(widget_info& item)
 			}
 		}
 	}
-	else if (item.widget_type == BOARD)
+	else if ((item.widget_type == BOARD) || (item.widget_type == TEXTBOX))
 	{
 		if ((int)item.top_line > ((int)item.lines.size() - (int)item.displayed_lines))
 		{
@@ -2973,7 +2974,7 @@ void frame::bound_top_line(widget_info& item)
 
 void frame::dynamically_adjust_displayed_lines(widget_info& item)
 {
-	if ((terminal_y - item.line_subtraction_from_terminal_height) > 0)
+	if (terminal_y > (int)item.line_subtraction_from_terminal_height)
 	{
 		item.displayed_lines = (unsigned int)(terminal_y - item.line_subtraction_from_terminal_height);
 		set_displayed_lines(item.id, item.displayed_lines);
