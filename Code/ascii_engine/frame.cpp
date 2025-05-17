@@ -2954,7 +2954,7 @@ void frame::bound_top_line(widget_info& item)
 			}
 		}
 	}
-	else if ((item.widget_type == BOARD) || (item.widget_type == TEXTBOX))
+	else if ((item.widget_type == BOARD) || (item.widget_type == TEXTBOX) || (item.widget_type == LABEL))
 	{
 		if ((int)item.top_line > ((int)item.lines.size() - (int)item.displayed_lines))
 		{

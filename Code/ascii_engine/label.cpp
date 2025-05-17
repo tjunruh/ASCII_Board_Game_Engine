@@ -3,7 +3,7 @@
 #include "widget_types.h"
 #include "error_codes.h"
 
-label::label(frame* parent, const std::string& special_operation, unsigned int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
+label::label(frame* parent, const std::string& special_operation, int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
 	if (start_logging)
 	{
@@ -19,8 +19,17 @@ label::label(frame* parent, const std::string& special_operation, unsigned int l
 	unselectable();
 	if (lines_count != 0)
 	{
+		if (lines_count > 0)
+		{
+			set_line_subtraction_from_terminal_height(0);
+			set_displayed_lines(lines_count);
+		}
+		else if (lines_count < 0)
+		{
+			set_line_subtraction_from_terminal_height(lines_count * -1);
+		}
+
 		set_line_constraint(true);
-		set_displayed_lines(lines_count);
 	}
 }
 
@@ -196,15 +205,24 @@ void label::get_controls(int& up, int& down, int& quit)
 	quit = _quit;
 }
 
-void label::set_lines_count(unsigned int lines_count)
+void label::set_lines_count(int lines_count)
 {
-	set_displayed_lines(lines_count);
 	if (lines_count == 0)
 	{
 		set_line_constraint(false);
+		set_top_line(0);
 	}
-	else
+	else if (lines_count > 0)
 	{
+		set_line_subtraction_from_terminal_height(0);
+		set_displayed_lines(lines_count);
+		set_line_constraint(true);
+		bound_top_line();
+	}
+	else if (lines_count < 0)
+	{
+		set_line_subtraction_from_terminal_height(lines_count * -1);
+		dynamically_adjust_displayed_lines();
 		set_line_constraint(true);
 	}
 }

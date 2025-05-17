@@ -20,7 +20,7 @@
 class label : public widget
 {
 public:
-	LABEL_API label(frame* parent, const std::string& special_operation = "none", unsigned int lines_count = 0, bool start_logging=false, const std::string& logging_file_path="label.log");
+	LABEL_API label(frame* parent, const std::string& special_operation = "none", int lines_count = 0, bool start_logging=false, const std::string& logging_file_path="label.log");
 	LABEL_API void set_output(std::string output);
 	LABEL_API void set_colors(std::vector<format_tools::index_format> colors);
 	LABEL_API std::vector<format_tools::index_format> get_colors();
@@ -31,7 +31,7 @@ public:
 	LABEL_API void scroll_down(unsigned int amount = 1, bool render=true);
 	LABEL_API void set_controls(int up, int down, int quit);
 	LABEL_API void get_controls(int& up, int& down, int& quit);
-	LABEL_API void set_lines_count(unsigned int lines_count);
+	LABEL_API void set_lines_count(int lines_count);
 private:
 	std::vector<format_tools::index_format> convert_color_tags(std::string& content);
 	int _up = ascii_io::up;
