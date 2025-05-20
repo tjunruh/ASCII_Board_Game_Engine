@@ -226,6 +226,8 @@ void text_box::set_lines_count(int lines_count)
 		set_displayed_lines(1);
 		set_line_subtraction_from_terminal_height(0);
 	}
+
+	mark_frame_as_stale();
 }
 
 bool text_box::cursor_on_top_border()
