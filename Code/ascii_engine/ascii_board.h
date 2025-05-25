@@ -82,6 +82,7 @@ public:
 	ASCII_BOARD_API void clear_column(int column);
 	ASCII_BOARD_API void clear_all();
 	ASCII_BOARD_API std::string get_tile(int row, int column);
+	ASCII_BOARD_API void set_tile(int row, int column, std::string value);
 	ASCII_BOARD_API char get_tile_character(int row, int column, unsigned int character_index);
 	ASCII_BOARD_API std::string get_board();
 	ASCII_BOARD_API std::vector<format_tools::index_format> get_colors();

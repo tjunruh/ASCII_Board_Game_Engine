@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #ifdef _WIN32
 #ifdef FORMAT_TOOLS_EXPORTS
@@ -92,6 +93,32 @@ namespace format_tools
 		{none, "None"}
 	};
 
+	const std::unordered_map<std::string, int> foreground_color_tags =
+	{
+		{"<black_foreground>", format_tools::black},
+		{"<red_foreground>", format_tools::red},
+		{"<green_foreground>", format_tools::green},
+		{"<yellow_foreground>", format_tools::yellow},
+		{"<blue_foreground>", format_tools::blue},
+		{"<magenta_foreground>", format_tools::magenta},
+		{"<cyan_foreground>", format_tools::cyan},
+		{"<white_foreground>", format_tools::white},
+		{"<no_color>", format_tools::none}
+	};
+
+	const std::unordered_map<std::string, int> background_color_tags =
+	{
+		{"<black_background>", format_tools::black},
+		{"<red_background>", format_tools::red},
+		{"<green_background>", format_tools::green},
+		{"<yellow_background>", format_tools::yellow},
+		{"<blue_background>", format_tools::blue},
+		{"<magenta_background>", format_tools::magenta},
+		{"<cyan_background>", format_tools::cyan},
+		{"<white_background>", format_tools::white},
+		{"<no_color>", format_tools::none}
+	};
+
 	const std::string right_alignment_keyword = "right";
 	const std::string left_alignment_keyword = "left";
 	const std::string center_alignment_keyword = "center";
@@ -134,4 +161,5 @@ namespace format_tools
 	FORMAT_TOOLS_API bool format_empty(const common_format& format);
 	FORMAT_TOOLS_API unsigned int compress(unsigned int value, unsigned int compression, unsigned int& remainder);
 	FORMAT_TOOLS_API unsigned int expand(unsigned int value, unsigned int expansion, unsigned int remainder);
+	FORMAT_TOOLS_API std::vector<format_tools::index_format> convert_color_tags(std::string& content);
 }

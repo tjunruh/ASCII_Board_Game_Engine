@@ -161,6 +161,35 @@ void ascii_board::clear_column(int column)
 	log.log_status(status, "ascii_board::clear_column");
 }
 
+void ascii_board::set_tile(int row, int column, std::string value)
+{
+	int status = UNDEFINED;
+	int action_tile_index = get_action_tile_index(row, column);
+	if (action_tile_index != -1)
+	{
+		std::vector<format_tools::index_format> colors = format_tools::convert_color_tags(value);
+		unsigned int value_length = get_value_length(action_tiles[action_tile_index]);
+		if (value.length() <= value_length)
+		{
+			clear_tile(row, column);
+			value = value + format_tools::get_spacing(value_length - value.length(), ' ');
+			action_tiles[action_tile_index].colors = colors;
+			action_tiles[action_tile_index].value = value;
+			status = SUCCESS;
+		}
+		else
+		{
+			status = INVALID_LENGTH;
+		}
+	}
+	else
+	{
+		status = INVALID_INDEX;
+	}
+
+	log.log_status(status, "ascii_board::set_tile");
+}
+
 void ascii_board::set_tile(tile_configuration configuration, bool activate, const std::string& name_id)
 {
 	int status = UNDEFINED;

@@ -936,3 +936,54 @@ unsigned int format_tools::expand(unsigned int value, unsigned int expansion, un
 	}
 	return expanded_value;
 }
+
+std::vector<format_tools::index_format> format_tools::convert_color_tags(std::string& content)
+{
+	bool start_reading = false;
+	std::string tag = "";
+	std::vector<format_tools::index_format> foreground_colors;
+	std::vector<format_tools::index_format> background_colors;
+	std::vector<format_tools::index_format> colors;
+	for (int i = 0; i < (int)content.length(); i++)
+	{
+		if (start_reading)
+		{
+			tag = tag + content[i];
+		}
+
+		if (content[i] == '<')
+		{
+			start_reading = true;
+			tag = content[i];
+		}
+		else if (content[i] == '>')
+		{
+			start_reading = false;
+			auto foreground_color_code = foreground_color_tags.find(tag);
+			auto background_color_code = background_color_tags.find(tag);
+			if (foreground_color_code != foreground_color_tags.end())
+			{
+				content.erase(i - tag.length() + 1, tag.length());
+				format_tools::index_format color;
+				i = i - tag.length();
+				color.index = i + 1;
+				color.format.foreground_format = foreground_color_code->second;
+				foreground_colors.push_back(color);
+			}
+			else if (background_color_code != background_color_tags.end())
+			{
+				content.erase(i - tag.length() + 1, tag.length());
+				format_tools::index_format color;
+				i = i - tag.length();
+				color.index = i + 1;
+				color.format.background_format = background_color_code->second;
+				background_colors.push_back(color);
+			}
+			tag = "";
+		}
+	}
+
+	colors = format_tools::combine(foreground_colors, background_colors);
+
+	return colors;
+}
