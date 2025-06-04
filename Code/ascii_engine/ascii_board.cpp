@@ -1050,6 +1050,7 @@ void ascii_board::set_tile_ranges(const std::string& content, std::vector<action
 {
 	int parameter = 0;
 	bool range_end = false;
+	bool start_reading = false;
 	std::string array_row = "";
 	std::string array_column = "";
 	std::string map_start_row = "";
@@ -1058,69 +1059,74 @@ void ascii_board::set_tile_ranges(const std::string& content, std::vector<action
 	std::string map_stop_column = "";
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
-		if (content[i] == ',')
+		if (content[i] == '(')
 		{
-			parameter++;
-			range_end = false;
+			start_reading = true;
 		}
-
-		if (content[i] == ')')
+		else if (start_reading)
 		{
-			parameter = 0;
-			if (map_stop_row == "")
+			if (content[i] == ',')
 			{
-				map_stop_row = map_start_row;
+				parameter++;
+				range_end = false;
 			}
+			else if (content[i] == ')')
+			{
+				start_reading = false;
+				parameter = 0;
+				if (map_stop_row == "")
+				{
+					map_stop_row = map_start_row;
+				}
 
-			if (map_stop_column == "")
-			{
-				map_stop_column = map_start_column;
-			}
-			set_tile_range(stoi(array_row), stoi(array_column), stoi(map_start_row), stoi(map_stop_row), stoi(map_start_column), stoi(map_stop_column), action_tile_skeletons);
-			array_row = "";
-			array_column = "";
-			map_start_row = "";
-			map_stop_row = "";
-			map_start_column = "";
-			map_stop_column = "";
-		}
-
-		if (content[i] == '-')
-		{
-			range_end = true;
-		}
-
-		if(isdigit(content[i]))
-		{
-			if (parameter == 0)
-			{
-				if (range_end)
+				if (map_stop_column == "")
 				{
-					map_stop_row = map_stop_row + content[i];
+					map_stop_column = map_start_column;
 				}
-				else
-				{
-					map_start_row = map_start_row + content[i];
-				}
+				set_tile_range(stoi(array_row), stoi(array_column), stoi(map_start_row), stoi(map_stop_row), stoi(map_start_column), stoi(map_stop_column), action_tile_skeletons);
+				array_row = "";
+				array_column = "";
+				map_start_row = "";
+				map_stop_row = "";
+				map_start_column = "";
+				map_stop_column = "";
 			}
-			else if (parameter == 1)
+			else if (content[i] == '-')
 			{
-				if (range_end)
-				{
-					map_stop_column = map_stop_column + content[i];
-				}
-				else
-				{
-					map_start_column = map_start_column + content[i];
-				}
+				range_end = true;
 			}
-			else if (parameter == 2)
+			else if (isdigit(content[i]))
 			{
-				array_row = array_row + content[i];
-			}
-			else if (parameter == 3)
-			{
-				array_column = array_column + content[i];
+				if (parameter == 0)
+				{
+					if (range_end)
+					{
+						map_stop_row = map_stop_row + content[i];
+					}
+					else
+					{
+						map_start_row = map_start_row + content[i];
+					}
+				}
+				else if (parameter == 1)
+				{
+					if (range_end)
+					{
+						map_stop_column = map_stop_column + content[i];
+					}
+					else
+					{
+						map_start_column = map_start_column + content[i];
+					}
+				}
+				else if (parameter == 2)
+				{
+					array_row = array_row + content[i];
+				}
+				else if (parameter == 3)
+				{
+					array_column = array_column + content[i];
+				}
 			}
 		}
 	}
