@@ -316,7 +316,7 @@ std::string action_tile_pattern_maker::generate_pattern()
 			{
 				if (action_tile_sections[j].start_collection)
 				{
-					pattern = pattern + "{";
+					pattern = pattern + "{ ";
 				}
 
 				pattern = pattern + "(" + std::to_string(action_tile_sections[j].start_row + (row_increment * i));
@@ -341,7 +341,7 @@ std::string action_tile_pattern_maker::generate_pattern()
 			}
 			else
 			{
-				pattern = pattern + "}  ";
+				pattern = pattern + "}\n";
 			}
 			
 		}
