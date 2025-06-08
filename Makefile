@@ -26,7 +26,8 @@ TEST_ASCII_ENGINE := test_ascii_engine.out
 
 EXECUTABLES := \
 	build_board_config.out \
-	validate_board_config.out
+	validate_board_config.out \
+	action_tile_pattern_maker.out
 EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 
 .PHONY: all clean engine test test-headless
@@ -174,6 +175,21 @@ $(BLD_DIR)/validate_board_config/%.o: $(SRC_DIR)/validate_board_config/%.cpp | $
 $(BLD_DIR)/validate_board_config.out: $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 ### End validate board config
+
+
+### Action tile pattern maker
+ACTION_TILE_PATTERN_MAKER_OBJS := \
+	action_tile_pattern_maker.o \
+	main.o
+ACTION_TILE_PATTERN_MAKER_OBJS := $(addprefix $(BLD_DIR)/action_tile_pattern_maker/, $(ACTION_TILE_PATTERN_MAKER_OBJS))
+ALL_OBJS += $(ACTION_TILE_PATTERN_MAKER_OBJS)
+
+$(BLD_DIR)/action_tile_pattern_maker/%.o: $(SRC_DIR)/action_tile_pattern_maker/%.cpp | $(BLD_DIR)/action_tile_pattern_maker
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+$(BLD_DIR)/action_tile_pattern_maker.out: $(ACTION_TILE_PATTERN_MAKER_OBJS) $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(ACTION_TILE_PATTERN_MAKER_OBJS) $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
+### End action tile pattern maker
 
 
 ### PHONY targets requiring other variables
