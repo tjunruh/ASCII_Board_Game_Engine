@@ -12,7 +12,8 @@ TREE_DIRS := \
 	ascii_engine \
 	headers/ascii_engine \
 	test_ascii_engine \
-	board_config_field_titles
+	board_config_field_titles \
+	action_tile_pattern_maker
 TREE_DIRS := $(addprefix $(BLD_DIR)/, $(TREE_DIRS))
 
 # Swap the debug definitions for debug builds
@@ -188,7 +189,7 @@ $(BLD_DIR)/action_tile_pattern_maker/%.o: $(SRC_DIR)/action_tile_pattern_maker/%
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
 $(BLD_DIR)/action_tile_pattern_maker.out: $(ACTION_TILE_PATTERN_MAKER_OBJS) $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(ACTION_TILE_PATTERN_MAKER_OBJS) $(VALIDATE_BOARD_CONFIG_OBJS) $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(ACTION_TILE_PATTERN_MAKER_OBJS) $(BLD_DIR)/validate_board_config/validate_board_config.o $(FILE_MANAGER_OBJS) $(BOARD_CONFIG_FIELD_PARSER_OBJS)
 ### End action tile pattern maker
 
 
