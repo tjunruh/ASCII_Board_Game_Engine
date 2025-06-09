@@ -432,6 +432,63 @@ int ascii_io::zoom_out(unsigned int amount)
 	return status;
 }
 
+int ascii_io::zoom_to_level(int level)
+{
+	int status = 0;
+#ifdef _WIN32
+	LPTSTR raw_home_directory;
+	const unsigned int buffer_size = 4096;
+
+	raw_home_directory = (LPTSTR)malloc(buffer_size * sizeof(TCHAR));
+	if (NULL == raw_home_directory)
+	{
+		status = 1;
+		return status;
+	}
+
+	DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
+	if (return_value == buffer_size || return_value == 0)
+	{
+		status = 1;
+		return status;
+	}
+	std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
+	std::string content = "";
+	status = file_manager::read_file(home_directory + console_settings_path + console_settings_file, content);
+	if (status == 0)
+	{
+		nlohmann::json console_settings = nlohmann::json::parse(content, nullptr, false);
+		if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults"))
+		{
+			int font_size = default_font_size + level * font_size_increment;
+			if (font_size <= 0)
+			{
+				font_size = 1;
+			}
+
+			console_settings["profiles"]["defaults"]["fontSize"] = font_size;
+			console_zoom_amount = level;
+			status = file_manager::write_file(home_directory + console_settings_path + console_settings_file, console_settings.dump(3));
+		}
+		else
+		{
+			status = 1;
+		}
+	}
+#elif __linux__
+	int amount = level - console_zoom_amount;
+	if (amount > 0)
+	{
+		status = zoom_in(amount);
+	}
+	else if (amount < 0)
+	{
+		status = zoom_out(amount);
+	}
+#endif
+	return status;
+}
+
 void ascii_io::set_color(int foreground, int background, bool bold)
 {
 #ifdef _WIN32
