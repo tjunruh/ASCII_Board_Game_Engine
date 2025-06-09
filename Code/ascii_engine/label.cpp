@@ -226,3 +226,8 @@ void label::set_lines_count(int lines_count)
 		set_line_constraint(true);
 	}
 }
+
+void label::enable_word_wrap(bool enable)
+{
+	set_column_constraint(!enable);
+}

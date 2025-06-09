@@ -31,6 +31,7 @@ public:
 	LABEL_API void set_controls(int up, int down, int quit);
 	LABEL_API void get_controls(int& up, int& down, int& quit);
 	LABEL_API void set_lines_count(int lines_count);
+	LABEL_API void enable_word_wrap(bool enable);
 private:
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
