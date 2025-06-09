@@ -382,7 +382,7 @@ int ascii_io::zoom_out(unsigned int amount)
 				int font_size = console_settings["profiles"]["defaults"]["fontSize"].template get<int>();
 				for (unsigned int i = 0; i < amount; i++)
 				{
-					if ((font_size - font_size_increment) > 0)
+					if ((font_size - font_size_increment) >= 0)
 					{
 						font_size = font_size - font_size_increment;
 						console_zoom_amount = console_zoom_amount - 1;
@@ -461,9 +461,9 @@ int ascii_io::zoom_to_level(int level)
 		if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults"))
 		{
 			int font_size = default_font_size + level * font_size_increment;
-			if (font_size <= 0)
+			if (font_size < 0)
 			{
-				font_size = 1;
+				font_size = 0;
 			}
 
 			console_settings["profiles"]["defaults"]["fontSize"] = font_size;
