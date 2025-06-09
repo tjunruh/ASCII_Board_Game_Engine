@@ -2027,6 +2027,14 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 			{
 				colors[i].x_position = colors[i].x_position - item.left_column;
 			}
+
+			format_tools::coordinate_format color;
+			color.x_position = width;
+			for (unsigned int i = 0; i < item.displayed_lines; i++)
+			{
+				color.y_position = i;
+				colors.push_back(color);
+			}
 		}
 
 		colors = format_tools::sort(colors);
@@ -2527,6 +2535,14 @@ void frame::translate_coordinate_colors_to_frame()
 					color_regions.push_back(color_region);
 				}
 			}
+
+			format_tools::coordinate_format color_region;
+			for (unsigned int j = 0; j < widgets[i].displayed_lines; j++)
+			{
+				color_region.x_position = widgets[i].x_origin + width;
+				color_region.y_position = widgets[i].y_origin + j;
+				color_regions.push_back(color_region);
+			}
 		}
 		else
 		{
@@ -2543,6 +2559,14 @@ void frame::translate_coordinate_colors_to_frame()
 					color_region.format = widgets[i].coordinate_colors[j].format;
 					color_regions.push_back(color_region);
 				}
+			}
+
+			format_tools::coordinate_format color_region;
+			for (unsigned int j = 0; j < widgets[i].displayed_lines; j++)
+			{
+				color_region.x_position = widgets[i].x_origin + width;
+				color_region.y_position = widgets[i].y_origin + j;
+				color_regions.push_back(color_region);
 			}
 		}
 	}
