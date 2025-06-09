@@ -476,14 +476,18 @@ int ascii_io::zoom_to_level(int level)
 		}
 	}
 #elif __linux__
-	int amount = level - console_zoom_amount;
-	if (amount > 0)
+	status = system("xdotool key Ctrl+0");
+	if (status == 0)
 	{
-		status = zoom_in(amount);
-	}
-	else if (amount < 0)
-	{
-		status = zoom_out(amount);
+		console_zoom_amount = 0;
+		if (level > 0)
+		{
+			status = zoom_in(level);
+		}
+		else if (level < 0)
+		{
+			status = zoom_out(level * -1);
+		}
 	}
 #endif
 	return status;
