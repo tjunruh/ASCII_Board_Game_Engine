@@ -1,9 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "format_tools.h"
-
-#ifdef __linux__
 #include <algorithm>
-#endif
+
 
 std::vector<std::string> format_tools::split_string(std::string str, char split_character)
 {
@@ -315,32 +313,6 @@ void format_tools::remove_newline_characters(std::string& text)
 	}
 }
 
-std::vector<format_tools::index_format> format_tools::sort(std::vector<index_format> index_colors)
-{
-	std::vector<index_format> sorted_format;
-	unsigned int combined_format_length = index_colors.size();
-	for (unsigned int i = 0; i < combined_format_length; i++)
-	{
-		int index = get_min_format_index(index_colors);
-		sorted_format.push_back(index_colors[index]);
-		index_colors.erase(index_colors.begin() + index);
-	}
-	return sorted_format;
-}
-
-std::vector<format_tools::coordinate_format> format_tools::sort(std::vector<coordinate_format> coordinate_colors)
-{
-	std::vector<coordinate_format> sorted_format;
-	unsigned int length = coordinate_colors.size();
-	for (unsigned int i = 0; i < length; i++)
-	{
-		int index = get_min_format_index(coordinate_colors);
-		sorted_format.push_back(coordinate_colors[index]);
-		coordinate_colors.erase(coordinate_colors.begin() + index);
-	}
-	return sorted_format;
-}
-
 int format_tools::calculate_flag_number(const std::vector<index_format>& index_colors, int index)
 {
 	int number = 0;
@@ -375,7 +347,6 @@ bool format_tools::index_found(const std::vector<index_format>& index_colors, in
 std::vector<format_tools::index_format> format_tools::combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2)
 {
 	std::vector<index_format> combined_format;
-	std::vector<index_format> sorted_format;
 
 	for (unsigned int i = 0; i < format_1.size(); i++)
 	{
@@ -419,8 +390,8 @@ std::vector<format_tools::index_format> format_tools::combine(const std::vector<
 		}
 	}
 
-	sorted_format = sort(combined_format);
-	return sorted_format;
+	std::sort(combined_format.begin(), combined_format.end(), index_format_sorting_functor());
+	return combined_format;
 }
 
 bool format_tools::present(const std::vector<index_format>& main_format, const std::vector<index_format>& check_format)
@@ -466,62 +437,13 @@ bool format_tools::present(const std::vector<index_format>& main_format, const s
 	return present;
 }
 
-int format_tools::get_min_format_index(const std::vector<index_format>& format_vec)
-{
-	int min_vec_index = 0;
-	int min_index = 0;
-	if (format_vec.size() > 0)
-	{
-		min_vec_index = 0;
-		min_index = format_vec[min_vec_index].index;
-		for (unsigned int i = 1; i < format_vec.size(); i++)
-		{
-			if (format_vec[i].index < min_index)
-			{
-				min_vec_index = i;
-				min_index = format_vec[min_vec_index].index;
-			}
-		}
-	}
-	return min_vec_index;
-}
-
-int format_tools::get_min_format_index(const std::vector<coordinate_format>& format_vec)
-{
-	int min_vec_index = 0;
-	int min_x = 0;
-	int min_y = 0;
-	if (format_vec.size() > 0)
-	{
-		min_vec_index = 0;
-		min_x = format_vec[min_vec_index].x_position;
-		min_y = format_vec[min_vec_index].y_position;
-		for (unsigned int i = 1; i < format_vec.size(); i++)
-		{
-			if (format_vec[i].y_position < min_y)
-			{
-				min_vec_index = i;
-				min_x = format_vec[min_vec_index].x_position;
-				min_y = format_vec[min_vec_index].y_position;
-			}
-			else if ((format_vec[i].y_position == min_y) && (format_vec[i].x_position < min_x))
-			{
-				min_vec_index = i;
-				min_x = format_vec[min_vec_index].x_position;
-				min_y = format_vec[min_vec_index].y_position;
-			}
-		}
-	}
-	return min_vec_index;
-}
-
 std::vector<format_tools::content_format> format_tools::convert(std::vector<index_format> index_vec, const std::string& content)
 {
 	unsigned int index_vec_position = 0;
 	unsigned int content_position = 0;
 	content_format converted_format;
 	std::vector<content_format> content_vec;
-	index_vec = sort(index_vec);
+	std::sort(index_vec.begin(), index_vec.end(), index_format_sorting_functor());
 	if ((index_vec.size() > 0) && (index_vec[0].index > 0))
 	{
 		converted_format.format.foreground_format = none;
@@ -568,15 +490,15 @@ std::vector<format_tools::content_format> format_tools::convert(std::vector<inde
 	return content_vec;
 }
 
-std::vector<format_tools::index_format> format_tools::convert(const std::vector<coordinate_format>& coordinate_vec, int width)
+std::vector<format_tools::index_format> format_tools::convert(std::vector<coordinate_format> coordinate_vec, int width)
 {
 	index_format converted_format;
 	std::vector<index_format> index_vec;
-	std::vector<coordinate_format> sorted_coordinate_vec = sort(coordinate_vec);
-	for (unsigned int i = 0; i < sorted_coordinate_vec.size(); i++)
+	std::sort(coordinate_vec.begin(), coordinate_vec.end(), coordinate_format_sorting_functor());
+	for (unsigned int i = 0; i < coordinate_vec.size(); i++)
 	{
-		converted_format.format = sorted_coordinate_vec[i].format;
-		converted_format.index = (sorted_coordinate_vec[i].y_position * width) + sorted_coordinate_vec[i].x_position;
+		converted_format.format = coordinate_vec[i].format;
+		converted_format.index = (coordinate_vec[i].y_position * width) + coordinate_vec[i].x_position;
 		if (index_vec.size() > 0 && index_vec[index_vec.size() - 1].index == converted_format.index)
 		{
 			if (format_empty(index_vec[index_vec.size() - 1].format))
@@ -624,7 +546,7 @@ std::vector<format_tools::coordinate_format> format_tools::convert(const std::ve
 
 std::vector<int> format_tools::set_flags(std::vector<index_format>& index_colors, std::string& content, char flag)
 {
-	index_colors = sort(index_colors);
+	std::sort(index_colors.begin(), index_colors.end(), index_format_sorting_functor());
 	std::vector<int> ignore_flags;
 	int flags_found = 0;
 	for (unsigned int i = 0; i < content.length(); i++)
@@ -815,7 +737,7 @@ std::vector<format_tools::coordinate_format> format_tools::bound_colors(std::vec
 {
 	if (colors.size() > 0)
 	{
-		colors = sort(colors);
+		std::sort(colors.begin(), colors.end(), coordinate_format_sorting_functor());
 		coordinate_format last_color = colors[0];
 		unsigned int colors_length = colors.size();
 		for (unsigned int i = 0; i < colors_length; i++)

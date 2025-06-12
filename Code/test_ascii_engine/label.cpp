@@ -19,6 +19,7 @@
 #include "expected_display_data.h"
 
 #include <string>
+#include <algorithm>
 
 class label_test : public testing::Test
 {
@@ -95,8 +96,8 @@ protected:
 
 	void format_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_format, int test_num)
 	{
-		correct_answer = format_tools::sort(correct_answer);
-		test_format = format_tools::sort(test_format);
+		std::sort(correct_answer.begin(), correct_answer.end(), format_tools::index_format_sorting_functor());
+		std::sort(test_format.begin(), test_format.end(), format_tools::index_format_sorting_functor());
 		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
 		for (unsigned int i = 0; i < correct_answer.size(); i++)
 		{

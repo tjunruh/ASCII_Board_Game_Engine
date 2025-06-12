@@ -55,6 +55,14 @@ namespace format_tools
 		char flag_replacement = ' ';
 	};
 
+	struct index_format_sorting_functor
+	{
+		bool operator()(const index_format& format_1, const index_format& format_2)
+		{
+			return format_1.index < format_2.index;
+		}
+	};
+
 	struct content_format
 	{
 		std::string content = "";
@@ -66,6 +74,21 @@ namespace format_tools
 		int x_position = 0;
 		int y_position = 0;
 		common_format format;
+	};
+
+	struct coordinate_format_sorting_functor
+	{
+		bool operator()(const coordinate_format& format_1, const coordinate_format& format_2)
+		{
+			if (format_1.y_position < format_2.y_position || (format_1.y_position == format_2.y_position && format_1.x_position < format_2.x_position))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	};
 
 	struct text_column
@@ -136,16 +159,12 @@ namespace format_tools
 	FORMAT_TOOLS_API std::vector<std::string> remove_trailing_whitespace(const std::vector<std::string>& lines);
 	FORMAT_TOOLS_API void mask_string(std::string& new_string, const std::string& old_string);
 	FORMAT_TOOLS_API void remove_newline_characters(std::string& text);
-	FORMAT_TOOLS_API std::vector<index_format> sort(std::vector<index_format> index_colors);
-	FORMAT_TOOLS_API std::vector<coordinate_format> sort(std::vector<coordinate_format> coordinate_colors);
 	FORMAT_TOOLS_API int calculate_flag_number(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API bool index_found(const std::vector<index_format>& index_colors, int index);
 	FORMAT_TOOLS_API std::vector<index_format> combine(const std::vector<index_format>& format_1, const std::vector<index_format>& format_2);
 	FORMAT_TOOLS_API bool present(const std::vector<index_format>& main_format, const std::vector<index_format>& check_format);
-	FORMAT_TOOLS_API int get_min_format_index(const std::vector<index_format>& format_vec);
-	FORMAT_TOOLS_API int get_min_format_index(const std::vector<coordinate_format>& format_vec);
 	FORMAT_TOOLS_API std::vector<content_format> convert(std::vector<index_format> index_vec, const std::string& content);
-	FORMAT_TOOLS_API std::vector<index_format> convert(const std::vector<coordinate_format>& coordinate_vec, int width);
+	FORMAT_TOOLS_API std::vector<index_format> convert(std::vector<coordinate_format> coordinate_vec, int width);
 	FORMAT_TOOLS_API std::vector<coordinate_format> convert(const std::vector<index_format>& index_vec, const std::vector<std::string>& lines);
 	FORMAT_TOOLS_API std::vector<int> set_flags(std::vector<index_format>& index_colors, std::string& content, char flag);
 	FORMAT_TOOLS_API std::vector<std::string> remove_flags(const std::vector<index_format>& index_colors, std::vector<int> ignore_flags, std::vector<std::string> lines, char flag);

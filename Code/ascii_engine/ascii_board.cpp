@@ -1303,7 +1303,8 @@ void ascii_board::build_board(std::string& board, std::vector<format_tools::inde
 		}
 	}
 
-	std::vector<format_tools::index_format> old_board_colors = format_tools::sort(get_index_colors());
+	std::vector<format_tools::index_format> old_board_colors = get_index_colors();
+	std::sort(old_board_colors.begin(), old_board_colors.end(), format_tools::index_format_sorting_functor());
 	std::sort(edited_indexes.begin(), edited_indexes.end());
 
 	unsigned int j = 0;

@@ -10,14 +10,15 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 class format_tools_test : public testing::Test
 {
 protected:
 	void format_equivalent_test(std::vector<format_tools::index_format> correct_answer, std::vector<format_tools::index_format> test_format, int test_num)
 	{
-		correct_answer = format_tools::sort(correct_answer);
-		test_format = format_tools::sort(test_format);
+		std::sort(correct_answer.begin(), correct_answer.end(), format_tools::index_format_sorting_functor());
+		std::sort(test_format.begin(), test_format.end(), format_tools::index_format_sorting_functor());
 		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
 		for (unsigned int i = 0; i < correct_answer.size(); i++)
 		{
@@ -30,8 +31,8 @@ protected:
 
 	void format_equivalent_test(std::vector<format_tools::coordinate_format> correct_answer, std::vector<format_tools::coordinate_format> test_format, int test_num)
 	{
-		correct_answer = format_tools::sort(correct_answer);
-		test_format = format_tools::sort(test_format);
+		std::sort(correct_answer.begin(), correct_answer.end(), format_tools::coordinate_format_sorting_functor());
+		std::sort(test_format.begin(), test_format.end(), format_tools::coordinate_format_sorting_functor());
 		ASSERT_EQ(test_format.size(), correct_answer.size()) << "Test num: " + std::to_string(test_num) + "\ncorrect_answer vector and test_colors vector have different lengths.";
 		for (unsigned int i = 0; i < correct_answer.size(); i++)
 		{
@@ -652,7 +653,8 @@ TEST_F(format_tools_test, sort_index)
 		{25, format, ' '},
 	};
 
-	format_equivalent_test(correct_answer, format_tools::sort(index_vec), 0);
+	std::sort(index_vec.begin(), index_vec.end(), format_tools::index_format_sorting_functor());
+	format_equivalent_test(correct_answer, index_vec, 0);
 }
 
 TEST_F(format_tools_test, sort_coordinate)
@@ -688,7 +690,8 @@ TEST_F(format_tools_test, sort_coordinate)
 		{8, 6, format},
 	};
 
-	format_equivalent_test(correct_answer, format_tools::sort(coordinate_vec), 0);
+	std::sort(coordinate_vec.begin(), coordinate_vec.end(), format_tools::coordinate_format_sorting_functor());
+	format_equivalent_test(correct_answer, coordinate_vec, 0);
 }
 
 TEST_F(format_tools_test, calculate_flag_number)
@@ -966,29 +969,6 @@ TEST_F(format_tools_test, present)
 	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec5));
 	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec6));
 	EXPECT_EQ(true, format_tools::present(index_vec4, index_vec7));
-}
-
-TEST_F(format_tools_test, get_min_format_index)
-{
-	format_tools::common_format empty_format;
-	std::vector<format_tools::index_format> index_vec1 = {
-		{5, empty_format, ' '},
-		{4, empty_format, ' '},
-		{3, empty_format, ' '},
-		{2, empty_format, ' '},
-		{1, empty_format, ' '},
-		{25, empty_format, ' '},
-		{0, empty_format, ' '},
-		{10, empty_format, ' '},
-		{9, empty_format, ' '},
-		{8, empty_format, ' '},
-		{7, empty_format, ' '},
-		{6, empty_format, ' '}
-	};
-
-	int correct_answer = 6;
-	int min_index = format_tools::get_min_format_index(index_vec1);
-	EXPECT_EQ(min_index, correct_answer);
 }
 
 TEST_F(format_tools_test, convert_index_to_content)

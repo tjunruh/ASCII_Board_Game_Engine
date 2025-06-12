@@ -2,10 +2,8 @@
 #include "frame.h"
 #include "error_codes.h"
 #include <cmath>
-
-#ifdef __linux__
 #include <algorithm>
-#endif
+
 
 frame::frame(bool start_logger, const std::string& logging_file_path)
 {
@@ -2037,7 +2035,7 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 			}
 		}
 
-		colors = format_tools::sort(colors);
+		std::sort(colors.begin(), colors.end(), format_tools::coordinate_format_sorting_functor());
 		if ((colors.size() > 0) && format_tools::format_empty(colors[0].format))
 		{
 			colors.erase(colors.begin());
