@@ -74,6 +74,7 @@ public:
 		std::string value = "";
 		std::vector<format_tools::index_format> colors;
 		std::vector<sub_tile_configuration> activated_configs;
+		bool edited = false;
 	};
 
 	ASCII_BOARD_API ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation = "none", int lines_count = 0, bool start_logging = false, const std::string& logging_file_path = "ascii_board.log");

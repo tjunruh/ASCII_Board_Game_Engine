@@ -5,6 +5,7 @@
 #include "../board_config_field_parser/board_config_field_parser.h"
 #include "error_codes.h"
 #include "format_tools.h"
+#include <algorithm>
 
 ascii_board::ascii_board(frame* parent, const std::string& path, const std::string& name_id, const std::string& special_operation, int lines_count, bool start_logging, const std::string& logging_file_path) : widget(parent, special_operation)
 {
@@ -109,6 +110,7 @@ void ascii_board::clear_tile(int row, int column)
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
 			action_tiles[i].activated_configs.clear();
+			action_tiles[i].edited = true;
 			status = SUCCESS;
 			break;
 		}
@@ -124,6 +126,7 @@ void ascii_board::clear_all()
 		action_tiles[i].value = action_tiles[i].default_value;
 		action_tiles[i].colors.clear();
 		action_tiles[i].activated_configs.clear();
+		action_tiles[i].edited = true;
 	}
 }
 
@@ -137,6 +140,7 @@ void ascii_board::clear_row(int row)
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
 			action_tiles[i].activated_configs.clear();
+			action_tiles[i].edited = true;
 			status = SUCCESS;
 		}
 	}
@@ -154,6 +158,7 @@ void ascii_board::clear_column(int column)
 			action_tiles[i].value = action_tiles[i].default_value;
 			action_tiles[i].colors.clear();
 			action_tiles[i].activated_configs.clear();
+			action_tiles[i].edited = true;
 			status = SUCCESS;
 		}
 	}
@@ -175,6 +180,7 @@ void ascii_board::set_tile(int row, int column, std::string value)
 			value = value + format_tools::get_spacing(value_length - value.length(), ' ');
 			action_tiles[action_tile_index].colors = colors;
 			action_tiles[action_tile_index].value = value;
+			action_tiles[action_tile_index].edited = true;
 			status = SUCCESS;
 		}
 		else
@@ -232,6 +238,8 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, cons
 			{
 				refresh_action_tile_colors(action_tiles[action_tile_index]);
 			}
+
+			action_tiles[action_tile_index].edited = true;
 		}
 		else
 		{
@@ -289,6 +297,8 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, const
 				{
 					refresh_action_tile_colors(action_tiles[i]);
 				}
+
+				action_tiles[i].edited = true;
 			}
 			else
 			{
@@ -343,6 +353,8 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, co
 				{
 					refresh_action_tile_colors(action_tiles[i]);
 				}
+
+				action_tiles[i].edited = true;
 			}
 			else
 			{
@@ -393,6 +405,8 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, const
 			{
 				refresh_action_tile_colors(action_tiles[i]);
 			}
+
+			action_tiles[i].edited = true;
 		}
 		else
 		{
@@ -721,6 +735,19 @@ void ascii_board::set_sub_configuration_color(const std::string& name_id, const 
 				if (board_configurations[i].tile_configurations[j].value == value_match)
 				{
 					board_configurations[i].tile_configurations[j].colors = colors;
+					if (status != SUCCESS)
+					{
+						for (unsigned int k = 0; k < action_tiles.size(); k++)
+						{
+							for (unsigned int m = 0; m < action_tiles[k].activated_configs.size(); m++)
+							{
+								if (action_tiles[k].activated_configs[m].name_id == board_configurations[i].name_id)
+								{
+									action_tiles[k].edited = true;
+								}
+							}
+						}
+					}
 					status = SUCCESS;
 				}
 			}
@@ -924,6 +951,8 @@ void ascii_board::use_translation(const std::string& name_id)
 					}
 					action_tiles[j].default_value = translation.action_tile_skeletons[i].default_value;
 				}
+
+				action_tiles[j].edited = true;
 			}
 		}
 	}
@@ -1205,6 +1234,7 @@ void ascii_board::build_board(std::string& board, std::vector<format_tools::inde
 {
 	board_colors.clear();
 	board = get_output();
+	std::vector<int> edited_indexes;
 	if (board.length() == 0)
 	{
 		return;
@@ -1213,58 +1243,96 @@ void ascii_board::build_board(std::string& board, std::vector<format_tools::inde
 	unsigned int line_length = board_lines[0].length();
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
-		unsigned int value_position = 0;
-		bool color_active = false;
-		bool color_wrap = false;
-		format_tools::index_format wrap_color;
-		for (unsigned int j = 0; j < action_tiles[i].board_section.size(); j++)
+		if (action_tiles[i].edited)
 		{
-			for (int row = action_tiles[i].board_section[j].board_start_row; row <= action_tiles[i].board_section[j].board_stop_row; row++)
+			unsigned int value_position = 0;
+			bool color_active = false;
+			bool color_wrap = false;
+			format_tools::index_format wrap_color;
+			for (unsigned int j = 0; j < action_tiles[i].board_section.size(); j++)
 			{
-				int column = 0;
-				for (column = action_tiles[i].board_section[j].board_start_column; column <= action_tiles[i].board_section[j].board_stop_column; column++)
+				for (int row = action_tiles[i].board_section[j].board_start_row; row <= action_tiles[i].board_section[j].board_stop_row; row++)
 				{
-					(board_lines[row])[column] = action_tiles[i].value[value_position];
-					for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
+					int column = 0;
+					for (column = action_tiles[i].board_section[j].board_start_column; column <= action_tiles[i].board_section[j].board_stop_column; column++)
 					{
-						if (action_tiles[i].colors[k].index == (int)value_position)
+						int board_index = column + row * line_length;
+						edited_indexes.push_back(board_index);
+						(board_lines[row])[column] = action_tiles[i].value[value_position];
+						for (unsigned int k = 0; k < action_tiles[i].colors.size(); k++)
 						{
-							color_active = true;
-							color_wrap = false;
-							format_tools::index_format color = action_tiles[i].colors[k];
-							color.index = column + row * line_length;
-							board_colors.push_back(color);
-							wrap_color = color;
+							if (action_tiles[i].colors[k].index == (int)value_position)
+							{
+								color_active = true;
+								color_wrap = false;
+								format_tools::index_format color = action_tiles[i].colors[k];
+								color.index = board_index;
+								board_colors.push_back(color);
+								wrap_color = color;
+							}
 						}
+
+						if (!color_active && color_wrap)
+						{
+							wrap_color.index = board_index;
+							board_colors.push_back(wrap_color);
+							color_wrap = false;
+							color_active = true;
+						}
+						value_position++;
 					}
 
-					if (!color_active && color_wrap)
+					if (color_active)
 					{
-						wrap_color.index = column + row * line_length;
-						board_colors.push_back(wrap_color);
-						color_wrap = false;
-						color_active = true;
-					}
-					value_position++;
-				}
+						if ((wrap_color.format.foreground_format != format_tools::none) || (wrap_color.format.background_format != format_tools::none) || wrap_color.format.bold)
+						{
+							format_tools::index_format color;
+							color.index = column + row * line_length;
+							color.format.foreground_format = format_tools::none;
+							color.format.background_format = format_tools::none;
+							board_colors.push_back(color);
+							color_wrap = true;
+						}
 
-				if (color_active)
-				{
-					if ((wrap_color.format.foreground_format != format_tools::none) || (wrap_color.format.background_format != format_tools::none) || wrap_color.format.bold)
-					{
-						format_tools::index_format color;
-						color.index = column + row * line_length;
-						color.format.foreground_format = format_tools::none;
-						color.format.background_format = format_tools::none;
-						board_colors.push_back(color);
-						color_wrap = true;
+						color_active = false;
 					}
-
-					color_active = false;
 				}
 			}
+
+			action_tiles[i].edited = false;
 		}
 	}
+
+	std::vector<format_tools::index_format> old_board_colors = format_tools::sort(get_index_colors());
+	std::sort(edited_indexes.begin(), edited_indexes.end());
+
+	unsigned int j = 0;
+	for (unsigned int i = 0; i < edited_indexes.size(); i++)
+	{
+		while (j < old_board_colors.size())
+		{
+			if (old_board_colors[j].index == edited_indexes[i])
+			{
+				old_board_colors.erase(old_board_colors.begin() + j);
+				break;
+			}
+			else if (old_board_colors[j].index > edited_indexes[i])
+			{
+				break;
+			}
+			else
+			{
+				j++;
+			}
+		}
+
+		if (j >= old_board_colors.size())
+		{
+			break;
+		}
+	}
+
+	board_colors = format_tools::combine(board_colors, old_board_colors);
 
 	board = format_tools::get_string(board_lines);
 }
