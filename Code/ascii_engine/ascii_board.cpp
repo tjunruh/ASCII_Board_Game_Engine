@@ -1282,6 +1282,8 @@ void ascii_board::build_board(std::string& board, std::vector<format_tools::inde
 						value_position++;
 					}
 
+					edited_indexes.push_back(column + row * line_length);
+
 					if (color_active)
 					{
 						if ((wrap_color.format.foreground_format != format_tools::none) || (wrap_color.format.background_format != format_tools::none) || wrap_color.format.bold)
