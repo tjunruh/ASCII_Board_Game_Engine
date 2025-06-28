@@ -98,7 +98,7 @@ void ascii_io::print(const std::string& output) {
 #ifdef _WIN32
 	std::cout << output;
 #elif __linux__
-	printw(output.c_str());
+	addstr(output.c_str());
 	refresh();
 #endif
 }
