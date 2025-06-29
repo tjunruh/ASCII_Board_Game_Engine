@@ -661,4 +661,9 @@ void ascii_io::initialize_colors()
 		}
 	}
 }
+
+void ascii_io::guarantee_clear_on_next_display()
+{
+	clearok(stdscr, true);
+}
 #endif

@@ -46,6 +46,7 @@ namespace ascii_io
    void ncurses_end();
    void initialize_colors();
    int get_color_id(int foreground, int background);
+   void guarantee_clear_on_next_display();
 #endif
 
 	const int undefined = -1;
