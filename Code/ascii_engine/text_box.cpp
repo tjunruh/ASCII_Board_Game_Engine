@@ -60,7 +60,7 @@ unsigned int text_box::write()
 		input = ascii_io::getchar();
 		if (frame_stale())
 		{
-			refresh();
+			display_entire_frame();
 
 			x_origin = get_x_origin();
 			y_origin = get_y_origin();

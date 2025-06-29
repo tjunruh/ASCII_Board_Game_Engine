@@ -31,7 +31,6 @@ public:
 	WIDGET_API void set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier);
 	WIDGET_API void add_border(bool border);
 	WIDGET_API void use_spacing_width_multipliers(bool use);
-	WIDGET_API void refresh();
 	WIDGET_API void selectable();
 	WIDGET_API void unselectable();
 	WIDGET_API bool is_selectable();
@@ -97,6 +96,7 @@ protected:
 	unsigned int get_output_length();
 	void dynamically_adjust_displayed_lines();
 	void bound_top_line();
+	void display_entire_frame();
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

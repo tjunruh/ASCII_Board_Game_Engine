@@ -53,7 +53,7 @@ int main()
 		else
 		{
 			my_label.set_output(selection + " was selected.");
-			my_label.refresh();
+			my_label.display();
 			my_menu.set_cursor_item(stoi(selection));
 		}
 

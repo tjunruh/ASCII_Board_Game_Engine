@@ -98,7 +98,7 @@ void widget::use_spacing_width_multipliers(bool use)
 	log.log_status(status, "widget::use_spacing_width_multipliers");
 }
 
-void widget::refresh()
+void widget::display_entire_frame()
 {
 	parent_frame->display();
 }
