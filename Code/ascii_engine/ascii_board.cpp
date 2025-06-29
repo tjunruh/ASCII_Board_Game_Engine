@@ -172,20 +172,37 @@ void ascii_board::set_tile(int row, int column, std::string value)
 	int action_tile_index = get_action_tile_index(row, column);
 	if (action_tile_index != -1)
 	{
-		std::vector<format_tools::index_format> colors = format_tools::convert_color_tags(value);
-		unsigned int value_length = get_value_length(action_tiles[action_tile_index]);
-		if (value.length() <= value_length)
+		bool invalid_character_found = false;
+		for (unsigned int i = 0; i < value.length(); i++)
 		{
-			clear_tile(row, column);
-			value = value + format_tools::get_spacing(value_length - value.length(), ' ');
-			action_tiles[action_tile_index].colors = colors;
-			action_tiles[action_tile_index].value = value;
-			action_tiles[action_tile_index].edited = true;
-			status = SUCCESS;
+			if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), value[i]) != 0)
+			{
+				invalid_character_found = true;
+				break;
+			}
+		}
+
+		if (!invalid_character_found)
+		{
+			std::vector<format_tools::index_format> colors = format_tools::convert_color_tags(value);
+			unsigned int value_length = get_value_length(action_tiles[action_tile_index]);
+			if (value.length() <= value_length)
+			{
+				clear_tile(row, column);
+				value = value + format_tools::get_spacing(value_length - value.length(), ' ');
+				action_tiles[action_tile_index].colors = colors;
+				action_tiles[action_tile_index].value = value;
+				action_tiles[action_tile_index].edited = true;
+				status = SUCCESS;
+			}
+			else
+			{
+				status = INVALID_LENGTH;
+			}
 		}
 		else
 		{
-			status = INVALID_LENGTH;
+			status = INVALID_VALUE;
 		}
 	}
 	else
