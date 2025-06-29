@@ -553,6 +553,14 @@ unsigned int widget::get_lines_count(bool only_displayed)
 	return lines_count;
 }
 
+unsigned int widget::get_columns_count()
+{
+	unsigned int columns_count = 0;
+	int status = parent_frame->get_columns_count(widget_id, columns_count);
+	log.log_status(status, "widget::get_columns_count");
+	return columns_count;
+}
+
 void widget::set_line_character(char character, unsigned int line, unsigned int character_index)
 {
 	int status = parent_frame->set_line_character(widget_id, character, line, character_index);

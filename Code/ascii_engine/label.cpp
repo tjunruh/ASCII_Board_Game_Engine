@@ -143,6 +143,14 @@ void label::scroll()
 		{
 			scroll_down();
 		}
+		else if (input == _left)
+		{
+			scroll_left();
+		}
+		else if (input == _right)
+		{
+			scroll_right();
+		}
 
 	} while (input != _quit);
 }
@@ -191,17 +199,65 @@ void label::scroll_down(unsigned int amount, bool render)
 	}
 }
 
-void label::set_controls(int up, int down, int quit)
+void label::scroll_left(unsigned int amount, bool render)
+{
+	unsigned int left_column = get_left_column();
+	if (amount >= left_column)
+	{
+		left_column = 0;
+	}
+	else
+	{
+		left_column = left_column - amount;
+	}
+	set_left_column(left_column);
+	if (render)
+	{
+		display();
+	}
+}
+
+void label::scroll_right(unsigned int amount, bool render)
+{
+	unsigned int left_column = get_left_column();
+	unsigned int displayed_columns = get_width();
+	unsigned int total_columns = get_columns_count();
+	unsigned int rightmost_column = 0;
+	if (displayed_columns < total_columns)
+	{
+		rightmost_column = total_columns - displayed_columns;
+	}
+
+	if ((left_column + amount) > rightmost_column)
+	{
+		left_column = rightmost_column;
+	}
+	else
+	{
+		left_column = left_column + amount;
+	}
+	set_left_column(left_column);
+	if (render)
+	{
+		display();
+	}
+}
+
+void label::set_controls(int up, int down, int left, int right, int quit)
 {
 	_up = up;
 	_down = down;
+	_left = left;
+	_right = right;
 	_quit = quit;
 }
 
-void label::get_controls(int& up, int& down, int& quit)
+void label::get_controls(int& up, int& down, int& left, int& right, int& quit)
 {
 	up = _up;
 	down = _down;
+	left = _left;
+	right = _right;
 	quit = _quit;
 }
 

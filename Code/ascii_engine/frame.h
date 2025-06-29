@@ -139,6 +139,7 @@ private:
 	bool widget_exists(int row, int column);
 	int get_levels(int row, int column);
 	int get_lines_count(int id, unsigned int& lines_count, bool only_displayed=true);
+	int get_columns_count(int id, unsigned int& columns_count);
 	int get_x_origin(int id, int& x_origin);
 	int get_y_origin(int id, int& y_origin);
 	int get_alignment(int id, std::string& allignment);

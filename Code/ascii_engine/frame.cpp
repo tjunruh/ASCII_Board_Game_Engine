@@ -961,6 +961,29 @@ int frame::get_lines_count(int id, unsigned int& lines_count, bool only_displaye
 	return status;
 }
 
+int frame::get_columns_count(int id, unsigned int& columns_count)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < widgets.size(); i++)
+	{
+		if (widgets[i].id == id)
+		{
+			columns_count = 0;
+			for (unsigned int j = 0; j < widgets[i].lines.size(); j++)
+			{
+				unsigned int line_length = widgets[i].lines[j].length();
+				if (line_length > columns_count)
+				{
+					columns_count = line_length;
+				}
+			}
+			status = SUCCESS;
+			break;
+		}
+	}
+	return status;
+}
+
 int frame::get_x_origin(int id, int& x_origin)
 {
 	int status = ELEMENT_NOT_FOUND;

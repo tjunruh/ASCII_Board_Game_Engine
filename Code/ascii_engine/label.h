@@ -28,12 +28,16 @@ public:
 	LABEL_API void scroll();
 	LABEL_API void scroll_up(unsigned int amount = 1, bool render=true);
 	LABEL_API void scroll_down(unsigned int amount = 1, bool render=true);
-	LABEL_API void set_controls(int up, int down, int quit);
-	LABEL_API void get_controls(int& up, int& down, int& quit);
+	LABEL_API void scroll_left(unsigned int amount = 1, bool render=true);
+	LABEL_API void scroll_right(unsigned int amount = 1, bool render=true);
+	LABEL_API void set_controls(int up, int down, int left, int right, int quit);
+	LABEL_API void get_controls(int& up, int& down, int& left, int& right, int& quit);
 	LABEL_API void set_lines_count(int lines_count);
 	LABEL_API void enable_word_wrap(bool enable);
 private:
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
+	int _left = ascii_io::left;
+	int _right = ascii_io::right;
 	int _quit = ascii_io::q;
 };

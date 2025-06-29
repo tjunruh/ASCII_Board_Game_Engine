@@ -88,6 +88,7 @@ protected:
 	unsigned int get_top_line();
 	unsigned int get_left_column();
 	unsigned int get_lines_count(bool only_displayed = true);
+	unsigned int get_columns_count();
 	void set_line_character(char character, unsigned int line, unsigned int character_index);
 	void update_lines();
 	unsigned int get_line_length(unsigned int line);
