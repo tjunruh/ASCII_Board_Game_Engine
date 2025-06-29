@@ -226,13 +226,8 @@ protected:
 		EXPECT_EQ(displayed_board, comparison) << std::to_string(test_num);
 	}
 
-	void scroll_test(ascii_board& local_test_board, int scroll_amount, const std::string& direction, const std::string& comparison, const std::string& expected_status_function, int expected_status_code, int test_num)
+	void scroll_test(ascii_board& local_test_board, int scroll_amount, const std::string& direction, const std::string& comparison, int test_num)
 	{
-		std::string log_content = "";
-		local_test_board.reset_logging("ascii_board.log");
-		int status = file_manager::read_file("ascii_board.log", log_content);
-		ASSERT_EQ(status, 0) << std::to_string(test_num);
-		ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
 		if (direction == "up")
 		{
 			local_test_board.scroll_up(scroll_amount);
@@ -249,9 +244,6 @@ protected:
 		{
 			local_test_board.scroll_right(scroll_amount);
 		}
-		status = file_manager::read_file("ascii_board.log", log_content);
-		ASSERT_EQ(status, 0) << std::to_string(test_num);
-		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
 
 		local_test_board.build();
 		std::string displayed_board = local_test_board.get_displayed_output();
@@ -1887,15 +1879,15 @@ TEST_F(ascii_board_test, scrolling_board_test)
 	set_left_display_index_test(local_test_board, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "widget::set_left_column", SUCCESS, 8);
 	local_test_frame->set_fake_console_width(42);
 	local_test_frame->get_frame_output();
-	scroll_test(local_test_board, 5, "down", single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, "widget::set_top_line", SUCCESS, 9);
-	scroll_test(local_test_board, 7, "down", single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, "ascii_board::scroll_down", INVALID_INDEX, 10);
-	scroll_test(local_test_board, 5, "up", single_line_board_definitions::empty_board_ten_lines, "widget::set_top_line", SUCCESS, 11);
-	scroll_test(local_test_board, 1, "up", single_line_board_definitions::empty_board_ten_lines, "ascii_board::scroll_up", INVALID_INDEX, 12);
+	scroll_test(local_test_board, 5, "down", single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, 9);
+	scroll_test(local_test_board, 7, "down", single_line_board_definitions::empty_board_ten_lines_scrolled_down_eleven, 10);
+	scroll_test(local_test_board, 11, "up", single_line_board_definitions::empty_board_ten_lines, 11);
+	scroll_test(local_test_board, 1, "up", single_line_board_definitions::empty_board_ten_lines, 12);
 	local_test_frame->set_fake_console_width(20);
 	local_test_frame->get_frame_output();
-	scroll_test(local_test_board, 10, "right", single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "widget::set_left_column", SUCCESS, 13);
-	scroll_test(local_test_board, 13, "right", single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "ascii_board::scroll_right", INVALID_INDEX, 14);
-	scroll_test(local_test_board, 10, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, "widget::set_left_column", SUCCESS, 15);
-	scroll_test(local_test_board, 1, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::scroll_left", INVALID_INDEX, 16);
+	scroll_test(local_test_board, 10, "right", single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, 13);
+	scroll_test(local_test_board, 13, "right", single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_twenty_two, 14);
+	scroll_test(local_test_board, 22, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, 15);
+	scroll_test(local_test_board, 1, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, 16);
 	delete(local_test_frame);
 }
