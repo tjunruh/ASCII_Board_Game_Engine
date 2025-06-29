@@ -129,11 +129,13 @@ TEST_F(label_test, set_get_controls_test)
 {
 	frame* local_test_frame = new frame();
 	label local_test_label_1(local_test_frame, "none", 0, true);
-	local_test_label_1.set_controls(ascii_io::w, ascii_io::s, ascii_io::ESC);
+	local_test_label_1.set_controls(ascii_io::w, ascii_io::s, ascii_io::a, ascii_io::d, ascii_io::ESC);
 	int up = ascii_io::undefined;
 	int down = ascii_io::undefined;
+	int left = ascii_io::undefined;
+	int right = ascii_io::undefined;
 	int quit = ascii_io::undefined;
-	local_test_label_1.get_controls(up, down, quit);
+	local_test_label_1.get_controls(up, down, left, right, quit);
 	EXPECT_EQ(up, ascii_io::w);
 	EXPECT_EQ(down, ascii_io::s);
 	EXPECT_EQ(quit, ascii_io::ESC);
