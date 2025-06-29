@@ -1017,20 +1017,21 @@ void ascii_board::scroll_up(unsigned int amount)
 	}
 	else
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::scroll_up");
+		set_top_line(0);
 	}
 }
 
 void ascii_board::scroll_down(unsigned int amount)
 {
 	unsigned int top_line = get_top_line();
-	if ((top_line + amount + get_displayed_lines()) <= board_lines_count)
+	unsigned int displayed_lines = get_displayed_lines();
+	if ((top_line + amount + displayed_lines) <= board_lines_count)
 	{
 		set_top_line(top_line + amount);
 	}
-	else
+	else if(board_lines_count > displayed_lines)
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::scroll_down");
+		set_top_line(board_lines_count - displayed_lines);
 	}
 }
 
@@ -1043,20 +1044,21 @@ void ascii_board::scroll_left(unsigned int amount)
 	}
 	else
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::scroll_left");
+		set_left_column(0);
 	}
 }
 
 void ascii_board::scroll_right(unsigned int amount)
 {
 	unsigned int left_column = get_left_column();
-	if ((left_column + amount + get_width()) < board_characters_in_line)
+	unsigned int width = get_width();
+	if ((left_column + amount + width) < board_characters_in_line)
 	{
 		set_left_column(left_column + amount);
 	}
-	else
+	else if (board_characters_in_line > width)
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::scroll_right");
+		set_left_column(board_characters_in_line - width);
 	}
 }
 
