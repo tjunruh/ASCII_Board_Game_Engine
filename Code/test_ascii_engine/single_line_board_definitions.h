@@ -21,6 +21,7 @@ namespace single_line_board_definitions
 #elif __linux__
 	std::string board_config_path = "Code/test_ascii_engine/test_configs/single_line_test_board_config.txt";
 	std::string upside_down_board_config_path = "Code/test_ascii_engine/test_configs/single_line_test_board_config_upside_down.txt";
+	std::string metadata_config_path = "Code/test_ascii_engine/test_configs/single_line_metadata_config.txt";
 	std::string cursor_config_path = "Code/test_ascii_engine/test_configs/single_line_test_cursor_config.txt";
 	std::string x_config_path = "Code/test_ascii_engine/test_configs/single_line_test_x_config.txt";
 #endif
