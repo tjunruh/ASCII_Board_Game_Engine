@@ -10,7 +10,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	validate_board_config map_validator;
 	std::string path = argv[1];
 	std::string content = "";
 	if (file_manager::read_file(path, content) == 1)
@@ -19,7 +18,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	std::string debug_log = "";
-	if (map_validator.validate(content, debug_log) == 1)
+	if (validate_board_config::validate(content, debug_log) == 1)
 	{
 		std::cout << debug_log << std::endl;
 		return 1;

@@ -130,6 +130,72 @@ protected:
 		
 	}
 
+	void metadata_test(ascii_board& local_test_board, int row, int column, const std::string& key, int expected_value, int expected_status_code, int test_num)
+	{
+		int returned_value = 0;
+		int status = local_test_board.get_metadata(row, column, key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
+	void metadata_test(ascii_board& local_test_board, int row, int column, const std::string& key, float expected_value, int expected_status_code, int test_num)
+	{
+		float returned_value = 0.0;
+		int status = local_test_board.get_metadata(row, column, key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
+	void metadata_test(ascii_board& local_test_board, int row, int column, const std::string& key, const std::string& expected_value, int expected_status_code, int test_num)
+	{
+		std::string returned_value = "";
+		int status = local_test_board.get_metadata(row, column, key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
+	void metadata_test(ascii_board& local_test_board, const std::string& key, int expected_value, int expected_status_code, int test_num)
+	{
+		int returned_value = 0;
+		int status = local_test_board.get_metadata(key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
+	void metadata_test(ascii_board& local_test_board, const std::string& key, float expected_value, int expected_status_code, int test_num)
+	{
+		float returned_value = 0.0;
+		int status = local_test_board.get_metadata(key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
+	void metadata_test(ascii_board& local_test_board, const std::string& key, std::string expected_value, int expected_status_code, int test_num)
+	{
+		std::string returned_value = "";
+		int status = local_test_board.get_metadata(key, returned_value);
+		EXPECT_EQ(status, expected_status_code) << std::to_string(test_num);
+		if (expected_status_code == SUCCESS)
+		{
+			EXPECT_EQ(expected_value, returned_value) << "Test Number: " + std::to_string(test_num);
+		}
+	}
+
 	void use_translation_test(ascii_board& local_test_board, std::string id, std::string expected_status_function, int expected_status_code, int test_num)
 	{
 		std::string log_content = "";
@@ -1706,6 +1772,45 @@ TEST_F(ascii_board_test, modify_configuration_irregular_line)
 	delete(local_test_frame);
 }
 
+TEST_F(ascii_board_test, test_metadata)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, single_line_board_definitions::metadata_config_path, "default", "none", 0, true);
+	metadata_test(local_test_board, 0, 0, "row", 0, SUCCESS, 0);
+	metadata_test(local_test_board, 0, 0, "test_float", 0.0f, SUCCESS, 1);
+	metadata_test(local_test_board, 0, 0, "test_integer", 0, SUCCESS, 2);
+	metadata_test(local_test_board, -1, 0, "row", 0, INVALID_INDEX, 3);
+	metadata_test(local_test_board, 0, 0, "invalid", 0, ELEMENT_NOT_FOUND, 4);
+	metadata_test(local_test_board, 3, 1, "test_float", -3.1f, SUCCESS, 5);
+	metadata_test(local_test_board, 3, 1, "test_string", "3", SUCCESS, 6);
+	metadata_test(local_test_board, 5, 2, "test_string", "none", INVALID_INDEX, 7);
+
+	metadata_test(local_test_board, 9, 0, "column", 0, SUCCESS, 8);
+	metadata_test(local_test_board, 9, 10, "column", 0, INVALID_INDEX, 9);
+	metadata_test(local_test_board, 9, 0, "invalid", 0, ELEMENT_NOT_FOUND, 10);
+	metadata_test(local_test_board, 9, 0, "test_float", 9.0f, SUCCESS, 11);
+	metadata_test(local_test_board, 9, 10, "test_float", 0.0f, INVALID_INDEX, 12);
+	metadata_test(local_test_board, 9, 0, "invalid", 0.0f, ELEMENT_NOT_FOUND, 13);
+	metadata_test(local_test_board, 9, 0, "test_string", "9", SUCCESS, 14);
+	metadata_test(local_test_board, 9, 10, "test_string", "none", INVALID_INDEX, 15);
+	metadata_test(local_test_board, 9, 0, "invalid", "none", ELEMENT_NOT_FOUND, 16);
+
+	metadata_test(local_test_board, 9, 9, "test_integer", -9, SUCCESS, 17);
+	metadata_test(local_test_board, 9, 9, "test_float", -9.9f, SUCCESS, 18);
+	metadata_test(local_test_board, 9, 9, "test_string", "9", SUCCESS, 19);
+
+	metadata_test(local_test_board, "map_name", "test", SUCCESS, 20);
+	metadata_test(local_test_board, "invalid", "none", ELEMENT_NOT_FOUND, 21);
+	metadata_test(local_test_board, "map_level", 1, SUCCESS, 22);
+	metadata_test(local_test_board, "invalid", -1, ELEMENT_NOT_FOUND, 23);
+	metadata_test(local_test_board, "map_id", 123.456f, SUCCESS, 24);
+	metadata_test(local_test_board, "invalid", 0.1f, ELEMENT_NOT_FOUND, 25);
+
+	metadata_test(local_test_board, "map_sublevel", -10, SUCCESS, 26);
+	metadata_test(local_test_board, "map_heading", "test_map", SUCCESS, 27);
+	metadata_test(local_test_board, "map_stats", -89.98f, SUCCESS, 28);
+}
+
 TEST_F(ascii_board_test, load_translation_single_line)
 {
 	frame* local_test_frame = new frame();
@@ -1798,6 +1903,68 @@ TEST_F(ascii_board_test, use_translation_single_line)
 	check_board(local_test_board, single_line_board_definitions::end_cursor_board, 8);
 
 	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, use_translation_single_line_metadata)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, single_line_board_definitions::board_config_path, "default", "none", 0, true);
+	std::string log_content = "";
+	local_test_board.reset_logging("ascii_board.log");
+	local_test_board.load_board_translation("metadata", single_line_board_definitions::metadata_config_path, true);
+	int status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::load_board_translation status: " + std::to_string(SUCCESS)), std::string::npos);
+	EXPECT_NE(log_content.find("All validations passed."), std::string::npos);
+	local_test_board.use_translation("metadata", true);
+
+	metadata_test(local_test_board, "map_level", 1, SUCCESS, 0);
+	metadata_test(local_test_board, "map_heading", "test_map", SUCCESS, 1);
+	metadata_test(local_test_board, "map_stats", -89.98f, SUCCESS, 2);
+
+	metadata_test(local_test_board, 9, 0, "column", 0, SUCCESS, 3);
+	metadata_test(local_test_board, 9, 0, "test_float", 9.0f, SUCCESS, 4);
+	metadata_test(local_test_board, 9, 0, "test_string", "9", SUCCESS, 5);
+
+	frame* local_test_frame_2 = new frame();
+	ascii_board local_test_board_2(local_test_frame_2, single_line_board_definitions::metadata_config_path, "metadata", "none", 0, true);
+	local_test_board_2.reset_logging("ascii_board.log");
+	local_test_board_2.load_board_translation("default", single_line_board_definitions::board_config_path);
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::load_board_translation status: " + std::to_string(SUCCESS)), std::string::npos);
+	EXPECT_NE(log_content.find("All validations passed."), std::string::npos);
+	local_test_board_2.use_translation("default");
+
+	metadata_test(local_test_board_2, "map_level", 1, SUCCESS, 6);
+	metadata_test(local_test_board_2, "map_heading", "test_map", SUCCESS, 7);
+	metadata_test(local_test_board_2, "map_stats", -89.98f, SUCCESS, 8);
+
+	metadata_test(local_test_board_2, 9, 0, "column", 0, SUCCESS, 9);
+	metadata_test(local_test_board_2, 9, 0, "test_float", 9.0f, SUCCESS, 10);
+	metadata_test(local_test_board_2, 9, 0, "test_string", "9", SUCCESS, 11);
+
+	frame* local_test_frame_3 = new frame();
+	ascii_board local_test_board_3(local_test_frame_3, single_line_board_definitions::metadata_config_path, "metadata", "none", 0, true);
+	local_test_board_3.reset_logging("ascii_board.log");
+	local_test_board_3.load_board_translation("default", single_line_board_definitions::board_config_path, true);
+	status = file_manager::read_file("ascii_board.log", log_content);
+	ASSERT_EQ(status, 0);
+	EXPECT_NE(log_content.find("ascii_board::load_board_translation status: " + std::to_string(SUCCESS)), std::string::npos);
+	EXPECT_NE(log_content.find("All validations passed."), std::string::npos);
+	local_test_board_3.use_translation("default", true);
+
+	metadata_test(local_test_board_3, "map_level", 1, ELEMENT_NOT_FOUND, 12);
+	metadata_test(local_test_board_3, "map_heading", "test_map", ELEMENT_NOT_FOUND, 13);
+	metadata_test(local_test_board_3, "map_stats", -89.98f, ELEMENT_NOT_FOUND, 14);
+
+	metadata_test(local_test_board_3, 9, 0, "column", 0, ELEMENT_NOT_FOUND, 15);
+	metadata_test(local_test_board_3, 9, 0, "test_float", 9.0f, ELEMENT_NOT_FOUND, 16);
+	metadata_test(local_test_board_3, 9, 0, "test_string", "9", ELEMENT_NOT_FOUND, 17);
+
+	delete(local_test_frame);
+	delete(local_test_frame_2);
+	delete(local_test_frame_3);
 }
 
 TEST_F(ascii_board_test, use_translation_multi_line)

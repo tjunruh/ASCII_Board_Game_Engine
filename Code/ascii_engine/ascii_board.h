@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include "widget.h"
 #include "frame.h"
 
@@ -49,12 +50,20 @@ public:
 
 private:
 
+	struct metadata_container
+	{
+		std::unordered_map<std::string, int> int_data;
+		std::unordered_map<std::string, float> float_data;
+		std::unordered_map<std::string, std::string> string_data;
+	};
+
 	struct action_tile_skeleton
 	{
 		int array_row = -1;
 		int array_column = -1;
 		std::vector<action_tile_board_section> board_section;
 		std::string default_value = "";
+		metadata_container metadata;
 	};
 
 	struct board_translation
@@ -62,6 +71,7 @@ private:
 		std::string name_id = "";
 		std::string board = "";
 		std::vector<action_tile_skeleton> action_tile_skeletons;
+		metadata_container metadata;
 	};
 
 public:
@@ -74,6 +84,7 @@ public:
 		std::string value = "";
 		std::vector<format_tools::index_format> colors;
 		std::vector<sub_tile_configuration> activated_configs;
+		metadata_container metadata;
 		bool edited = false;
 	};
 
@@ -101,13 +112,19 @@ public:
 	ASCII_BOARD_API void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API int get_number_of_columns();
 	ASCII_BOARD_API int get_number_of_rows();
+	ASCII_BOARD_API int get_metadata(int row, int column, const std::string& metadata_name, int& value);
+	ASCII_BOARD_API int get_metadata(int row, int column, const std::string& metadata_name, float& value);
+	ASCII_BOARD_API int get_metadata(int row, int column, const std::string& metadata_name, std::string& value);
+	ASCII_BOARD_API int get_metadata(const std::string& metadata_name, int& value);
+	ASCII_BOARD_API int get_metadata(const std::string& metadata_name, float& value);
+	ASCII_BOARD_API int get_metadata(const std::string& metadata_name, std::string& value);
 	ASCII_BOARD_API void display();
 	ASCII_BOARD_API void build();
 	ASCII_BOARD_API action_tile get_action_tile(int row, int column);
 	ASCII_BOARD_API bool configuration_activated(const std::string& name_id, int row, int column);
 	ASCII_BOARD_API void modify_configuration(const std::string& target_name_id, const std::string& modification_name_id);
-	ASCII_BOARD_API int load_board_translation(const std::string& name_id, const std::string& path);
-	ASCII_BOARD_API void use_translation(const std::string& name_id);
+	ASCII_BOARD_API int load_board_translation(const std::string& name_id, const std::string& path, bool load_metadata=false);
+	ASCII_BOARD_API void use_translation(const std::string& name_id, bool swap_metadata=false);
 	ASCII_BOARD_API void set_lines_count(int lines_count);
 	ASCII_BOARD_API void set_top_display_index(unsigned int index);
 	ASCII_BOARD_API void set_left_display_index(unsigned int index);
@@ -126,11 +143,13 @@ private:
 	std::vector<action_tile> action_tiles;
 	std::vector<board_configuration> board_configurations;
 	std::vector<board_translation> board_translations;
+	metadata_container map_metadata;
 	void set_tile_range(int array_row, int array_column, int board_start_row, int board_stop_row, int board_start_column, int board_stop_column, std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void initialize_tiles(int rows, int columns, std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void set_tile_ranges(const std::string& content, std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void remove_inactive_tiles(std::vector<action_tile_skeleton>& action_tile_skeletons);
 	void set_tile_default_values(const std::string& board_reference, std::vector<action_tile_skeleton>& action_tile_skeletons);
+	void set_map_metadata(const std::string& content, board_translation& translation);
 	std::string get_board_section(const std::string& board_reference, const std::vector<action_tile_board_section>& board_section);
 	void build_board(std::string& board, std::vector<format_tools::index_format>& board_colors);
 	unsigned int get_value_length(action_tile tile);

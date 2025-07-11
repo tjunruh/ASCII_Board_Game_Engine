@@ -141,6 +141,10 @@ std::string build_board_config::modify_content(std::string content)
 	modified_content = modified_content + board_config_field_titles::action_tiles_begin + "\n";
 	modified_content = modified_content + board_config_field_titles::action_tile_initialization;
 	modified_content = modified_content + board_config_field_titles::action_tiles_end + "\n\n\n";
+	modified_content = modified_content + board_config_field_titles::metadata_field;
+	modified_content = modified_content + board_config_field_titles::metadata_begin + "\n";
+	modified_content = modified_content + board_config_field_titles::metadata_initialization;
+	modified_content = modified_content + board_config_field_titles::metadata_end;
 
 	return modified_content;
 }

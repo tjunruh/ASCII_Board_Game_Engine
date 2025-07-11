@@ -4,14 +4,13 @@
 
 int action_tile_pattern_maker::validate_action_tile_field(std::string action_tiles_field, std::string& debug_info)
 {
-	validate_board_config validation_manager;
 	board_config_field_parser parser;
 	std::string error_lines = "";
 	debug_info = "";
 	int error_line = -1;
 	action_tiles_field = parser.remove_spaces(action_tiles_field);
 
-	if (validation_manager.validate_enclosing_characters(action_tiles_field, error_line, error_lines, '(', ')') == 1)
+	if (validate_board_config::validate_enclosing_characters(action_tiles_field, error_line, error_lines, '(', ')') == 1)
 	{
 		debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in action tiles field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
@@ -23,7 +22,7 @@ int action_tile_pattern_maker::validate_action_tile_field(std::string action_til
 		debug_info = debug_info + "Passed: Parenthesis validation in action tiles field.\n";
 	}
 
-	if (validation_manager.validate_enclosing_characters(action_tiles_field, error_line, error_lines, '{', '}') == 1)
+	if (validate_board_config::validate_enclosing_characters(action_tiles_field, error_line, error_lines, '{', '}') == 1)
 	{
 		debug_info = debug_info + "Failed: Curly brackets mismatch or data not enclosed in action tiles field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
@@ -35,7 +34,7 @@ int action_tile_pattern_maker::validate_action_tile_field(std::string action_til
 		debug_info = debug_info + "Passed: Curley brackets validation in action tiles field.\n";
 	}
 
-	if (validation_manager.validate_number_of_parameters(action_tiles_field, 4, error_line, error_lines) == 1)
+	if (validate_board_config::validate_number_of_parameters(action_tiles_field, 4, error_line, error_lines) == 1)
 	{
 		debug_info = debug_info + "Failed: Incorrect number of parameters in action tiles field parenthesis (4 expected).\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
@@ -47,7 +46,7 @@ int action_tile_pattern_maker::validate_action_tile_field(std::string action_til
 		debug_info = debug_info + "Passed: Correct number of parameters in action tiles field parenthesis.\n";
 	}
 
-	if (validation_manager.validate_parameters(action_tiles_field, true, error_line, error_lines) == 1)
+	if (validate_board_config::validate_parameters(action_tiles_field, true, error_line, error_lines) == 1)
 	{
 		debug_info = debug_info + "Failed: Invalid parameter in action tiles field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";
@@ -59,7 +58,7 @@ int action_tile_pattern_maker::validate_action_tile_field(std::string action_til
 		debug_info = debug_info + "Passed: Valid parameters in action tiles field.\n";
 	}
 
-	if (validation_manager.validate_hyphen_range(action_tiles_field, error_line, error_lines) == 1)
+	if (validate_board_config::validate_hyphen_range(action_tiles_field, error_line, error_lines) == 1)
 	{
 		debug_info = debug_info + "Failed: Invalid range using hyphen in action tiles field.\n";
 		debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of action tiles field.\n";

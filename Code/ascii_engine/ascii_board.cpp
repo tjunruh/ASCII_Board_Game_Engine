@@ -20,7 +20,6 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		}
 	}
 	log.log_begin("ascii_board::ascii_board");
-	validate_board_config validator;
 	int status = UNDEFINED;
 	std::string board_config = "";
 	int file_status = file_manager::read_file(path, board_config);
@@ -31,7 +30,7 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		return;
 	}
 	std::string validation_debug_log = "";
-	int validation_status = validator.validate(board_config, validation_debug_log);
+	int validation_status = validate_board_config::validate(board_config, validation_debug_log);
 	if (validation_status == 1)
 	{
 		status = INVALID_CONFIG;
@@ -40,13 +39,16 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		return;
 	}
 
-	std::string array_dimension_field = "";
-	std::string action_tiles_field = "";
 	board_config_field_parser parser;
 	board_translation translation;
 	translation.board = parser.get_board(board_config);
-	array_dimension_field = parser.get_dimension_field(board_config);
-	action_tiles_field = parser.get_action_tiles_field(board_config);
+	std::string array_dimension_field = parser.get_dimension_field(board_config);
+	std::string action_tiles_field = parser.get_action_tiles_field(board_config);
+	std::string metadata_field = "";
+	if (validate_board_config::validate_metadata_begin(board_config) == 0 && validate_board_config::validate_metadata_end(board_config) == 0)
+	{
+		metadata_field = parser.remove_spaces(parser.get_metadata_field(board_config));
+	}
 
 	parser.get_array_dimensions(array_dimension_field, max_rows, max_columns);
 
@@ -56,6 +58,7 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 	set_tile_ranges(action_tiles_field, translation.action_tile_skeletons);
 	remove_inactive_tiles(translation.action_tile_skeletons);
 	set_tile_default_values(translation.board, translation.action_tile_skeletons);
+	set_map_metadata(metadata_field, translation);
 	newline_guard(translation);
 	board_translations.push_back(translation);
 	board_lines_count = format_tools::get_lines(translation.board).size();
@@ -72,8 +75,11 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		}
 		tile.default_value = translation.action_tile_skeletons[i].default_value;
 		tile.value = translation.action_tile_skeletons[i].default_value;
+		tile.metadata = translation.action_tile_skeletons[i].metadata;
 		action_tiles.push_back(tile);
 	}
+
+	map_metadata = translation.metadata;
 
 	set_widget_type(BOARD);
 	selectable();
@@ -783,6 +789,117 @@ int ascii_board::get_number_of_rows()
 	return max_rows;
 }
 
+int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, int& value)
+{
+	int status = INVALID_INDEX;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
+		{
+			auto element = action_tiles[i].metadata.int_data.find(metadata_name);
+			if (element != action_tiles[i].metadata.int_data.end())
+			{
+				status = SUCCESS;
+				value = element->second;
+			}
+			else
+			{
+				status = ELEMENT_NOT_FOUND;
+			}
+			break;
+		}
+	}
+
+	return status;
+}
+
+int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, float& value)
+{
+	int status = INVALID_INDEX;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
+		{
+			auto element = action_tiles[i].metadata.float_data.find(metadata_name);
+			if (element != action_tiles[i].metadata.float_data.end())
+			{
+				status = SUCCESS;
+				value = element->second;
+			}
+			else
+			{
+				status = ELEMENT_NOT_FOUND;
+			}
+			break;
+		}
+	}
+
+	return status;
+}
+
+int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, std::string& value)
+{
+	int status = INVALID_INDEX;
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
+		{
+			auto element = action_tiles[i].metadata.string_data.find(metadata_name);
+			if (element != action_tiles[i].metadata.string_data.end())
+			{
+				status = SUCCESS;
+				value = element->second;
+			}
+			else
+			{
+				status = ELEMENT_NOT_FOUND;
+			}
+			break;
+		}
+	}
+
+	return status;
+}
+
+int ascii_board::get_metadata(const std::string& metadata_name, int& value)
+{
+	int status = ELEMENT_NOT_FOUND;
+	auto element = map_metadata.int_data.find(metadata_name);
+	if (element != map_metadata.int_data.end())
+	{
+		status = SUCCESS;
+		value = element->second;
+	}
+
+	return status;
+}
+
+int ascii_board::get_metadata(const std::string& metadata_name, float& value)
+{
+	int status = ELEMENT_NOT_FOUND;
+	auto element = map_metadata.float_data.find(metadata_name);
+	if (element != map_metadata.float_data.end())
+	{
+		status = SUCCESS;
+		value = element->second;
+	}
+
+	return status;
+}
+
+int ascii_board::get_metadata(const std::string& metadata_name, std::string& value)
+{
+	int status = ELEMENT_NOT_FOUND;
+	auto element = map_metadata.string_data.find(metadata_name);
+	if (element != map_metadata.string_data.end())
+	{
+		status = SUCCESS;
+		value = element->second;
+	}
+
+	return status;
+}
+
 void ascii_board::display()
 {
 	if (frame_stale() && (get_line_subtraction_from_terminal_height() != 0))
@@ -872,13 +989,12 @@ void ascii_board::modify_configuration(const std::string& target_name_id, const 
 	log.log_status(status, "ascii_board::modify_configuration");
 }
 
-int ascii_board::load_board_translation(const std::string& name_id, const std::string& path)
+int ascii_board::load_board_translation(const std::string& name_id, const std::string& path, bool load_metadata)
 {
 	log.log_begin("ascii_board::load_board_translation");
 	board_translation translation;
 	translation.name_id = name_id;
 	log.log_begin("ascii_board::load_board_translation");
-	validate_board_config validator;
 	int status = UNDEFINED;
 	std::string board_config = "";
 	int file_status = file_manager::read_file(path, board_config);
@@ -889,7 +1005,7 @@ int ascii_board::load_board_translation(const std::string& name_id, const std::s
 		return status;
 	}
 	std::string validation_debug_log = "";
-	int validation_status = validator.validate(board_config, validation_debug_log);
+	int validation_status = validate_board_config::validate(board_config, validation_debug_log);
 	if (validation_status == 1)
 	{
 		status = INVALID_CONFIG;
@@ -914,9 +1030,13 @@ int ascii_board::load_board_translation(const std::string& name_id, const std::s
 		return status;
 	}
 
-	std::string action_tiles_field = "";
 	translation.board = parser.get_board(board_config);
-	action_tiles_field = parser.get_action_tiles_field(board_config);
+	std::string action_tiles_field = parser.get_action_tiles_field(board_config);
+	std::string metadata_field = "";
+	if (load_metadata && validate_board_config::validate_metadata_begin(board_config) == 0 && validate_board_config::validate_metadata_end(board_config) == 0)
+	{
+		metadata_field = parser.remove_spaces(parser.get_metadata_field(board_config));
+	}
 	initialize_tiles(number_of_rows, number_of_columns, translation.action_tile_skeletons);
 	set_tile_ranges(action_tiles_field, translation.action_tile_skeletons);
 	remove_inactive_tiles(translation.action_tile_skeletons);
@@ -927,6 +1047,11 @@ int ascii_board::load_board_translation(const std::string& name_id, const std::s
 		return status;
 	}
 	set_tile_default_values(translation.board, translation.action_tile_skeletons);
+	if (load_metadata)
+	{
+		set_map_metadata(metadata_field, translation);
+	}
+
 	newline_guard(translation);
 	board_translations.push_back(translation);
 	status = SUCCESS;
@@ -936,7 +1061,7 @@ int ascii_board::load_board_translation(const std::string& name_id, const std::s
 	return status;
 }
 
-void ascii_board::use_translation(const std::string& name_id)
+void ascii_board::use_translation(const std::string& name_id, bool swap_metadata)
 {
 	int status = ELEMENT_NOT_FOUND;
 	board_translation translation;
@@ -967,10 +1092,19 @@ void ascii_board::use_translation(const std::string& name_id)
 						}
 					}
 					action_tiles[j].default_value = translation.action_tile_skeletons[i].default_value;
+					if (swap_metadata)
+					{
+						action_tiles[j].metadata = translation.action_tile_skeletons[i].metadata;
+					}
 				}
 
 				action_tiles[j].edited = true;
 			}
+		}
+
+		if (swap_metadata)
+		{
+			map_metadata = translation.metadata;
 		}
 	}
 
@@ -1215,6 +1349,133 @@ void ascii_board::set_tile_default_values(const std::string& board_reference, st
 	for (unsigned int i = 0; i < action_tile_skeletons.size(); i++)
 	{
 		action_tile_skeletons[i].default_value = get_board_section(board_reference, action_tile_skeletons[i].board_section);
+	}
+}
+
+void ascii_board::set_map_metadata(const std::string& content, board_translation& translation)
+{
+	int parameter = 0;
+	bool start_reading = false;
+	char curly_bracket = '}';
+	std::string row = "";
+	std::string column = "";
+	std::string key = "";
+	std::string value = "";
+	metadata_container metadata;
+	for (unsigned int i = 0; i < content.length(); i++)
+	{
+		if (content[i] == '(')
+		{
+			start_reading = true;
+		}
+		else if (start_reading)
+		{
+			if (content[i] == ',')
+			{
+				parameter++;
+			}
+			else if (content[i] == ')')
+			{
+				start_reading = false;
+				if (key == "row")
+				{
+					row = value;
+				}
+				else if (key == "column")
+				{
+					column = value;
+				}
+
+				bool negative = false;
+				if (value.length() > 0 && value[0] == '-')
+				{
+					value = value.erase(0, 1);
+					negative = true;
+				}
+
+				if (validate_board_config::is_float(value))
+				{
+					float float_value = stof(value);
+					if (negative)
+					{
+						float_value = float_value * -1;
+					}
+
+					if (curly_bracket != '}')
+					{
+						metadata.float_data.insert({ key, float_value });
+					}
+					else
+					{
+						translation.metadata.float_data.insert({ key, float_value });
+					}
+				}
+				else if (validate_board_config::is_integer(value))
+				{
+					int integer_value = stoi(value);
+					if (negative)
+					{
+						integer_value = integer_value * -1;
+					}
+
+					if (curly_bracket != '}')
+					{
+						metadata.int_data.insert({ key, integer_value });
+					}
+					else
+					{
+						translation.metadata.int_data.insert({ key, integer_value });
+					}
+				}
+				else if (validate_board_config::is_string(value))
+				{
+					value = value.erase(0, 1);
+					value = value.erase(value.length() - 1, 1);
+
+					if (curly_bracket != '}')
+					{
+						metadata.string_data.insert({ key, value });
+					}
+					else
+					{
+						translation.metadata.string_data.insert({ key, value });
+					}
+				}
+
+				parameter = 0;
+				key = "";
+				value = "";
+			}
+			else if (parameter == 0)
+			{
+				key = key + content[i];
+			}
+			else if (parameter == 1)
+			{
+				value = value + content[i];
+			}
+		}
+		else if (content[i] == '{')
+		{
+			curly_bracket = '{';
+		}
+		else if (content[i] == '}')
+		{
+			curly_bracket = '}';
+			for (unsigned int j = 0; j < translation.action_tile_skeletons.size(); j++)
+			{
+				if (translation.action_tile_skeletons[j].array_row == stoi(row) && translation.action_tile_skeletons[j].array_column == stoi(column))
+				{
+					translation.action_tile_skeletons[j].metadata = metadata;
+					break;
+				}
+			}
+			metadata.float_data.clear();
+			metadata.int_data.clear();
+			metadata.string_data.clear();
+			row = "";
+			column = "";
+		}
 	}
 }
 

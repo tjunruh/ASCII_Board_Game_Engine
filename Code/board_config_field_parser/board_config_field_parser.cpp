@@ -26,6 +26,18 @@ std::string board_config_field_parser::get_action_tiles_field(const std::string 
 	return action_tiles_field;
 }
 
+std::string board_config_field_parser::get_metadata_field(const std::string& content)
+{
+	size_t start_position = content.find(board_config_field_titles::metadata_begin) + board_config_field_titles::metadata_begin.length();
+	size_t stop_position = content.find(board_config_field_titles::metadata_end);
+	std::string metadata_field = "";
+	for (unsigned int i = start_position; i < stop_position; i++)
+	{
+		metadata_field = metadata_field + content[i];
+	}
+	return metadata_field;
+}
+
 std::string board_config_field_parser::get_board(const std::string &content)
 {
 	int start_row = get_board_boundary_row(content);

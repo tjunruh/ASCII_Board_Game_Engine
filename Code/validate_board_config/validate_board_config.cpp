@@ -2,6 +2,7 @@
 #include "validate_board_config.h"
 #include "../board_config_field_titles/board_config_field_titles.h"
 #include "../board_config_field_parser/board_config_field_parser.h"
+#include <algorithm>
 
 int validate_board_config::validate_board_begin(const std::string &content)
 {
@@ -57,6 +58,26 @@ int validate_board_config::validate_action_tiles_end(const std::string &content)
 {
 	int validity = 0;
 	if (content.find(board_config_field_titles::action_tiles_end) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_metadata_begin(const std::string& content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::metadata_begin) == std::string::npos)
+	{
+		validity = 1;
+	}
+	return validity;
+}
+
+int validate_board_config::validate_metadata_end(const std::string& content)
+{
+	int validity = 0;
+	if (content.find(board_config_field_titles::metadata_end) == std::string::npos)
 	{
 		validity = 1;
 	}
@@ -423,6 +444,127 @@ int validate_board_config::validate_board_index(const std::string &content, int 
 	return validity;
 }
 
+int validate_board_config::validate_metadata_parameters(const std::string& content, int& error_line, std::string& error_line_content)
+{
+	char curly_bracket = ' ';
+	char parenthesis = ' ';
+	int validity = 0;
+	int parameter = 0;
+	error_line = 0;
+	error_line_content = "";
+	std::string previous_line_content = "";
+	std::string row = "";
+	std::string column = "";
+	std::string key = "";
+	std::string value = "";
+	std::vector<std::string> keys;
+	std::vector<row_column> coordinates;
+	for (int i = 0; (unsigned int)i < content.length(); i++)
+	{
+		error_line_content = error_line_content + content[i];
+		if (content[i] == '(')
+		{
+			parenthesis = '(';
+		}
+		else if (content[i] == ')')
+		{
+			parenthesis = ')';
+			parameter = 0;
+			if ((key.length() == 0) || (std::count(keys.begin(), keys.end(), key) != 0))
+			{
+				validity = 1;
+				break;
+			}
+			else
+			{
+				keys.push_back(key);
+			}
+
+			if (value.length() > 0 && value[0] == '-')
+			{
+				value = value.erase(0, 1);
+			}
+
+			if (key == "row" && is_integer(value))
+			{
+				row = value;
+			}
+			else if (key == "column" && is_integer(value))
+			{
+				column = value;
+			}
+
+			if (!is_integer(value) && !is_float(value) && !is_string(value))
+			{
+				validity = 1;
+				break;
+			}
+
+			key = "";
+			value = "";
+		}
+		else if (content[i] == '{')
+		{
+			curly_bracket = '{';
+		}
+		else if (content[i] == '}')
+		{
+			curly_bracket = '}';
+			if (row.length() == 0 || column.length() == 0)
+			{
+				validity = 1;
+				error_line_content = error_line_content + " << required row or column parameter not found or are not integers";
+				break;
+			}
+			else
+			{
+				row_column coordinate;
+				coordinate.row = row;
+				coordinate.column = column;
+				if (std::count(coordinates.begin(), coordinates.end(), coordinate) != 0)
+				{
+					error_line_content = error_line_content + " << row and column coordinates cannot be duplicated";
+					validity = 1;
+					break;
+				}
+				else
+				{
+					coordinates.push_back(coordinate);
+				}
+			}
+
+			row = "";
+			column = "";
+			keys.clear();
+		}
+		else if (content[i] == ',')
+		{
+			parameter++;
+		}
+		else if (content[i] == '\n')
+		{
+			error_line++;
+			previous_line_content = error_line_content;
+			error_line_content = "";
+		}
+		else if (parenthesis == '(')
+		{
+			if (parameter == 0)
+			{
+				key = key + content[i];
+			}
+			else if (parameter == 1)
+			{
+				value = value + content[i];
+			}
+		}
+	}
+
+	error_line_content = previous_line_content + error_line_content;
+
+	return validity;
+}
+
 int validate_board_config::validate_hyphen_range(const std::string &content, int& error_line, std::string& error_line_content)
 {
 	std::string number = "";
@@ -440,7 +582,7 @@ int validate_board_config::validate_hyphen_range(const std::string &content, int
 		}
 		else if((content[i] == ',') || (content[i] == ')'))
 		{
-			if (is_number(number) && is_number(previous_number))
+			if (is_integer(number) && is_integer(previous_number))
 			{
 				if (stoi(number) <= stoi(previous_number))
 				{
@@ -525,7 +667,7 @@ bool validate_board_config::uniform(std::vector<row_column> storage)
 	return is_uniform;
 }
 
-bool validate_board_config::is_number(const std::string &number_string)
+bool validate_board_config::is_integer(const std::string &number_string)
 {
 	bool number = true;
 	if (number_string.length() == 0)
@@ -545,6 +687,48 @@ bool validate_board_config::is_number(const std::string &number_string)
 	}
 	
 	return number;
+}
+
+bool validate_board_config::is_float(const std::string& number_string)
+{
+	bool number = true;
+	bool decimal_found = false;
+	if (number_string.length() == 0)
+	{
+		number = false;
+	}
+	else
+	{
+		for (unsigned int i = 0; i < number_string.length(); i++)
+		{
+			if (!isdigit(number_string[i]) && (number_string[i] != '.'))
+			{
+				number = false;
+				break;
+			}
+			else if (number_string[i] == '.')
+			{
+				if (decimal_found)
+				{
+					number = false;
+					break;
+				}
+				decimal_found = true;;
+			}
+		}
+	}
+
+	return number && decimal_found;
+}
+
+bool validate_board_config::is_string(const std::string& string_string)
+{
+	bool is_string = false;
+	if (string_string.length() > 1 && string_string[0] == '\"' && string_string[string_string.length() - 1] == '\"')
+	{
+		is_string = true;
+	}
+	return is_string;
 }
 
 int validate_board_config::get_rows(const std::string &board)
@@ -656,15 +840,41 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 		debug_info = debug_info + "Passed: Action tiles end tag found.\n";
 	}
 
-	std::string board = "";
-	std::string dimension_field = "";
-	std::string action_tiles_field = "";
+	bool include_metadata = true;
+	if (validate_metadata_begin(content) == 1)
+	{
+		debug_info = debug_info + "Failed: Metadata field begin tag is missing or malformed. - ignoring metadata\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::metadata_begin + "\n";
+		include_metadata = false;
+	}
+	else
+	{
+		debug_info = debug_info + "Passed: Metadata field begin tag found.\n";
+	}
+
+	if (validate_metadata_end(content) == 1)
+	{
+		debug_info = debug_info + "Failed: Metadata field end tag is missing or malformed. - ignoring metadata\n";
+		debug_info = debug_info + "Missing: " + board_config_field_titles::metadata_end + "\n";
+		include_metadata = false;
+	}
+	else
+	{
+		debug_info = debug_info + "Passed: Metadata field end tag found.\n";
+	}
+
 	board_config_field_parser parser;
-	board = parser.get_board(content);
-	dimension_field = parser.get_dimension_field(content);
-	action_tiles_field = parser.get_action_tiles_field(content);
+	std::string board = parser.get_board(content);
+	std::string dimension_field = parser.get_dimension_field(content);
+	std::string action_tiles_field = parser.get_action_tiles_field(content);
+	std::string metadata_field = "";
+	if (include_metadata)
+	{
+		metadata_field = parser.get_metadata_field(content);
+	}
 	dimension_field = parser.remove_spaces(dimension_field);
 	action_tiles_field = parser.remove_spaces(action_tiles_field);
+	metadata_field = parser.remove_spaces(metadata_field);
 	int error_line = 0;
 	std::string error_line_content = "";
 
@@ -762,6 +972,57 @@ int validate_board_config::validate(const std::string &content, std::string& deb
 	else
 	{
 		debug_info = debug_info + "Passed: Valid parameters in action tiles field.\n";
+	}
+
+	if (include_metadata)
+	{
+		if (validate_enclosing_characters(metadata_field, error_line, error_line_content, '(', ')') == 1)
+		{
+			debug_info = debug_info + "Failed: Parenthesis mismatch or data not enclosed in metadata field.\n";
+			debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of metadata field.\n";
+			debug_info = debug_info + error_line_content + " << parenthesis mismatch or data not enclosed\n";
+			return 1;
+		}
+		else
+		{
+			debug_info = debug_info + "Passed: Parenthesis validation in metadata field.\n";
+		}
+
+		if (validate_enclosing_characters(metadata_field, error_line, error_line_content, '{', '}') == 1)
+		{
+			debug_info = debug_info + "Failed: Curly brackets mismatch or data not enclosed in metadata field.\n";
+			debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of metadata field.\n";
+			debug_info = debug_info + error_line_content + " << curly brackets mismatch or data not enclosed\n";
+			return 1;
+		}
+		else
+		{
+			debug_info = debug_info + "Passed: Curly brackets validation in metadata field.\n";
+		}
+
+		if (validate_number_of_parameters(metadata_field, 2, error_line, error_line_content) == 1)
+		{
+			debug_info = debug_info + "Failed: Incorrect number of parameters in metadata field parenthesis (2 expected).\n";
+			debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of metadata field.\n";
+			debug_info = debug_info + error_line_content + " << incorrect number of parameters\n";
+			return 1;
+		}
+		else
+		{
+			debug_info = debug_info + "Passed: Correct number of parameters in metadata field parenthesis.\n";
+		}
+
+		if (validate_metadata_parameters(metadata_field, error_line, error_line_content) == 1)
+		{
+			debug_info = debug_info + "Failed: Invalid parameter in metadata field.\n";
+			debug_info = debug_info + "Error on line " + std::to_string(error_line) + " of metadata field.\n";
+			debug_info = debug_info + error_line_content + " << invalid parameter\n";
+			return 1;
+		}
+		else
+		{
+			debug_info = debug_info + "Passed: Valid parameters in metadata field.\n";
+		}
 	}
 	
 	if (validate_hyphen_range(action_tiles_field, error_line, error_line_content) == 1)

@@ -17,6 +17,7 @@ class board_config_field_parser
 public:
 	std::string get_dimension_field(const std::string &content);
 	std::string get_action_tiles_field(const std::string &content);
+	std::string get_metadata_field(const std::string& content);
 	std::string get_board(const std::string &content);
 	std::string remove_spaces(const std::string &content);
 	void get_array_dimensions(const std::string &content, int& row, int& column);
