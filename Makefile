@@ -34,7 +34,6 @@ EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 .PHONY: all clean engine test test-headless
 
 all: $(EXECUTABLES) $(addprefix $(BLD_DIR)/, $(TEST_ASCII_ENGINE)) engine
-	cp LICENSE build/
 
 clean:
 	-rm -rf $(BLD_DIR)
