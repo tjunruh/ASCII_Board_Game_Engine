@@ -199,13 +199,12 @@ int frame::get_selection()
 		if (input == _select)
 		{
 			log.log_comment("select action");
-			widget_info item;
-			get_widget(selected_row, selected_column, selected_level, item);
-			if (item.selectable)
+			widget_info* item = get_widget(selected_row, selected_column, selected_level);
+			if (item != nullptr && item->selectable)
 			{
-				selected_id = item.id;
+				selected_id = item->id;
 				log.log_comment("Selected row: " + std::to_string(selected_row) + " Selected column: " + std::to_string(selected_column) + " Selected level: " + std::to_string(selected_level));
-				log.log_comment("Selected ID: " + std::to_string(item.id));
+				log.log_comment("Selected ID: " + std::to_string(item->id));
 				break;
 			}
 		}
@@ -739,8 +738,8 @@ void frame::highlight(int row, int column, int level)
 			int y_origin = 0;
 			get_x_origin(widgets[i].id, x_origin);
 			get_y_origin(widgets[i].id, y_origin);
-			unsigned int width = get_widget_width(widgets[i], false);
-			unsigned int height = get_widget_height(widgets[i], false);
+			unsigned int width = get_widget_width(&widgets[i], false);
+			unsigned int height = get_widget_height(&widgets[i], false);
 			
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
@@ -788,8 +787,8 @@ void frame::unhighlight(int row, int column, int level)
 			int y_origin = 0;
 			get_x_origin(widgets[i].id, x_origin);
 			get_y_origin(widgets[i].id, y_origin);
-			unsigned int width = get_widget_width(widgets[i], false);
-			unsigned int height = get_widget_height(widgets[i], false);
+			unsigned int width = get_widget_width(&widgets[i], false);
+			unsigned int height = get_widget_height(&widgets[i], false);
 
 			int x = x_origin - 2 - widgets[i].left_border_spacing;
 			int y = y_origin - 1 - widgets[i].top_border_spacing;
@@ -1302,13 +1301,13 @@ float frame::get_greatest_width_multiplier_at_coordinate(int row, int column)
 	return greatest_width_multiplier;
 }
 
-float frame::get_width_weight(const widget_info& item, float multiplier)
+float frame::get_width_weight(const widget_info* const item, float multiplier)
 {
 	float total_width_multiplier = 0.0;
 	std::vector<int> columns_completed;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].row == item.row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i].column) == 0))
+		if (widgets[i].row == item->row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i].column) == 0))
 		{
 			total_width_multiplier = total_width_multiplier + get_greatest_width_multiplier_at_coordinate(widgets[i].row, widgets[i].column);
 			columns_completed.push_back(widgets[i].column);
@@ -1716,16 +1715,18 @@ std::vector<int> frame::get_row_ids(int row)
 
 std::vector<std::vector<int>> frame::sort_row_ids(std::vector<int> ids)
 {
-	std::vector<widget_info> widgets_vec;
+	std::vector<widget_info*> widgets_vec;
 	for (unsigned int i = 0; i < ids.size(); i++)
 	{
-		widget_info item;
-		get_widget(ids[i], item);
-		widgets_vec.push_back(item);
+		widget_info* item = get_widget(ids[i]);
+		if (item != nullptr)
+		{
+			widgets_vec.push_back(item);
+		}
 	}
 
 	unsigned int widgets_vec_length = widgets_vec.size();
-	std::vector<widget_info> sorted_widgets;
+	std::vector<widget_info*> sorted_widgets;
 	for (unsigned int i = 0; i < widgets_vec_length; i++)
 	{
 		int index = get_min_column_index(widgets_vec);
@@ -1736,12 +1737,12 @@ std::vector<std::vector<int>> frame::sort_row_ids(std::vector<int> ids)
 	std::vector<std::vector<int>> sorted_ids;
 	while(sorted_widgets.size() > 0)
 	{
-		std::vector<widget_info> level_group;
+		std::vector<widget_info*> level_group;
 		level_group.push_back(sorted_widgets[0]);
 		sorted_widgets.erase(sorted_widgets.begin());
 		for (unsigned int i = 0; i < sorted_widgets.size(); i++)
 		{
-			if ((level_group[0].row == sorted_widgets[i].row) && (level_group[0].column == sorted_widgets[i].column))
+			if ((level_group[0]->row == sorted_widgets[i]->row) && (level_group[0]->column == sorted_widgets[i]->column))
 			{
 				level_group.push_back(sorted_widgets[i]);
 				sorted_widgets.erase(sorted_widgets.begin() + i);
@@ -1756,53 +1757,53 @@ std::vector<std::vector<int>> frame::sort_row_ids(std::vector<int> ids)
 			for (unsigned int k = 0; k < id_group_length; k++)
 			{
 				int index = get_min_level_index(level_group);
-				sorted_id_group.push_back(level_group[index].id);
+				sorted_id_group.push_back(level_group[index]->id);
 				level_group.erase(level_group.begin() + index);
 			}
 		}
 		else
 		{
-			sorted_id_group.push_back(level_group[0].id);
+			sorted_id_group.push_back(level_group[0]->id);
 		}
 		sorted_ids.push_back(sorted_id_group);
 	}
 	return sorted_ids;
 }
 
-int frame::get_min_column_index(const std::vector<widget_info>& widget_vec)
+int frame::get_min_column_index(const std::vector<widget_info*> widget_vec)
 {
 	int min_index = 0;
 	int min_column = 0;
 	if (widget_vec.size() > 0)
 	{
 		min_index = 0;
-		min_column = widget_vec[min_index].column;
+		min_column = widget_vec[min_index]->column;
 		for (unsigned int i = 1; i < widget_vec.size(); i++)
 		{
-			if (widget_vec[i].column < min_column)
+			if (widget_vec[i]->column < min_column)
 			{
 				min_index = i;
-				min_column = widget_vec[min_index].column;
+				min_column = widget_vec[min_index]->column;
 			}
 		}
 	}
 	return min_index;
 }
 
-int frame::get_min_level_index(const std::vector<widget_info>& widget_vec)
+int frame::get_min_level_index(const std::vector<widget_info*> widget_vec)
 {
 	int min_index = 0;
 	int min_level = 0;
 	if (widget_vec.size() > 0)
 	{
 		min_index = 0;
-		min_level = widget_vec[min_index].level;
+		min_level = widget_vec[min_index]->level;
 		for (unsigned int i = 1; i < widget_vec.size(); i++)
 		{
-			if (widget_vec[i].level < min_level)
+			if (widget_vec[i]->level < min_level)
 			{
 				min_index = i;
-				min_level = widget_vec[min_index].level;
+				min_level = widget_vec[min_index]->level;
 			}
 		}
 	}
@@ -1834,56 +1835,51 @@ int frame::get_output(int id, std::string& output)
 	return status;
 }
 
-int frame::get_widget(int id, widget_info& return_value)
+frame::widget_info* frame::get_widget(int id)
 {
-	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if (widgets[i].id == id)
 		{
-			return_value = widgets[i];
-			status = SUCCESS;
-			break;
+			return &widgets[i];
 		}
 	}
-	return status;
+
+	return nullptr;
 }
 
-int frame::get_widget(int row, int column, int level, widget_info& return_value)
+frame::widget_info* frame::get_widget(int row, int column, int level)
 {
-	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
 		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
 		{
-			return_value = widgets[i];
-			status = SUCCESS;
-			break;
+			return &widgets[i];
 		}
 	}
-	return status;
+	return nullptr;
 }
 
-unsigned int frame::get_widget_width(const widget_info& item, bool include_spacing)
+unsigned int frame::get_widget_width(const widget_info* const item, bool include_spacing)
 {	
 	int raw_width = 0;
-	raw_width = int(terminal_x * get_width_weight(item, item.width_multiplier));
+	raw_width = int(terminal_x * get_width_weight(item, item->width_multiplier));
 	
 	if(!include_spacing)
 	{
-		if(!item.use_spacing_width_multipliers)
+		if(!item->use_spacing_width_multipliers)
 		{
-			raw_width = raw_width - item.left_spacing - item.right_spacing;
+			raw_width = raw_width - item->left_spacing - item->right_spacing;
 		}
 		
-		if (item.add_border)
+		if (item->add_border)
 		{
 			raw_width = raw_width - 4;
 		}
 	}
-	else if (item.use_spacing_width_multipliers)
+	else if (item->use_spacing_width_multipliers)
 	{
-		raw_width = raw_width + int(terminal_x * get_width_weight(item, item.left_width_multiplier)) + int(terminal_x * get_width_weight(item, item.right_width_multiplier));
+		raw_width = raw_width + int(terminal_x * get_width_weight(item, item->left_width_multiplier)) + int(terminal_x * get_width_weight(item, item->right_width_multiplier));
 	}
 
 	unsigned int width = 0;
@@ -1894,20 +1890,20 @@ unsigned int frame::get_widget_width(const widget_info& item, bool include_spaci
 	else
 	{
 		log.log_begin("frame::get_widget_width");
-		log.log_comment("Widget id: " + std::to_string(item.id) + " has zero width.");
+		log.log_comment("Widget id: " + std::to_string(item->id) + " has zero width.");
 		log.log_end("frame::get_widget_width");
 	}
 	return width;
 }
 
-unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info& item, bool include_spacing)
+unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info* const item, bool include_spacing)
 {
 	unsigned int greatest_widget_width = 0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == item.row) && (widgets[i].column == item.column))
+		if ((widgets[i].row == item->row) && (widgets[i].column == item->column))
 		{
-			unsigned int widget_width = get_widget_width(widgets[i], include_spacing);
+			unsigned int widget_width = get_widget_width(&widgets[i], include_spacing);
 			if (widget_width > greatest_widget_width)
 			{
 				greatest_widget_width = widget_width;
@@ -1920,23 +1916,23 @@ unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info& i
 int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
 {
 	int status = ELEMENT_NOT_FOUND;
-	widget_info item;
-	status = get_widget(id, item);
-	if (status == SUCCESS)
+	const widget_info* const item = get_widget(id);
+	if (item != nullptr)
 	{
 		width = get_widget_width(item, include_spacing);
+		status = SUCCESS;
 	}
 	return status;
 }
 
-unsigned int frame::get_widget_height(const widget_info& item, bool include_spacing)
+unsigned int frame::get_widget_height(const widget_info* const item, bool include_spacing)
 {
 	unsigned int height = 0;
-	get_lines_count(item.id, height);
+	get_lines_count(item->id, height);
 	if (include_spacing)
 	{
-		height = height + item.top_spacing + item.bottom_spacing;
-		if (item.add_border)
+		height = height + item->top_spacing + item->bottom_spacing;
+		if (item->add_border)
 		{
 			height = height + 2;
 		}
@@ -1948,110 +1944,111 @@ unsigned int frame::get_widget_height(const widget_info& item, bool include_spac
 int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
 {
 	int status = ELEMENT_NOT_FOUND;
-	widget_info item;
-	status = get_widget(id, item);
-	if (status == SUCCESS)
+	const widget_info* const item = get_widget(id);
+	if (item != nullptr)
 	{
 		height = get_widget_height(item, include_spacing);
+		status = SUCCESS;
 	}
 	return status;
 }
 
-void frame::constrain_lines(const widget_info& item, std::vector<std::string>& widget_lines)
+void frame::constrain_lines(const widget_info* const item, std::vector<std::string>& widget_lines)
 {
-	if (item.line_constraint)
+	if (item->line_constraint)
 	{
 		unsigned int stop_line = 0;
 		std::string empty_line = format_tools::get_spacing(get_widget_width(item, false), ' ');
-		if (widget_lines.size() < (item.displayed_lines + item.top_line))
+		if (widget_lines.size() < (item->displayed_lines + item->top_line))
 		{
 			stop_line = widget_lines.size();
 		}
 		else
 		{
-			stop_line = item.displayed_lines + item.top_line;
+			stop_line = item->displayed_lines + item->top_line;
 		}
 
 		int last_widget_line = widget_lines.size() - 1;
 		for (int i = last_widget_line; i >= 0; i--)
 		{
-			if ((unsigned int)i >= stop_line || (unsigned int)i < item.top_line)
+			if ((unsigned int)i >= stop_line || (unsigned int)i < item->top_line)
 			{
 				widget_lines.erase(widget_lines.begin() + i);
 			}
 		}
 
-		for (unsigned int i = widget_lines.size(); i < item.displayed_lines; i++)
+		for (unsigned int i = widget_lines.size(); i < item->displayed_lines; i++)
 		{
 			widget_lines.push_back(empty_line);
 		}
 	}
 
-	if (item.column_constraint)
+	if (item->column_constraint)
 	{
 		unsigned int width = get_widget_width(item, false);
 		for (unsigned int i = 0; i < widget_lines.size(); i++)
 		{
-			if (widget_lines[i].length() > (item.left_column + width))
+			if (widget_lines[i].length() > (item->left_column + width))
 			{
-				widget_lines[i].erase(item.left_column + width, widget_lines[i].length() - (item.left_column + width));
+				widget_lines[i].erase(item->left_column + width, widget_lines[i].length() - (item->left_column + width));
 			}
-			widget_lines[i].erase(0, item.left_column);
+			widget_lines[i].erase(0, item->left_column);
 		}
 	}
 }
 
-void frame::constrain_colors(const widget_info& item, std::vector<format_tools::coordinate_format>& colors)
+void frame::constrain_colors(const widget_info* const item, std::vector<format_tools::coordinate_format>& colors)
 {
-	if (item.coordinate_colors.size() > 0)
+	if (item->coordinate_colors.size() > 0)
 	{
-		if (item.line_constraint)
+		colors = item->coordinate_colors;
+		if (item->line_constraint)
 		{
 			unsigned int stop_line = 0;
-			if (item.lines.size() < (item.displayed_lines + item.top_line))
+			if (item->lines.size() < (item->displayed_lines + item->top_line))
 			{
-				stop_line = item.lines.size();
+				stop_line = item->lines.size();
 			}
 			else
 			{
-				stop_line = item.displayed_lines + item.top_line;
+				stop_line = item->displayed_lines + item->top_line;
 			}
 
-			int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
+			int number_of_coordinate_colors = item->coordinate_colors.size() - 1;
 			for (int i = number_of_coordinate_colors; i >= 0; i--)
 			{
-				if (item.coordinate_colors[i].y_position < (int)item.top_line || item.coordinate_colors[i].y_position >= (int)stop_line)
+				if (item->coordinate_colors[i].y_position < (int)item->top_line || item->coordinate_colors[i].y_position >= (int)stop_line)
 				{
-					colors.erase(item.coordinate_colors.begin() + i);
+					colors.erase(colors.begin() + i);
 				}
 			}
 
 			for (unsigned int i = 0; i < colors.size(); i++)
 			{
-				colors[i].y_position = colors[i].y_position - item.top_line;
+				colors[i].y_position = colors[i].y_position - item->top_line;
 			}
 		}
 
-		if (item.column_constraint)
+		if (item->column_constraint)
 		{
-			int number_of_coordinate_colors = item.coordinate_colors.size() - 1;
+			int number_of_coordinate_colors = item->coordinate_colors.size() - 1;
 			unsigned int width = get_widget_width(item, false);
 			for (int i = number_of_coordinate_colors; i >= 0; i--)
 			{
-				if (item.coordinate_colors[i].x_position < (int)item.left_column || item.coordinate_colors[i].x_position >= ((int)item.left_column + (int)width))
+				if (item->coordinate_colors[i].x_position < (int)item->left_column || item->coordinate_colors[i].x_position >= ((int)item->left_column + (int)width))
 				{
-					colors.erase(item.coordinate_colors.begin() + i);
+					colors.erase(colors.begin() + i);
 				}
 			}
 
 			for (unsigned int i = 0; i < colors.size(); i++)
 			{
-				colors[i].x_position = colors[i].x_position - item.left_column;
+				colors[i].x_position = colors[i].x_position - item->left_column;
 			}
 
 			format_tools::coordinate_format color;
 			color.x_position = width;
-			for (unsigned int i = 0; i < item.displayed_lines; i++)
+			for (unsigned int i = 0; i < item->displayed_lines; i++)
 			{
 				color.y_position = i;
 				colors.push_back(color);
@@ -2066,21 +2063,21 @@ void frame::constrain_colors(const widget_info& item, std::vector<format_tools::
 	}
 }
 
-void frame::update_widget_output_from_lines(widget_info& item)
+void frame::update_widget_output_from_lines(widget_info* item)
 {
 	unsigned int output_index = 0;
-	for (unsigned int i = 0; i < item.lines.size(); i++)
+	for (unsigned int i = 0; i < item->lines.size(); i++)
 	{
-		for (unsigned int j = 0; j < item.lines[i].length(); j++)
+		for (unsigned int j = 0; j < item->lines[i].length(); j++)
 		{
-			while (output_index < item.output.length() && item.output[output_index] == '\n')
+			while (output_index < item->output.length() && item->output[output_index] == '\n')
 			{
 				output_index++;
 			}
 
-			if (output_index < item.output.length())
+			if (output_index < item->output.length())
 			{
-				item.output[output_index] = (item.lines[i])[j];
+				item->output[output_index] = (item->lines[i])[j];
 				output_index++;
 			}
 			else
@@ -2091,22 +2088,23 @@ void frame::update_widget_output_from_lines(widget_info& item)
 	}
 }
 
-std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
+std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 {
 	std::vector<std::string> widget_lines;
 	unsigned int width = get_widget_width(item, false);
 
 	std::vector<int> ignore_flags;
 
+	std::string output_copy = item->output;
 	if (_color_enabled)
 	{
-		ignore_flags = format_tools::set_flags(item.index_colors, item.output, '*');
+		ignore_flags = format_tools::set_flags(item->index_colors, output_copy, '*');
 	}
 
-	std::vector<std::string> user_lines = format_tools::split_string(item.output, '\n');
+	std::vector<std::string> user_lines = format_tools::split_string(output_copy, '\n');
 	std::string line = "";
 
-	if (!item.column_constraint)
+	if (!item->column_constraint)
 	{
 		for (unsigned int i = 0; i < user_lines.size(); i++)
 		{
@@ -2132,7 +2130,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 						line = line + first_section;
 						widget_lines.push_back(line);
 						line = "";
-						if (item.widget_type == LABEL)
+						if (item->widget_type == LABEL)
 						{
 							second_section.insert(0, "-");
 						}
@@ -2140,7 +2138,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 					}
 					else
 					{
-						if (item.widget_type == TEXTBOX)
+						if (item->widget_type == TEXTBOX)
 						{
 							if (words[j] == " ")
 							{
@@ -2193,15 +2191,14 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 		widget_lines.push_back(format_tools::get_spacing(width, ' '));
 	}
 
-	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item.widget_type) != 0)
+	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item->widget_type) != 0)
 	{
-		item.lines = format_tools::remove_flags(item.index_colors, ignore_flags, widget_lines, '*');
-		set_lines(item.id, item.lines);
+		item->lines = format_tools::remove_flags(item->index_colors, ignore_flags, widget_lines, '*');
 	}
 
-	if (!item.column_constraint)
+	if (!item->column_constraint)
 	{
-		widget_lines = format_tools::fill_lines(widget_lines, width, item.alignment);
+		widget_lines = format_tools::fill_lines(widget_lines, width, item->alignment);
 	}
 	else
 	{
@@ -2213,40 +2210,38 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 				longest_line_length = widget_lines[i].length();
 			}
 		}
-		widget_lines = format_tools::fill_lines(widget_lines, longest_line_length, item.alignment);
+		widget_lines = format_tools::fill_lines(widget_lines, longest_line_length, item->alignment);
 	}
 
 	if (_color_enabled)
 	{
-		convert_flags(item.coordinate_colors, item.index_colors, ignore_flags, widget_lines, '*');
-		if (item.widget_type == LABEL)
+		convert_flags(item->coordinate_colors, item->index_colors, ignore_flags, widget_lines, '*');
+		if (item->widget_type == LABEL)
 		{
-			item.coordinate_colors = format_tools::bound_colors(item.coordinate_colors, widget_lines);
+			item->coordinate_colors = format_tools::bound_colors(item->coordinate_colors, widget_lines);
 		}
-		set_coordinate_colors(item.id, item.coordinate_colors);
 	}
 
-	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item.widget_type) != 0)
+	if (std::count(widget_types::line_constraint_widgets.begin(), widget_types::line_constraint_widgets.end(), item->widget_type) != 0)
 	{
-		if (item.line_constraint || item.column_constraint)
+		if (item->line_constraint || item->column_constraint)
 		{
-			if (item.line_constraint)
+			if (item->line_constraint)
 			{
-				if (item.line_subtraction_from_terminal_height != 0)
+				if (item->line_subtraction_from_terminal_height != 0)
 				{
 					dynamically_adjust_displayed_lines(item);
 				}
-				else if (item.top_line >= widget_lines.size())
+				else if (item->top_line >= widget_lines.size())
 				{
 					if (widget_lines.size() > 0)
 					{
-						item.top_line = widget_lines.size() - 1;
+						item->top_line = widget_lines.size() - 1;
 					}
 					else
 					{
-						item.top_line = 0;
+						item->top_line = 0;
 					}
-					set_top_line(item.id, item.top_line);
 				}
 			}
 
@@ -2254,9 +2249,9 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 		}
 	}
 
-	set_lines_count(item.id, widget_lines.size());
+	item->lines_count = widget_lines.size();
 
-	if (item.widget_type == TEXTBOX)
+	if (item->widget_type == TEXTBOX)
 	{
 		for (unsigned int i = 0; i < widget_lines.size(); i++)
 		{
@@ -2270,55 +2265,55 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info& item)
 	return widget_lines;
 }
 
-std::vector<std::string> frame::build_widget_lines(int id)
+std::vector<std::string> frame::build_widget_lines(widget_info* item)
 {
-	widget_info item;
-	get_widget(id, item);
+	std::vector<std::string> widget_lines;
+	if (item != nullptr)
+	{
+		if (item->line_edited)
+		{
+			update_widget_output_from_lines(item);
+			item->line_edited = false;
+		}
 
-	if (item.line_edited)
-	{
-		update_widget_output_from_lines(item);
-		set_line_edited(id, false);
-		set_output(id, item.output, false);
-	}
+		if (item->output == "")
+		{
+			item->output = " ";
+		}
+		int left_spacing = 0;
+		int right_spacing = 0;
+		if (item->use_spacing_width_multipliers)
+		{
+			left_spacing = int(terminal_x * get_width_weight(item, item->left_width_multiplier));
+			right_spacing = int(terminal_x * get_width_weight(item, item->right_width_multiplier));
+		}
+		else
+		{
+			left_spacing = item->left_spacing;
+			right_spacing = item->right_spacing;
+		}
+		std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
+		std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
+		unsigned int width = get_widget_width(item, false);
+		std::string active_spacing = format_tools::get_spacing(width, ' ');
 
-	if (item.output == "")
-	{
-		item.output = " ";
-	}
-	int left_spacing = 0;
-	int right_spacing = 0;
-	if (item.use_spacing_width_multipliers)
-	{
-		left_spacing = int(terminal_x * get_width_weight(item, item.left_width_multiplier));
-		right_spacing = int(terminal_x * get_width_weight(item, item.right_width_multiplier));
-	}
-	else
-	{
-		left_spacing = item.left_spacing;
-		right_spacing = item.right_spacing;
-	}
-	std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
-	std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
-	unsigned int width = get_widget_width(item, false);
-	std::string active_spacing = format_tools::get_spacing(width, ' ');
+		widget_lines = build_core_widget_lines(item);
 
-	std::vector<std::string> widget_lines = build_core_widget_lines(item);
+		for (int i = 0; i < item->top_spacing; i++)
+		{
+			widget_lines.insert(widget_lines.begin(), active_spacing);
+		}
 
-	for (int i = 0; i < item.top_spacing; i++)
-	{
-		widget_lines.insert(widget_lines.begin(), active_spacing);
-	}
+		for (int i = 0; i < item->bottom_spacing; i++)
+		{
+			widget_lines.push_back(active_spacing);
+		}
 
-	for (int i = 0; i < item.bottom_spacing; i++)
-	{
-		widget_lines.push_back(active_spacing);
-	}
-
-	for (unsigned int i = 0; i < widget_lines.size(); i++)
-	{
-		widget_lines[i].insert(0, left_spacing_string);
-		widget_lines[i] = widget_lines[i] + right_spacing_string;
+		for (unsigned int i = 0; i < widget_lines.size(); i++)
+		{
+			widget_lines[i].insert(0, left_spacing_string);
+			widget_lines[i] = widget_lines[i] + right_spacing_string;
+		}
 	}
 
 	return widget_lines;
@@ -2326,24 +2321,27 @@ std::vector<std::string> frame::build_widget_lines(int id)
 
 int frame::get_displayed_output(int id, std::vector<std::string>& displayed_output)
 {
-	widget_info item;
-	int status = get_widget(id, item);
-	if (status == SUCCESS)
+	int status = ELEMENT_NOT_FOUND;
+	widget_info* item = get_widget(id);
+	if (item != nullptr)
 	{
-		constrain_lines(item, item.lines);
-		displayed_output = item.lines;
+		displayed_output = item->lines;
+		constrain_lines(item, displayed_output);
+		status = SUCCESS;
 	}
 	return status;
 }
 
 int frame::get_displayed_colors(int id, std::vector<format_tools::index_format>& colors)
 {
-	widget_info item;
-	int status = get_widget(id, item);
-	if (_color_enabled && (status == SUCCESS))
+	int status = ELEMENT_NOT_FOUND;
+	widget_info* item = get_widget(id);
+	if (_color_enabled && (item != nullptr))
 	{
-		constrain_colors(item, item.coordinate_colors);
-		colors = format_tools::convert(item.coordinate_colors, get_widget_width(item, false));
+		std::vector<format_tools::coordinate_format> colors_container;
+		constrain_colors(item, colors_container);
+		colors = format_tools::convert(colors_container, get_widget_width(item, false));
+		status = SUCCESS;
 	}
 	return status;
 }
@@ -2381,11 +2379,10 @@ unsigned int frame::get_columns_in_row(int row)
 	std::vector<int> columns;
 	for (unsigned int i = 0; i < row_ids.size(); i++)
 	{
-		widget_info item;
-		get_widget(row_ids[i], item);
-		if (!element_exists(columns, item.column))
+		const widget_info* const item = get_widget(row_ids[i]);
+		if (item != nullptr && !element_exists(columns, item->column))
 		{
-			columns.push_back(item.column);
+			columns.push_back(item->column);
 		}
 	}
 	return columns.size();
@@ -2410,30 +2407,36 @@ std::string frame::generate_frame_output()
 	for (int i = 0; i < total_rows; i++)
 	{
 		std::vector<std::vector<int>> row_ids = sort_row_ids(get_row_ids(i));
-		widget_info item;
+		widget_info* item = nullptr;
 		for (unsigned int j = 0; j < row_ids.size(); j++)
 		{
 			std::vector<std::string> accumulated_widget_lines;
 			for (unsigned int m = 0; m < row_ids[j].size(); m++)
 			{
 				std::vector<std::string> widget_lines;
-				widget_lines = build_widget_lines((row_ids[j])[m]);
-				get_widget((row_ids[j])[m], item);
-
-				if (item.add_border)
+				item = get_widget((row_ids[j])[m]);
+				if (item != nullptr)
 				{
-					generate_border(item, widget_lines);
-				}
+					widget_lines = build_widget_lines(item);
 
-				if (!only_widget_at_coordinate(item))
-				{
-					widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
+					if (item->add_border)
+					{
+						generate_border(item, widget_lines);
+					}
+
+					if (!only_widget_at_coordinate(item))
+					{
+						widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
+					}
 				}
 
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			column_data.text.push_back(accumulated_widget_lines);
-			column_data.width.push_back(get_greatest_widget_width_at_coordinate(item, true));
+			if (item != nullptr)
+			{
+				column_data.width.push_back(get_greatest_widget_width_at_coordinate(item, true));
+			}
 		}
 		unsigned int row_lines = 0;
 		frame_output = frame_output + format_tools::fuse_columns_into_row(column_data, row_lines);
@@ -2468,45 +2471,49 @@ void frame::set_widget_origins()
 	int level = 0;
 	unsigned int x = 0;
 	unsigned int y = 0;
-	widget_info item;
+	widget_info* item;
 	for(unsigned int row = 0; row < row_heights.size(); row++)
 	{
 		x = 0;
 		column = 0;
-		while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND)
+		item = get_widget(row, column, level);
+		while (item != nullptr)
 		{
 			unsigned int y_origin = y;
+			int greatest_widget_width_at_coordinate = get_greatest_widget_width_at_coordinate(item, true);
 			do
 			{
 				int left_spacing = 0;
-				if (item.use_spacing_width_multipliers)
+				if (item->use_spacing_width_multipliers)
 				{
-					left_spacing = int(terminal_x * get_width_weight(item, item.left_width_multiplier));
+					left_spacing = int(terminal_x * get_width_weight(item, item->left_width_multiplier));
 				}
 				else
 				{
-					left_spacing = item.left_spacing;
+					left_spacing = item->left_spacing;
 				}
 				unsigned int x_origin = x + left_spacing;
-				y_origin = y_origin + item.top_spacing;
-				if (item.add_border)
+				y_origin = y_origin + item->top_spacing;
+				if (item->add_border)
 				{
 					x_origin = x_origin + 2;
 					y_origin = y_origin + 1;
 				}
-				set_x_origin(item.id, x_origin);
-				set_y_origin(item.id, y_origin);
-				if (item.add_border)
+				set_x_origin(item->id, x_origin);
+				set_y_origin(item->id, y_origin);
+				if (item->add_border)
 				{
 					y_origin = y_origin - 1;
 				}
-				y_origin = y_origin - item.top_spacing;
+				y_origin = y_origin - item->top_spacing;
 				y_origin = y_origin + get_widget_height(item, true);
 				level++;
-			} while (get_widget(row, column, level, item) != ELEMENT_NOT_FOUND);
+				item = get_widget(row, column, level);
+			} while (item != nullptr);
 			level = 0;
 			column++;
-			x = x + get_greatest_widget_width_at_coordinate(item, true);
+			x = x + greatest_widget_width_at_coordinate;
+			item = get_widget(row, column, level);
 		}
 		y = y + row_heights[row];
 	}
@@ -2544,7 +2551,7 @@ void frame::translate_coordinate_colors_to_frame()
 		}
 		else if (!widgets[i].line_constraint && widgets[i].column_constraint)
 		{
-			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int width = get_widget_width(&widgets[i], false);
 			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
 			{
 				if (widgets[i].coordinate_colors[j].x_position >= (int)widgets[i].left_column && widgets[i].coordinate_colors[j].x_position < ((int)widgets[i].left_column + (int)width))
@@ -2567,7 +2574,7 @@ void frame::translate_coordinate_colors_to_frame()
 		}
 		else
 		{
-			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int width = get_widget_width(&widgets[i], false);
 			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
 			{
 				bool in_line_bound = widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines);
@@ -2654,7 +2661,7 @@ bool frame::initialize_selection(int& row, int& column, int& level)
 	}
 }
 
-bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, widget_info item, int search_row)
+bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, const widget_info* const item, int search_row)
 {
 	int original_row = row;
 	int original_column = column;
@@ -2666,8 +2673,8 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, wid
 		return false;
 	}
 	float distance = 0.0;
-	int original_x = item.x_origin;
-	int original_y = item.y_origin;
+	int original_x = item->x_origin;
+	int original_y = item->y_origin;
 	int x = 0;
 	int y = 0;
 	float min_distance = 0.0;
@@ -2697,10 +2704,13 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, wid
 	}
 	else
 	{
-		get_widget(min_id, item);
-		row = item.row;
-		column = item.column;
-		level = item.level;
+		widget_info* item = get_widget(min_id);
+		if (item != nullptr)
+		{
+			row = item->row;
+			column = item->column;
+			level = item->level;
+		}
 	}
 	return widget_found;
 }
@@ -2710,32 +2720,34 @@ void frame::up_handle(int& selected_row, int& selected_column, int& selected_lev
 	int last_selected_row = selected_row;
 	int last_selected_column = selected_column;
 	int last_selected_level = selected_level;
-	widget_info item;
-	get_widget(selected_row, selected_column, selected_level, item);
-	do
+	widget_info* item = get_widget(selected_row, selected_column, selected_level);
+	if (item != NULL)
 	{
-		if ((selected_level - 1) >= 0)
+		do
 		{
-			selected_level--;
-		}
-		else if ((selected_row - 1) >= 0)
-		{
-
-			if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row - 1))
+			if ((selected_level - 1) >= 0)
 			{
-				selected_row--;
-				selected_level = 0;
+				selected_level--;
 			}
-		}
-		else
-		{
-			selected_row = last_selected_row;
-			selected_column = last_selected_column;
-			selected_level = last_selected_level;
-			break;
-		}
+			else if ((selected_row - 1) >= 0)
+			{
 
-	} while (!is_selectable(selected_row, selected_column, selected_level));
+				if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row - 1))
+				{
+					selected_row--;
+					selected_level = 0;
+				}
+			}
+			else
+			{
+				selected_row = last_selected_row;
+				selected_column = last_selected_column;
+				selected_level = last_selected_level;
+				break;
+			}
+
+		} while (!is_selectable(selected_row, selected_column, selected_level));
+	}
 }
 
 void frame::down_handle(int& selected_row, int& selected_column, int& selected_level)
@@ -2743,31 +2755,33 @@ void frame::down_handle(int& selected_row, int& selected_column, int& selected_l
 	int last_selected_row = selected_row;
 	int last_selected_column = selected_column;
 	int last_selected_level = selected_level;
-	widget_info item;
-	get_widget(selected_row, selected_column, selected_level, item);
-	do
+	widget_info* item = get_widget(selected_row, selected_column, selected_level);
+	if (item != nullptr)
 	{
-		if ((selected_level + 1) < get_levels(selected_row, selected_column))
+		do
 		{
-			selected_level++;
-		}
-		else if ((selected_row + 1) < (int)get_total_rows())
-		{
-			if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row + 1))
+			if ((selected_level + 1) < get_levels(selected_row, selected_column))
 			{
-				selected_row++;
-				selected_level = 0;
+				selected_level++;
 			}
-		}
-		else
-		{
-			selected_row = last_selected_row;
-			selected_column = last_selected_column;
-			selected_level = last_selected_level;
-			break;
-		}
+			else if ((selected_row + 1) < (int)get_total_rows())
+			{
+				if (!get_nearest_selectable_in_row(selected_row, selected_column, selected_level, item, selected_row + 1))
+				{
+					selected_row++;
+					selected_level = 0;
+				}
+			}
+			else
+			{
+				selected_row = last_selected_row;
+				selected_column = last_selected_column;
+				selected_level = last_selected_level;
+				break;
+			}
 
-	} while (!is_selectable(selected_row, selected_column, selected_level));
+		} while (!is_selectable(selected_row, selected_column, selected_level));
+	}
 }
 
 void frame::right_handle(int& selected_row, int& selected_column, int& selected_level)
@@ -2840,28 +2854,28 @@ void frame::left_handle(int& selected_row, int& selected_column, int& selected_l
 	} while (!is_selectable(selected_row, selected_column, selected_level));
 }
 
-void frame::generate_border(const widget_info& item, std::vector<std::string>& lines)
+void frame::generate_border(const widget_info* const item, std::vector<std::string>& lines)
 {
-	int top_spacing = item.top_spacing - item.top_border_spacing;
-	int bottom_spacing = item.bottom_spacing - item.bottom_border_spacing;
+	int top_spacing = item->top_spacing - item->top_border_spacing;
+	int bottom_spacing = item->bottom_spacing - item->bottom_border_spacing;
 	int left_spacing = 0;
 	int right_spacing = 0;
 	int left_border_spacing = 0;
 	int right_border_spacing = 0;
 
-	if (item.use_spacing_width_multipliers)
+	if (item->use_spacing_width_multipliers)
 	{
-		left_border_spacing = int(terminal_x * get_width_weight(item, item.left_border_width_multiplier));
-		right_border_spacing = int(terminal_x * get_width_weight(item, item.right_border_width_multiplier));
-		left_spacing = int(terminal_x * get_width_weight(item, item.left_width_multiplier)) - left_border_spacing;
-		right_spacing = int(terminal_x * get_width_weight(item, item.right_width_multiplier)) - right_border_spacing;
+		left_border_spacing = int(terminal_x * get_width_weight(item, item->left_border_width_multiplier));
+		right_border_spacing = int(terminal_x * get_width_weight(item, item->right_border_width_multiplier));
+		left_spacing = int(terminal_x * get_width_weight(item, item->left_width_multiplier)) - left_border_spacing;
+		right_spacing = int(terminal_x * get_width_weight(item, item->right_width_multiplier)) - right_border_spacing;
 	}
 	else
 	{
-		left_border_spacing = item.left_border_spacing;
-		right_border_spacing = item.right_border_spacing;
-		left_spacing = item.left_spacing - item.left_border_spacing;
-		right_spacing = item.right_spacing - item.right_border_spacing;
+		left_border_spacing = item->left_border_spacing;
+		right_border_spacing = item->right_border_spacing;
+		left_spacing = item->left_spacing - item->left_border_spacing;
+		right_spacing = item->right_spacing - item->right_border_spacing;
 	}
 
 	int middle_spacing = get_widget_width(item, false) + 2 + left_border_spacing + right_border_spacing;
@@ -2875,20 +2889,20 @@ void frame::generate_border(const widget_info& item, std::vector<std::string>& l
 		}
 		else
 		{
-			lines[k].insert(left_spacing, std::string(1, item.vertical_border) + " ");
-			lines[k].insert(lines[k].length() - right_spacing, " " + std::string(1, item.vertical_border));
+			lines[k].insert(left_spacing, std::string(1, item->vertical_border) + " ");
+			lines[k].insert(lines[k].length() - right_spacing, " " + std::string(1, item->vertical_border));
 		}
 	}
-	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
-	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item.corner_border) + format_tools::get_spacing(middle_spacing, item.horizontal_border) + std::string(1, item.corner_border) + format_tools::get_spacing(right_spacing, ' '));
+	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item->corner_border) + format_tools::get_spacing(middle_spacing, item->horizontal_border) + std::string(1, item->corner_border) + format_tools::get_spacing(right_spacing, ' '));
+	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item->corner_border) + format_tools::get_spacing(middle_spacing, item->horizontal_border) + std::string(1, item->corner_border) + format_tools::get_spacing(right_spacing, ' '));
 }
 
-bool frame::only_widget_at_coordinate(const widget_info& item)
+bool frame::only_widget_at_coordinate(const widget_info* const item)
 {
 	unsigned int widgets_at_coordinate = 0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == item.row) && (widgets[i].column == item.column))
+		if ((widgets[i].row == item->row) && (widgets[i].column == item->column))
 		{
 			widgets_at_coordinate = widgets_at_coordinate + 1;
 		}
@@ -2973,62 +2987,56 @@ int frame::get_output_length(int id, unsigned int& length)
 	return status;
 }
 
-void frame::bound_top_line(widget_info& item)
+void frame::bound_top_line(widget_info* item)
 {
-	if (item.widget_type == MENU)
+	if (item->widget_type == MENU)
 	{
 		unsigned int top_line_remainder = 0;
-		unsigned int top_item = format_tools::compress(item.top_line, item.line_compression_amount, top_line_remainder);
+		unsigned int top_item = format_tools::compress(item->top_line, item->line_compression_amount, top_line_remainder);
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int displayed_items = format_tools::compress(item.displayed_lines, item.line_compression_amount, displayed_lines_remainder);
+		unsigned int displayed_items = format_tools::compress(item->displayed_lines, item->line_compression_amount, displayed_lines_remainder);
 		unsigned int line_count_remainder = 0;
-		unsigned int item_count = format_tools::compress(item.lines.size(), item.line_compression_amount, line_count_remainder);
+		unsigned int item_count = format_tools::compress(item->lines.size(), item->line_compression_amount, line_count_remainder);
 		if ((int)top_item > ((int)item_count - (int)displayed_items))
 		{
 			if (((int)item_count - (int)displayed_items) >= 0)
 			{
 				top_item = item_count - displayed_items;
-				item.top_line = format_tools::expand(top_item, item.line_compression_amount, top_line_remainder);
-				set_top_line(item.id, item.top_line);
+				item->top_line = format_tools::expand(top_item, item->line_compression_amount, top_line_remainder);
 			}
 			else
 			{
 				top_item = 0;
-				item.top_line = format_tools::expand(top_item, item.line_compression_amount, top_line_remainder);
-				set_top_line(item.id, item.top_line);
+				item->top_line = format_tools::expand(top_item, item->line_compression_amount, top_line_remainder);
 			}
 		}
 	}
-	else if ((item.widget_type == BOARD) || (item.widget_type == TEXTBOX) || (item.widget_type == LABEL))
+	else if ((item->widget_type == BOARD) || (item->widget_type == TEXTBOX) || (item->widget_type == LABEL))
 	{
-		if ((int)item.top_line > ((int)item.lines.size() - (int)item.displayed_lines))
+		if ((int)item->top_line > ((int)item->lines.size() - (int)item->displayed_lines))
 		{
-			if (((int)item.lines.size() - (int)item.displayed_lines) >= 0)
+			if (((int)item->lines.size() - (int)item->displayed_lines) >= 0)
 			{
-				item.top_line = item.lines.size() - item.displayed_lines;
-				set_top_line(item.id, item.top_line);
+				item->top_line = item->lines.size() - item->displayed_lines;
 			}
 			else
 			{
-				item.top_line = 0;
-				set_top_line(item.id, item.top_line);
+				item->top_line = 0;
 			}
 		}
 	}
 }
 
-void frame::dynamically_adjust_displayed_lines(widget_info& item)
+void frame::dynamically_adjust_displayed_lines(widget_info* item)
 {
-	if (terminal_y > (int)item.line_subtraction_from_terminal_height)
+	if (terminal_y > (int)item->line_subtraction_from_terminal_height)
 	{
-		item.displayed_lines = (unsigned int)(terminal_y - item.line_subtraction_from_terminal_height);
-		set_displayed_lines(item.id, item.displayed_lines);
+		item->displayed_lines = (unsigned int)(terminal_y - item->line_subtraction_from_terminal_height);
 		bound_top_line(item);
 	}
 	else
 	{
-		item.displayed_lines = 1;
-		set_displayed_lines(item.id, item.displayed_lines);
+		item->displayed_lines = 1;
 		bound_top_line(item);
 	}
 }

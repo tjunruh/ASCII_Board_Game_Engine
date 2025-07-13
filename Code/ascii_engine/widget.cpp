@@ -1,5 +1,6 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "widget.h"
+#include "error_codes.h"
 
 #ifdef __linux__
 #include <algorithm>
@@ -569,10 +570,16 @@ void widget::set_line_character(char character, unsigned int line, unsigned int 
 
 void widget::update_lines()
 {
-	frame::widget_info item;
-	int status = parent_frame->get_widget(widget_id, item);
-	log.log_status(status, "widget::update_lines");
-	parent_frame->build_core_widget_lines(item);
+	frame::widget_info* item = parent_frame->get_widget(widget_id);
+	if (item != nullptr)
+	{
+		parent_frame->build_core_widget_lines(item);
+		log.log_status(SUCCESS, "widget::update_lines");
+	}
+	else
+	{
+		log.log_status(ELEMENT_NOT_FOUND, "widget::update_lines");
+	}
 }
 
 unsigned int widget::get_line_length(unsigned int line)
@@ -605,16 +612,20 @@ unsigned int widget::get_output_length()
 
 void widget::dynamically_adjust_displayed_lines()
 {
-	frame::widget_info item;
-	parent_frame->get_widget(widget_id, item);
-	parent_frame->dynamically_adjust_displayed_lines(item);
+	frame::widget_info* item = parent_frame->get_widget(widget_id);
+	if (item != nullptr)
+	{
+		parent_frame->dynamically_adjust_displayed_lines(item);
+	}
 }
 
 void widget::bound_top_line()
 {
-	frame::widget_info item;
-	parent_frame->get_widget(widget_id, item);
-	parent_frame->bound_top_line(item);
+	frame::widget_info* item = parent_frame->get_widget(widget_id);
+	if (item != nullptr)
+	{
+		parent_frame->bound_top_line(item);
+	}
 }
 
 #ifdef __linux__
