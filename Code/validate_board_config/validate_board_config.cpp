@@ -446,7 +446,6 @@ int validate_board_config::validate_board_index(const std::string &content, int 
 
 int validate_board_config::validate_metadata_parameters(const std::string& content, int& error_line, std::string& error_line_content)
 {
-	char curly_bracket = ' ';
 	char parenthesis = ' ';
 	int validity = 0;
 	int parameter = 0;
@@ -503,13 +502,8 @@ int validate_board_config::validate_metadata_parameters(const std::string& conte
 			key = "";
 			value = "";
 		}
-		else if (content[i] == '{')
-		{
-			curly_bracket = '{';
-		}
 		else if (content[i] == '}')
 		{
-			curly_bracket = '}';
 			if (row.length() == 0 || column.length() == 0)
 			{
 				validity = 1;
@@ -713,7 +707,7 @@ bool validate_board_config::is_float(const std::string& number_string)
 					number = false;
 					break;
 				}
-				decimal_found = true;;
+				decimal_found = true;
 			}
 		}
 	}
