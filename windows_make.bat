@@ -27,6 +27,7 @@ copy Code\validate_board_config\windows_msbuild\Release\validate_board_config.ex
 copy Code\action_tile_pattern_maker\windows_msbuild\Release\action_tile_pattern_maker.exe build
 copy Code\ascii_engine\*.h build\headers\ascii_engine
 copy Code\file_manager\*.h build\headers\ascii_engine
+copy LICENSE build
 FOR /D %%p IN ("Code\ascii_engine\windows_msbuild\*.*") DO rmdir "%%p" /s /q
 FOR /D %%p IN ("Code\build_board_config\windows_msbuild\*.*") DO rmdir "%%p" /s /q
 FOR /D %%p IN ("Code\validate_board_config\windows_msbuild\*.*") DO rmdir "%%p" /s /q

@@ -34,6 +34,7 @@ EXECUTABLES := $(addprefix $(BLD_DIR)/, $(EXECUTABLES))
 .PHONY: all clean engine test test-headless
 
 all: $(EXECUTABLES) $(addprefix $(BLD_DIR)/, $(TEST_ASCII_ENGINE)) engine
+	cp LICENSE build/
 
 clean:
 	-rm -rf $(BLD_DIR)
@@ -201,6 +202,7 @@ test-headless: $(BLD_DIR)/$(TEST_ASCII_ENGINE)
 	env LD_LIBRARY_PATH="./$(BLD_DIR)" $< --gtest_filter=-ascii_io.*
 
 engine: $(ASCII_ENGINE_HEADERS) $(addprefix $(BLD_DIR)/, $(ASCII_ENGINE_LIBRARY)) $(EXECUTABLES)
+	cp LICENSE build/
 ### End PHONY targets
 
 
