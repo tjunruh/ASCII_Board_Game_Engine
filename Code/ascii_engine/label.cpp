@@ -16,7 +16,7 @@ label::label(frame* parent, const std::string& special_operation, int lines_coun
 		}
 	}
 	set_widget_type(LABEL);
-	unselectable();
+	set_selectable(false);
 	if (lines_count != 0)
 	{
 		if (lines_count > 0)

@@ -24,7 +24,7 @@ int main()
 	my_label.add_border(true);
 	my_label.set_spacing(5, 5, 25, 10);
 	my_label.set_output("\n\nASCII ENGINE!!!\n\n");
-	my_label.selectable(); // label widget is not selectable by default
+	my_label.set_selectable(true); // label widget is not selectable by default
 
 	label_over_text_box.set_spacing(5, 0, 25, 15);
 	label_over_text_box.set_output("Write Something Here");

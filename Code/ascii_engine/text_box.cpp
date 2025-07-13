@@ -15,7 +15,7 @@ text_box::text_box(frame* parent, std::string special_operation, int lines_count
 		}
 	}
 	set_widget_type(TEXTBOX);
-	selectable();
+	set_selectable(true);
 	set_line_constraint(true);
 	if (lines_count > 0)
 	{

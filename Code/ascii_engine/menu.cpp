@@ -21,7 +21,7 @@ menu::menu(frame* parent, const std::string& special_operation, int lines_count,
 		}
 	}
 	set_widget_type(MENU);
-	selectable();
+	set_selectable(true);
 	set_column_constraint(true);
 	if (lines_count != 0)
 	{

@@ -43,20 +43,20 @@ int main()
     label_4.set_output("1\n2\n3\n4\n5\n6\n7\n8\n9\n10");
     label_4.set_alignment("center");
     label_4.set_spacing(0, 0, 1, 1);
-    label_4.selectable();
+    label_4.set_selectable(true);
     label_4.add_border(true);
 
     label label_5(my_frame, "merge");
     label_5.set_output("Select me to set above label lines count to 10");
     label_5.set_spacing(1, 0, 1, 1);
-    label_5.selectable();
+    label_5.set_selectable(true);
     label_5.add_border(true);
 
     label label_6(my_frame, "merge");
     label_6.set_output("EXIT");
     label_6.set_spacing(1, 0, 1, 1);
     label_6.add_border(true);
-    label_6.selectable();
+    label_6.set_selectable(true);
 
     label label_7(my_frame);
     label_7.set_output("Background color sample label:");
@@ -86,7 +86,7 @@ int main()
     label_10.set_alignment("center");
     label_10.set_spacing(0, 0, 1, 1);
     label_10.add_border(true);
-    label_10.selectable();
+    label_10.set_selectable(true);
 
     
     ascii_io::hide_cursor();

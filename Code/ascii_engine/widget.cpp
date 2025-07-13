@@ -9,94 +9,251 @@
 widget::widget(frame* parent, std::string special_operation)
 {
 	parent_frame = parent;
-	widget_id = parent_frame->add_widget();
-	int status = parent_frame->append(widget_id, special_operation);
+	parent_frame->add_widget(&item);
+	int status = parent_frame->append(item.id, special_operation);
 	log.log_status(status, "widget::widget");
 }
 
 void widget::set_alignment(std::string alignment)
 {
-	int status = parent_frame->set_alignment(widget_id, alignment);
+	int status = UNDEFINED;
+	if ((alignment != format_tools::right_alignment_keyword) && (alignment != format_tools::left_alignment_keyword) && (alignment != format_tools::center_alignment_keyword) && (alignment != format_tools::center_block_alignment_keyword))
+	{
+		status = INVALID_VALUE;
+	}
+	else if (item.widget_type == TEXTBOX)
+	{
+		status = OPERATION_NOT_SUPPORTED;
+	}
+	else
+	{
+		item.alignment = alignment;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_alignment");
 }
 
 void widget::set_output_to_frame(const std::string& text, bool mark_stale)
 {
-	int status = parent_frame->set_output(widget_id, text, mark_stale);
-	log.log_status(status, "widget::set_output_to_frame");
+	item.output = text;
+	parent_frame->display_stale = mark_stale;
+	item.line_edited = false;
 }
 
 void widget::set_spacing(int top, int bottom, int left, int right)
 {
-	int status = parent_frame->set_spacing(widget_id, top, bottom, left, right);
+	int status = UNDEFINED;
+	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.top_spacing = top;
+		item.bottom_spacing = bottom;
+		item.right_spacing = right;
+		item.left_spacing = left;
+		if (item.top_border_spacing > top)
+		{
+			item.top_border_spacing = top;
+		}
+
+		if (item.bottom_border_spacing > bottom)
+		{
+			item.bottom_border_spacing = bottom;
+		}
+
+		if (item.left_border_spacing > left)
+		{
+			item.left_border_spacing = left;
+		}
+
+		if (item.right_border_spacing > right)
+		{
+			item.right_border_spacing = right;
+		}
+
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_spacing");
 }
 
 void widget::set_border_spacing(int top, int bottom, int right, int left)
 {
-	int status = parent_frame->set_border_spacing(widget_id, top, bottom, right, left);
+	int status = UNDEFINED;
+	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
+	{
+		status = INVALID_VALUE;
+	}
+	else if ((item.top_spacing >= top) && (item.bottom_spacing >= bottom) && (item.right_spacing >= right) && (item.left_spacing >= left))
+	{
+		item.top_border_spacing = top;
+		item.bottom_border_spacing = bottom;
+		item.right_border_spacing = right;
+		item.left_border_spacing = left;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+	else
+	{
+		status = INVALID_VALUE;
+	}
+
 	log.log_status(status, "widget::set_border_spacing");
 }
 
 void widget::set_widget_type(int type)
 {
-	widget_type = type;
-	int status = parent_frame->set_widget_type(widget_id, widget_type);
-	log.log_status(status, "widget::set_widget_type");
+	item.widget_type = type;
 }
 
 void widget::set_vertical_border(char border)
 {
-	int status = parent_frame->set_vertical_border(widget_id, border);
+	int status = UNDEFINED;
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.vertical_border = border;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_vertical_border");
 }
 
 void widget::set_horizontal_border(char border)
 {
-	int status = parent_frame->set_horizontal_border(widget_id, border);
+	int status = UNDEFINED;
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.horizontal_border = border;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_horizontal_border");
 }
 
 void widget::set_corner_border(char border)
 {
-	int status = parent_frame->set_corner_border(widget_id, border);
+	int status = UNDEFINED;
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.corner_border = border;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_corner_border");
 }
 
 void widget::set_highlight_character(char character)
 {
-	int status = parent_frame->set_highlight_character(widget_id, character);
+	int status = UNDEFINED;
+	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.highlight_character = character;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_highlight_character");
 }
 
 void widget::set_width_multiplier(float multiplier)
 {
-	int status = parent_frame->set_width_multiplier(widget_id, multiplier);
+	int status = UNDEFINED;
+	if (multiplier <= 0)
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.width_multiplier = multiplier;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_width_multiplier");
 }
 
 void widget::set_spacing_width_multipliers(float left_multiplier, float right_multiplier)
 {
-	int status = parent_frame->set_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	int status = UNDEFINED;
+	if ((left_multiplier < 0) || (right_multiplier < 0))
+	{
+		status = INVALID_VALUE;
+	}
+	else
+	{
+		item.left_width_multiplier = left_multiplier;
+		item.right_width_multiplier = right_multiplier;
+		if (item.left_border_width_multiplier > left_multiplier)
+		{
+			item.left_border_width_multiplier = left_multiplier;
+		}
+
+		if (item.right_border_width_multiplier > right_multiplier)
+		{
+			item.right_border_width_multiplier = right_multiplier;
+		}
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::set_spacing_width_multipliers");
 }
 
 void widget::set_border_spacing_width_multipliers(float left_multiplier, float right_multiplier)
 {
-	int status = parent_frame->set_border_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
+	int status = UNDEFINED;
+	if ((left_multiplier < 0) || (right_multiplier < 0))
+	{
+		status = INVALID_VALUE;
+	}
+	else if ((item.right_width_multiplier >= right_multiplier) && (item.left_width_multiplier >= left_multiplier))
+	{
+		item.left_border_width_multiplier = left_multiplier;
+		item.right_border_width_multiplier = right_multiplier;
+		parent_frame->display_stale = true;
+		status = SUCCESS;
+	}
+	else
+	{
+		status = INVALID_VALUE;
+	}
+
 	log.log_status(status, "widget::set_border_spacing_width_multipliers");
 }
 
 void widget::add_border(bool border)
 {
-	int status = parent_frame->add_border(widget_id, border);
-	log.log_status(status, "widget::add_border");
+	item.add_border = border;
+	parent_frame->display_stale = true;
 }
 
 void widget::use_spacing_width_multipliers(bool use)
 {
-	int status = parent_frame->use_spacing_width_multipliers(widget_id, use);
-	log.log_status(status, "widget::use_spacing_width_multipliers");
+	item.use_spacing_width_multipliers = use;
+	parent_frame->display_stale = true;
 }
 
 void widget::display_entire_frame()
@@ -104,94 +261,73 @@ void widget::display_entire_frame()
 	parent_frame->display();
 }
 
-void widget::selectable()
+void widget::set_selectable(bool selectable)
 {
-	int status = parent_frame->set_selectable(widget_id, true);
-	log.log_status(status, "widget::selectable");
-}
-
-void widget::unselectable()
-{
-	int status = parent_frame->set_selectable(widget_id, false);
-	log.log_status(status, "widget::unselectable");
+	item.selectable = selectable;
 }
 
 bool widget::is_selectable()
 {
-	bool selectable = false;
-	int status = parent_frame->get_selectability(widget_id, selectable);
-	log.log_status(status, "widget::is_selectable");
-	return selectable;
+	return item.selectable;
 }
 
 void widget::get_spacing(int& top, int& bottom, int& left, int& right)
 {
-	int status = parent_frame->get_spacing(widget_id, top, bottom, left, right);
-	log.log_status(status, "widget::get_spacing");
+	top = item.top_spacing;
+	bottom = item.bottom_spacing;
+	left = item.left_spacing;
+	right = item.right_spacing;
 }
 
 void widget::get_border_spacing(int& top, int& bottom, int& left, int& right)
 {
-	int status = parent_frame->get_border_spacing(widget_id, top, bottom, left, right);
-	log.log_status(status, "widget::get_border_spacing");
+	top = item.top_border_spacing;
+	bottom = item.bottom_border_spacing;
+	left = item.left_border_spacing;
+	right = item.right_border_spacing;
 }
 
 char widget::get_vertical_border()
 {
-	char border = ' ';
-	int status = parent_frame->get_vertical_border(widget_id, border);
-	log.log_status(status, "widget::get_vertical_border");
-	return border;
+	return item.vertical_border;
 }
 
 char widget::get_horizontal_border()
 {
-	char border = ' ';
-	int status = parent_frame->get_horizontal_border(widget_id, border);
-	log.log_status(status, "widget::get_horizontal_border");
-	return border;
+	return item.horizontal_border;
 }
 
 char widget::get_corner_border()
 {
-	char border = ' ';
-	int status = parent_frame->get_corner_border(widget_id, border);
-	log.log_status(status, "widget::get_corner_border");
-	return border;
+	return item.corner_border;
 }
 
 char widget::get_highlight_character()
 {
-	char highlight_character = ' ';
-	int status = parent_frame->get_highlight_character(widget_id, highlight_character);
-	log.log_status(status, "widget::get_highlight_character");
-	return highlight_character;
+	return item.highlight_character;
 }
 
 float widget::get_width_multiplier()
 {
-	float multiplier = 0.0;
-	int status = parent_frame->get_width_multiplier(widget_id, multiplier);
-	log.log_status(status, "widget::get_width_multiplier");
-	return multiplier;
+	return item.width_multiplier;
 }
 
 void widget::get_spacing_width_multipliers(float& left_multiplier, float& right_multiplier)
 {
-	int status = parent_frame->get_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
-	log.log_status(status, "widget::get_spacing_width_multipliers");
+	left_multiplier = item.left_width_multiplier;
+	right_multiplier = item.right_width_multiplier;
 }
 
 void widget::get_border_spacing_width_multipliers(float& left_multiplier, float& right_multiplier)
 {
-	int status = parent_frame->get_border_spacing_width_multipliers(widget_id, left_multiplier, right_multiplier);
-	log.log_status(status, "widget::get_border_spacing_width_multipliers");
+	left_multiplier = item.left_border_width_multiplier;
+	right_multiplier = item.right_border_width_multiplier;
 }
 
 unsigned int widget::get_width(bool include_spacing)
 {
 	unsigned int width = 0;
-	int status = parent_frame->get_widget_width(widget_id, width, include_spacing);
+	int status = parent_frame->get_widget_width(item.id, width, include_spacing);
 	log.log_status(status, "widget::get_width");
 	return width;
 }
@@ -199,45 +335,54 @@ unsigned int widget::get_width(bool include_spacing)
 unsigned int widget::get_height(bool include_spacing)
 {
 	unsigned int height = 0;
-	int status = parent_frame->get_widget_height(widget_id, height, include_spacing);
+	int status = parent_frame->get_widget_height(item.id, height, include_spacing);
 	log.log_status(status, "widget::get_height");
 	return height;
 }
 
 int widget::get_x_origin()
 {
+	int status = UNDEFINED;
 	int x_origin = 0;
-	int status = parent_frame->get_x_origin(widget_id, x_origin);
+	if (item.x_origin != -1)
+	{
+		x_origin = item.x_origin;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::get_x_origin");
 	return x_origin;
 }
 
 int widget::get_y_origin()
 {
+	int status = UNDEFINED;
 	int y_origin = 0;
-	int status = parent_frame->get_y_origin(widget_id, y_origin);
+	if (item.y_origin != -1)
+	{
+		y_origin = item.y_origin;
+		status = SUCCESS;
+	}
+
 	log.log_status(status, "widget::get_y_origin");
 	return y_origin;
 }
 
 int widget::get_widget_type()
 {
-	return widget_type;
+	return item.widget_type;
 }
 
 std::string widget::get_output()
 {
-	std::string output = "";
-	int status = parent_frame->get_output(widget_id, output);
-	log.log_status(status, "widget::get_output");
-	return output;
+	return item.output;
 }
 
 std::string widget::get_displayed_output()
 {
 	std::vector<std::string> output_lines;
 	std::string output = "";
-	int status = parent_frame->get_displayed_output(widget_id, output_lines);
+	int status = parent_frame->get_displayed_output(item.id, output_lines);
 	output_lines = format_tools::add_newline_characters(output_lines);
 	if (output_lines.size() > 0 && output_lines[output_lines.size() - 1].length() > 0)
 	{
@@ -250,10 +395,7 @@ std::string widget::get_displayed_output()
 
 std::string widget::get_alignment()
 {
-	std::string alignment = "";
-	int status = parent_frame->get_alignment(widget_id, alignment);
-	log.log_status(status, "widget::get_alignment");
-	return alignment;
+	return item.alignment;
 }
 
 bool widget::frame_stale()
@@ -283,22 +425,18 @@ bool widget::color_enabled()
 
 void widget::set_index_colors(const std::vector<format_tools::index_format>& index_colors)
 {
-	int status = parent_frame->set_index_colors(widget_id, index_colors);
-	log.log_status(status, "widget::set_index_colors");
+	item.index_colors = index_colors;
 }
 
 std::vector<format_tools::index_format> widget::get_index_colors()
 {
-	std::vector<format_tools::index_format> index_colors;
-	int status = parent_frame->get_index_colors(widget_id, index_colors);
-	log.log_status(status, "widget::get_index_colors");
-	return index_colors;
+	return item.index_colors;
 }
 
 std::vector<format_tools::index_format> widget::get_displayed_index_colors()
 {
 	std::vector<format_tools::index_format> index_colors;
-	int status = parent_frame->get_displayed_colors(widget_id, index_colors);
+	int status = parent_frame->get_displayed_colors(item.id, index_colors);
 	log.log_status(status, "widget::get_displayed_index_colors");
 	return index_colors;
 }
@@ -320,7 +458,7 @@ int widget::get_default_background_color()
 
 int widget::start_logging(const std::string& file_path)
 {
-	int status = log.start_widget_logging(file_path, widget_type);
+	int status = log.start_widget_logging(file_path, item.widget_type);
 	return status;
 }
 
@@ -331,7 +469,7 @@ void widget::stop_logging()
 
 int widget::reset_logging(const std::string& file_path)
 {
-	int status = log.log_reset(file_path, widget_type);
+	int status = log.log_reset(file_path, item.widget_type);
 	return status;
 }
 
@@ -436,120 +574,94 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 
 void widget::set_line_constraint(bool line_constraint)
 {
-	int status = parent_frame->set_line_constraint(widget_id, line_constraint);
-	log.log_status(status, "widget::set_line_constraint");
+	item.line_constraint = line_constraint;
+	parent_frame->display_stale = true;
 }
 
 void widget::set_column_constraint(bool column_constraint)
 {
-	int status = parent_frame->set_column_constraint(widget_id, column_constraint);
-	log.log_status(status, "widget::set_column_constraint");
+	item.column_constraint = column_constraint;
+	parent_frame->display_stale = true;
 }
 
 void widget::set_displayed_lines(unsigned int displayed_lines)
 {
-	int status = parent_frame->set_displayed_lines(widget_id, displayed_lines);
-	log.log_status(status, "widget::set_displayed_lines");
+	item.displayed_lines = displayed_lines;
 }
 
 void widget::set_line_subtraction_from_terminal_height(unsigned int line_subtraction_from_terminal_height)
 {
-	int status = parent_frame->set_line_subtraction_from_terminal_height(widget_id, line_subtraction_from_terminal_height);
-	log.log_status(status, "widget::set_line_subtraction_from_terminal_height");
+	item.line_subtraction_from_terminal_height = line_subtraction_from_terminal_height;
 }
 
 void widget::set_line_compression_amount(unsigned int line_compression_amount)
 {
-	int status = parent_frame->set_line_compression_amount(widget_id, line_compression_amount);
-	log.log_status(status, "widget::set_line_compression_amount");
+	item.line_compression_amount = line_compression_amount;
 }
 
 void widget::set_top_line(unsigned int top_line)
 {
-	int status = parent_frame->set_top_line(widget_id, top_line);
-	log.log_status(status, "widget::set_top_line");
+	item.top_line = top_line;
 }
 
 void widget::set_left_column(unsigned int left_column)
 {
-	int status = parent_frame->set_left_column(widget_id, left_column);
-	log.log_status(status, "widget::set_left_column");
+	item.left_column = left_column;
 }
 
 void widget::get_displayed_output(std::vector<std::string>& displayed_output)
 {
-	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
+	int status = parent_frame->get_displayed_output(item.id, displayed_output);
 	log.log_status(status, "widget::get_displayed_output");
 }
 
 void widget::get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors)
 {
-	int status = parent_frame->get_displayed_output(widget_id, displayed_output);
+	int status = parent_frame->get_displayed_output(item.id, displayed_output);
 	log.log_status(status, "widget::get_displayed_output");
-	status = parent_frame->get_displayed_colors(widget_id, colors);
+	status = parent_frame->get_displayed_colors(item.id, colors);
 	log.log_status(status, "widget::get_displayed_output");
 }
 
 bool widget::get_line_constraint()
 {
-	bool line_constraint = false;
-	int status = parent_frame->get_line_constraint(widget_id, line_constraint);
-	log.log_status(status, "widget::get_line_constraint");
-	return line_constraint;
+	return item.line_constraint;
 }
 
 bool widget::get_column_constraint()
 {
-	bool column_constraint = false;
-	int status = parent_frame->get_column_constraint(widget_id, column_constraint);
-	log.log_status(status, "widget::get_column_constraint");
-	return column_constraint;
+	return item.column_constraint;
 }
 
 unsigned int widget::get_displayed_lines()
 {
-	unsigned int displayed_lines = 0;
-	int status = parent_frame->get_displayed_lines(widget_id, displayed_lines);
-	log.log_status(status, "widget::get_displayed_lines");
-	return displayed_lines;
+	return item.displayed_lines;
 }
 
 unsigned int widget::get_line_subtraction_from_terminal_height()
 {
-	unsigned int line_subtraction_from_terminal_height = 0;
-	int status = parent_frame->get_line_subtraction_from_terminal_height(widget_id, line_subtraction_from_terminal_height);
-	log.log_status(status, "widget::get_line_subtraction_from_terminal_height");
-	return line_subtraction_from_terminal_height;
+	return item.line_subtraction_from_terminal_height;
 }
 
 unsigned int widget::get_line_compression_amount()
 {
-	unsigned int line_compression_amount = 0;
-	int status = parent_frame->get_line_compression_amount(widget_id, line_compression_amount);
-	log.log_status(status, "widget::get_line_compression_amount");
-	return line_compression_amount;
+	return item.line_compression_amount;
 }
 
 unsigned int widget::get_top_line()
 {
-	unsigned int top_line = 0;
-	int status = parent_frame->get_top_line(widget_id, top_line);
-	log.log_status(status, "widget::get_top_line");
-	return top_line;
+	return item.top_line;
 }
 
 unsigned int widget::get_left_column()
 {
-	unsigned int left_column = 0;
-	int status = parent_frame->get_left_column(widget_id, left_column);
-	log.log_status(status, "widget::get_left_column");
-	return left_column;
+	return item.left_column;
 }
 
 unsigned int widget::get_lines_count(bool only_displayed)
 {
 	unsigned int lines_count = 0;
-	int status = parent_frame->get_lines_count(widget_id, lines_count, only_displayed);
+	int status = parent_frame->get_lines_count(item.id, lines_count, only_displayed);
 	log.log_status(status, "widget::get_lines_count");
 	return lines_count;
 }
@@ -557,75 +669,110 @@ unsigned int widget::get_lines_count(bool only_displayed)
 unsigned int widget::get_columns_count()
 {
 	unsigned int columns_count = 0;
-	int status = parent_frame->get_columns_count(widget_id, columns_count);
-	log.log_status(status, "widget::get_columns_count");
+	for (unsigned int i = 0; i < item.lines.size(); i++)
+	{
+		unsigned int line_length = item.lines[i].length();
+		if (line_length > columns_count)
+		{
+			columns_count = line_length;
+		}
+	}
+
 	return columns_count;
 }
 
 void widget::set_line_character(char character, unsigned int line, unsigned int character_index)
 {
-	int status = parent_frame->set_line_character(widget_id, character, line, character_index);
+	int status = UNDEFINED;
+	if (line < item.lines.size())
+	{
+		if (character_index < item.lines[line].length())
+		{
+			(item.lines[line])[character_index] = character;
+			item.line_edited = true;
+			status = SUCCESS;
+		}
+		else
+		{
+			status = INVALID_INDEX;
+		}
+	}
+	else
+	{
+		status = INVALID_INDEX;
+	}
+
 	log.log_status(status, "widget::set_line_character");
 }
 
 void widget::update_lines()
 {
-	frame::widget_info* item = parent_frame->get_widget(widget_id);
-	if (item != nullptr)
-	{
-		parent_frame->build_core_widget_lines(item);
-		log.log_status(SUCCESS, "widget::update_lines");
-	}
-	else
-	{
-		log.log_status(ELEMENT_NOT_FOUND, "widget::update_lines");
-	}
+	parent_frame->build_core_widget_lines(&item);
 }
 
 unsigned int widget::get_line_length(unsigned int line)
 {
+	int status = UNDEFINED;
 	unsigned int length = 0;
-	int status = parent_frame->get_line_length(widget_id, line, length);
+	if (item.lines.size() > line)
+	{
+		length = item.lines[line].length();
+		status = SUCCESS;
+	}
+	else
+	{
+		status = INVALID_INDEX;
+	}
+
 	log.log_status(status, "widget::get_line_length");
 	return length;
 }
 
 void widget::insert_character_in_output(unsigned int index, char character)
 {
-	int status = parent_frame->insert_character_in_output(widget_id, index, character);
-	log.log_status(status, "widget::insert_line_in_output");
+	int status = UNDEFINED;
+	if (item.output.length() >= index)
+	{
+		item.output.insert(index, std::string(1, character));
+		status = SUCCESS;
+	}
+	else
+	{
+		status = INVALID_INDEX;
+	}
+
+	log.log_status(status, "widget::insert_character_in_output");
 }
 
 void widget::erase_character_in_output(unsigned int index)
 {
-	int status = parent_frame->erase_character_in_output(widget_id, index);
+	int status = UNDEFINED;
+	if (item.output.length() > index)
+	{
+		item.output.erase(item.output.begin() + index);
+		status = SUCCESS;
+	}
+	else
+	{
+		status = INVALID_INDEX;
+	}
+
 	log.log_status(status, "widget::erase_character_in_output");
 }
 
 unsigned int widget::get_output_length()
 {
-	unsigned int length = 0;
-	int status = parent_frame->get_output_length(widget_id, length);
-	log.log_status(status, "widget::get_output_length");
-	return length;
+	return item.output.length();
 }
 
 void widget::dynamically_adjust_displayed_lines()
 {
-	frame::widget_info* item = parent_frame->get_widget(widget_id);
-	if (item != nullptr)
-	{
-		parent_frame->dynamically_adjust_displayed_lines(item);
-	}
+	parent_frame->dynamically_adjust_displayed_lines(&item);
 }
 
 void widget::bound_top_line()
 {
-	frame::widget_info* item = parent_frame->get_widget(widget_id);
-	if (item != nullptr)
-	{
-		parent_frame->bound_top_line(item);
-	}
+		parent_frame->bound_top_line(&item);
 }
 
 #ifdef __linux__

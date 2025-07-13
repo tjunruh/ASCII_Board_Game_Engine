@@ -38,7 +38,7 @@ int main()
     label label_3(my_frame, "merge");
     label_3.set_output("Select me to set top left text box displayed lines to 10");
     label_3.add_border(true);
-    label_3.selectable();
+    label_3.set_selectable(true);
     label_3.set_spacing(1, 0, 1, 1);
 
     label label_4(my_frame);
@@ -54,7 +54,7 @@ int main()
     label_5.set_output("EXIT");
     label_5.set_alignment("center");
     label_5.add_border(true);
-    label_5.selectable();
+    label_5.set_selectable(true);
     label_5.use_spacing_width_multipliers(true);
     label_5.set_spacing_width_multipliers(1.0, 1.0);
 

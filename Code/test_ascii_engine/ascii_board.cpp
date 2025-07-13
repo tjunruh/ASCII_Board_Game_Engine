@@ -2036,14 +2036,14 @@ TEST_F(ascii_board_test, scrolling_board_test)
 	set_lines_count_test(local_test_board, 0, single_line_board_definitions::empty_board, 0);
 	set_lines_count_test(local_test_board, 10, single_line_board_definitions::empty_board_ten_lines, 1);
 	set_lines_count_test(local_test_board, -11, single_line_board_definitions::empty_board_ten_lines, 2);
-	set_top_display_index_test(local_test_board, 5, single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, "widget::set_top_line", SUCCESS, 3);
+	set_top_display_index_test(local_test_board, 5, single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, "ascii_board::set_top_display_index", SUCCESS, 3);
 	set_top_display_index_test(local_test_board, 12, single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, "ascii_board::set_top_display_index", INVALID_INDEX, 4);
 	local_test_frame->set_fake_console_width(20);
 	local_test_frame->get_frame_output();
-	set_top_display_index_test(local_test_board, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "widget::set_top_line", SUCCESS, 5);
-	set_left_display_index_test(local_test_board, 10, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "widget::set_left_column", SUCCESS, 6);
+	set_top_display_index_test(local_test_board, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::set_top_display_index", SUCCESS, 5);
+	set_left_display_index_test(local_test_board, 10, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "ascii_board::set_left_display_index", SUCCESS, 6);
 	set_left_display_index_test(local_test_board, 23, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "ascii_board::set_left_display_index", INVALID_INDEX, 7);
-	set_left_display_index_test(local_test_board, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "widget::set_left_column", SUCCESS, 8);
+	set_left_display_index_test(local_test_board, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::set_left_display_index", SUCCESS, 8);
 	local_test_frame->set_fake_console_width(42);
 	local_test_frame->get_frame_output();
 	scroll_test(local_test_board, 5, "down", single_line_board_definitions::empty_board_ten_lines_scrolled_down_five, 9);

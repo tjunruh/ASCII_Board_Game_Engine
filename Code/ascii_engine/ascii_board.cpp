@@ -82,7 +82,7 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 	map_metadata = translation.metadata;
 
 	set_widget_type(BOARD);
-	selectable();
+	set_selectable(true);
 	set_column_constraint(true);
 
 	if (lines_count != 0)
@@ -1137,26 +1137,34 @@ void ascii_board::set_lines_count(int lines_count)
 
 void ascii_board::set_top_display_index(unsigned int index)
 {
+	int status = UNDEFINED;
 	if ((index + get_displayed_lines()) <= board_lines_count)
 	{
 		set_top_line(index);
+		status = SUCCESS;
 	}
 	else
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::set_top_display_index");
+		status = INVALID_INDEX;
 	}
+
+	log.log_status(status, "ascii_board::set_top_display_index");
 }
 
 void ascii_board::set_left_display_index(unsigned int index)
 {
+	int status = UNDEFINED;
 	if ((index + get_width()) <= board_characters_in_line)
 	{
 		set_left_column(index);
+		status = SUCCESS;
 	}
 	else
 	{
-		log.log_status(INVALID_INDEX, "ascii_board::set_left_display_index");
+		status = INVALID_INDEX;
 	}
+
+	log.log_status(status, "ascii_board::set_left_display_index");
 }
 
 void ascii_board::scroll_up(unsigned int amount)

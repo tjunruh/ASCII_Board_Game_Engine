@@ -394,13 +394,11 @@ int frame::reset_logging(const std::string& file_path)
 	return status;
 }
 
-int frame::add_widget()
+void frame::add_widget(widget_info* item)
 {
 	int id = generate_widget_id();
-	widget_info new_widget;
-	new_widget.id = id;
-	widgets.push_back(new_widget);
-	return id;
+	item->id = id;
+	widgets.push_back(item);
 }
 
 int frame::append(int id, const std::string& special_operation)
@@ -436,290 +434,11 @@ int frame::set_position(int id, int row, int column, int level)
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].id == id)
+		if (widgets[i]->id == id)
 		{
-			widgets[i].row = row;
-			widgets[i].column = column;
-			widgets[i].level = level;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_output(int id, const std::string& output, bool mark_frame_stale)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].output = output;
-			display_stale = mark_frame_stale;
-			widgets[i].line_edited = false;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_alignment(int id, const std::string& alignment)
-{
-	if ((alignment != format_tools::right_alignment_keyword) && (alignment != format_tools::left_alignment_keyword) && (alignment != format_tools::center_alignment_keyword) && (alignment != format_tools::center_block_alignment_keyword))
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].widget_type == TEXTBOX)
-			{
-				status = OPERATION_NOT_SUPPORTED;
-			}
-			else
-			{
-				widgets[i].alignment = alignment;
-				display_stale = true;
-				status = SUCCESS;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_spacing(int id, int top, int bottom, int left, int right)
-{
-	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].top_spacing = top;
-			widgets[i].bottom_spacing = bottom;
-			widgets[i].right_spacing = right;
-			widgets[i].left_spacing = left;
-			if (widgets[i].top_border_spacing > top)
-			{
-				widgets[i].top_border_spacing = top;
-			}
-
-			if (widgets[i].bottom_border_spacing > bottom)
-			{
-				widgets[i].bottom_border_spacing = bottom;
-			}
-
-			if (widgets[i].left_border_spacing > left)
-			{
-				widgets[i].left_border_spacing = left;
-			}
-
-			if (widgets[i].right_border_spacing > right)
-			{
-				widgets[i].right_border_spacing = right;
-			}
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_border_spacing(int id, int top, int bottom, int right, int left)
-{
-	if ((top < 0) || (bottom < 0) || (right < 0) || (left < 0))
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if ((widgets[i].top_spacing >= top) && (widgets[i].bottom_spacing >= bottom) && (widgets[i].right_spacing >= right) && (widgets[i].left_spacing >= left))
-			{
-				widgets[i].top_border_spacing = top;
-				widgets[i].bottom_border_spacing = bottom;
-				widgets[i].right_border_spacing = right;
-				widgets[i].left_border_spacing = left;
-				display_stale = true;
-				status = SUCCESS;
-			}
-			else
-			{
-				status = INVALID_VALUE;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_widget_type(int id, int type)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].widget_type = type;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_vertical_border(int id, char border)
-{
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].vertical_border = border;
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_horizontal_border(int id, char border)
-{
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].horizontal_border = border;
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_corner_border(int id, char border)
-{
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), border) != 0)
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].corner_border = border;
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_highlight_character(int id, char character)
-{
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].highlight_character = character;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_x_origin(int id, int x_origin)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].x_origin = x_origin;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_y_origin(int id, int y_origin)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].y_origin = y_origin;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::add_border(int id, bool border)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].add_border = border;
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::use_spacing_width_multipliers(int id, bool use)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].use_spacing_width_multipliers = use;
-			display_stale = true;
+			widgets[i]->row = row;
+			widgets[i]->column = column;
+			widgets[i]->level = level;
 			status = SUCCESS;
 			break;
 		}
@@ -732,38 +451,34 @@ void frame::highlight(int row, int column, int level)
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column) && (widgets[i]->level == level))
 		{
-			int x_origin = 0;
-			int y_origin = 0;
-			get_x_origin(widgets[i].id, x_origin);
-			get_y_origin(widgets[i].id, y_origin);
-			unsigned int width = get_widget_width(&widgets[i], false);
-			unsigned int height = get_widget_height(&widgets[i], false);
-			
-			int x = x_origin - 2 - widgets[i].left_border_spacing;
-			int y = y_origin - 1 - widgets[i].top_border_spacing;
-			keep_point_in_console_bounds(x, y);
-			ascii_io::move_cursor_to_position(x, y);
-			ascii_io::print(std::string(1, widgets[i].highlight_character));
+			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int height = get_widget_height(widgets[i], false);
 
-			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
-			y = y_origin - 1 - widgets[i].top_border_spacing;
+			int x = widgets[i]->x_origin - 2 - widgets[i]->left_border_spacing;
+			int y = widgets[i]->y_origin - 1 - widgets[i]->top_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			ascii_io::print(std::string(1, widgets[i].highlight_character));
+			ascii_io::print(std::string(1, widgets[i]->highlight_character));
 
-			x = x_origin - 2 - widgets[i].left_border_spacing;
-			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			x = widgets[i]->x_origin + (int)width + 1 + widgets[i]->right_border_spacing;
+			y = widgets[i]->y_origin - 1 - widgets[i]->top_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			ascii_io::print(std::string(1, widgets[i].highlight_character));
+			ascii_io::print(std::string(1, widgets[i]->highlight_character));
 
-			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
-			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			x = widgets[i]->x_origin - 2 - widgets[i]->left_border_spacing;
+			y = widgets[i]->y_origin + (int)height  + widgets[i]->bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			ascii_io::print(std::string(1, widgets[i].highlight_character));
+			ascii_io::print(std::string(1, widgets[i]->highlight_character));
+
+			x = widgets[i]->x_origin + (int)width + 1 + widgets[i]->left_border_spacing;
+			y = widgets[i]->y_origin + (int)height + widgets[i]->bottom_border_spacing;
+			keep_point_in_console_bounds(x, y);
+			ascii_io::move_cursor_to_position(x, y);
+			ascii_io::print(std::string(1, widgets[i]->highlight_character));
 			status = SUCCESS;
 			break;
 		}
@@ -776,25 +491,22 @@ void frame::unhighlight(int row, int column, int level)
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column) && (widgets[i]->level == level))
 		{
 			char corner_character = ' ';
-			if (widgets[i].add_border)
+			if (widgets[i]->add_border)
 			{
-				corner_character = widgets[i].corner_border;
+				corner_character = widgets[i]->corner_border;
 			}
-			int x_origin = 0;
-			int y_origin = 0;
-			get_x_origin(widgets[i].id, x_origin);
-			get_y_origin(widgets[i].id, y_origin);
-			unsigned int width = get_widget_width(&widgets[i], false);
-			unsigned int height = get_widget_height(&widgets[i], false);
 
-			int x = x_origin - 2 - widgets[i].left_border_spacing;
-			int y = y_origin - 1 - widgets[i].top_border_spacing;
+			unsigned int width = get_widget_width(widgets[i], false);
+			unsigned int height = get_widget_height(widgets[i], false);
+
+			int x = widgets[i]->x_origin - 2 - widgets[i]->left_border_spacing;
+			int y = widgets[i]->y_origin - 1 - widgets[i]->top_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
+			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
 				ascii_io::enable_dec();
@@ -808,11 +520,11 @@ void frame::unhighlight(int row, int column, int level)
 				ascii_io::print(std::string(1, corner_character));
 			}
 
-			x = x_origin + (int)width + 1 + widgets[i].right_border_spacing;
-			y = y_origin - 1 - widgets[i].top_border_spacing;
+			x = widgets[i]->x_origin + (int)width + 1 + widgets[i]->right_border_spacing;
+			y = widgets[i]->y_origin - 1 - widgets[i]->top_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
+			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
 				ascii_io::print(std::string(1, dec.top_right_corner));
@@ -825,11 +537,11 @@ void frame::unhighlight(int row, int column, int level)
 				ascii_io::print(std::string(1, corner_character));
 			}
 
-			x = x_origin - 2 - widgets[i].left_border_spacing;
-			y = y_origin + (int)height  + widgets[i].bottom_border_spacing;
+			x = widgets[i]->x_origin - 2 - widgets[i]->left_border_spacing;
+			y = widgets[i]->y_origin + (int)height  + widgets[i]->bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
+			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
 				ascii_io::print(std::string(1, dec.bottom_left_corner));
@@ -842,11 +554,11 @@ void frame::unhighlight(int row, int column, int level)
 				ascii_io::print(std::string(1, corner_character));
 			}
 
-			x = x_origin + (int)width + 1 + widgets[i].left_border_spacing;
-			y = y_origin + (int)height + widgets[i].bottom_border_spacing;
+			x = widgets[i]->x_origin + (int)width + 1 + widgets[i]->left_border_spacing;
+			y = widgets[i]->y_origin + (int)height + widgets[i]->bottom_border_spacing;
 			keep_point_in_console_bounds(x, y);
 			ascii_io::move_cursor_to_position(x, y);
-			if (_dec_enabled && widgets[i].add_border && (widgets[i].corner_border == dec.get_endpoint_char()))
+			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
 #ifdef _WIN32
 				ascii_io::print(std::string(1, dec.bottom_right_corner));
@@ -892,40 +604,12 @@ void frame::keep_point_in_console_bounds(int& x, int& y)
 	}
 }
 
-bool frame::widget_exists(int id)
-{
-	bool exists = false;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			exists = true;
-			break;
-		}
-	}
-	return exists;
-}
-
-bool frame::widget_exists(int row, int column)
-{
-	bool exists = false;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if ((widgets[i].row == row) && (widgets[i].column == column))
-		{
-			exists = true;
-			break;
-		}
-	}
-	return exists;
-}
-
 int frame::get_levels(int row, int column)
 {
 	int count = 0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column))
 		{
 			count++;
 		}
@@ -938,336 +622,21 @@ int frame::get_lines_count(int id, unsigned int& lines_count, bool only_displaye
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].id == id)
+		if (widgets[i]->id == id)
 		{
-			if (!widgets[i].line_constraint)
+			if (!widgets[i]->line_constraint)
 			{
-				lines_count = widgets[i].lines_count;
+				lines_count = widgets[i]->lines_count;
 			}
 			else if (only_displayed)
 			{
-				lines_count = widgets[i].displayed_lines;
+				lines_count = widgets[i]->displayed_lines;
 			}
 			else
 			{
-				lines_count = widgets[i].lines.size();
+				lines_count = widgets[i]->lines.size();
 			}
 
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_columns_count(int id, unsigned int& columns_count)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			columns_count = 0;
-			for (unsigned int j = 0; j < widgets[i].lines.size(); j++)
-			{
-				unsigned int line_length = widgets[i].lines[j].length();
-				if (line_length > columns_count)
-				{
-					columns_count = line_length;
-				}
-			}
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_x_origin(int id, int& x_origin)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].x_origin == -1)
-			{
-				status = UNDEFINED;
-			}
-			else
-			{
-				x_origin = widgets[i].x_origin;
-				status = SUCCESS;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_y_origin(int id, int& y_origin)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].y_origin == -1)
-			{
-				status = UNDEFINED;
-			}
-			else
-			{
-				y_origin = widgets[i].y_origin;
-				status = SUCCESS;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_alignment(int id, std::string& alignment)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			alignment = widgets[i].alignment;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_spacing(int id, int& top, int& bottom, int& left, int& right)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			top = widgets[i].top_spacing;
-			bottom = widgets[i].bottom_spacing;
-			left = widgets[i].left_spacing;
-			right = widgets[i].right_spacing;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_border_spacing(int id, int& top, int& bottom, int& left, int& right)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			top = widgets[i].top_border_spacing;
-			bottom = widgets[i].bottom_border_spacing;
-			left = widgets[i].left_border_spacing;
-			right = widgets[i].right_border_spacing;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_vertical_border(int id, char& border)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			border = widgets[i].vertical_border;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_horizontal_border(int id, char& border)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			border = widgets[i].horizontal_border;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_corner_border(int id, char& border)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			border = widgets[i].corner_border;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_width_multiplier(int id, float& multiplier)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			multiplier = widgets[i].width_multiplier;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			left_multiplier = widgets[i].left_width_multiplier;
-			right_multiplier = widgets[i].right_width_multiplier;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_border_spacing_width_multipliers(int id, float& left_multiplier, float& right_multiplier)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			left_multiplier = widgets[i].left_border_width_multiplier;
-			right_multiplier = widgets[i].right_border_width_multiplier;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_highlight_character(int id, char& highlight_character)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			highlight_character = widgets[i].highlight_character;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_selectability(int id, bool& selectable)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			selectable = widgets[i].selectable;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_top_line(int id, unsigned int& top_line)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			top_line = widgets[i].top_line;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_left_column(int id, unsigned int& left_column)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			left_column = widgets[i].left_column;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_displayed_lines(int id, unsigned int& displayed_lines)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			displayed_lines = widgets[i].displayed_lines;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_line_subtraction_from_terminal_height(int id, unsigned int& line_subtraction_from_terminal_height)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			line_subtraction_from_terminal_height = widgets[i].line_subtraction_from_terminal_height;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_line_compression_amount(int id, unsigned int& line_compression_amount)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			line_compression_amount = widgets[i].line_compression_amount;
 			status = SUCCESS;
 			break;
 		}
@@ -1280,16 +649,16 @@ float frame::get_greatest_width_multiplier_at_coordinate(int row, int column)
 	float greatest_width_multiplier = 0.0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column))
 		{
 			float multiplier = 0.0;
-			if (widgets[i].use_spacing_width_multipliers)
+			if (widgets[i]->use_spacing_width_multipliers)
 			{
-				multiplier = widgets[i].width_multiplier + widgets[i].right_width_multiplier + widgets[i].left_width_multiplier;
+				multiplier = widgets[i]->width_multiplier + widgets[i]->right_width_multiplier + widgets[i]->left_width_multiplier;
 			}
 			else
 			{
-				multiplier = widgets[i].width_multiplier;
+				multiplier = widgets[i]->width_multiplier;
 			}
 
 			if (multiplier > greatest_width_multiplier)
@@ -1307,391 +676,14 @@ float frame::get_width_weight(const widget_info* const item, float multiplier)
 	std::vector<int> columns_completed;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].row == item->row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i].column) == 0))
+		if (widgets[i]->row == item->row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i]->column) == 0))
 		{
-			total_width_multiplier = total_width_multiplier + get_greatest_width_multiplier_at_coordinate(widgets[i].row, widgets[i].column);
-			columns_completed.push_back(widgets[i].column);
+			total_width_multiplier = total_width_multiplier + get_greatest_width_multiplier_at_coordinate(widgets[i]->row, widgets[i]->column);
+			columns_completed.push_back(widgets[i]->column);
 		}
 	}
 
 	return (multiplier / total_width_multiplier);
-}
-
-int frame::get_index_colors(int id, std::vector<format_tools::index_format>& index_colors)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			index_colors = widgets[i].index_colors;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_line_constraint(int id, bool& line_constraint)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			line_constraint = widgets[i].line_constraint;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_column_constraint(int id, bool& column_constraint)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			column_constraint = widgets[i].column_constraint;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::get_line_length(int id, unsigned int line, unsigned int& length)
-{
-	int status = ELEMENT_NOT_FOUND;
-	length = 0;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].lines.size() > line)
-			{
-				length = widgets[i].lines[line].length();
-				status = SUCCESS;
-				break;
-			}
-			else
-			{
-				status = INVALID_INDEX;
-				break;
-			}
-		}
-	}
-	return status;
-}
-
-int frame::set_lines_count(int id, unsigned int lines_count)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].lines_count = lines_count;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_width_multiplier(int id, float multiplier)
-{
-	if (multiplier <= 0)
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].width_multiplier = multiplier;
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier)
-{
-	if ((left_multiplier < 0) || (right_multiplier < 0))
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].left_width_multiplier = left_multiplier;
-			widgets[i].right_width_multiplier = right_multiplier;
-			if (widgets[i].left_border_width_multiplier > left_multiplier)
-			{
-				widgets[i].left_border_width_multiplier = left_multiplier;
-			}
-
-			if (widgets[i].right_border_width_multiplier > right_multiplier)
-			{
-				widgets[i].right_border_width_multiplier = right_multiplier;
-			}
-			display_stale = true;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_border_spacing_width_multipliers(int id, float left_multiplier, float right_multiplier)
-{
-	if ((left_multiplier < 0) || (right_multiplier < 0))
-	{
-		return INVALID_VALUE;
-	}
-
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if ((widgets[i].right_width_multiplier >= right_multiplier) && (widgets[i].left_width_multiplier >= left_multiplier))
-			{
-				widgets[i].left_border_width_multiplier = left_multiplier;
-				widgets[i].right_border_width_multiplier = right_multiplier;
-				display_stale = true;
-				status = SUCCESS;
-			}
-			else
-			{
-				status = INVALID_VALUE;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_selectable(int id, bool selectable)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].selectable = selectable;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_coordinate_colors(int id, std::vector<format_tools::coordinate_format> coordinate_colors)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].coordinate_colors = coordinate_colors;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_index_colors(int id, std::vector<format_tools::index_format> index_colors)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].index_colors = index_colors;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_line_constraint(int id, bool line_constraint)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].line_constraint = line_constraint;
-			status = SUCCESS;
-			display_stale = true;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_top_line(int id, unsigned int top_line)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].top_line = top_line;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_column_constraint(int id, bool column_constraint)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].column_constraint = column_constraint;
-			status = SUCCESS;
-			display_stale = true;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_left_column(int id, unsigned int left_column)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].left_column = left_column;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_displayed_lines(int id, unsigned int displayed_lines)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].displayed_lines = displayed_lines;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_line_subtraction_from_terminal_height(int id, unsigned int line_subtraction_from_terminal_height)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].line_subtraction_from_terminal_height = line_subtraction_from_terminal_height;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_line_compression_amount(int id, unsigned int line_compression_amount)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].line_compression_amount = line_compression_amount;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_lines(int id, const std::vector <std::string>& lines)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].lines = lines;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_line_character(int id, char character, unsigned int line, unsigned int character_index)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (line < widgets[i].lines.size())
-			{
-				if (character_index < widgets[i].lines[line].length())
-				{
-					(widgets[i].lines[line])[character_index] = character;
-					widgets[i].line_edited = true;
-					status = SUCCESS;
-				}
-				else
-				{
-					status = INVALID_INDEX;
-				}
-			}
-			else
-			{
-				status = INVALID_INDEX;
-			}
-			break;
-		}
-	}
-	return status;
-}
-
-int frame::set_line_edited(int id, bool line_edited)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			widgets[i].line_edited = line_edited;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
 }
 
 int frame::generate_widget_id()
@@ -1705,9 +697,9 @@ std::vector<int> frame::get_row_ids(int row)
 	std::vector<int> ids;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].row == row)
+		if (widgets[i]->row == row)
 		{
-			ids.push_back(widgets[i].id);
+			ids.push_back(widgets[i]->id);
 		}
 	}
 	return ids;
@@ -1820,28 +812,13 @@ bool frame::in_range(int value, int begin, int end)
 	return in;
 }
 
-int frame::get_output(int id, std::string& output)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			output = widgets[i].output;
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
 frame::widget_info* frame::get_widget(int id)
 {
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i].id == id)
+		if (widgets[i]->id == id)
 		{
-			return &widgets[i];
+			return widgets[i];
 		}
 	}
 
@@ -1852,9 +829,9 @@ frame::widget_info* frame::get_widget(int row, int column, int level)
 {
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column) && (widgets[i]->level == level))
 		{
-			return &widgets[i];
+			return widgets[i];
 		}
 	}
 	return nullptr;
@@ -1901,9 +878,9 @@ unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info* c
 	unsigned int greatest_widget_width = 0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == item->row) && (widgets[i].column == item->column))
+		if ((widgets[i]->row == item->row) && (widgets[i]->column == item->column))
 		{
-			unsigned int widget_width = get_widget_width(&widgets[i], include_spacing);
+			unsigned int widget_width = get_widget_width(widgets[i], include_spacing);
 			if (widget_width > greatest_widget_width)
 			{
 				greatest_widget_width = widget_width;
@@ -2365,9 +1342,9 @@ unsigned int frame::get_total_rows()
 	std::vector<int> rows;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (!element_exists(rows, widgets[i].row))
+		if (!element_exists(rows, widgets[i]->row))
 		{
-			rows.push_back(widgets[i].row);
+			rows.push_back(widgets[i]->row);
 		}
 	}
 	return rows.size();
@@ -2499,8 +1476,8 @@ void frame::set_widget_origins()
 					x_origin = x_origin + 2;
 					y_origin = y_origin + 1;
 				}
-				set_x_origin(item->id, x_origin);
-				set_y_origin(item->id, y_origin);
+				item->x_origin = x_origin;
+				item->y_origin = y_origin;
 				if (item->add_border)
 				{
 					y_origin = y_origin - 1;
@@ -2524,76 +1501,76 @@ void frame::translate_coordinate_colors_to_frame()
 	color_regions.clear();
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (!widgets[i].line_constraint && !widgets[i].column_constraint)
+		if (!widgets[i]->line_constraint && !widgets[i]->column_constraint)
 		{
-			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
 				format_tools::coordinate_format color_region;
-				color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
-				color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
-				color_region.format = widgets[i].coordinate_colors[j].format;
+				color_region.x_position = widgets[i]->coordinate_colors[j].x_position + widgets[i]->x_origin;
+				color_region.y_position = widgets[i]->coordinate_colors[j].y_position + widgets[i]->y_origin;
+				color_region.format = widgets[i]->coordinate_colors[j].format;
 				color_regions.push_back(color_region);
 			}
 		}
-		else if (widgets[i].line_constraint && !widgets[i].column_constraint)
+		else if (widgets[i]->line_constraint && !widgets[i]->column_constraint)
 		{
-			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
-				if (widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines))
+				if (widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines))
 				{
 					format_tools::coordinate_format color_region;
-					color_region.x_position = widgets[i].coordinate_colors[j].x_position + widgets[i].x_origin;
-					color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
-					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_region.x_position = widgets[i]->coordinate_colors[j].x_position + widgets[i]->x_origin;
+					color_region.y_position = widgets[i]->coordinate_colors[j].y_position - widgets[i]->top_line + widgets[i]->y_origin;
+					color_region.format = widgets[i]->coordinate_colors[j].format;
 					color_regions.push_back(color_region);
 				}
 			}
 		}
-		else if (!widgets[i].line_constraint && widgets[i].column_constraint)
+		else if (!widgets[i]->line_constraint && widgets[i]->column_constraint)
 		{
-			unsigned int width = get_widget_width(&widgets[i], false);
-			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			unsigned int width = get_widget_width(widgets[i], false);
+			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
-				if (widgets[i].coordinate_colors[j].x_position >= (int)widgets[i].left_column && widgets[i].coordinate_colors[j].x_position < ((int)widgets[i].left_column + (int)width))
+				if (widgets[i]->coordinate_colors[j].x_position >= (int)widgets[i]->left_column && widgets[i]->coordinate_colors[j].x_position < ((int)widgets[i]->left_column + (int)width))
 				{
 					format_tools::coordinate_format color_region;
-					color_region.x_position = widgets[i].coordinate_colors[j].x_position - widgets[i].left_column + widgets[i].x_origin;
-					color_region.y_position = widgets[i].coordinate_colors[j].y_position + widgets[i].y_origin;
-					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_region.x_position = widgets[i]->coordinate_colors[j].x_position - widgets[i]->left_column + widgets[i]->x_origin;
+					color_region.y_position = widgets[i]->coordinate_colors[j].y_position + widgets[i]->y_origin;
+					color_region.format = widgets[i]->coordinate_colors[j].format;
 					color_regions.push_back(color_region);
 				}
 			}
 
 			format_tools::coordinate_format color_region;
-			for (unsigned int j = 0; j < widgets[i].displayed_lines; j++)
+			for (unsigned int j = 0; j < widgets[i]->displayed_lines; j++)
 			{
-				color_region.x_position = widgets[i].x_origin + width;
-				color_region.y_position = widgets[i].y_origin + j;
+				color_region.x_position = widgets[i]->x_origin + width;
+				color_region.y_position = widgets[i]->y_origin + j;
 				color_regions.push_back(color_region);
 			}
 		}
 		else
 		{
-			unsigned int width = get_widget_width(&widgets[i], false);
-			for (unsigned int j = 0; j < widgets[i].coordinate_colors.size(); j++)
+			unsigned int width = get_widget_width(widgets[i], false);
+			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
-				bool in_line_bound = widgets[i].coordinate_colors[j].y_position >= (int)widgets[i].top_line && widgets[i].coordinate_colors[j].y_position < ((int)widgets[i].top_line + (int)widgets[i].displayed_lines);
-				bool in_column_bound = widgets[i].coordinate_colors[j].x_position >= (int)widgets[i].left_column && widgets[i].coordinate_colors[j].x_position < ((int)widgets[i].left_column + (int)width);
+				bool in_line_bound = widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines);
+				bool in_column_bound = widgets[i]->coordinate_colors[j].x_position >= (int)widgets[i]->left_column && widgets[i]->coordinate_colors[j].x_position < ((int)widgets[i]->left_column + (int)width);
 				if (in_line_bound && in_column_bound)
 				{
 					format_tools::coordinate_format color_region;
-					color_region.x_position = widgets[i].coordinate_colors[j].x_position - widgets[i].left_column + widgets[i].x_origin;
-					color_region.y_position = widgets[i].coordinate_colors[j].y_position - widgets[i].top_line + widgets[i].y_origin;
-					color_region.format = widgets[i].coordinate_colors[j].format;
+					color_region.x_position = widgets[i]->coordinate_colors[j].x_position - widgets[i]->left_column + widgets[i]->x_origin;
+					color_region.y_position = widgets[i]->coordinate_colors[j].y_position - widgets[i]->top_line + widgets[i]->y_origin;
+					color_region.format = widgets[i]->coordinate_colors[j].format;
 					color_regions.push_back(color_region);
 				}
 			}
 
 			format_tools::coordinate_format color_region;
-			for (unsigned int j = 0; j < widgets[i].displayed_lines; j++)
+			for (unsigned int j = 0; j < widgets[i]->displayed_lines; j++)
 			{
-				color_region.x_position = widgets[i].x_origin + width;
-				color_region.y_position = widgets[i].y_origin + j;
+				color_region.x_position = widgets[i]->x_origin + width;
+				color_region.y_position = widgets[i]->y_origin + j;
 				color_regions.push_back(color_region);
 			}
 		}
@@ -2605,27 +1582,13 @@ bool frame::is_selectable(int row, int column, int level)
 	bool selectable = false;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == row) && (widgets[i].column == column) && (widgets[i].level == level))
+		if ((widgets[i]->row == row) && (widgets[i]->column == column) && (widgets[i]->level == level))
 		{
-			if (widgets[i].selectable)
+			if (widgets[i]->selectable)
 			{
 				selectable = true;
 				break;
 			}
-		}
-	}
-	return selectable;
-}
-
-bool frame::is_selectable(int id)
-{
-	bool selectable = false;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			selectable = widgets[i].selectable;
-			break;
 		}
 	}
 	return selectable;
@@ -2673,20 +1636,15 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, con
 		return false;
 	}
 	float distance = 0.0;
-	int original_x = item->x_origin;
-	int original_y = item->y_origin;
-	int x = 0;
-	int y = 0;
 	float min_distance = 0.0;
 	int min_id = 0;
 	bool widget_found = false;
 	for (unsigned int i = 0; i < row_ids.size(); i++)
 	{
-		if (is_selectable(row_ids[i]))
+		widget_info* other_item = get_widget(row_ids[i]);
+		if (other_item != nullptr && item->selectable)
 		{
-			get_x_origin(row_ids[i], x);
-			get_y_origin(row_ids[i], y);
-			distance = (float)pow(pow(abs(x - original_x), 2) + pow(abs(y - original_y), 2), 0.5);
+			distance = (float)pow(pow(abs(other_item->x_origin - item->x_origin), 2) + pow(abs(other_item->y_origin - item->y_origin), 2), 0.5);
 			if ((distance < min_distance) || min_distance == 0)
 			{
 				min_distance = distance;
@@ -2902,7 +1860,7 @@ bool frame::only_widget_at_coordinate(const widget_info* const item)
 	unsigned int widgets_at_coordinate = 0;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if ((widgets[i].row == item->row) && (widgets[i].column == item->column))
+		if ((widgets[i]->row == item->row) && (widgets[i]->column == item->column))
 		{
 			widgets_at_coordinate = widgets_at_coordinate + 1;
 		}
@@ -2924,67 +1882,6 @@ std::vector<format_tools::index_format> frame::dec_format(std::string& format_co
 void frame::mark_as_stale()
 {
 	display_stale = true;
-}
-
-int frame::insert_character_in_output(int id, unsigned int index, char character)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].output.length() >= index)
-			{
-				widgets[i].output.insert(index, std::string(1, character));
-				status = SUCCESS;
-				break;
-			}
-			else
-			{
-				status = INVALID_INDEX;
-				break;
-			}
-		}
-	}
-	return status;
-}
-
-int frame::erase_character_in_output(int id, unsigned int index)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			if (widgets[i].output.length() > index)
-			{
-				widgets[i].output.erase(widgets[i].output.begin() + index);
-				status = SUCCESS;
-				break;
-			}
-			else
-			{
-				status = INVALID_INDEX;
-				break;
-			}
-		}
-	}
-	return status;
-}
-
-int frame::get_output_length(int id, unsigned int& length)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i].id == id)
-		{
-			length = widgets[i].output.length();
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
 }
 
 void frame::bound_top_line(widget_info* item)
