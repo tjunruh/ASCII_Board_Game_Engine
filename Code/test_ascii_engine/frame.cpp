@@ -43,26 +43,6 @@ protected:
 		}
 	}
 
-	void set_get_spacer_character(frame* test_frame, char character, std::string expected_status_function, int expected_status_code, bool set, int test_num)
-	{
-		if (set)
-		{
-			std::string log_content = "";
-			test_frame->reset_logging("frame.log");
-			int status = file_manager::read_file("frame.log", log_content);
-			ASSERT_EQ(status, 0) << std::to_string(test_num);
-			test_frame->set_spacer_character(character);
-			status = file_manager::read_file("frame.log", log_content);
-			ASSERT_EQ(status, 0) << std::to_string(test_num);
-			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
-		}
-		else
-		{
-			char returned_character = test_frame->get_spacer_character();
-			EXPECT_EQ(character, returned_character) << std::to_string(test_num);
-		}
-	}
-
 	void set_get_dec_format_characters(frame* test_frame, char horizontal_char, char vertical_char, char intersection_char, char endpoint_char, std::string expected_status_function, int expected_status_code, bool set, int test_num)
 	{
 		if (set)
@@ -136,15 +116,6 @@ TEST_F(frame_test, set_get_controls_test)
 	frame* test_frame = new frame();
 	set_get_controls(test_frame, ascii_io::enter, ascii_io::q, ascii_io::up, ascii_io::down, ascii_io::left, ascii_io::right, true, 0);
 	set_get_controls(test_frame, ascii_io::enter, ascii_io::q, ascii_io::up, ascii_io::down, ascii_io::left, ascii_io::right, false, 1);
-	delete(test_frame);
-}
-
-TEST_F(frame_test, set_get_spacer_character_test)
-{
-	frame* test_frame = new frame(true);
-	set_get_spacer_character(test_frame, '\n', "frame::set_spacer_character", INVALID_VALUE, true, 0);
-	set_get_spacer_character(test_frame, '=', "frame::set_spacer_character", SUCCESS, true, 1);
-	set_get_spacer_character(test_frame, '=', "N/A", UNDEFINED, false, 2);
 	delete(test_frame);
 }
 

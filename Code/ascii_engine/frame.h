@@ -21,15 +21,12 @@ class frame
 {
 public:
 	friend class widget;
-	friend class spacer;
 	FRAME_API frame(bool start_logger=false, const std::string& logging_file_path="frame.log");
 	FRAME_API void display();
 	FRAME_API bool stale();
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
 	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
 	FRAME_API int get_selection();
-	FRAME_API void set_spacer_character(char character);
-	FRAME_API char get_spacer_character();
 	FRAME_API void enable_dec(bool enable);
 	FRAME_API bool dec_enabled();
 	FRAME_API void enable_color(bool enable);
@@ -40,8 +37,7 @@ public:
 	FRAME_API void set_default_foreground_color(int color);
 	FRAME_API int get_default_background_color();
 	FRAME_API int get_default_foreground_color();
-	FRAME_API void use_fake_console_dimensions();
-	FRAME_API void use_true_console_dimensions();
+	FRAME_API void use_fake_console_dimensions(bool use);
 	FRAME_API void set_fake_console_width(int width);
 	FRAME_API void set_fake_console_height(int height);
 	FRAME_API std::string get_frame_output();
@@ -114,7 +110,6 @@ private:
 	std::vector<std::vector<int>> sort_row_ids(std::vector<int> ids);
 	int get_min_column_index(const std::vector<widget_info*> widget_vec);
 	int get_min_level_index(const std::vector<widget_info*> widget_vec);
-	bool in_range(int value, int begin, int end);
 	widget_info* get_widget(int id);
 	widget_info* get_widget(int row, int column, int level);
 	unsigned int get_widget_width(const widget_info* const item, bool include_spacing);
@@ -144,7 +139,6 @@ private:
 	void left_handle(int& selected_row, int& selected_column, int& selected_level);
 	void generate_border(const widget_info* const item, std::vector<std::string>& lines);
 	bool only_widget_at_coordinate(const widget_info* const item);
-	void mark_as_stale();
 	void bound_top_line(widget_info* item);
 	void dynamically_adjust_displayed_lines(widget_info* item);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
@@ -166,7 +160,6 @@ private:
 	bool display_stale = true;
 	std::vector<unsigned int> row_heights;
 	logger log;
-	char spacer_character = '-';
 	bool _dec_enabled = false;
 	bool _color_enabled = false;
 	bool _use_fake_console_dimensions = false;

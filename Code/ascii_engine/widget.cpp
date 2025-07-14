@@ -405,7 +405,7 @@ bool widget::frame_stale()
 
 void widget::mark_frame_as_stale()
 {
-	parent_frame->mark_as_stale();
+	parent_frame->display_stale = true;
 }
 
 void widget::frame_display()

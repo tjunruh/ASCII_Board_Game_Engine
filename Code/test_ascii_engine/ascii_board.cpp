@@ -2027,7 +2027,7 @@ TEST_F(ascii_board_test, scrolling_board_test)
 {
 	frame* local_test_frame = new frame();
 	ascii_board local_test_board(local_test_frame, single_line_board_definitions::board_config_path, "default", "none", 10, true);
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_width(42);
 	local_test_frame->set_fake_console_height(21);
 	local_test_frame->get_frame_output();

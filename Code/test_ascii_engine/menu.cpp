@@ -234,7 +234,7 @@ TEST_F(menu_test, test_basic)
 	};
 	
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(10);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -309,7 +309,7 @@ TEST_F(menu_test, test_border)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -382,7 +382,7 @@ TEST_F(menu_test, test_merge)
 	};
 	
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(10);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -523,7 +523,7 @@ TEST_F(menu_test, test_spacing)
 	};
 	
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -606,7 +606,7 @@ TEST_F(menu_test, test_border_spacing)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -690,7 +690,7 @@ TEST_F(menu_test, right_alignment)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -780,7 +780,7 @@ TEST_F(menu_test, center_alignment)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -870,7 +870,7 @@ TEST_F(menu_test, center_block_alignment)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -973,7 +973,7 @@ TEST_F(menu_test, separated)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -1058,7 +1058,7 @@ TEST_F(menu_test, basic_label_test)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -1154,7 +1154,7 @@ TEST_F(menu_test, separated_label)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -1243,7 +1243,7 @@ TEST_F(menu_test, test_displayed_line_limit)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -1337,7 +1337,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;
@@ -1432,7 +1432,7 @@ TEST_F(menu_test, test_remove_items)
 	};
 
 	frame* local_test_frame = new frame();
-	local_test_frame->use_fake_console_dimensions();
+	local_test_frame->use_fake_console_dimensions(true);
 	local_test_frame->set_fake_console_height(16);
 	local_test_frame->set_fake_console_width(100);
 	std::vector<menu*> menus;

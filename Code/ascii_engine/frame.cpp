@@ -235,23 +235,6 @@ int frame::get_selection()
 	return selected_id;
 }
 
-void frame::set_spacer_character(char character)
-{
-	if (std::count(format_tools::invalid_characters.begin(), format_tools::invalid_characters.end(), character) != 0)
-	{
-		log.log_status(INVALID_VALUE, "frame::set_spacer_character");
-		return;
-	}
-
-	spacer_character = character;
-	log.log_status(SUCCESS, "frame::set_spacer_character");
-}
-
-char frame::get_spacer_character()
-{
-	return spacer_character;
-}
-
 void frame::enable_dec(bool enable)
 {
 	_dec_enabled = enable;
@@ -338,14 +321,9 @@ int frame::get_default_foreground_color()
 	return default_foreground_color;
 }
 
-void frame::use_fake_console_dimensions()
+void frame::use_fake_console_dimensions(bool use)
 {
-	_use_fake_console_dimensions = true;
-}
-
-void frame::use_true_console_dimensions()
-{
-	_use_fake_console_dimensions = false;
+	_use_fake_console_dimensions = use;
 }
 
 void frame::set_fake_console_width(int width)
@@ -800,16 +778,6 @@ int frame::get_min_level_index(const std::vector<widget_info*> widget_vec)
 		}
 	}
 	return min_index;
-}
-
-bool frame::in_range(int value, int begin, int end)
-{
-	bool in = false;
-	if ((value >= begin) || (value < end))
-	{
-		in = true;
-	}
-	return in;
 }
 
 frame::widget_info* frame::get_widget(int id)
@@ -1877,11 +1845,6 @@ bool frame::only_widget_at_coordinate(const widget_info* const item)
 std::vector<format_tools::index_format> frame::dec_format(std::string& format_content, unsigned int line_length)
 {
 	return dec.format(format_content, line_length);
-}
-
-void frame::mark_as_stale()
-{
-	display_stale = true;
 }
 
 void frame::bound_top_line(widget_info* item)
