@@ -14,6 +14,11 @@ widget::widget(frame* parent, std::string special_operation)
 	log.log_status(status, "widget::widget");
 }
 
+widget::~widget()
+{
+	parent_frame->delete_link_to_widget(item.id);
+}
+
 void widget::set_alignment(std::string alignment)
 {
 	int status = UNDEFINED;
@@ -326,18 +331,12 @@ void widget::get_border_spacing_width_multipliers(float& left_multiplier, float&
 
 unsigned int widget::get_width(bool include_spacing)
 {
-	unsigned int width = 0;
-	int status = parent_frame->get_widget_width(item.id, width, include_spacing);
-	log.log_status(status, "widget::get_width");
-	return width;
+	return parent_frame->get_widget_width(item.id, include_spacing);
 }
 
 unsigned int widget::get_height(bool include_spacing)
 {
-	unsigned int height = 0;
-	int status = parent_frame->get_widget_height(item.id, height, include_spacing);
-	log.log_status(status, "widget::get_height");
-	return height;
+	return parent_frame->get_widget_height(item.id, include_spacing);
 }
 
 int widget::get_x_origin()
@@ -380,16 +379,14 @@ std::string widget::get_output()
 
 std::string widget::get_displayed_output()
 {
-	std::vector<std::string> output_lines;
 	std::string output = "";
-	int status = parent_frame->get_displayed_output(item.id, output_lines);
+	std::vector<std::string> output_lines = parent_frame->get_displayed_output(item.id);
 	output_lines = format_tools::add_newline_characters(output_lines);
 	if (output_lines.size() > 0 && output_lines[output_lines.size() - 1].length() > 0)
 	{
 		output_lines[output_lines.size() - 1].erase(output_lines[output_lines.size() - 1].length() - 1, 1);
 	}
 	output = format_tools::get_string(output_lines);
-	log.log_status(status, "widget::get_displayed_output");
 	return output;
 }
 
@@ -435,10 +432,7 @@ std::vector<format_tools::index_format> widget::get_index_colors()
 
 std::vector<format_tools::index_format> widget::get_displayed_index_colors()
 {
-	std::vector<format_tools::index_format> index_colors;
-	int status = parent_frame->get_displayed_colors(item.id, index_colors);
-	log.log_status(status, "widget::get_displayed_index_colors");
-	return index_colors;
+	return parent_frame->get_displayed_colors(item.id);
 }
 
 std::vector<format_tools::index_format> widget::dec_format(std::string& format_content, unsigned int line_length)
@@ -611,16 +605,13 @@ void widget::set_left_column(unsigned int left_column)
 
 void widget::get_displayed_output(std::vector<std::string>& displayed_output)
 {
-	int status = parent_frame->get_displayed_output(item.id, displayed_output);
-	log.log_status(status, "widget::get_displayed_output");
+	displayed_output = parent_frame->get_displayed_output(item.id);
 }
 
 void widget::get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors)
 {
-	int status = parent_frame->get_displayed_output(item.id, displayed_output);
-	log.log_status(status, "widget::get_displayed_output");
-	status = parent_frame->get_displayed_colors(item.id, colors);
-	log.log_status(status, "widget::get_displayed_output");
+	displayed_output = parent_frame->get_displayed_output(item.id);
+	colors = parent_frame->get_displayed_colors(item.id);
 }
 
 bool widget::get_line_constraint()

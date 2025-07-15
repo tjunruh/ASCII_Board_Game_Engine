@@ -200,7 +200,7 @@ int frame::get_selection()
 		{
 			log.log_comment("select action");
 			widget_info* item = get_widget(selected_row, selected_column, selected_level);
-			if (item != nullptr && item->selectable)
+			if (item->selectable)
 			{
 				selected_id = item->id;
 				log.log_comment("Selected row: " + std::to_string(selected_row) + " Selected column: " + std::to_string(selected_column) + " Selected level: " + std::to_string(selected_level));
@@ -421,6 +421,7 @@ int frame::set_position(int id, int row, int column, int level)
 			break;
 		}
 	}
+
 	return status;
 }
 
@@ -654,7 +655,7 @@ float frame::get_width_weight(const widget_info* const item, float multiplier)
 	std::vector<int> columns_completed;
 	for (unsigned int i = 0; i < widgets.size(); i++)
 	{
-		if (widgets[i]->row == item->row && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i]->column) == 0))
+		if ((widgets[i]->row == item->row) && (std::count(columns_completed.begin(), columns_completed.end(), widgets[i]->column) == 0))
 		{
 			total_width_multiplier = total_width_multiplier + get_greatest_width_multiplier_at_coordinate(widgets[i]->row, widgets[i]->column);
 			columns_completed.push_back(widgets[i]->column);
@@ -688,11 +689,7 @@ std::vector<std::vector<int>> frame::sort_row_ids(std::vector<int> ids)
 	std::vector<widget_info*> widgets_vec;
 	for (unsigned int i = 0; i < ids.size(); i++)
 	{
-		widget_info* item = get_widget(ids[i]);
-		if (item != nullptr)
-		{
-			widgets_vec.push_back(item);
-		}
+		widgets_vec.push_back(get_widget(ids[i]));
 	}
 
 	unsigned int widgets_vec_length = widgets_vec.size();
@@ -858,16 +855,9 @@ unsigned int frame::get_greatest_widget_width_at_coordinate(const widget_info* c
 	return greatest_widget_width;
 }
 
-int frame::get_widget_width(int id, unsigned int& width, bool include_spacing)
+unsigned int frame::get_widget_width(int id, bool include_spacing)
 {
-	int status = ELEMENT_NOT_FOUND;
-	const widget_info* const item = get_widget(id);
-	if (item != nullptr)
-	{
-		width = get_widget_width(item, include_spacing);
-		status = SUCCESS;
-	}
-	return status;
+	return get_widget_width(get_widget(id), include_spacing);
 }
 
 unsigned int frame::get_widget_height(const widget_info* const item, bool include_spacing)
@@ -886,16 +876,9 @@ unsigned int frame::get_widget_height(const widget_info* const item, bool includ
 	return height;
 }
 
-int frame::get_widget_height(int id, unsigned int& height, bool include_spacing)
+unsigned int frame::get_widget_height(int id, bool include_spacing)
 {
-	int status = ELEMENT_NOT_FOUND;
-	const widget_info* const item = get_widget(id);
-	if (item != nullptr)
-	{
-		height = get_widget_height(item, include_spacing);
-		status = SUCCESS;
-	}
-	return status;
+	return get_widget_height(get_widget(id), include_spacing);
 }
 
 void frame::constrain_lines(const widget_info* const item, std::vector<std::string>& widget_lines)
@@ -1213,82 +1196,75 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 std::vector<std::string> frame::build_widget_lines(widget_info* item)
 {
 	std::vector<std::string> widget_lines;
-	if (item != nullptr)
+	if (item->line_edited)
 	{
-		if (item->line_edited)
-		{
-			update_widget_output_from_lines(item);
-			item->line_edited = false;
-		}
+		update_widget_output_from_lines(item);
+		item->line_edited = false;
+	}
 
-		if (item->output == "")
-		{
-			item->output = " ";
-		}
-		int left_spacing = 0;
-		int right_spacing = 0;
-		if (item->use_spacing_width_multipliers)
-		{
-			left_spacing = int(terminal_x * get_width_weight(item, item->left_width_multiplier));
-			right_spacing = int(terminal_x * get_width_weight(item, item->right_width_multiplier));
-		}
-		else
-		{
-			left_spacing = item->left_spacing;
-			right_spacing = item->right_spacing;
-		}
-		std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
-		std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
-		unsigned int width = get_widget_width(item, false);
-		std::string active_spacing = format_tools::get_spacing(width, ' ');
+	if (item->output == "")
+	{
+		item->output = " ";
+	}
+	int left_spacing = 0;
+	int right_spacing = 0;
+	if (item->use_spacing_width_multipliers)
+	{
+		left_spacing = int(terminal_x * get_width_weight(item, item->left_width_multiplier));
+		right_spacing = int(terminal_x * get_width_weight(item, item->right_width_multiplier));
+	}
+	else
+	{
+		left_spacing = item->left_spacing;
+		right_spacing = item->right_spacing;
+	}
+	std::string left_spacing_string = format_tools::get_spacing(left_spacing, ' ');
+	std::string right_spacing_string = format_tools::get_spacing(right_spacing, ' ');
+	unsigned int width = get_widget_width(item, false);
+	std::string active_spacing = format_tools::get_spacing(width, ' ');
 
-		widget_lines = build_core_widget_lines(item);
+	widget_lines = build_core_widget_lines(item);
 
-		for (int i = 0; i < item->top_spacing; i++)
-		{
-			widget_lines.insert(widget_lines.begin(), active_spacing);
-		}
+	for (int i = 0; i < item->top_spacing; i++)
+	{
+		widget_lines.insert(widget_lines.begin(), active_spacing);
+	}
 
-		for (int i = 0; i < item->bottom_spacing; i++)
-		{
-			widget_lines.push_back(active_spacing);
-		}
+	for (int i = 0; i < item->bottom_spacing; i++)
+	{
+		widget_lines.push_back(active_spacing);
+	}
 
-		for (unsigned int i = 0; i < widget_lines.size(); i++)
-		{
-			widget_lines[i].insert(0, left_spacing_string);
-			widget_lines[i] = widget_lines[i] + right_spacing_string;
-		}
+	for (unsigned int i = 0; i < widget_lines.size(); i++)
+	{
+		widget_lines[i].insert(0, left_spacing_string);
+		widget_lines[i] = widget_lines[i] + right_spacing_string;
 	}
 
 	return widget_lines;
 }
 
-int frame::get_displayed_output(int id, std::vector<std::string>& displayed_output)
+std::vector<std::string> frame::get_displayed_output(int id)
 {
-	int status = ELEMENT_NOT_FOUND;
 	widget_info* item = get_widget(id);
-	if (item != nullptr)
-	{
-		displayed_output = item->lines;
-		constrain_lines(item, displayed_output);
-		status = SUCCESS;
-	}
-	return status;
+	std::vector<std::string> displayed_output = item->lines;
+	constrain_lines(item, displayed_output);
+	return displayed_output;
 }
 
-int frame::get_displayed_colors(int id, std::vector<format_tools::index_format>& colors)
+std::vector<format_tools::index_format> frame::get_displayed_colors(int id)
 {
 	int status = ELEMENT_NOT_FOUND;
 	widget_info* item = get_widget(id);
-	if (_color_enabled && (item != nullptr))
+	std::vector<format_tools::index_format> colors;
+	if (_color_enabled)
 	{
 		std::vector<format_tools::coordinate_format> colors_container;
 		constrain_colors(item, colors_container);
 		colors = format_tools::convert(colors_container, get_widget_width(item, false));
 		status = SUCCESS;
 	}
-	return status;
+	return colors;
 }
 
 bool frame::element_exists(const std::vector<int>& storage, int element)
@@ -1325,7 +1301,7 @@ unsigned int frame::get_columns_in_row(int row)
 	for (unsigned int i = 0; i < row_ids.size(); i++)
 	{
 		const widget_info* const item = get_widget(row_ids[i]);
-		if (item != nullptr && !element_exists(columns, item->column))
+		if (!element_exists(columns, item->column))
 		{
 			columns.push_back(item->column);
 		}
@@ -1360,28 +1336,22 @@ std::string frame::generate_frame_output()
 			{
 				std::vector<std::string> widget_lines;
 				item = get_widget((row_ids[j])[m]);
-				if (item != nullptr)
+				widget_lines = build_widget_lines(item);
+
+				if (item->add_border)
 				{
-					widget_lines = build_widget_lines(item);
+					generate_border(item, widget_lines);
+				}
 
-					if (item->add_border)
-					{
-						generate_border(item, widget_lines);
-					}
-
-					if (!only_widget_at_coordinate(item))
-					{
-						widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
-					}
+				if (!only_widget_at_coordinate(item))
+				{
+					widget_lines = format_tools::fill_lines(widget_lines, get_greatest_widget_width_at_coordinate(item, true), format_tools::left_alignment_keyword);
 				}
 
 				accumulated_widget_lines.insert(accumulated_widget_lines.end(), widget_lines.begin(), widget_lines.end());
 			}
 			column_data.text.push_back(accumulated_widget_lines);
-			if (item != nullptr)
-			{
-				column_data.width.push_back(get_greatest_widget_width_at_coordinate(item, true));
-			}
+			column_data.width.push_back(get_greatest_widget_width_at_coordinate(item, true));
 		}
 		unsigned int row_lines = 0;
 		frame_output = frame_output + format_tools::fuse_columns_into_row(column_data, row_lines);
@@ -1610,7 +1580,7 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, con
 	for (unsigned int i = 0; i < row_ids.size(); i++)
 	{
 		widget_info* other_item = get_widget(row_ids[i]);
-		if (other_item != nullptr && item->selectable)
+		if (item->selectable)
 		{
 			distance = (float)pow(pow(abs(other_item->x_origin - item->x_origin), 2) + pow(abs(other_item->y_origin - item->y_origin), 2), 0.5);
 			if ((distance < min_distance) || min_distance == 0)
@@ -1631,12 +1601,9 @@ bool frame::get_nearest_selectable_in_row(int& row, int& column, int& level, con
 	else
 	{
 		widget_info* item = get_widget(min_id);
-		if (item != nullptr)
-		{
-			row = item->row;
-			column = item->column;
-			level = item->level;
-		}
+		row = item->row;
+		column = item->column;
+		level = item->level;
 	}
 	return widget_found;
 }
@@ -1647,7 +1614,7 @@ void frame::up_handle(int& selected_row, int& selected_column, int& selected_lev
 	int last_selected_column = selected_column;
 	int last_selected_level = selected_level;
 	widget_info* item = get_widget(selected_row, selected_column, selected_level);
-	if (item != NULL)
+	if (item != nullptr)
 	{
 		do
 		{
@@ -1898,6 +1865,22 @@ void frame::dynamically_adjust_displayed_lines(widget_info* item)
 	{
 		item->displayed_lines = 1;
 		bound_top_line(item);
+	}
+}
+
+void frame::delete_link_to_widget(int id)
+{
+	int widgets_length = (int)widgets.size() - 1;
+	for (int i = widgets_length; i >= 0; i--)
+	{
+		if (widgets[i]->id > id)
+		{
+			widgets[i]->id--;
+		}
+		else if (widgets[i]->id == id)
+		{
+			widgets.erase(widgets.begin() + i);
+		}
 	}
 }
 

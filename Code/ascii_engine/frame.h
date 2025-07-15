@@ -114,16 +114,16 @@ private:
 	widget_info* get_widget(int row, int column, int level);
 	unsigned int get_widget_width(const widget_info* const item, bool include_spacing);
 	unsigned int get_greatest_widget_width_at_coordinate(const widget_info* const item, bool include_spacing);
-	int get_widget_width(int id, unsigned int& width, bool include_spacing);
+	unsigned int get_widget_width(int id, bool include_spacing);
 	unsigned int get_widget_height(const widget_info* const item, bool include_spacing);
-	int get_widget_height(int id, unsigned int& width, bool include_spacing);
+	unsigned int get_widget_height(int id, bool include_spacing);
 	void constrain_lines(const widget_info* const item, std::vector<std::string>& widget_lines);
 	void constrain_colors(const widget_info* const item, std::vector<format_tools::coordinate_format>& colors);
 	void update_widget_output_from_lines(widget_info* item);
 	std::vector<std::string> build_core_widget_lines(widget_info* item);
 	std::vector<std::string> build_widget_lines(widget_info* item);
-	int get_displayed_output(int id, std::vector<std::string>& displayed_output);
-	int get_displayed_colors(int id, std::vector<format_tools::index_format>& colors);
+	std::vector<std::string> get_displayed_output(int id);
+	std::vector<format_tools::index_format> get_displayed_colors(int id);
 	bool element_exists(const std::vector<int>& storage, int element);
 	unsigned int get_total_rows();
 	unsigned int get_columns_in_row(int row);
@@ -142,6 +142,7 @@ private:
 	void bound_top_line(widget_info* item);
 	void dynamically_adjust_displayed_lines(widget_info* item);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
+	void delete_link_to_widget(int id);
 
 #ifdef __linux__
 	void dec_print(const std::string& input);
