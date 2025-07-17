@@ -21,6 +21,11 @@ frame::frame(bool start_logger, const std::string& logging_file_path)
 	ascii_io::get_terminal_size(terminal_x, terminal_y);
 }
 
+frame::~frame()
+{
+	widgets.clear();
+}
+
 void frame::display()
 {
 	std::string output = generate_frame_output();
@@ -1254,7 +1259,6 @@ std::vector<std::string> frame::get_displayed_output(int id)
 
 std::vector<format_tools::index_format> frame::get_displayed_colors(int id)
 {
-	int status = ELEMENT_NOT_FOUND;
 	widget_info* item = get_widget(id);
 	std::vector<format_tools::index_format> colors;
 	if (_color_enabled)
@@ -1262,7 +1266,6 @@ std::vector<format_tools::index_format> frame::get_displayed_colors(int id)
 		std::vector<format_tools::coordinate_format> colors_container;
 		constrain_colors(item, colors_container);
 		colors = format_tools::convert(colors_container, get_widget_width(item, false));
-		status = SUCCESS;
 	}
 	return colors;
 }

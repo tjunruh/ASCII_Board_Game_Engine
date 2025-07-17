@@ -22,6 +22,7 @@ class frame
 public:
 	friend class widget;
 	FRAME_API frame(bool start_logger=false, const std::string& logging_file_path="frame.log");
+	FRAME_API ~frame();
 	FRAME_API void display();
 	FRAME_API bool stale();
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
