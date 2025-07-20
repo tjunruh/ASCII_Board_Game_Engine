@@ -17,6 +17,11 @@
 class menu : public widget
 {
 public:
+	struct item_structure
+	{
+		std::string item = "";
+		std::string label = "";
+	};
 	MENU_API menu(frame* parent, const std::string& special_operation="none", int lines_count=0, bool start_logging=false, const std::string& logging_file_path="menu.log");
 	MENU_API int append_item(const std::string& item);
 	MENU_API int remove_item(const std::string& item);
@@ -37,12 +42,8 @@ public:
 	MENU_API void display();
 	MENU_API void build();
 	MENU_API void separate_items(bool separate);
+	MENU_API std::vector<item_structure> get_menu_item_data();
 private:
-	struct item_structure
-	{
-		std::string name_id = "";
-		std::string label = "";
-	};
 	std::vector<item_structure> menu_items;
 	char _cursor = '*';
 	unsigned int _cursor_item = 0;

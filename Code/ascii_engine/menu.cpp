@@ -46,7 +46,7 @@ int menu::append_item(const std::string& item)
 	if (!item_exists(item))
 	{
 		item_structure item_initialization;
-		item_initialization.name_id = item;
+		item_initialization.item = item;
 		menu_items.push_back(item_initialization);
 		status = SUCCESS;
 		if (!get_line_constraint())
@@ -63,7 +63,7 @@ int menu::remove_item(const std::string& item)
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].name_id == item)
+		if (menu_items[i].item == item)
 		{
 			unsigned int top_line_remainder = 0;
 			unsigned int displayed_lines_remainder = 0;
@@ -154,7 +154,7 @@ int menu::set_item_label(const std::string& item, const std::string& label)
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].name_id == item)
+		if (menu_items[i].item == item)
 		{
 			menu_items[i].label = label;
 			status = SUCCESS;
@@ -203,7 +203,7 @@ bool menu::item_exists(const std::string& item)
 	bool exists = false;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].name_id == item)
+		if (menu_items[i].item == item)
 		{
 			exists = true;
 			break;
@@ -247,7 +247,7 @@ std::string menu::build_output()
 			item_output = item_output + "  ";
 		}
 		
-		item_output = item_output + menu_items[i].name_id + "\n";
+		item_output = item_output + menu_items[i].item + "\n";
 		if ((get_line_compression_amount() != 0) && ((i + 1) != menu_items.size()))
 		{
 			item_output = item_output + format_tools::get_spacing(item_width, _horizontal_char) + "\n";
@@ -391,7 +391,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		{
 			if (menu_items.size() > 0)
 			{
-				selection = menu_items[_cursor_item].name_id;
+				selection = menu_items[_cursor_item].item;
 			}
 			break;
 		}
@@ -498,6 +498,11 @@ void menu::separate_items(bool separate)
 	}
 }
 
+std::vector<menu::item_structure> menu::get_menu_item_data()
+{
+	return menu_items;
+}
+
 bool menu::label_exists()
 {
 	bool exists = false;
@@ -517,9 +522,9 @@ unsigned int menu::get_longest_item_length()
 	unsigned int longest_length = 0;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].name_id.length() > longest_length)
+		if (menu_items[i].item.length() > longest_length)
 		{
-			longest_length = menu_items[i].name_id.length();
+			longest_length = menu_items[i].item.length();
 		}
 	}
 	return longest_length;
