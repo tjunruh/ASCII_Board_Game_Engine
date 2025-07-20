@@ -174,6 +174,12 @@ private:
 	int terminal_y = -1;
 	int previous_x = -2;
 	int previous_y = -2;
+	int selected_row = 0;
+	int last_selected_row = 0;
+	int selected_column = 0;
+	int last_selected_column = 0;
+	int selected_level = 0;
+	int last_selected_level = 0;
 #ifdef WIN32
 	std::string previous_output = "";
 #endif

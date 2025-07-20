@@ -173,12 +173,6 @@ void frame::get_controls(int& select, int& quit, int& up, int& down, int& left, 
 int frame::get_selection()
 {
 	int input = 0;
-	static int selected_row = 0;
-	static int last_selected_row = 0;
-	static int selected_column = 0;
-	static int last_selected_column = 0;
-	static int selected_level = 0;
-	static int last_selected_level = 0;
 	int selected_id = -1;
 	log.log_begin("frame::get_selection");
 	if (!initialize_selection(selected_row, selected_column, selected_level))
