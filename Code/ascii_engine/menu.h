@@ -37,8 +37,7 @@ public:
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	MENU_API void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	MENU_API void get_selection(std::string& selection, int& key_stroke);
-	MENU_API void enable_quit();
-	MENU_API void disable_quit();
+	MENU_API void enable_quit(bool enable);
 	MENU_API void display();
 	MENU_API void build();
 	MENU_API void separate_items(bool separate);

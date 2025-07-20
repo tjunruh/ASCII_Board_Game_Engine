@@ -40,7 +40,7 @@ int main()
 	my_menu.append_item("lose");
 	my_menu.append_item("exit");
 	my_menu.set_alignment("center");
-	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
+	my_menu.enable_quit(true); // can exit menu with 'q' without selecting item
 	my_menu.build();
 
 	ascii_io::hide_cursor();

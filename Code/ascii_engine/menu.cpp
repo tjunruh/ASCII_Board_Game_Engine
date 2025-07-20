@@ -363,14 +363,9 @@ void menu::get_separater_characters(char& horizontal_char, char& vertical_char, 
 	endpoint_char = _endpoint_char;
 }
 
-void menu::enable_quit()
+void menu::enable_quit(bool enable)
 {
-	quit_enabled = true;
-}
-
-void menu::disable_quit()
-{
-	quit_enabled = false;
+	quit_enabled = enable;
 }
 
 void menu::get_selection(std::string& selection, int& key_stroke)

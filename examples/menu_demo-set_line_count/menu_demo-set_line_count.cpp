@@ -29,7 +29,7 @@ int main()
 		my_menu.append_item("Item " + std::to_string(i));
 	}
 	my_menu.append_item("Exit");
-	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
+	my_menu.enable_quit(true); // can exit menu with 'q' without selecting item
 	my_menu.set_alignment("center");
 
 	my_label.add_border(true);

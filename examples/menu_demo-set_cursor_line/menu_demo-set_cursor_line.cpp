@@ -30,7 +30,7 @@ int main()
 		my_menu.set_item_label(std::to_string(9 - i), "line " + std::to_string(i) + "    Select to jump to line " + std::to_string(9 - i)); // Add label for item
 	}
 	my_menu.append_item("Exit");
-	my_menu.enable_quit(); // can exit menu with 'q' without selecting item
+	my_menu.enable_quit(true); // can exit menu with 'q' without selecting item
 	my_menu.set_alignment("center");
 
 	my_label.add_border(true);
