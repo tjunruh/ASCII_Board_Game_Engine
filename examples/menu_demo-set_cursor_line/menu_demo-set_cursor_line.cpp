@@ -54,7 +54,7 @@ int main()
 		{
 			my_label.set_output(selection + " was selected.");
 			my_label.display();
-			my_menu.set_cursor_item(stoi(selection));
+			my_menu.set_cursor_index(stoi(selection));
 		}
 
 	}

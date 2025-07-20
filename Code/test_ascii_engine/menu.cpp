@@ -128,11 +128,18 @@ protected:
 		}
 	}
 
-	void set_get_cursor_item(menu& local_test_menu, unsigned int item, unsigned int expected_item, int test_num)
+	void set_get_cursor_index(menu& local_test_menu, unsigned int index, unsigned int expected_index, int test_num)
 	{
-		local_test_menu.set_cursor_item(item);
-		unsigned int returned_item = local_test_menu.get_cursor_item();
-		EXPECT_EQ(expected_item, returned_item) << "Test Number: " + std::to_string(test_num);
+		local_test_menu.set_cursor_index(index);
+		unsigned int returned_index = local_test_menu.get_cursor_index();
+		EXPECT_EQ(expected_index, returned_index) << "Test Number: " + std::to_string(test_num);
+	}
+
+	void get_cursor_item_data_test(menu& local_test_menu, menu::item_structure expected_item_data, int test_num)
+	{
+		menu::item_structure actual_item_data = local_test_menu.get_cursor_item_data();
+		EXPECT_EQ(actual_item_data.item, expected_item_data.item) << std::to_string(test_num);
+		EXPECT_EQ(actual_item_data.label, expected_item_data.label) << std::to_string(test_num);
 	}
 };
 
@@ -184,7 +191,7 @@ TEST_F(menu_test, set_get_cursor_character_test)
 	delete(local_test_frame);
 }
 
-TEST_F(menu_test, set_get_cursor_item_test)
+TEST_F(menu_test, set_get_cursor_index_test)
 {
 	frame* local_test_frame = new frame();
 	menu local_test_menu_1(local_test_frame, "none", 5);
@@ -198,17 +205,46 @@ TEST_F(menu_test, set_get_cursor_item_test)
 	local_test_menu_1.append_item("7");
 	local_test_menu_1.append_item("8");
 	local_test_menu_1.append_item("9");
-	set_get_cursor_item(local_test_menu_1, 0, 0, 0);
-	set_get_cursor_item(local_test_menu_1, 5, 4, 1);
-	set_get_cursor_item(local_test_menu_1, 10, 4, 2);
-	set_get_cursor_item(local_test_menu_1, 9, 4, 3);
+	set_get_cursor_index(local_test_menu_1, 0, 0, 0);
+	set_get_cursor_index(local_test_menu_1, 5, 4, 1);
+	set_get_cursor_index(local_test_menu_1, 10, 4, 2);
+	set_get_cursor_index(local_test_menu_1, 9, 4, 3);
 	local_test_menu_1.set_lines_count(10);
-	set_get_cursor_item(local_test_menu_1, 9, 9, 4);
+	set_get_cursor_index(local_test_menu_1, 9, 9, 4);
 	local_test_menu_1.set_lines_count(20);
-	set_get_cursor_item(local_test_menu_1, 15, 9, 5);
+	set_get_cursor_index(local_test_menu_1, 15, 9, 5);
 	local_test_menu_1.set_lines_count(5);
-	set_get_cursor_item(local_test_menu_1, 9, 4, 6);
+	set_get_cursor_index(local_test_menu_1, 9, 4, 6);
 	delete(local_test_frame);
+}
+
+TEST_F(menu_test, test_get_cursor_item_data)
+{
+	frame* local_test_frame = new frame();
+	menu local_test_menu_1(local_test_frame, "none");
+	local_test_menu_1.append_item("0");
+	local_test_menu_1.append_item("1");
+	local_test_menu_1.append_item("2");
+	local_test_menu_1.append_item("3");
+	local_test_menu_1.append_item("4");
+	local_test_menu_1.append_item("5");
+	local_test_menu_1.append_item("6");
+	local_test_menu_1.append_item("7");
+	local_test_menu_1.append_item("8");
+	local_test_menu_1.append_item("9");
+	local_test_menu_1.set_item_label("0", "label for item 0");
+	menu::item_structure item_data;
+	item_data.item = "0";
+	item_data.label = "label for item 0";
+	get_cursor_item_data_test(local_test_menu_1, item_data, 0);
+	local_test_menu_1.set_cursor_index(9);
+	item_data.item = "9";
+	item_data.label = "";
+	get_cursor_item_data_test(local_test_menu_1, item_data, 1);
+	local_test_menu_1.remove_all_items();
+	item_data.item = "";
+	item_data.label = "";
+	get_cursor_item_data_test(local_test_menu_1, item_data, 2);
 }
 
 TEST_F(menu_test, test_basic)

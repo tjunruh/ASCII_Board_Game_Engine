@@ -30,8 +30,9 @@ public:
 	MENU_API int set_item_label(const std::string& item, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
-	MENU_API void set_cursor_item(unsigned int item);
-	MENU_API unsigned int get_cursor_item();
+	MENU_API void set_cursor_index(unsigned int index);
+	MENU_API unsigned int get_cursor_index();
+	MENU_API item_structure get_cursor_item_data();
 	MENU_API void set_controls(std::vector<int> select, int up, int down, int quit);
 	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
@@ -45,7 +46,7 @@ public:
 private:
 	std::vector<item_structure> menu_items;
 	char _cursor = '*';
-	unsigned int _cursor_item = 0;
+	unsigned int _cursor_index = 0;
 	unsigned int last_cursor_item = 0;
 	unsigned int last_cursor_line_remainder = 0;
 	std::vector<int> _select =
@@ -66,8 +67,8 @@ private:
 	bool label_exists();
 	unsigned int get_longest_item_length();
 	unsigned int get_longest_label_length();
-	unsigned int get_stop_item(unsigned int top_item, unsigned int displayed_items);
+	unsigned int get_stop_index(unsigned int top_index, unsigned int displayed_items);
 	void set_cursor_line(unsigned int line);
-	unsigned int bound_cursor_item(unsigned int cursor_item, unsigned int top_item, unsigned int stop_item);
+	unsigned int bound_cursor_index(unsigned int cursor_index, unsigned int top_index, unsigned int stop_index);
 	unsigned int fit_displayed_lines_for_separated_items(unsigned int displayed_lines);
 };

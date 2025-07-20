@@ -67,7 +67,7 @@ int menu::remove_item(const std::string& item)
 		{
 			unsigned int top_line_remainder = 0;
 			unsigned int displayed_lines_remainder = 0;
-			unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+			unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
 			unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
 			menu_items.erase(menu_items.begin() + i);
 			status = SUCCESS;
@@ -79,11 +79,11 @@ int menu::remove_item(const std::string& item)
 
 			bound_top_line();
 
-			unsigned int bounded_cursor_item = bound_cursor_item(_cursor_item, top_item, get_stop_item(top_item, displayed_items));
-			if (bounded_cursor_item != _cursor_item)
+			unsigned int bounded_cursor_item = bound_cursor_index(_cursor_index, top_index, get_stop_index(top_index, displayed_items));
+			if (bounded_cursor_item != _cursor_index)
 			{
-				_cursor_item = bounded_cursor_item;
-				set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+				_cursor_index = bounded_cursor_item;
+				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 			break;
 		}
@@ -104,7 +104,7 @@ void menu::set_lines_count(int lines_count)
 	{
 		unsigned int top_line_remainder = 0;
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+		unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
 		unsigned int displayed_items = 0;
 		if (lines_count > 0)
 		{
@@ -121,11 +121,11 @@ void menu::set_lines_count(int lines_count)
 		set_line_constraint(true);
 		bound_top_line();
 
-		unsigned int bounded_cursor_item = bound_cursor_item(_cursor_item, top_item, get_stop_item(top_item, displayed_items));
-		if (bounded_cursor_item != _cursor_item)
+		unsigned int bounded_cursor_item = bound_cursor_index(_cursor_index, top_index, get_stop_index(top_index, displayed_items));
+		if (bounded_cursor_item != _cursor_index)
 		{
-			_cursor_item = bounded_cursor_item;
-			set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+			_cursor_index = bounded_cursor_item;
+			set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		}
 
 		unsigned int displayed_lines = format_tools::expand(displayed_items, get_line_compression_amount(), displayed_lines_remainder);
@@ -184,18 +184,29 @@ char menu::get_cursor()
 	return _cursor;
 }
 
-void menu::set_cursor_item(unsigned int item)
+void menu::set_cursor_index(unsigned int index)
 {
 	unsigned int top_line_remainder = 0;
 	unsigned int displayed_lines_remainder = 0;
-	unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
-	_cursor_item = bound_cursor_item(item, top_item, get_stop_item(top_item, format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder)));
-	set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+	unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+	_cursor_index = bound_cursor_index(index, top_index, get_stop_index(top_index, format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder)));
+	set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 }
 
-unsigned int menu::get_cursor_item()
+unsigned int menu::get_cursor_index()
 {
-	return _cursor_item;
+	return _cursor_index;
+}
+
+menu::item_structure menu::get_cursor_item_data()
+{
+	item_structure item_data;
+	if (_cursor_index < menu_items.size())
+	{
+		item_data = menu_items[_cursor_index];
+	}
+
+	return item_data;
 }
 
 bool menu::item_exists(const std::string& item)
@@ -237,7 +248,7 @@ std::string menu::build_output()
 
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (_cursor_item == i)
+		if (_cursor_index == i)
 		{
 			item_output = item_output + _cursor + " ";
 			set_cursor_line(format_tools::expand(i, get_line_compression_amount(), 1));
@@ -386,32 +397,32 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		{
 			if (menu_items.size() > 0)
 			{
-				selection = menu_items[_cursor_item].item;
+				selection = menu_items[_cursor_index].item;
 			}
 			break;
 		}
 		else if (key_stroke == _up)
 		{
-			if (_cursor_item > 0)
+			if (_cursor_index > 0)
 			{
-				if (_cursor_item == top_item)
+				if (_cursor_index == top_item)
 				{
 					top_item--;
 				}
-				_cursor_item--;
-				set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+				_cursor_index--;
+				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 		}
 		else if (key_stroke == _down)
 		{
-			if (_cursor_item < (menu_items.size() - 1))
+			if (_cursor_index < (menu_items.size() - 1))
 			{
-				if ((_cursor_item - top_item + 1) == displayed_items)
+				if ((_cursor_index - top_item + 1) == displayed_items)
 				{
 					top_item++;
 				}
-				_cursor_item++;
-				set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+				_cursor_index++;
+				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 		}
 
@@ -429,13 +440,13 @@ void menu::display()
 		unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
 
 		unsigned int top_line_remainder = 0;
-		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+		unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
 
-		unsigned int bounded_cursor_item = bound_cursor_item(_cursor_item, top_item, get_stop_item(top_item, displayed_items));
-		if (bounded_cursor_item != _cursor_item)
+		unsigned int bounded_cursor_item = bound_cursor_index(_cursor_index, top_index, get_stop_index(top_index, displayed_items));
+		if (bounded_cursor_item != _cursor_index)
 		{
-			_cursor_item = bounded_cursor_item;
-			set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+			_cursor_index = bounded_cursor_item;
+			set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		}
 	}
 	std::vector<std::string> displayed_output;
@@ -479,16 +490,16 @@ void menu::separate_items(bool separate)
 
 		unsigned int top_line_remainder = 0;
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+		unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
 		unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
 
 		bound_top_line();
 
-		unsigned int bounded_cursor_item = bound_cursor_item(_cursor_item, top_item, get_stop_item(top_item, displayed_items));
-		if (bounded_cursor_item != _cursor_item)
+		unsigned int bounded_cursor_item = bound_cursor_index(_cursor_index, top_index, get_stop_index(top_index, displayed_items));
+		if (bounded_cursor_item != _cursor_index)
 		{
-			_cursor_item = bounded_cursor_item;
-			set_cursor_line(format_tools::expand(_cursor_item, get_line_compression_amount(), 1));
+			_cursor_index = bounded_cursor_item;
+			set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		}
 	}
 }
@@ -538,16 +549,16 @@ unsigned int menu::get_longest_label_length()
 	return longest_length;
 }
 
-unsigned int menu::get_stop_item(unsigned int top_item, unsigned int displayed_items)
+unsigned int menu::get_stop_index(unsigned int top_index, unsigned int displayed_items)
 {
 	unsigned int stop_item;
-	if (menu_items.size() < (displayed_items + top_item))
+	if (menu_items.size() < (displayed_items + top_index))
 	{
 		stop_item = menu_items.size();
 	}
 	else
 	{
-		stop_item = displayed_items + top_item;
+		stop_item = displayed_items + top_index;
 	}
 
 	return stop_item;
@@ -560,25 +571,25 @@ void menu::set_cursor_line(unsigned int line)
 	last_cursor_item = format_tools::compress(line, get_line_compression_amount(), last_cursor_line_remainder);
 }
 
-unsigned int menu::bound_cursor_item(unsigned int cursor_item, unsigned int top_item, unsigned int stop_item)
+unsigned int menu::bound_cursor_index(unsigned int cursor_index, unsigned int top_index, unsigned int stop_index)
 {
-	if (cursor_item >= stop_item)
+	if (cursor_index >= stop_index)
 	{
-		if ((int)(stop_item - 1) >= 0)
+		if ((int)(stop_index - 1) >= 0)
 		{
-			cursor_item = stop_item - 1;
+			cursor_index = stop_index - 1;
 		}
 		else
 		{
-			cursor_item = 0;
+			cursor_index = 0;
 		}
 	}
-	else if (cursor_item < top_item)
+	else if (cursor_index < top_index)
 	{
-		cursor_item = top_item;
+		cursor_index = top_index;
 	}
 
-	return cursor_item;
+	return cursor_index;
 }
 
 unsigned int menu::fit_displayed_lines_for_separated_items(unsigned int displayed_lines)
