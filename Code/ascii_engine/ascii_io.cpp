@@ -1,6 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "ascii_io.h"
 #include <iostream>
+#include <algorithm>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -131,6 +132,15 @@ int ascii_io::getchar() {
 #endif
 
 	return input;
+}
+
+void ascii_io::wait_for_keystroke(std::vector<int> keystroke_options)
+{
+	int input = ascii_io::undefined;
+	do
+	{
+		input = getchar();
+	} while (std::count(keystroke_options.begin(), keystroke_options.end(), input) == 0);
 }
 
 void ascii_io::clear() {
