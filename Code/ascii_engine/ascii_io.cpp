@@ -2,6 +2,8 @@
 #include "ascii_io.h"
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -12,8 +14,6 @@
 #elif __linux__
 #include <ncurses.h>
 #include <memory>
-#include <chrono>
-#include <thread>
 #include "format_tools.h"
 #endif
 
@@ -290,7 +290,7 @@ void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
 #endif
 }
 
-int ascii_io::zoom_in(unsigned int amount)
+int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
 {
 	int status = 0;
 #ifdef _WIN32
@@ -307,6 +307,7 @@ int ascii_io::zoom_in(unsigned int amount)
 	DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
 	if (return_value == buffer_size || return_value == 0)
 	{
+		free(raw_home_directory);
 		status = 1;
 		return status;
 	}
@@ -345,6 +346,7 @@ int ascii_io::zoom_in(unsigned int amount)
 			status = 1;
 		}
 	}
+	free(raw_home_directory);
 #elif __linux__
 	status = system("which xdotool > /dev/null");
 	if (status == 0)
@@ -356,10 +358,11 @@ int ascii_io::zoom_in(unsigned int amount)
 		}
 	}
 #endif
+	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
 	return status;
 }
 
-int ascii_io::zoom_out(unsigned int amount)
+int ascii_io::zoom_out(unsigned int amount, unsigned int wait_milliseconds)
 {
 	int status = 0;
 #ifdef _WIN32
@@ -376,6 +379,7 @@ int ascii_io::zoom_out(unsigned int amount)
 	DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
 	if (return_value == buffer_size || return_value == 0)
 	{
+		free(raw_home_directory);
 		status = 1;
 		return status;
 	}
@@ -428,6 +432,7 @@ int ascii_io::zoom_out(unsigned int amount)
 			status = 1;
 		}
 	}
+	free(raw_home_directory);
 #elif __linux__
 	status = system("which xdotool > /dev/null");
 	if (status == 0)
@@ -439,10 +444,11 @@ int ascii_io::zoom_out(unsigned int amount)
 		}
 	}
 #endif
+	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
 	return status;
 }
 
-int ascii_io::zoom_to_level(int level)
+int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 {
 	int status = 0;
 #ifdef _WIN32
@@ -460,6 +466,7 @@ int ascii_io::zoom_to_level(int level)
 	if (return_value == buffer_size || return_value == 0)
 	{
 		status = 1;
+		free(raw_home_directory);
 		return status;
 	}
 	std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
@@ -485,6 +492,7 @@ int ascii_io::zoom_to_level(int level)
 			status = 1;
 		}
 	}
+	free(raw_home_directory);
 #elif __linux__
 	status = system("xdotool key Ctrl+0");
 	if (status == 0)
@@ -500,6 +508,7 @@ int ascii_io::zoom_to_level(int level)
 		}
 	}
 #endif
+	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
 	return status;
 }
 
@@ -575,6 +584,7 @@ void ascii_io::ascii_engine_end()
 		DWORD return_value = GetEnvironmentVariable(TEXT("userprofile"), raw_home_directory, buffer_size);
 		if (return_value == buffer_size || return_value == 0)
 		{
+			free(raw_home_directory);
 			return;
 		}
 		std::string home_directory = convert_LPTSTR_to_string(raw_home_directory);
@@ -589,6 +599,7 @@ void ascii_io::ascii_engine_end()
 				status = file_manager::write_file(home_directory + console_settings_path + console_settings_file, console_settings.dump(3));
 			}
 		}
+		free(raw_home_directory);
 	}
 #elif __linux__
 	if (console_zoom_amount > 0)

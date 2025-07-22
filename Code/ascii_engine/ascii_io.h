@@ -27,9 +27,9 @@ namespace ascii_io
 	ASCII_IO_API void move_cursor_right(unsigned int amount=1);
 	ASCII_IO_API void move_cursor_left(unsigned int amount=1);
 	ASCII_IO_API void move_cursor_to_position(unsigned int x, unsigned int y);
-	ASCII_IO_API int zoom_in(unsigned int amount=1);
-	ASCII_IO_API int zoom_out(unsigned int amount = 1);
-	ASCII_IO_API int zoom_to_level(int level);
+	ASCII_IO_API int zoom_in(unsigned int amount=1, unsigned int wait_milliseconds = 0);
+	ASCII_IO_API int zoom_out(unsigned int amount = 1, unsigned int wait_milliseconds = 0);
+	ASCII_IO_API int zoom_to_level(int level, unsigned int wait_milliseconds = 0);
 	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
 	ASCII_IO_API std::string get_key_name(int key);
 	ASCII_IO_API void ascii_engine_init(bool maximize=false);
