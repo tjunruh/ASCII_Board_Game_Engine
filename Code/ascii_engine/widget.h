@@ -19,7 +19,6 @@ class widget
 {
 public:
 	WIDGET_API widget(frame* parent, std::string special_operation="none");
-	WIDGET_API virtual ~widget();
 	WIDGET_API void set_alignment(std::string alignment);
 	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
 	WIDGET_API void set_border_spacing(int top, int bottom, int left, int right);

@@ -1865,22 +1865,6 @@ void frame::dynamically_adjust_displayed_lines(widget_info* item)
 	}
 }
 
-void frame::delete_link_to_widget(int id)
-{
-	int widgets_length = (int)widgets.size() - 1;
-	for (int i = widgets_length; i >= 0; i--)
-	{
-		if (widgets[i]->id > id)
-		{
-			widgets[i]->id--;
-		}
-		else if (widgets[i]->id == id)
-		{
-			widgets.erase(widgets.begin() + i);
-		}
-	}
-}
-
 #ifdef __linux__
 void frame::dec_print(const std::string& input)
 {

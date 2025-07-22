@@ -143,7 +143,6 @@ private:
 	void bound_top_line(widget_info* item);
 	void dynamically_adjust_displayed_lines(widget_info* item);
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
-	void delete_link_to_widget(int id);
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

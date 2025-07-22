@@ -14,11 +14,6 @@ widget::widget(frame* parent, std::string special_operation)
 	log.log_status(status, "widget::widget");
 }
 
-widget::~widget()
-{
-	parent_frame->delete_link_to_widget(item.id);
-}
-
 void widget::set_alignment(std::string alignment)
 {
 	int status = UNDEFINED;
