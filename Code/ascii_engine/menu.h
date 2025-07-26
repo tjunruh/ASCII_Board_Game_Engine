@@ -29,6 +29,7 @@ public:
 	MENU_API void set_lines_count(int lines_count);
 	MENU_API int append_item_label(const std::string& item, const std::string& label);
 	MENU_API int set_item_label(const std::string& item, unsigned int column, const std::string& label);
+	MENU_API void use_top_row_as_heading(bool heading);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
 	MENU_API void set_cursor_index(unsigned int index);
@@ -63,6 +64,7 @@ private:
 	char _vertical_char = '|';
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
+	bool _heading = false;
 	std::string build_output();
 	bool item_exists(const std::string& item);
 	bool label_exists();

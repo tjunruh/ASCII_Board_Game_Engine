@@ -200,6 +200,15 @@ int menu::set_item_label(const std::string& item, unsigned int column, const std
 	return status;
 }
 
+void menu::use_top_row_as_heading(bool heading)
+{
+	_heading = heading;
+	if (_heading && _cursor_index == 0)
+	{
+		_cursor_index = 1;
+	}
+}
+
 void menu::set_cursor(char cursor)
 {
 	int status = UNDEFINED;
@@ -225,6 +234,10 @@ void menu::set_cursor_index(unsigned int index)
 	unsigned int top_line_remainder = 0;
 	unsigned int displayed_lines_remainder = 0;
 	unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+	if (_heading && index == 0)
+	{
+		index = 1;
+	}
 	_cursor_index = bound_cursor_index(index, top_index, get_stop_index(top_index, format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder)));
 	set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 }
@@ -478,6 +491,10 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 					top_item--;
 				}
 				_cursor_index--;
+				if (_heading && _cursor_index == 0)
+				{
+					_cursor_index = 1;
+				}
 				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 		}
@@ -495,6 +512,10 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		}
 
 		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
+		if (_heading && top_item == 0)
+		{
+			top_item = 1;
+		}
 
 	} while ((key_stroke != _quit) || !quit_enabled);
 }
@@ -673,6 +694,11 @@ unsigned int menu::bound_cursor_index(unsigned int cursor_index, unsigned int to
 	else if (cursor_index < top_index)
 	{
 		cursor_index = top_index;
+	}
+
+	if (_heading && cursor_index == 0)
+	{
+		cursor_index = 1;
 	}
 
 	return cursor_index;
