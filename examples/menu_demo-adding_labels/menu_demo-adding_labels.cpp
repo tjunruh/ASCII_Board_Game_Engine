@@ -27,7 +27,7 @@ int main()
 	for (unsigned int i = 0; i < 100; i++)
 	{
 		my_menu.append_item("Item " + std::to_string(i));
-		my_menu.set_item_label("Item " + std::to_string(i), "This is my label for item " + std::to_string(i)); // Add label for item
+		my_menu.append_item_label("Item " + std::to_string(i), "This is my label for item " + std::to_string(i)); // Add label for item
 	}
 	my_menu.append_item("Exit");
 	my_menu.enable_quit(true); // can exit menu with 'q' without selecting item

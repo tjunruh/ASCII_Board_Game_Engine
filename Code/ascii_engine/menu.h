@@ -20,14 +20,15 @@ public:
 	struct item_structure
 	{
 		std::string item = "";
-		std::string label = "";
+		std::vector<std::string> labels;
 	};
 	MENU_API menu(frame* parent, const std::string& special_operation="none", int lines_count=0, bool start_logging=false, const std::string& logging_file_path="menu.log");
 	MENU_API int append_item(const std::string& item);
 	MENU_API int remove_item(const std::string& item);
 	MENU_API void remove_all_items();
 	MENU_API void set_lines_count(int lines_count);
-	MENU_API int set_item_label(const std::string& item, const std::string& label);
+	MENU_API int append_item_label(const std::string& item, const std::string& label);
+	MENU_API int set_item_label(const std::string& item, unsigned int column, const std::string& label);
 	MENU_API void set_cursor(char cursor);
 	MENU_API char get_cursor();
 	MENU_API void set_cursor_index(unsigned int index);
@@ -66,7 +67,7 @@ private:
 	bool item_exists(const std::string& item);
 	bool label_exists();
 	unsigned int get_longest_item_length();
-	unsigned int get_longest_label_length();
+	std::vector<unsigned int> get_longest_label_lengths();
 	unsigned int get_stop_index(unsigned int top_index, unsigned int displayed_items);
 	void set_cursor_line(unsigned int line);
 	unsigned int bound_cursor_index(unsigned int cursor_index, unsigned int top_index, unsigned int stop_index);

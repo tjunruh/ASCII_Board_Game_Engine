@@ -71,14 +71,24 @@ protected:
 		}
 	}
 
-	void set_item_label_test(menu& local_test_menu, std::string item, std::string label, std::string expected_error_function, int expected_error_code)
+	void append_item_label_test(menu& local_test_menu, std::string item, std::string label, std::string expected_error_function, int expected_error_code, int test_num)
 	{
 		std::string log_content = "";
 		local_test_menu.reset_logging("menu.log");
-		local_test_menu.set_item_label(item, label);
+		local_test_menu.append_item_label(item, label);
 		int status = file_manager::read_file("menu.log", log_content);
 		ASSERT_EQ(status, 0);
-		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Expected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
+		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) <<  "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
+	}
+
+	void set_item_label_test(menu& local_test_menu, std::string item, unsigned int column, std::string label, std::string expected_error_function, int expected_error_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_menu.reset_logging("menu.log");
+		local_test_menu.set_item_label(item, column, label);
+		int status = file_manager::read_file("menu.log", log_content);
+		ASSERT_EQ(status, 0);
+		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
 	}
 
 	void set_get_separate_characters(menu& local_test_menu, char horizontal_char, char vertical_char, char intersection_char, char endpoint_char, std::string expected_status_function, int expected_status_code, bool set, int test_num)
@@ -139,7 +149,26 @@ protected:
 	{
 		menu::item_structure actual_item_data = local_test_menu.get_cursor_item_data();
 		EXPECT_EQ(actual_item_data.item, expected_item_data.item) << std::to_string(test_num);
-		EXPECT_EQ(actual_item_data.label, expected_item_data.label) << std::to_string(test_num);
+		ASSERT_EQ(actual_item_data.labels.size(), expected_item_data.labels.size()) << std::to_string(test_num);
+		for (unsigned int i = 0; i < actual_item_data.labels.size(); i++)
+		{
+			EXPECT_EQ(actual_item_data.labels[i], expected_item_data.labels[i]) << std::to_string(test_num);
+		}
+	}
+
+	void menu_data_test(menu& local_test_menu, std::vector<menu::item_structure> expected_menu_data, int test_num)
+	{
+		std::vector<menu::item_structure> actual_menu_data = local_test_menu.get_menu_item_data();
+		ASSERT_EQ(expected_menu_data.size(), actual_menu_data.size()) << std::to_string(test_num);
+		for (unsigned int i = 0; i < expected_menu_data.size(); i++)
+		{
+			EXPECT_EQ(expected_menu_data[i].item, actual_menu_data[i].item) << std::to_string(test_num);
+			ASSERT_EQ(expected_menu_data[i].labels.size(), actual_menu_data[i].labels.size()) << std::to_string(test_num);
+			for (unsigned int j = 0; j < expected_menu_data[i].labels.size(); j++)
+			{
+				EXPECT_EQ(expected_menu_data[i].labels[j], actual_menu_data[i].labels[j]) << std::to_string(test_num);
+			}
+		}
 	}
 };
 
@@ -159,13 +188,57 @@ TEST_F(menu_test, is_selectable)
 	delete(local_test_frame);
 }
 
-TEST_F(menu_test, set_item_label_status_codes)
+TEST_F(menu_test, test_append_item_label)
 {
 	frame* local_test_frame = new frame();
 	menu local_test_menu_1(local_test_frame, "none", 0, true);
+	local_test_menu_1.append_item("item 0");
 	local_test_menu_1.append_item("item 1");
-	set_item_label_test(local_test_menu_1, "item 1", "my label", "menu::set_item_label", SUCCESS);
-	set_item_label_test(local_test_menu_1, "gibberish", "my label 2", "menu::set_item_label", ELEMENT_NOT_FOUND);
+	local_test_menu_1.append_item("item 2");
+	append_item_label_test(local_test_menu_1, "item 0", "0.0", "menu::append_item_label", SUCCESS, 0);
+	append_item_label_test(local_test_menu_1, "item 1", "1.0", "menu::append_item_label", SUCCESS, 1);
+	append_item_label_test(local_test_menu_1, "item 1", "1.1", "menu::append_item_label", SUCCESS, 2);
+	append_item_label_test(local_test_menu_1, "item 2", "2.0", "menu::append_item_label", SUCCESS, 3);
+	append_item_label_test(local_test_menu_1, "item 2", "2.1", "menu::append_item_label", SUCCESS, 4);
+	append_item_label_test(local_test_menu_1, "item 2", "2.2", "menu::append_item_label", SUCCESS, 5);
+	append_item_label_test(local_test_menu_1, "gibberish", "my label 2", "menu::append_item_label", ELEMENT_NOT_FOUND, 6);
+
+	std::vector<menu::item_structure> expected_menu_data =
+	{
+		{"item 0", {"0.0"}},
+		{"item 1", {"1.0", "1.1"}},
+		{"item 2", {"2.0", "2.1", "2.2"}}
+	};
+
+	menu_data_test(local_test_menu_1, expected_menu_data, 7);
+	delete(local_test_frame);
+}
+
+TEST_F(menu_test, test_set_item_label)
+{
+	frame* local_test_frame = new frame();
+	menu local_test_menu_1(local_test_frame, "none", 0, true);
+	local_test_menu_1.append_item("item 0");
+	local_test_menu_1.append_item("item 1");
+	local_test_menu_1.append_item("item 2");
+	set_item_label_test(local_test_menu_1, "item 0", 1, "0.1", "menu::set_item_label", SUCCESS, 0);
+	set_item_label_test(local_test_menu_1, "item 1", 2, "1.2", "menu::set_item_label", SUCCESS, 1);
+	set_item_label_test(local_test_menu_1, "item 1", 0, "1.0", "menu::set_item_label", SUCCESS, 2);
+	set_item_label_test(local_test_menu_1, "item 2", 0, "2.0", "menu::set_item_label", SUCCESS, 3);
+	set_item_label_test(local_test_menu_1, "item 2", 1, "2.1", "menu::set_item_label", SUCCESS, 4);
+	set_item_label_test(local_test_menu_1, "item 2", 3, "2.3", "menu::set_item_label", SUCCESS, 5);
+	set_item_label_test(local_test_menu_1, "item 2", 2, "2.2", "menu::set_item_label", SUCCESS, 6);
+	set_item_label_test(local_test_menu_1, "gibberish", 4, "my label", "menu::set_item_label", ELEMENT_NOT_FOUND, 7);
+
+	std::vector<menu::item_structure> expected_menu_data =
+	{
+		{"item 0", {"", "0.1"}},
+		{"item 1", {"1.0", "", "1.2"}},
+		{"item 2", {"2.0", "2.1", "2.2", "2.3"}}
+	};
+
+	menu_data_test(local_test_menu_1, expected_menu_data, 8);
+	delete(local_test_frame);
 }
 
 TEST_F(menu_test, set_get_separator_characters_test)
@@ -221,7 +294,7 @@ TEST_F(menu_test, set_get_cursor_index_test)
 TEST_F(menu_test, test_get_cursor_item_data)
 {
 	frame* local_test_frame = new frame();
-	menu local_test_menu_1(local_test_frame, "none");
+	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("0");
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.append_item("2");
@@ -232,19 +305,19 @@ TEST_F(menu_test, test_get_cursor_item_data)
 	local_test_menu_1.append_item("7");
 	local_test_menu_1.append_item("8");
 	local_test_menu_1.append_item("9");
-	local_test_menu_1.set_item_label("0", "label for item 0");
+	local_test_menu_1.append_item_label("0", "label for item 0");
 	menu::item_structure item_data;
 	item_data.item = "0";
-	item_data.label = "label for item 0";
+	item_data.labels.push_back("label for item 0");
 	get_cursor_item_data_test(local_test_menu_1, item_data, 0);
 	local_test_menu_1.set_cursor_index(9);
 	item_data.item = "9";
-	item_data.label = "";
+	item_data.labels.clear();
 	get_cursor_item_data_test(local_test_menu_1, item_data, 1);
 	local_test_menu_1.remove_all_items();
 	item_data.item = "";
-	item_data.label = "";
 	get_cursor_item_data_test(local_test_menu_1, item_data, 2);
+	delete(local_test_frame);
 }
 
 TEST_F(menu_test, test_basic)
@@ -1101,16 +1174,16 @@ TEST_F(menu_test, basic_label_test)
 	menu local_test_menu_1(local_test_frame);
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border(true);
-	local_test_menu_1.set_item_label("1", "This is the first item");
+	local_test_menu_1.append_item_label("1", "This is the first item");
 	local_test_menu_1.build();
 	menus.push_back(&local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
-	local_test_menu_2.set_item_label("1", "Number 1");
+	local_test_menu_2.append_item_label("1", "Number 1");
 	local_test_menu_2.append_item("2");
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
-	local_test_menu_2.set_item_label("4", "Last option");
+	local_test_menu_2.append_item_label("4", "Last option");
 	local_test_menu_2.add_border(true);
 	local_test_menu_2.build();
 	menus.push_back(&local_test_menu_2);
@@ -1123,7 +1196,7 @@ TEST_F(menu_test, basic_label_test)
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
-	local_test_menu_4.set_item_label("b", "Middle option");
+	local_test_menu_4.append_item_label("b", "Middle option");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border(true);
 	local_test_menu_4.build();
@@ -1198,16 +1271,16 @@ TEST_F(menu_test, separated_label)
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border(true);
 	local_test_menu_1.separate_items(true);
-	local_test_menu_1.set_item_label("1", "This is the first item");
+	local_test_menu_1.append_item_label("1", "This is the first item");
 	local_test_menu_1.build();
 	menus.push_back(&local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
-	local_test_menu_2.set_item_label("1", "Number 1");
+	local_test_menu_2.append_item_label("1", "Number 1");
 	local_test_menu_2.append_item("2");
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
-	local_test_menu_2.set_item_label("4", "Last option");
+	local_test_menu_2.append_item_label("4", "Last option");
 	local_test_menu_2.add_border(true);
 	local_test_menu_2.separate_items(true);
 	local_test_menu_2.build();
@@ -1222,7 +1295,7 @@ TEST_F(menu_test, separated_label)
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
-	local_test_menu_4.set_item_label("b", "Middle option");
+	local_test_menu_4.append_item_label("b", "Middle option");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border(true);
 	local_test_menu_4.separate_items(true);
@@ -1381,17 +1454,17 @@ TEST_F(menu_test, test_different_separater_characters)
 	local_test_menu_1.append_item("1");
 	local_test_menu_1.add_border(true);
 	local_test_menu_1.separate_items(true);
-	local_test_menu_1.set_item_label("1", "This is the first item");
+	local_test_menu_1.append_item_label("1", "This is the first item");
 	local_test_menu_1.set_separater_characters('=', '!', '#', '*');
 	local_test_menu_1.build();
 	menus.push_back(&local_test_menu_1);
 	menu local_test_menu_2(local_test_frame);
 	local_test_menu_2.append_item("1");
-	local_test_menu_2.set_item_label("1", "Number 1");
+	local_test_menu_2.append_item_label("1", "Number 1");
 	local_test_menu_2.append_item("2");
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
-	local_test_menu_2.set_item_label("4", "Last option");
+	local_test_menu_2.append_item_label("4", "Last option");
 	local_test_menu_2.add_border(true);
 	local_test_menu_2.separate_items(true);
 	local_test_menu_2.set_separater_characters('=', '!', '#', '*');
@@ -1408,7 +1481,7 @@ TEST_F(menu_test, test_different_separater_characters)
 	menu local_test_menu_4(local_test_frame, "new line");
 	local_test_menu_4.append_item("a");
 	local_test_menu_4.append_item("b");
-	local_test_menu_4.set_item_label("b", "Middle option");
+	local_test_menu_4.append_item_label("b", "Middle option");
 	local_test_menu_4.append_item("c");
 	local_test_menu_4.add_border(true);
 	local_test_menu_4.separate_items(true);

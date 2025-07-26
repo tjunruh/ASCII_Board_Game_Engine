@@ -149,17 +149,53 @@ void menu::remove_all_items()
 	}
 }
 
-int menu::set_item_label(const std::string& item, const std::string& label)
+int menu::append_item_label(const std::string& item, const std::string& label)
 {
 	int status = ELEMENT_NOT_FOUND;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
 		if (menu_items[i].item == item)
 		{
-			menu_items[i].label = label;
+			menu_items[i].labels.push_back(label);
 			status = SUCCESS;
 		}
 	}
+	log.log_status(status, "menu::append_item_label");
+	return status;
+}
+
+int menu::set_item_label(const std::string& item, unsigned int column, const std::string& label)
+{
+	int status = ELEMENT_NOT_FOUND;
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].item == item)
+		{
+			if (column >= menu_items[i].labels.size())
+			{
+				unsigned int empty_columns = column - menu_items[i].labels.size();
+				for (unsigned int j = 0; j <= empty_columns; j++)
+				{
+					if (j < empty_columns)
+					{
+						menu_items[i].labels.push_back("");
+					}
+					else
+					{
+						menu_items[i].labels.push_back(label);
+					}
+				}
+			}
+			else
+			{
+				menu_items[i].labels[column] = label;
+			}
+
+			status = SUCCESS;
+			break;
+		}
+	}
+
 	log.log_status(status, "menu::set_item_label");
 	return status;
 }
@@ -229,14 +265,23 @@ std::string menu::build_output()
 	std::string label_output = "";
 	bool build_label = label_exists();
 	unsigned int item_width = get_longest_item_length() + 2;
-	unsigned int label_width = get_longest_label_length() + 3;
+	std::vector<unsigned int> label_widths = get_longest_label_lengths();
+
+	for (unsigned int i = 0; i < label_widths.size(); i++)
+	{
+		label_widths[i] = label_widths[i];
+	}
 
 	if (get_line_compression_amount() != 0)
 	{
 		item_output = format_tools::get_spacing(item_width, _horizontal_char) + "\n";
 		if (build_label)
 		{
-			label_output = std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
+			for (unsigned int i = 0; i < label_widths.size(); i++)
+			{
+				label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_widths[i] + 1, _horizontal_char);
+			}
+			label_output = label_output + "\n";
 		}
 	}
 
@@ -266,10 +311,25 @@ std::string menu::build_output()
 
 		if (build_label)
 		{
-			label_output = label_output + separation_string + menu_items[i].label + "\n";
+			for (unsigned int j = 0; j < label_widths.size(); j++)
+			{
+				if (j < menu_items[i].labels.size())
+				{
+					label_output = label_output + separation_string + format_tools::fill_line(menu_items[i].labels[j], label_widths[j], format_tools::left_alignment_keyword);
+				}
+				else
+				{
+					label_output = label_output + separation_string + format_tools::fill_line("", label_widths[j], format_tools::left_alignment_keyword);
+				}
+			}
+			label_output = label_output + "\n";
 			if ((get_line_compression_amount() != 0) && ((i + 1) != menu_items.size()))
 			{
-				label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _intersection_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
+				for (unsigned int j = 0; j < label_widths.size(); j++)
+				{
+					label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _intersection_char) + format_tools::get_spacing(label_widths[j] + 1, _horizontal_char);
+				}
+				label_output = label_output + "\n";
 			}
 		}
 	}
@@ -279,7 +339,11 @@ std::string menu::build_output()
 		item_output = item_output + format_tools::get_spacing(item_width, _horizontal_char) + "\n";
 		if (build_label)
 		{
-			label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_width - 2, _horizontal_char) + "\n";
+			for (unsigned int i = 0; i < label_widths.size(); i++)
+			{
+				label_output = label_output + std::string(1, _horizontal_char) + std::string(1, _endpoint_char) + format_tools::get_spacing(label_widths[i] + 1, _horizontal_char);
+			}
+			label_output = label_output + "\n";
 		}
 	}
 
@@ -292,12 +356,16 @@ std::string menu::build_output()
 	{
 		std::vector<std::string> label_lines = format_tools::get_lines(label_output);
 		label_lines = format_tools::remove_newline_characters(label_lines);
-		label_lines = format_tools::fill_lines(label_lines, label_width, format_tools::left_alignment_keyword);
 		format_tools::text_column lines;
 		lines.text.push_back(item_lines);
 		lines.width.push_back(item_width);
 		lines.text.push_back(label_lines);
-		lines.width.push_back(label_width);
+		unsigned int total_label_width = 0;
+		for (unsigned int i = 0; i < label_widths.size(); i++)
+		{
+			total_label_width = total_label_width + label_widths[i];
+		}
+		lines.width.push_back(total_label_width);
 		unsigned int lines_in_column = 0;
 		output = format_tools::fuse_columns_into_row(lines, lines_in_column);
 	}
@@ -514,10 +582,13 @@ bool menu::label_exists()
 	bool exists = false;
 	for (unsigned int i = 0; i < menu_items.size(); i++)
 	{
-		if (menu_items[i].label != "")
+		for (unsigned int j = 0; j < menu_items[i].labels.size(); j++)
 		{
-			exists = true;
-			break;
+			if (menu_items[i].labels[j] != "")
+			{
+				exists = true;
+				break;
+			}
 		}
 	}
 	return exists;
@@ -536,17 +607,32 @@ unsigned int menu::get_longest_item_length()
 	return longest_length;
 }
 
-unsigned int menu::get_longest_label_length()
+std::vector<unsigned int> menu::get_longest_label_lengths()
 {
-	unsigned int longest_length = 0;
-	for (unsigned int i = 0; i < menu_items.size(); i++)
+	std::vector<unsigned int> longest_lengths;
+	bool max_columns_reached = false;
+	unsigned int column = 0;
+	while (!max_columns_reached)
 	{
-		if (menu_items[i].label.length() > longest_length)
+		max_columns_reached = true;
+		unsigned int longest_length = 0;
+		for (unsigned int i = 0; i < menu_items.size(); i++)
 		{
-			longest_length = menu_items[i].label.length();
+			if (column < menu_items[i].labels.size() && menu_items[i].labels[column].length() > longest_length)
+			{
+				longest_length = menu_items[i].labels[column].length();
+				max_columns_reached = false;
+			}
 		}
+
+		if (longest_length != 0)
+		{
+			longest_lengths.push_back(longest_length);
+		}
+		column++;
 	}
-	return longest_length;
+
+	return longest_lengths;
 }
 
 unsigned int menu::get_stop_index(unsigned int top_index, unsigned int displayed_items)
