@@ -134,13 +134,15 @@ int ascii_io::getchar() {
 	return input;
 }
 
-void ascii_io::wait_for_keystroke(std::vector<int> keystroke_options)
+int ascii_io::wait_for_keystroke(std::vector<int> keystroke_options)
 {
 	int input = ascii_io::undefined;
 	do
 	{
 		input = getchar();
 	} while (std::count(keystroke_options.begin(), keystroke_options.end(), input) == 0);
+
+	return input;
 }
 
 void ascii_io::clear() {
