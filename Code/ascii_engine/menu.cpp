@@ -280,11 +280,6 @@ std::string menu::build_output()
 	unsigned int item_width = get_longest_item_length() + 2;
 	std::vector<unsigned int> label_widths = get_longest_label_lengths();
 
-	for (unsigned int i = 0; i < label_widths.size(); i++)
-	{
-		label_widths[i] = label_widths[i];
-	}
-
 	if (get_line_compression_amount() != 0)
 	{
 		item_output = format_tools::get_spacing(item_width, _horizontal_char) + "\n";
@@ -669,14 +664,17 @@ std::vector<unsigned int> menu::get_longest_label_lengths()
 		unsigned int longest_length = 0;
 		for (unsigned int i = 0; i < menu_items.size(); i++)
 		{
-			if (column < menu_items[i].labels.size() && menu_items[i].labels[column].length() > longest_length)
+			if (column < menu_items[i].labels.size())
 			{
-				longest_length = menu_items[i].labels[column].length();
+				if (menu_items[i].labels[column].length() > longest_length)
+				{
+					longest_length = menu_items[i].labels[column].length();
+				}
 				max_columns_reached = false;
 			}
 		}
 
-		if (longest_length != 0)
+		if (!max_columns_reached)
 		{
 			longest_lengths.push_back(longest_length);
 		}

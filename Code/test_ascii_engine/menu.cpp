@@ -228,16 +228,17 @@ TEST_F(menu_test, test_set_item_label)
 	set_item_label_test(local_test_menu_1, "item 2", 1, "2.1", "menu::set_item_label", SUCCESS, 4);
 	set_item_label_test(local_test_menu_1, "item 2", 3, "2.3", "menu::set_item_label", SUCCESS, 5);
 	set_item_label_test(local_test_menu_1, "item 2", 2, "2.2", "menu::set_item_label", SUCCESS, 6);
-	set_item_label_test(local_test_menu_1, "gibberish", 4, "my label", "menu::set_item_label", ELEMENT_NOT_FOUND, 7);
+	set_item_label_test(local_test_menu_1, "item 2", 5, "2.5", "menu::set_item_label", SUCCESS, 7);
+	set_item_label_test(local_test_menu_1, "gibberish", 4, "my label", "menu::set_item_label", ELEMENT_NOT_FOUND, 8);
 
 	std::vector<menu::item_structure> expected_menu_data =
 	{
 		{"item 0", {"", "0.1"}},
 		{"item 1", {"1.0", "", "1.2"}},
-		{"item 2", {"2.0", "2.1", "2.2", "2.3"}}
+		{"item 2", {"2.0", "2.1", "2.2", "2.3", "", "2.5"}}
 	};
 
-	menu_data_test(local_test_menu_1, expected_menu_data, 8);
+	menu_data_test(local_test_menu_1, expected_menu_data, 9);
 	delete(local_test_frame);
 }
 
