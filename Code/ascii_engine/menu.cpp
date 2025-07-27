@@ -140,9 +140,27 @@ void menu::set_lines_count(int lines_count)
 
 void menu::remove_all_items()
 {
-	menu_items.clear();
+	if (_heading && menu_items.size() > 0)
+	{
+		item_structure heading = menu_items[0];
+		menu_items.clear();
+		menu_items.push_back(heading);
+	}
+	else
+	{
+		menu_items.clear();
+	}
+
 	set_top_line(0);
-	set_cursor_line(format_tools::expand(0, get_line_compression_amount(), 1));
+	if (_heading)
+	{
+		set_cursor_line(format_tools::expand(1, get_line_compression_amount(), 1));
+	}
+	else
+	{
+		set_cursor_line(format_tools::expand(0, get_line_compression_amount(), 1));
+	}
+
 	if (!get_line_constraint())
 	{
 		set_displayed_lines(0);

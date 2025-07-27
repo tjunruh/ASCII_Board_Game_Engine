@@ -1518,8 +1518,8 @@ TEST_F(menu_test, test_remove_items)
 	const expected_display_data correct_answer =
 	{
 		".------------------------------------------------..------------------------------------------------.\n"
-		"| * 1                                            || * 1                                            |\n"
-		".------------------------------------------------.|   2                                            |\n"
+		"| * 1                                            ||   1                                            |\n"
+		".------------------------------------------------.| * 2                                            |\n"
 		"                                                  |   3                                            |\n"
 		"                                                  |   4                                            |\n"
 		"                                                  .------------------------------------------------.\n"
@@ -1528,7 +1528,7 @@ TEST_F(menu_test, test_remove_items)
 		"|   Second option                                                                                  |\n"
 		".--------------------------------------------------------------------------------------------------.\n"
 		".-------------------------------..-------------------------------..-------------------------------. \n"
-		"| * a                           || * d                           || * h                           | \n"
+		"| * a                           || * d                           ||   h                           | \n"
 		"|   b                           ||   e                           |.-------------------------------. \n"
 		"|   c                           ||   f                           |                                  \n"
 		".-------------------------------.|   g                           |                                  \n"
@@ -1561,6 +1561,7 @@ TEST_F(menu_test, test_remove_items)
 	local_test_menu_2.append_item("2");
 	local_test_menu_2.append_item("3");
 	local_test_menu_2.append_item("4");
+	local_test_menu_2.use_top_row_as_heading(true);
 	local_test_menu_2.add_border(true);
 	local_test_menu_2.build();
 	menus.push_back(&local_test_menu_2);
@@ -1587,6 +1588,10 @@ TEST_F(menu_test, test_remove_items)
 	menus.push_back(&local_test_menu_5);
 	menu local_test_menu_6(local_test_frame);
 	local_test_menu_6.append_item("h");
+	local_test_menu_6.append_item("i");
+	local_test_menu_6.append_item("j");
+	local_test_menu_6.use_top_row_as_heading(true);
+	local_test_menu_6.remove_all_items();
 	local_test_menu_6.add_border(true);
 	local_test_menu_6.build();
 	menus.push_back(&local_test_menu_6);
