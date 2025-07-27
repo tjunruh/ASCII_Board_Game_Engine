@@ -81,14 +81,26 @@ protected:
 		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) <<  "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
 	}
 
-	void set_item_label_test(menu& local_test_menu, std::string item, unsigned int column, std::string label, std::string expected_error_function, int expected_error_code, int test_num)
+	void set_get_item_label_test(menu& local_test_menu, std::string item, unsigned int column, std::string label, bool set, std::string expected_error_function, int expected_error_code, int test_num)
 	{
 		std::string log_content = "";
 		local_test_menu.reset_logging("menu.log");
-		local_test_menu.set_item_label(item, column, label);
-		int status = file_manager::read_file("menu.log", log_content);
-		ASSERT_EQ(status, 0);
-		EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
+		if (set)
+		{
+			local_test_menu.set_item_label(item, column, label);
+			int status = file_manager::read_file("menu.log", log_content);
+			ASSERT_EQ(status, 0);
+			EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
+		}
+		else
+		{
+			std::string actual_label = "";
+			local_test_menu.get_item_label(item, column, actual_label);
+			EXPECT_EQ(label, actual_label) << std::to_string(test_num);
+			int status = file_manager::read_file("menu.log", log_content);
+			ASSERT_EQ(status, 0);
+			EXPECT_NE(log_content.find(expected_error_function + " status: " + std::to_string(expected_error_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_error_function + "\nExpected code: " + std::to_string(expected_error_code);
+		}
 	}
 
 	void set_get_separate_characters(menu& local_test_menu, char horizontal_char, char vertical_char, char intersection_char, char endpoint_char, std::string expected_status_function, int expected_status_code, bool set, int test_num)
@@ -221,15 +233,19 @@ TEST_F(menu_test, test_set_item_label)
 	local_test_menu_1.append_item("item 0");
 	local_test_menu_1.append_item("item 1");
 	local_test_menu_1.append_item("item 2");
-	set_item_label_test(local_test_menu_1, "item 0", 1, "0.1", "menu::set_item_label", SUCCESS, 0);
-	set_item_label_test(local_test_menu_1, "item 1", 2, "1.2", "menu::set_item_label", SUCCESS, 1);
-	set_item_label_test(local_test_menu_1, "item 1", 0, "1.0", "menu::set_item_label", SUCCESS, 2);
-	set_item_label_test(local_test_menu_1, "item 2", 0, "2.0", "menu::set_item_label", SUCCESS, 3);
-	set_item_label_test(local_test_menu_1, "item 2", 1, "2.1", "menu::set_item_label", SUCCESS, 4);
-	set_item_label_test(local_test_menu_1, "item 2", 3, "2.3", "menu::set_item_label", SUCCESS, 5);
-	set_item_label_test(local_test_menu_1, "item 2", 2, "2.2", "menu::set_item_label", SUCCESS, 6);
-	set_item_label_test(local_test_menu_1, "item 2", 5, "2.5", "menu::set_item_label", SUCCESS, 7);
-	set_item_label_test(local_test_menu_1, "gibberish", 4, "my label", "menu::set_item_label", ELEMENT_NOT_FOUND, 8);
+	set_get_item_label_test(local_test_menu_1, "item 0", 1, "0.1", true, "menu::set_item_label", SUCCESS, 0);
+	set_get_item_label_test(local_test_menu_1, "item 1", 2, "1.2", true, "menu::set_item_label", SUCCESS, 1);
+	set_get_item_label_test(local_test_menu_1, "item 1", 0, "1.0", true, "menu::set_item_label", SUCCESS, 2);
+	set_get_item_label_test(local_test_menu_1, "item 2", 0, "2.0", true, "menu::set_item_label", SUCCESS, 3);
+	set_get_item_label_test(local_test_menu_1, "item 2", 1, "2.1", true, "menu::set_item_label", SUCCESS, 4);
+	set_get_item_label_test(local_test_menu_1, "item 2", 3, "2.3", true, "menu::set_item_label", SUCCESS, 5);
+	set_get_item_label_test(local_test_menu_1, "item 2", 2, "2.2", true, "menu::set_item_label", SUCCESS, 6);
+	set_get_item_label_test(local_test_menu_1, "item 2", 5, "2.5", true, "menu::set_item_label", SUCCESS, 7);
+	set_get_item_label_test(local_test_menu_1, "gibberish", 4, "my label", true, "menu::set_item_label", ELEMENT_NOT_FOUND, 8);
+	set_get_item_label_test(local_test_menu_1, "item 0", 1, "0.1", false, "menu::get_item_label", SUCCESS, 9);
+	set_get_item_label_test(local_test_menu_1, "gibberish", 0, "", false, "menu::get_item_label", ELEMENT_NOT_FOUND, 10);
+	set_get_item_label_test(local_test_menu_1, "item 0", 2, "", false, "menu::get_item_label", INVALID_INDEX, 11);
+	set_get_item_label_test(local_test_menu_1, "item 2", 5, "2.5", false, "menu::get_item_label", SUCCESS, 12);
 
 	std::vector<menu::item_structure> expected_menu_data =
 	{
@@ -238,7 +254,7 @@ TEST_F(menu_test, test_set_item_label)
 		{"item 2", {"2.0", "2.1", "2.2", "2.3", "", "2.5"}}
 	};
 
-	menu_data_test(local_test_menu_1, expected_menu_data, 9);
+	menu_data_test(local_test_menu_1, expected_menu_data, 13);
 	delete(local_test_frame);
 }
 

@@ -35,6 +35,7 @@ public:
 	MENU_API void set_cursor_index(unsigned int index);
 	MENU_API unsigned int get_cursor_index();
 	MENU_API item_structure get_cursor_item_data();
+	MENU_API int get_item_label(const std::string& item, unsigned int column, std::string& label);
 	MENU_API void set_controls(std::vector<int> select, int up, int down, int left, int right, int quit);
 	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& left, int& right, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);

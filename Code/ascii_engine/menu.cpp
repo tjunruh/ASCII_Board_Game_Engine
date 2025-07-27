@@ -276,6 +276,31 @@ menu::item_structure menu::get_cursor_item_data()
 	return item_data;
 }
 
+int menu::get_item_label(const std::string& item, unsigned int column, std::string& label)
+{
+	int status = ELEMENT_NOT_FOUND;
+	label = "";
+	for (unsigned int i = 0; i < menu_items.size(); i++)
+	{
+		if (menu_items[i].item == item)
+		{
+			if (column < menu_items[i].labels.size())
+			{
+				label = menu_items[i].labels[column];
+				status = SUCCESS;
+			}
+			else
+			{
+				status = INVALID_INDEX;
+			}
+			break;
+		}
+	}
+
+	log.log_status(status, "menu::get_item_label");
+	return status;
+}
+
 bool menu::item_exists(const std::string& item)
 {
 	bool exists = false;
