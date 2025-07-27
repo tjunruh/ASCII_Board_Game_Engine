@@ -35,8 +35,8 @@ public:
 	MENU_API void set_cursor_index(unsigned int index);
 	MENU_API unsigned int get_cursor_index();
 	MENU_API item_structure get_cursor_item_data();
-	MENU_API void set_controls(std::vector<int> select, int up, int down, int quit);
-	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& quit);
+	MENU_API void set_controls(std::vector<int> select, int up, int down, int left, int right, int quit);
+	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& left, int& right, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	MENU_API void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	MENU_API void get_selection(std::string& selection, int& key_stroke);
@@ -57,6 +57,8 @@ private:
 	};
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
+	int _left = ascii_io::left;
+	int _right = ascii_io::right;
 	int _quit = ascii_io::q;
 	bool quit_enabled = false;
 	unsigned int non_separated_lines_count = 0;

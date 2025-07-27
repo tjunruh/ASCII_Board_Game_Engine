@@ -395,7 +395,7 @@ std::string menu::build_output()
 	return output;
 }
 
-void menu::set_controls(std::vector<int> select, int up, int down, int quit)
+void menu::set_controls(std::vector<int> select, int up, int down, int left, int right, int quit)
 {
 	_select.clear();
 	for (unsigned int i = 0; i < select.size(); i++)
@@ -404,10 +404,12 @@ void menu::set_controls(std::vector<int> select, int up, int down, int quit)
 	}
 	_up = up;
 	_down = down;
+	_left = left;
+	_right = right;
 	_quit = quit;
 }
 
-void menu::get_controls(std::vector<int>& select, int& up, int& down, int& quit)
+void menu::get_controls(std::vector<int>& select, int& up, int& down, int& left, int& right, int& quit)
 {
 	select.clear();
 	for (unsigned int i = 0; i < _select.size(); i++)
@@ -416,6 +418,8 @@ void menu::get_controls(std::vector<int>& select, int& up, int& down, int& quit)
 	}
 	up = _up;
 	down = _down;
+	left = _left;
+	right = _right;
 	quit = _quit;
 }
 
@@ -508,6 +512,32 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 				}
 				_cursor_index++;
 				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+			}
+		}
+		else if (key_stroke == _left)
+		{
+			unsigned int left_column = get_left_column();
+			if (left_column > 0)
+			{
+				set_left_column(left_column - 1);
+			}
+			else
+			{
+				set_left_column(0);
+			}
+		}
+		else if (key_stroke == _right)
+		{
+			unsigned int left_column = get_left_column();
+			unsigned int width = get_width();
+			unsigned int top_line_length = get_line_length(0);
+			if ((left_column + 1 + width) < top_line_length)
+			{
+				set_left_column(left_column + 1);
+			}
+			else if (top_line_length > width)
+			{
+				set_left_column(top_line_length - width);
 			}
 		}
 
