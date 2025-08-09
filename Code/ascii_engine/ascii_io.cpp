@@ -15,6 +15,8 @@
 #include <ncurses.h>
 #include <memory>
 #include "format_tools.h"
+#include <termios.h>
+#include <sys/ioctl.h>
 #endif
 
 int console_zoom_amount = 0;
@@ -361,6 +363,11 @@ int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
+#ifdef __linux__
+	winsize ws;
+	ioctl(0, TIOCGWINSZ, &ws);
+	resizeterm(ws.ws_row, ws.ws_col);
+#endif
 	return status;
 }
 
@@ -447,6 +454,11 @@ int ascii_io::zoom_out(unsigned int amount, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
+#ifdef __linux__
+	winsize ws;
+	ioctl(0, TIOCGWINSZ, &ws);
+	resizeterm(ws.ws_row, ws.ws_col);
+#endif
 	return status;
 }
 
@@ -511,6 +523,11 @@ int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
+#ifdef __linux__
+	winsize ws;
+	ioctl(0, TIOCGWINSZ, &ws);
+	resizeterm(ws.ws_row, ws.ws_col);
+#endif
 	return status;
 }
 
