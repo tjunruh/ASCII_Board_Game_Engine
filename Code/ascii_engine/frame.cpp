@@ -958,11 +958,11 @@ void frame::constrain_colors(const widget_info* const item, std::vector<format_t
 
 		if (item->column_constraint)
 		{
-			int number_of_coordinate_colors = item->coordinate_colors.size() - 1;
+			int number_of_coordinate_colors = colors.size() - 1;
 			unsigned int width = get_widget_width(item, false);
 			for (int i = number_of_coordinate_colors; i >= 0; i--)
 			{
-				if (item->coordinate_colors[i].x_position < (int)item->left_column || item->coordinate_colors[i].x_position >= ((int)item->left_column + (int)width))
+				if (colors[i].x_position < (int)item->left_column || colors[i].x_position >= ((int)item->left_column + (int)width))
 				{
 					colors.erase(colors.begin() + i);
 				}
