@@ -1221,6 +1221,83 @@ void ascii_board::scroll_right(unsigned int amount)
 	}
 }
 
+void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int bottom_padding, int left_padding, int right_padding)
+{
+	int action_tile_index = get_action_tile_index(row, column);
+	if (action_tile_index != -1 && action_tiles[action_tile_index].board_section.size() > 0)
+	{
+		int top = action_tiles[action_tile_index].board_section[0].board_start_row;
+		int bottom = action_tiles[action_tile_index].board_section[0].board_stop_row;
+		int left = action_tiles[action_tile_index].board_section[0].board_start_column;
+		int right = action_tiles[action_tile_index].board_section[0].board_stop_column;
+		for (unsigned int i = 1; i < action_tiles[action_tile_index].board_section.size(); i++)
+		{
+			if (action_tiles[action_tile_index].board_section[i].board_start_row < top)
+			{
+				top = action_tiles[action_tile_index].board_section[i].board_start_row;
+			}
+
+			if (action_tiles[action_tile_index].board_section[i].board_stop_row > bottom)
+			{
+				bottom = action_tiles[action_tile_index].board_section[i].board_stop_row;
+			}
+
+			if (action_tiles[action_tile_index].board_section[i].board_start_column < left)
+			{
+				left = action_tiles[action_tile_index].board_section[i].board_start_column;
+			}
+
+			if (action_tiles[action_tile_index].board_section[i].board_stop_column > right)
+			{
+				right = action_tiles[action_tile_index].board_section[i].board_stop_column;
+			}
+		}
+
+		int left_column = get_left_column();
+		int top_line = get_top_line();
+		int width = get_width();
+		int displayed_lines = get_displayed_lines();
+
+		if (top - top_padding >= 0)
+		{
+			top = top - top_padding;
+		}
+
+		bottom = bottom + bottom_padding;
+
+		if (left - left_padding >= 0)
+		{
+			left = left - left_padding;
+		}
+
+		right = right + right_padding;
+
+		if ((top < top_line) && (bottom < top_line + displayed_lines))
+		{
+			scroll_up(top_line - top);
+		}
+		else if ((top >= top_line) && (bottom >= top_line + displayed_lines))
+		{
+			scroll_down((bottom + 1) - (top_line + displayed_lines));
+		}
+
+		if ((left < left_column) && (right < left_column + width))
+		{
+			scroll_left(left_column - left);
+		}
+		else if ((left >= left_column) && (right >= left_column + width))
+		{
+			scroll_right((right + 1) - (left_column + width));
+		}
+
+		log.log_status(SUCCESS, "ascii_board::bring_tile_into_view");
+	}
+	else
+	{
+		log.log_status(ELEMENT_NOT_FOUND, "ascii_board::bring_tile_into_view");
+	}
+}
+
 void ascii_board::initialize_tiles(int rows, int columns, std::vector<action_tile_skeleton>& action_tile_skeletons)
 {
 	action_tile_skeletons.clear();

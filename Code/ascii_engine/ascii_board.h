@@ -132,6 +132,7 @@ public:
 	ASCII_BOARD_API void scroll_down(unsigned int amount = 1);
 	ASCII_BOARD_API void scroll_left(unsigned int amount = 1);
 	ASCII_BOARD_API void scroll_right(unsigned int amount = 1);
+	ASCII_BOARD_API void bring_tile_into_view(int row, int column, int top_padding = 0, int bottom_padding = 0, int left_padding = 0, int right_padding = 0);
 
 private:
 	int max_rows = 0;

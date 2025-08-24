@@ -316,6 +316,24 @@ protected:
 		EXPECT_EQ(displayed_board, comparison) << std::to_string(test_num);
 	}
 
+	void bring_tile_into_view_test(ascii_board& local_test_board, int row, int column, int top_padding, int bottom_padding, int left_padding, int right_padding, const std::string& comparison, const std::string& expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+
+		local_test_board.bring_tile_into_view(row, column, top_padding, bottom_padding, left_padding, right_padding);
+
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+		local_test_board.build();
+		std::string board = local_test_board.get_displayed_output();
+		EXPECT_EQ(board, comparison) << std::to_string(test_num);
+	}
+
 	void clear(ascii_board& local_test_board, int row, int column, const std::string& comparison, std::string expected_status_function, int expected_status_code, int test_num)
 	{
 		std::string log_content = "";
@@ -2056,5 +2074,30 @@ TEST_F(ascii_board_test, scrolling_board_test)
 	scroll_test(local_test_board, 13, "right", single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_twenty_two, 14);
 	scroll_test(local_test_board, 22, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, 15);
 	scroll_test(local_test_board, 1, "left", single_line_board_definitions::empty_board_ten_lines_twenty_columns, 16);
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, test_bring_tile_into_view)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, single_line_board_definitions::board_config_path, "default", "none", 10, true);
+	local_test_frame->use_fake_console_dimensions(true);
+	local_test_frame->set_fake_console_width(20);
+	local_test_frame->set_fake_console_height(21);
+	local_test_frame->get_frame_output();
+	local_test_board.build();
+	EXPECT_EQ(single_line_board_definitions::empty_board_ten_lines_twenty_columns, local_test_board.get_displayed_output());
+	bring_tile_into_view_test(local_test_board, 0, 9, 0, 0, 0, 1, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_twenty_one, "ascii_board::bring_tile_into_view", SUCCESS, 0);
+	bring_tile_into_view_test(local_test_board, 0, 3, 0, 0, 3, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "ascii_board::bring_tile_into_view", SUCCESS, 1);
+	bring_tile_into_view_test(local_test_board, 0, 0, 0, 0, 1, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", SUCCESS, 2);
+	bring_tile_into_view_test(local_test_board, 0, 6, 0, 0, 0, 2, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_right_ten, "ascii_board::bring_tile_into_view", SUCCESS, 3);
+	bring_tile_into_view_test(local_test_board, 0, 0, 0, 0, 1, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", SUCCESS, 4);
+	bring_tile_into_view_test(local_test_board, 9, 0, 0, 1, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_down_eleven, "ascii_board::bring_tile_into_view", SUCCESS, 5);
+	bring_tile_into_view_test(local_test_board, 2, 0, 0, 0, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_down_five, "ascii_board::bring_tile_into_view", SUCCESS, 6);
+	bring_tile_into_view_test(local_test_board, 0, 0, 1, 0, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", SUCCESS, 7);
+	bring_tile_into_view_test(local_test_board, 6, 0, 0, 1, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_down_five, "ascii_board::bring_tile_into_view", SUCCESS, 8);
+	bring_tile_into_view_test(local_test_board, 0, 0, 1, 0, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", SUCCESS, 9);
+	bring_tile_into_view_test(local_test_board, 0, 10, 1, 1, 1, 1, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", ELEMENT_NOT_FOUND, 10);
+
 	delete(local_test_frame);
 }
