@@ -647,8 +647,15 @@ unsigned int widget::get_left_column()
 unsigned int widget::get_lines_count(bool only_displayed)
 {
 	unsigned int lines_count = 0;
-	int status = parent_frame->get_lines_count(item.id, lines_count, only_displayed);
-	log.log_status(status, "widget::get_lines_count");
+	if (!item.line_constraint || !only_displayed)
+	{
+		lines_count = item.lines.size();
+	}
+	else
+	{
+		lines_count = item.displayed_lines;
+	}
+
 	return lines_count;
 }
 

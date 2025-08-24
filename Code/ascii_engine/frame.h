@@ -102,7 +102,6 @@ private:
 	void unhighlight(int row, int column, int level);
 	void keep_point_in_console_bounds(int& x, int& y);
 	int get_levels(int row, int column);
-	int get_lines_count(int id, unsigned int& lines_count, bool only_displayed=true);
 	float get_greatest_width_multiplier_at_coordinate(int row, int column);
 	float get_width_weight(const widget_info* const item, float multiplier);
 	int generate_widget_id();

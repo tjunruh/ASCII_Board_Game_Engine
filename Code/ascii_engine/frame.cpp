@@ -595,29 +595,6 @@ int frame::get_levels(int row, int column)
 	return count;
 }
 
-int frame::get_lines_count(int id, unsigned int& lines_count, bool only_displayed)
-{
-	int status = ELEMENT_NOT_FOUND;
-	for (unsigned int i = 0; i < widgets.size(); i++)
-	{
-		if (widgets[i]->id == id)
-		{
-			if (!widgets[i]->line_constraint || !only_displayed)
-			{
-				lines_count = widgets[i]->lines.size();
-			}
-			else
-			{
-				lines_count = widgets[i]->displayed_lines;
-			}
-
-			status = SUCCESS;
-			break;
-		}
-	}
-	return status;
-}
-
 float frame::get_greatest_width_multiplier_at_coordinate(int row, int column)
 {
 	float greatest_width_multiplier = 0.0;
@@ -858,7 +835,15 @@ unsigned int frame::get_widget_width(int id, bool include_spacing)
 unsigned int frame::get_widget_height(const widget_info* const item, bool include_spacing)
 {
 	unsigned int height = 0;
-	get_lines_count(item->id, height);
+	if (item->line_constraint)
+	{
+		height = item->displayed_lines;
+	}
+	else
+	{
+		height = item->lines.size();
+	}
+
 	if (include_spacing)
 	{
 		height = height + item->top_spacing + item->bottom_spacing;
