@@ -19,7 +19,7 @@ text_box::text_box(frame* parent, std::string special_operation, int lines_count
 	set_line_constraint(true);
 	if (lines_count > 0)
 	{
-		set_displayed_lines(lines_count);
+		set_displayed_lines_count(lines_count);
 		set_line_subtraction_from_terminal_height(0);
 	}
 	else if (lines_count < 0)
@@ -28,7 +28,7 @@ text_box::text_box(frame* parent, std::string special_operation, int lines_count
 	}
 	else
 	{
-		set_displayed_lines(1);
+		set_displayed_lines_count(1);
 		set_line_subtraction_from_terminal_height(0);
 	}
 }
@@ -40,12 +40,12 @@ unsigned int text_box::write()
 
 	move_cursor_to_linear_position(saved_cursor_linear_position);
 
-	if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines() + get_top_line()))
+	if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines_count() + get_top_line()))
 	{
 		int x = 0;
 		int y = 0;
 		ascii_io::get_cursor_position(x, y);
-		y = y_origin - 1 + get_displayed_lines();
+		y = y_origin - 1 + get_displayed_lines_count();
 		ascii_io::move_cursor_to_position(x, y);
 		fit_cursor_to_line();
 	}
@@ -67,19 +67,19 @@ unsigned int text_box::write()
 
 			move_cursor_to_linear_position(saved_cursor_linear_position);
 
-			if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines() + get_top_line()))
+			if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines_count() + get_top_line()))
 			{
 				int x = 0;
 				int y = 0;
 				ascii_io::get_cursor_position(x, y);
-				y = y_origin - 1 + get_displayed_lines();
+				y = y_origin - 1 + get_displayed_lines_count();
 				ascii_io::move_cursor_to_position(x, y);
 				fit_cursor_to_line();
 			}
 		}
 
 		unsigned int top_line = get_top_line();
-		unsigned int displayed_lines = get_displayed_lines();
+		unsigned int displayed_lines = get_displayed_lines_count();
 
 		if (input == ascii_io::up)
 		{
@@ -103,7 +103,7 @@ unsigned int text_box::write()
 		{
 			if (cursor_on_bottom_border())
 			{
-				if ((get_cursor_line() + 1) < get_lines_count(false))
+				if ((get_cursor_line() + 1) < get_total_lines_count())
 				{
 					top_line++;
 					set_top_line(top_line);
@@ -111,7 +111,7 @@ unsigned int text_box::write()
 					fit_cursor_to_line();
 				}
 			}
-			else if((get_cursor_line() + 1) < get_lines_count(false))
+			else if((get_cursor_line() + 1) < get_total_lines_count())
 			{
 				ascii_io::move_cursor_down();
 				fit_cursor_to_line();
@@ -213,7 +213,7 @@ void text_box::set_lines_count(int lines_count)
 {
 	if (lines_count > 0)
 	{
-		set_displayed_lines(lines_count);
+		set_displayed_lines_count(lines_count);
 		set_line_subtraction_from_terminal_height(0);
 	}
 	else if (lines_count < 0)
@@ -223,7 +223,7 @@ void text_box::set_lines_count(int lines_count)
 	}
 	else
 	{
-		set_displayed_lines(1);
+		set_displayed_lines_count(1);
 		set_line_subtraction_from_terminal_height(0);
 	}
 
@@ -277,7 +277,7 @@ unsigned int text_box::get_linear_cursor_position()
 	x = x - x_origin;
 	y = y - y_origin;
 	unsigned int position = 0;
-	unsigned int total_lines = get_lines_count(false);
+	unsigned int total_lines = get_total_lines_count();
 	for (unsigned int i = 0; i < total_lines; i++)
 	{
 		if (((int)i - (int)get_top_line()) == y)
@@ -296,7 +296,7 @@ void text_box::get_two_dimensional_cursor_position(unsigned int linear_position,
 	x = x_origin;
 	y = y_origin;
 	unsigned int current_linear_position = 0;
-	unsigned int total_lines = get_lines_count(false);
+	unsigned int total_lines = get_total_lines_count();
 	for (unsigned int i = 0; i < total_lines; i++)
 	{
 		unsigned int line_length = get_line_length(i);
@@ -348,7 +348,7 @@ unsigned int text_box::get_line_of_position(unsigned int position)
 {
 	unsigned int line = 0;
 	unsigned int current_linear_position = 0;
-	unsigned int total_lines = get_lines_count(false);
+	unsigned int total_lines = get_total_lines_count();
 	for (unsigned int i = 0; i < total_lines; i++)
 	{
 		unsigned int line_length = get_line_length(i);

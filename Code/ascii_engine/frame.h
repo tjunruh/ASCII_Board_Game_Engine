@@ -80,7 +80,7 @@ private:
 		float width_multiplier = 1.0;
 		bool selectable = false;
 		unsigned int top_line = 0;
-		unsigned int displayed_lines = 0;
+		unsigned int displayed_lines_count = 0;
 		unsigned int line_subtraction_from_terminal_height = 0;
 		unsigned int line_compression_amount = 0;
 		unsigned int left_column = 0;

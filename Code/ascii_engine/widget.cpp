@@ -573,9 +573,9 @@ void widget::set_column_constraint(bool column_constraint)
 	parent_frame->display_stale = true;
 }
 
-void widget::set_displayed_lines(unsigned int displayed_lines)
+void widget::set_displayed_lines_count(unsigned int displayed_lines_count)
 {
-	item.displayed_lines = displayed_lines;
+	item.displayed_lines_count = displayed_lines_count;
 }
 
 void widget::set_line_subtraction_from_terminal_height(unsigned int line_subtraction_from_terminal_height)
@@ -619,9 +619,14 @@ bool widget::get_column_constraint()
 	return item.column_constraint;
 }
 
-unsigned int widget::get_displayed_lines()
+unsigned int widget::get_total_lines_count()
 {
-	return item.displayed_lines;
+	return item.lines.size();
+}
+
+unsigned int widget::get_displayed_lines_count()
+{
+	return item.displayed_lines_count;
 }
 
 unsigned int widget::get_line_subtraction_from_terminal_height()
@@ -644,34 +649,24 @@ unsigned int widget::get_left_column()
 	return item.left_column;
 }
 
-unsigned int widget::get_lines_count(bool only_displayed)
+unsigned int widget::get_total_columns_count()
 {
-	unsigned int lines_count = 0;
-	if (!item.line_constraint || !only_displayed)
-	{
-		lines_count = item.lines.size();
-	}
-	else
-	{
-		lines_count = item.displayed_lines;
-	}
-
-	return lines_count;
-}
-
-unsigned int widget::get_columns_count()
-{
-	unsigned int columns_count = 0;
+	unsigned int total_columns_count = 0;
 	for (unsigned int i = 0; i < item.lines.size(); i++)
 	{
 		unsigned int line_length = item.lines[i].length();
-		if (line_length > columns_count)
+		if (line_length > total_columns_count)
 		{
-			columns_count = line_length;
+			total_columns_count = line_length;
 		}
 	}
 
-	return columns_count;
+	return total_columns_count;
+}
+
+unsigned int widget::get_displayed_columns_count()
+{
+	return get_width();
 }
 
 void widget::set_line_character(char character, unsigned int line, unsigned int character_index)

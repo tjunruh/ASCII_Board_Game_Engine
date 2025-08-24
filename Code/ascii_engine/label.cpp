@@ -22,7 +22,7 @@ label::label(frame* parent, const std::string& special_operation, int lines_coun
 		if (lines_count > 0)
 		{
 			set_line_subtraction_from_terminal_height(0);
-			set_displayed_lines(lines_count);
+			set_displayed_lines_count(lines_count);
 		}
 		else if (lines_count < 0)
 		{
@@ -176,12 +176,12 @@ void label::scroll_up(unsigned int amount, bool render)
 void label::scroll_down(unsigned int amount, bool render)
 {
 	unsigned int top_line = get_top_line();
-	unsigned int displayed_lines = get_displayed_lines();
-	unsigned int total_lines = get_lines_count(false);
+	unsigned int displayed_lines_count = get_displayed_lines_count();
+	unsigned int total_lines = get_total_lines_count();
 	unsigned int bottom_line = 0;
-	if (displayed_lines < total_lines)
+	if (displayed_lines_count < total_lines)
 	{
-		bottom_line = total_lines - displayed_lines;
+		bottom_line = total_lines - displayed_lines_count;
 	}
 
 	if ((top_line + amount) > bottom_line)
@@ -220,12 +220,12 @@ void label::scroll_left(unsigned int amount, bool render)
 void label::scroll_right(unsigned int amount, bool render)
 {
 	unsigned int left_column = get_left_column();
-	unsigned int displayed_columns = get_width();
-	unsigned int total_columns = get_columns_count();
+	unsigned int displayed_columns_count = get_displayed_columns_count();
+	unsigned int total_columns = get_total_columns_count();
 	unsigned int rightmost_column = 0;
-	if (displayed_columns < total_columns)
+	if (displayed_columns_count < total_columns)
 	{
-		rightmost_column = total_columns - displayed_columns;
+		rightmost_column = total_columns - displayed_columns_count;
 	}
 
 	if ((left_column + amount) > rightmost_column)
@@ -271,7 +271,7 @@ void label::set_lines_count(int lines_count)
 	else if (lines_count > 0)
 	{
 		set_line_subtraction_from_terminal_height(0);
-		set_displayed_lines(lines_count);
+		set_displayed_lines_count(lines_count);
 		set_line_constraint(true);
 		bound_top_line();
 	}

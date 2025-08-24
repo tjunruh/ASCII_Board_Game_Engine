@@ -71,7 +71,7 @@ protected:
 	void widget_display(std::vector<std::string> output_lines, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 	void set_line_constraint(bool line_constraint);
 	void set_column_constraint(bool column_constraint);
-	void set_displayed_lines(unsigned int displayed_lines);
+	void set_displayed_lines_count(unsigned int displayed_lines_count);
 	void set_line_subtraction_from_terminal_height(unsigned int line_subtraction_from_terminal_height);
 	void set_line_compression_amount(unsigned int line_compression_amount);
 	void set_top_line(unsigned int top_line);
@@ -80,13 +80,14 @@ protected:
 	void get_displayed_output(std::vector<std::string>& displayed_output, std::vector<format_tools::index_format>& colors);
 	bool get_line_constraint();
 	bool get_column_constraint();
-	unsigned int get_displayed_lines();
 	unsigned int get_line_subtraction_from_terminal_height();
 	unsigned int get_line_compression_amount();
 	unsigned int get_top_line();
 	unsigned int get_left_column();
-	unsigned int get_lines_count(bool only_displayed = true);
-	unsigned int get_columns_count();
+	unsigned int get_total_lines_count();
+	unsigned int get_displayed_lines_count();
+	unsigned int get_total_columns_count();
+	unsigned int get_displayed_columns_count();
 	void set_line_character(char character, unsigned int line, unsigned int character_index);
 	void update_lines();
 	unsigned int get_line_length(unsigned int line);

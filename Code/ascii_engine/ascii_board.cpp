@@ -90,7 +90,7 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		if (lines_count > 0)
 		{
 			set_line_subtraction_from_terminal_height(0);
-			set_displayed_lines(lines_count);
+			set_displayed_lines_count(lines_count);
 		}
 		else if (lines_count < 0)
 		{
@@ -1117,14 +1117,14 @@ void ascii_board::set_lines_count(int lines_count)
 	{
 		set_line_constraint(false);
 		set_top_line(0);
-		set_displayed_lines(board_lines_count);
+		set_displayed_lines_count(board_lines_count);
 	}
 	else
 	{
 		if (lines_count > 0)
 		{
 			set_line_subtraction_from_terminal_height(0);
-			set_displayed_lines(lines_count);
+			set_displayed_lines_count(lines_count);
 		}
 		else if (lines_count < 0)
 		{
@@ -1138,7 +1138,7 @@ void ascii_board::set_lines_count(int lines_count)
 void ascii_board::set_top_display_index(unsigned int index)
 {
 	int status = UNDEFINED;
-	if ((index + get_displayed_lines()) <= board_lines_count)
+	if ((index + get_displayed_lines_count()) <= board_lines_count)
 	{
 		set_top_line(index);
 		status = SUCCESS;
@@ -1154,7 +1154,7 @@ void ascii_board::set_top_display_index(unsigned int index)
 void ascii_board::set_left_display_index(unsigned int index)
 {
 	int status = UNDEFINED;
-	if ((index + get_width()) <= board_characters_in_line)
+	if ((index + get_displayed_columns_count()) <= board_characters_in_line)
 	{
 		set_left_column(index);
 		status = SUCCESS;
@@ -1183,14 +1183,14 @@ void ascii_board::scroll_up(unsigned int amount)
 void ascii_board::scroll_down(unsigned int amount)
 {
 	unsigned int top_line = get_top_line();
-	unsigned int displayed_lines = get_displayed_lines();
-	if ((top_line + amount + displayed_lines) <= board_lines_count)
+	unsigned int displayed_lines_count = get_displayed_lines_count();
+	if ((top_line + amount + displayed_lines_count) <= board_lines_count)
 	{
 		set_top_line(top_line + amount);
 	}
-	else if(board_lines_count > displayed_lines)
+	else if(board_lines_count > displayed_lines_count)
 	{
-		set_top_line(board_lines_count - displayed_lines);
+		set_top_line(board_lines_count - displayed_lines_count);
 	}
 }
 
@@ -1210,14 +1210,14 @@ void ascii_board::scroll_left(unsigned int amount)
 void ascii_board::scroll_right(unsigned int amount)
 {
 	unsigned int left_column = get_left_column();
-	unsigned int width = get_width();
-	if ((left_column + amount + width) < board_characters_in_line)
+	unsigned int displayed_columns_count = get_displayed_columns_count();
+	if ((left_column + amount + displayed_columns_count) < board_characters_in_line)
 	{
 		set_left_column(left_column + amount);
 	}
-	else if (board_characters_in_line > width)
+	else if (board_characters_in_line > displayed_columns_count)
 	{
-		set_left_column(board_characters_in_line - width);
+		set_left_column(board_characters_in_line - displayed_columns_count);
 	}
 }
 
@@ -1255,8 +1255,8 @@ void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int
 
 		int left_column = get_left_column();
 		int top_line = get_top_line();
-		int width = get_width();
-		int displayed_lines = get_displayed_lines();
+		int displayed_columns_count = get_displayed_columns_count();
+		int displayed_lines_count = get_displayed_lines_count();
 
 		if (top - top_padding >= 0)
 		{
@@ -1272,22 +1272,22 @@ void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int
 
 		right = right + right_padding;
 
-		if ((top < top_line) && (bottom < top_line + displayed_lines))
+		if ((top < top_line) && (bottom < top_line + displayed_lines_count))
 		{
 			scroll_up(top_line - top);
 		}
-		else if ((top >= top_line) && (bottom >= top_line + displayed_lines))
+		else if ((top >= top_line) && (bottom >= top_line + displayed_lines_count))
 		{
-			scroll_down((bottom + 1) - (top_line + displayed_lines));
+			scroll_down((bottom + 1) - (top_line + displayed_lines_count));
 		}
 
-		if ((left < left_column) && (right < left_column + width))
+		if ((left < left_column) && (right < left_column + displayed_columns_count))
 		{
 			scroll_left(left_column - left);
 		}
-		else if ((left >= left_column) && (right >= left_column + width))
+		else if ((left >= left_column) && (right >= left_column + displayed_columns_count))
 		{
-			scroll_right((right + 1) - (left_column + width));
+			scroll_right((right + 1) - (left_column + displayed_columns_count));
 		}
 
 		log.log_status(SUCCESS, "ascii_board::bring_tile_into_view");

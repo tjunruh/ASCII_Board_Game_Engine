@@ -837,7 +837,7 @@ unsigned int frame::get_widget_height(const widget_info* const item, bool includ
 	unsigned int height = 0;
 	if (item->line_constraint)
 	{
-		height = item->displayed_lines;
+		height = item->displayed_lines_count;
 	}
 	else
 	{
@@ -867,13 +867,13 @@ void frame::constrain_lines(const widget_info* const item, std::vector<std::stri
 	{
 		unsigned int stop_line = 0;
 		std::string empty_line = format_tools::get_spacing(get_widget_width(item, false), ' ');
-		if (widget_lines.size() < (item->displayed_lines + item->top_line))
+		if (widget_lines.size() < (item->displayed_lines_count + item->top_line))
 		{
 			stop_line = widget_lines.size();
 		}
 		else
 		{
-			stop_line = item->displayed_lines + item->top_line;
+			stop_line = item->displayed_lines_count + item->top_line;
 		}
 
 		int last_widget_line = widget_lines.size() - 1;
@@ -885,7 +885,7 @@ void frame::constrain_lines(const widget_info* const item, std::vector<std::stri
 			}
 		}
 
-		for (unsigned int i = widget_lines.size(); i < item->displayed_lines; i++)
+		for (unsigned int i = widget_lines.size(); i < item->displayed_lines_count; i++)
 		{
 			widget_lines.push_back(empty_line);
 		}
@@ -913,13 +913,13 @@ void frame::constrain_colors(const widget_info* const item, std::vector<format_t
 		if (item->line_constraint)
 		{
 			unsigned int stop_line = 0;
-			if (item->lines.size() < (item->displayed_lines + item->top_line))
+			if (item->lines.size() < (item->displayed_lines_count + item->top_line))
 			{
 				stop_line = item->lines.size();
 			}
 			else
 			{
-				stop_line = item->displayed_lines + item->top_line;
+				stop_line = item->displayed_lines_count + item->top_line;
 			}
 
 			int number_of_coordinate_colors = item->coordinate_colors.size() - 1;
@@ -956,7 +956,7 @@ void frame::constrain_colors(const widget_info* const item, std::vector<format_t
 
 			format_tools::coordinate_format color;
 			color.x_position = width;
-			for (unsigned int i = 0; i < item->displayed_lines; i++)
+			for (unsigned int i = 0; i < item->displayed_lines_count; i++)
 			{
 				color.y_position = i;
 				colors.push_back(color);
@@ -1430,7 +1430,7 @@ void frame::translate_coordinate_colors_to_frame()
 		{
 			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
-				if (widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines))
+				if (widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines_count))
 				{
 					format_tools::coordinate_format color_region;
 					color_region.x_position = widgets[i]->coordinate_colors[j].x_position + widgets[i]->x_origin;
@@ -1456,7 +1456,7 @@ void frame::translate_coordinate_colors_to_frame()
 			}
 
 			format_tools::coordinate_format color_region;
-			for (unsigned int j = 0; j < widgets[i]->displayed_lines; j++)
+			for (unsigned int j = 0; j < widgets[i]->displayed_lines_count; j++)
 			{
 				color_region.x_position = widgets[i]->x_origin + width;
 				color_region.y_position = widgets[i]->y_origin + j;
@@ -1468,7 +1468,7 @@ void frame::translate_coordinate_colors_to_frame()
 			unsigned int width = get_widget_width(widgets[i], false);
 			for (unsigned int j = 0; j < widgets[i]->coordinate_colors.size(); j++)
 			{
-				bool in_line_bound = widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines);
+				bool in_line_bound = widgets[i]->coordinate_colors[j].y_position >= (int)widgets[i]->top_line && widgets[i]->coordinate_colors[j].y_position < ((int)widgets[i]->top_line + (int)widgets[i]->displayed_lines_count);
 				bool in_column_bound = widgets[i]->coordinate_colors[j].x_position >= (int)widgets[i]->left_column && widgets[i]->coordinate_colors[j].x_position < ((int)widgets[i]->left_column + (int)width);
 				if (in_line_bound && in_column_bound)
 				{
@@ -1481,7 +1481,7 @@ void frame::translate_coordinate_colors_to_frame()
 			}
 
 			format_tools::coordinate_format color_region;
-			for (unsigned int j = 0; j < widgets[i]->displayed_lines; j++)
+			for (unsigned int j = 0; j < widgets[i]->displayed_lines_count; j++)
 			{
 				color_region.x_position = widgets[i]->x_origin + width;
 				color_region.y_position = widgets[i]->y_origin + j;
@@ -1797,7 +1797,7 @@ void frame::bound_top_line(widget_info* item)
 		unsigned int top_line_remainder = 0;
 		unsigned int top_item = format_tools::compress(item->top_line, item->line_compression_amount, top_line_remainder);
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int displayed_items = format_tools::compress(item->displayed_lines, item->line_compression_amount, displayed_lines_remainder);
+		unsigned int displayed_items = format_tools::compress(item->displayed_lines_count, item->line_compression_amount, displayed_lines_remainder);
 		unsigned int line_count_remainder = 0;
 		unsigned int item_count = format_tools::compress(item->lines.size(), item->line_compression_amount, line_count_remainder);
 		if ((int)top_item > ((int)item_count - (int)displayed_items))
@@ -1816,11 +1816,11 @@ void frame::bound_top_line(widget_info* item)
 	}
 	else if ((item->widget_type == BOARD) || (item->widget_type == TEXTBOX) || (item->widget_type == LABEL))
 	{
-		if ((int)item->top_line > ((int)item->lines.size() - (int)item->displayed_lines))
+		if ((int)item->top_line > ((int)item->lines.size() - (int)item->displayed_lines_count))
 		{
-			if (((int)item->lines.size() - (int)item->displayed_lines) >= 0)
+			if (((int)item->lines.size() - (int)item->displayed_lines_count) >= 0)
 			{
-				item->top_line = item->lines.size() - item->displayed_lines;
+				item->top_line = item->lines.size() - item->displayed_lines_count;
 			}
 			else
 			{
@@ -1834,12 +1834,12 @@ void frame::dynamically_adjust_displayed_lines(widget_info* item)
 {
 	if (terminal_y > (int)item->line_subtraction_from_terminal_height)
 	{
-		item->displayed_lines = (unsigned int)(terminal_y - item->line_subtraction_from_terminal_height);
+		item->displayed_lines_count = (unsigned int)(terminal_y - item->line_subtraction_from_terminal_height);
 		bound_top_line(item);
 	}
 	else
 	{
-		item->displayed_lines = 1;
+		item->displayed_lines_count = 1;
 		bound_top_line(item);
 	}
 }

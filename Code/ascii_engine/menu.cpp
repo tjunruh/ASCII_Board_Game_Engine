@@ -29,7 +29,7 @@ menu::menu(frame* parent, const std::string& special_operation, int lines_count,
 		{
 			non_separated_lines_count = lines_count;
 			set_line_subtraction_from_terminal_height(0);
-			set_displayed_lines(lines_count);
+			set_displayed_lines_count(lines_count);
 		}
 		else if (lines_count < 0)
 		{
@@ -51,7 +51,7 @@ int menu::append_item(const std::string& item)
 		status = SUCCESS;
 		if (!get_line_constraint())
 		{
-			set_displayed_lines(get_displayed_lines() + 1);
+			set_displayed_lines_count(get_displayed_lines_count() + 1);
 		}
 	}
 	log.log_status(status, "menu::append_item");
@@ -68,13 +68,13 @@ int menu::remove_item(const std::string& item)
 			unsigned int top_line_remainder = 0;
 			unsigned int displayed_lines_remainder = 0;
 			unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
-			unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
+			unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 			menu_items.erase(menu_items.begin() + i);
 			status = SUCCESS;
 			if (!get_line_constraint())
 			{
 				displayed_items--;
-				set_displayed_lines(format_tools::expand(displayed_items, get_line_compression_amount(), displayed_lines_remainder));
+				set_displayed_lines_count(format_tools::expand(displayed_items, get_line_compression_amount(), displayed_lines_remainder));
 			}
 
 			bound_top_line();
@@ -98,7 +98,7 @@ void menu::set_lines_count(int lines_count)
 	{
 		set_line_constraint(false);
 		set_top_line(0);
-		set_displayed_lines(format_tools::expand(menu_items.size(), get_line_compression_amount(), 1));
+		set_displayed_lines_count(format_tools::expand(menu_items.size(), get_line_compression_amount(), 1));
 	}
 	else
 	{
@@ -115,7 +115,7 @@ void menu::set_lines_count(int lines_count)
 		{
 			set_line_subtraction_from_terminal_height(lines_count * -1);
 			dynamically_adjust_displayed_lines();
-			displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
+			displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 		}
 
 		set_line_constraint(true);
@@ -128,13 +128,13 @@ void menu::set_lines_count(int lines_count)
 			set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		}
 
-		unsigned int displayed_lines = format_tools::expand(displayed_items, get_line_compression_amount(), displayed_lines_remainder);
+		unsigned int displayed_lines_count = format_tools::expand(displayed_items, get_line_compression_amount(), displayed_lines_remainder);
 
 		if (get_line_compression_amount() != 0)
 		{
-			displayed_lines = fit_displayed_lines_for_separated_items(displayed_lines);
+			displayed_lines_count = fit_displayed_lines_for_separated_items(displayed_lines_count);
 		}
-		set_displayed_lines(displayed_lines);
+		set_displayed_lines_count(displayed_lines_count);
 	}
 }
 
@@ -163,7 +163,7 @@ void menu::remove_all_items()
 
 	if (!get_line_constraint())
 	{
-		set_displayed_lines(0);
+		set_displayed_lines_count(0);
 	}
 }
 
@@ -256,7 +256,7 @@ void menu::set_cursor_index(unsigned int index)
 	{
 		index = 1;
 	}
-	_cursor_index = bound_cursor_index(index, top_index, get_stop_index(top_index, format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder)));
+	_cursor_index = bound_cursor_index(index, top_index, get_stop_index(top_index, format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder)));
 	set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 }
 
@@ -514,7 +514,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		unsigned int top_line_remainder = 0;
 		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
+		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 
 		if (std::count(_select.begin(), _select.end(), key_stroke) != 0)
 		{
@@ -594,7 +594,7 @@ void menu::display()
 	{
 		dynamically_adjust_displayed_lines();
 		unsigned int displayed_lines_remainder = 0;
-		unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
+		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 
 		unsigned int top_line_remainder = 0;
 		unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
@@ -623,16 +623,16 @@ void menu::separate_items(bool separate)
 	{
 		if (!separate && non_separated_lines_count != 0)
 		{
-			set_displayed_lines(non_separated_lines_count);
+			set_displayed_lines_count(non_separated_lines_count);
 		}
 		else if (separate)
 		{
-			unsigned int displayed_lines = get_displayed_lines();
-			unsigned int adjusted_displayed_lines = fit_displayed_lines_for_separated_items(displayed_lines);
-			if (adjusted_displayed_lines != displayed_lines)
+			unsigned int displayed_lines_count = get_displayed_lines_count();
+			unsigned int adjusted_displayed_lines = fit_displayed_lines_for_separated_items(displayed_lines_count);
+			if (adjusted_displayed_lines != displayed_lines_count)
 			{
-				displayed_lines = adjusted_displayed_lines;
-				set_displayed_lines(displayed_lines);
+				displayed_lines_count = adjusted_displayed_lines;
+				set_displayed_lines_count(displayed_lines_count);
 			}
 		}
 
@@ -648,7 +648,7 @@ void menu::separate_items(bool separate)
 		unsigned int top_line_remainder = 0;
 		unsigned int displayed_lines_remainder = 0;
 		unsigned int top_index = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
-		unsigned int displayed_items = format_tools::compress(get_displayed_lines(), get_line_compression_amount(), displayed_lines_remainder);
+		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 
 		bound_top_line();
 
