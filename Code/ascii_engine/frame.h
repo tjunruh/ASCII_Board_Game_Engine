@@ -76,7 +76,6 @@ private:
 		int widget_type = WIDGET;
 		int x_origin = -1;
 		int y_origin = -1;
-		unsigned int lines_count = 0;
 		int level = 0;
 		float width_multiplier = 1.0;
 		bool selectable = false;

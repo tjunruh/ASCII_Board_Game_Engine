@@ -602,17 +602,13 @@ int frame::get_lines_count(int id, unsigned int& lines_count, bool only_displaye
 	{
 		if (widgets[i]->id == id)
 		{
-			if (!widgets[i]->line_constraint)
+			if (!widgets[i]->line_constraint || !only_displayed)
 			{
-				lines_count = widgets[i]->lines_count;
-			}
-			else if (only_displayed)
-			{
-				lines_count = widgets[i]->displayed_lines;
+				lines_count = widgets[i]->lines.size();
 			}
 			else
 			{
-				lines_count = widgets[i]->lines.size();
+				lines_count = widgets[i]->displayed_lines;
 			}
 
 			status = SUCCESS;
@@ -1175,8 +1171,6 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 			constrain_lines(item, widget_lines);
 		}
 	}
-
-	item->lines_count = widget_lines.size();
 
 	if (item->widget_type == TEXTBOX)
 	{
