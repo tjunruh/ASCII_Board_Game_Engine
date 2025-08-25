@@ -59,15 +59,12 @@ protected:
 	void set_widget_type(int type);
 	bool frame_stale();
 	void mark_frame_as_stale();
-	void frame_display();
 	bool dec_enabled();
 	bool color_enabled();
 	void set_index_colors(const std::vector<format_tools::index_format>& index_colors);
 	std::vector<format_tools::index_format> get_index_colors();
 	std::vector<format_tools::index_format> get_displayed_index_colors();
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
-	int get_default_foreground_color();
-	int get_default_background_color();
 	void widget_display(std::vector<std::string> output_lines, bool can_use_dec = false, bool can_use_color = false, const std::vector<format_tools::index_format>& colors = {});
 	void set_line_constraint(bool line_constraint);
 	void set_column_constraint(bool column_constraint);

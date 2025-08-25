@@ -400,11 +400,6 @@ void widget::mark_frame_as_stale()
 	parent_frame->display_stale = true;
 }
 
-void widget::frame_display()
-{
-	parent_frame->display();
-}
-
 bool widget::dec_enabled()
 {
 	return parent_frame->dec_enabled();
@@ -435,16 +430,6 @@ std::vector<format_tools::index_format> widget::dec_format(std::string& format_c
 	return parent_frame->dec_format(format_content, line_length);
 }
 
-int widget::get_default_foreground_color()
-{
-	return parent_frame->get_default_foreground_color();
-}
-
-int widget::get_default_background_color()
-{
-	return parent_frame->get_default_background_color();
-}
-
 int widget::start_logging(const std::string& file_path)
 {
 	int status = log.start_widget_logging(file_path, item.widget_type);
@@ -472,7 +457,7 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 	ascii_io::get_cursor_position(cursor_x, cursor_y);
 	if (frame_stale())
 	{
-		frame_display();
+		parent_frame->display();
 	}
 	else if ((can_use_dec && dec_enabled()) || (can_use_color && color_enabled()))
 	{
@@ -506,8 +491,8 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 		regions = format_tools::fit_to_width(regions, width);
 		for (unsigned int i = 0; i < regions.size(); i++)
 		{
-			int foreground_color = get_default_foreground_color();
-			int background_color = get_default_background_color();
+			int foreground_color = parent_frame->get_default_foreground_color();
+			int background_color = parent_frame->get_default_background_color();
 			if (std::count(format_tools::colors.begin(), format_tools::colors.end(), regions[i].format.foreground_format) != 0)
 			{
 				foreground_color = regions[i].format.foreground_format;
@@ -544,7 +529,7 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 				ascii_io::move_cursor_to_position(x_origin, y_origin + line);
 			}
 		}
-		ascii_io::set_color(get_default_foreground_color(), get_default_background_color());
+		ascii_io::set_color(parent_frame->get_default_foreground_color(), parent_frame->get_default_background_color());
 #ifdef _WIN32
 		ascii_io::disable_dec();
 #endif
