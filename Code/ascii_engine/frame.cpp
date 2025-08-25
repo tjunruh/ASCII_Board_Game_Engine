@@ -39,21 +39,7 @@ void frame::display()
 		std::vector<format_tools::index_format> index_regions;
 		std::vector<int> ignore_flags;
 		ascii_io::move_cursor_to_position(0, 0);
-		unsigned int width = 0;
-		if (_color_enabled)
-		{
-			index_regions = format_tools::convert(color_regions, format_tools::get_first_line_length(output));
-			ignore_flags = format_tools::set_flags(index_regions, output, '*');
-		}
-		format_tools::mask_string(output, previous_output);
-		if (_color_enabled)
-		{
-			std::vector<std::string> lines = format_tools::get_lines(output);
-			convert_flags(color_regions, index_regions, ignore_flags, lines, '*');
-			output = format_tools::get_string(lines);
-		}
 	}
-	previous_output = output;
 #elif __linux__
 	ascii_io::clear();
 #endif

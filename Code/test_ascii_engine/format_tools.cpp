@@ -535,55 +535,6 @@ TEST_F(format_tools_test, remove_trailing_whitespace)
 	EXPECT_EQ(lines, correct_answer);
 }
 
-TEST_F(format_tools_test, mask_string)
-{
-	std::string test_string =
-		"1 1 \n"
-		"2 2 \n"
-		"3 3 \n"
-		"4 4 \n"
-		"5 5 \n"
-		"6 6 \n"
-		"7 7 \n"
-		"8 8 \n"
-		"9 9 \n"
-		"1010\n"
-		"  11\n";
-
-	std::string previous_test_string =
-		"1 1 1 \n"
-		"2 2 2 \n"
-		"3 3 3 \n"
-		"4 4 4 \n"
-		"5 5 5 \n"
-		"6 6 6 \n"
-		"7 7 7 \n"
-		"8 8 8 \n"
-		"9 9 9 \n"
-		"1010\n"
-		"1111\n"
-		"1212\n"
-		"1313\n";
-
-	std::string correct_answer =
-		"1 1  \n"
-		"2 2  \n"
-		"3 3  \n"
-		"4 4  \n"
-		"5 5  \n"
-		"6 6  \n"
-		"7 7  \n"
-		"8 8  \n"
-		"9 9  \n"
-		"1010\n"
-		"  11\n"
-		"    \n"
-		"    \n";
-
-	format_tools::mask_string(test_string, previous_test_string);
-	EXPECT_EQ(test_string, correct_answer);
-}
-
 TEST_F(format_tools_test, remove_newline_characters_string)
 {
 	std::string test_string =

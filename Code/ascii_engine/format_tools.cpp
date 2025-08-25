@@ -270,37 +270,6 @@ std::vector<std::string> format_tools::remove_trailing_whitespace(const std::vec
 	return updated_lines;
 }
 
-void format_tools::mask_string(std::string& output, const std::string& old_output)
-{
-	std::vector<std::string> new_output_lines = get_lines(output);
-	std::vector<std::string> old_output_lines = remove_trailing_whitespace(get_lines(old_output));
-	for (unsigned int i = 0; i < old_output_lines.size(); i++)
-	{
-		if (i < new_output_lines.size())
-		{
-			if (old_output_lines[i].length() > new_output_lines[i].length())
-			{
-				while ((old_output_lines[i].length() - new_output_lines[i].length()) != 0)
-				{
-					new_output_lines[i].insert(new_output_lines[i].length() - 2, " ");
-				}
-			}
-		}
-		else
-		{
-			std::string spacer = get_spacing(old_output_lines[i].length() - 1, ' ');
-			spacer = spacer + "\n";
-			new_output_lines.push_back(spacer);
-		}
-	}
-
-	output = "";
-	for (unsigned int i = 0; i < new_output_lines.size(); i++)
-	{
-		output = output + new_output_lines[i];
-	}
-}
-
 void format_tools::remove_newline_characters(std::string& text)
 {
 	int text_length = (int)(text.length() - 1);
