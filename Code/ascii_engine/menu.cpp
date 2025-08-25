@@ -567,15 +567,15 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		else if (key_stroke == _right)
 		{
 			unsigned int left_column = get_left_column();
-			unsigned int width = get_width();
-			unsigned int top_line_length = get_line_length(0);
-			if ((left_column + 1 + width) < top_line_length)
+			unsigned int displayed_columns_count = get_displayed_columns_count();
+			unsigned int  total_columns_count = get_total_columns_count();
+			if ((left_column + 1 + displayed_columns_count) < total_columns_count)
 			{
 				set_left_column(left_column + 1);
 			}
-			else if (top_line_length > width)
+			else if (total_columns_count > displayed_columns_count)
 			{
-				set_left_column(top_line_length - width);
+				set_left_column(total_columns_count - displayed_columns_count);
 			}
 		}
 
