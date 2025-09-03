@@ -508,18 +508,14 @@ int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 	}
 	free(raw_home_directory);
 #elif __linux__
-	status = system("xdotool key Ctrl+0");
-	if (status == 0)
+
+	if (level > console_zoom_amount)
 	{
-		console_zoom_amount = 0;
-		if (level > 0)
-		{
-			status = zoom_in(level);
-		}
-		else if (level < 0)
-		{
-			status = zoom_out(level * -1);
-		}
+		status = zoom_in(level - console_zoom_amount);
+	}
+	else if (level < console_zoom_amount)
+	{
+		status = zoom_out(console_zoom_amount - level);
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
