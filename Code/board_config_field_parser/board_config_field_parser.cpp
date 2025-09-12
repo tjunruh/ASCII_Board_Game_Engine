@@ -75,11 +75,17 @@ std::string board_config_field_parser::get_board(const std::string &content)
 std::string board_config_field_parser::remove_spaces(const std::string &content)
 {
 	std::string updated_content = "";
+	bool in_qutation_marks = false;
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
-		if (content[i] != ' ')
+		if ((content[i] != ' ') || in_qutation_marks)
 		{
 			updated_content = updated_content + content[i];
+		}
+
+		if (content[i] == '\"')
+		{
+			in_qutation_marks = !in_qutation_marks;
 		}
 	}
 	return updated_content;
