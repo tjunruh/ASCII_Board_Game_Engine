@@ -25,7 +25,6 @@ int console_zoom_amount = 0;
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
-const int font_size_increment = 2;
 
 std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 {
@@ -328,7 +327,7 @@ int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
 				int font_size = console_settings["profiles"]["defaults"]["fontSize"].template get<int>();
 				for (unsigned int i = 0; i < amount; i++)
 				{
-					font_size = font_size + font_size_increment;
+					font_size = font_size + 1;
 					console_zoom_amount = console_zoom_amount + 1;
 				}
 				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
@@ -338,7 +337,7 @@ int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
 				int font_size = default_font_size;
 				for (unsigned int i = 0; i < amount; i++)
 				{
-					font_size = font_size + font_size_increment;
+					font_size = font_size + 1;
 					console_zoom_amount = console_zoom_amount + 1;
 				}
 				console_settings["profiles"]["defaults"]["fontSize"] = font_size;
@@ -405,9 +404,9 @@ int ascii_io::zoom_out(unsigned int amount, unsigned int wait_milliseconds)
 				int font_size = console_settings["profiles"]["defaults"]["fontSize"].template get<int>();
 				for (unsigned int i = 0; i < amount; i++)
 				{
-					if ((font_size - font_size_increment) >= 0)
+					if ((font_size - 1) >= 0)
 					{
-						font_size = font_size - font_size_increment;
+						font_size = font_size - 1;
 						console_zoom_amount = console_zoom_amount - 1;
 					}
 					else
@@ -422,9 +421,9 @@ int ascii_io::zoom_out(unsigned int amount, unsigned int wait_milliseconds)
 				int font_size = default_font_size;
 				for (unsigned int i = 0; i < amount; i++)
 				{
-					if ((font_size - font_size_increment) > 0)
+					if ((font_size - 1) > 0)
 					{
-						font_size = font_size - font_size_increment;
+						font_size = font_size - 1;
 						console_zoom_amount = console_zoom_amount - 1;
 					}
 					else
@@ -491,7 +490,7 @@ int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 		nlohmann::json console_settings = nlohmann::json::parse(content, nullptr, false);
 		if (console_settings.contains("profiles") && console_settings["profiles"].contains("defaults"))
 		{
-			int font_size = default_font_size + level * font_size_increment;
+			int font_size = default_font_size + level * 1;
 			if (font_size < 0)
 			{
 				font_size = 0;
