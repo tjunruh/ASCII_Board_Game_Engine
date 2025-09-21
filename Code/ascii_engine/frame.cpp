@@ -990,6 +990,11 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 	std::vector<int> ignore_flags;
 
 	std::string output_copy = item->output;
+	if (output_copy == "")
+	{
+		output_copy = " ";
+	}
+
 	if (_color_enabled)
 	{
 		ignore_flags = format_tools::set_flags(item->index_colors, output_copy, '*');
@@ -1166,10 +1171,6 @@ std::vector<std::string> frame::build_widget_lines(widget_info* item)
 		item->line_edited = false;
 	}
 
-	if (item->output == "")
-	{
-		item->output = " ";
-	}
 	int left_spacing = 0;
 	int right_spacing = 0;
 	if (item->use_spacing_width_multipliers)
