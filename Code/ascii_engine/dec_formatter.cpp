@@ -38,6 +38,35 @@ void dec_formatter::set_format_chars(char horizontal_char, char vertical_char, c
 
 std::vector<format_tools::index_format> dec_formatter::format(std::string& format_content, unsigned int line_length)
 {
+	if (_use_light_formatting)
+	{
+		for (unsigned int i = 0; i < dec_trigger_characters.size(); i++)
+		{
+			if (dec_trigger_characters[i] == _vertical_char)
+			{
+				dec_trigger_characters.erase(dec_trigger_characters.begin() + i);
+				break;
+			}
+		}
+	}
+	else
+	{
+		bool vertical_dec_trigger_char_present = false;
+		for (unsigned int i = 0; i < dec_trigger_characters.size(); i++)
+		{
+			if (dec_trigger_characters[i] == _vertical_char)
+			{
+				vertical_dec_trigger_char_present = true;
+				break;
+			}
+		}
+
+		if (!vertical_dec_trigger_char_present)
+		{
+			dec_trigger_characters.push_back(_vertical_char);
+		}
+	}
+
 	std::vector<std::string> format_lines;
 	if (line_length == 0)
 	{
@@ -258,6 +287,11 @@ void dec_formatter::get_format_chars(char& horizontal_char, char& vertical_char,
 char dec_formatter::get_endpoint_char()
 {
 	return _endpoint_char;
+}
+
+void dec_formatter::use_light_formatting(bool light_formatting)
+{
+	_use_light_formatting = light_formatting;
 }
 
 #ifdef __linux__

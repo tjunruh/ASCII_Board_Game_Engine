@@ -20,6 +20,7 @@ public:
 	std::vector<format_tools::index_format> format(std::string& format_content, unsigned int line_length=0);
 	void get_format_chars(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	char get_endpoint_char();
+	void use_light_formatting(bool light_formatting);
 #ifdef __linux__
 	void print_dec_string(const std::string& input);
 #endif
@@ -44,6 +45,7 @@ private:
 	char _vertical_char = '|';
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
+	bool _use_light_formatting = false;
 	std::vector<char> dec_trigger_characters =
 	{
 		_horizontal_char,

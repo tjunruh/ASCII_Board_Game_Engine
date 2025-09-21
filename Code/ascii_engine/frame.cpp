@@ -225,6 +225,11 @@ void frame::enable_dec(bool enable)
 	_dec_enabled = enable;
 }
 
+void frame::use_light_dec_formatting(bool light_formatting)
+{
+	dec.use_light_formatting(light_formatting);
+}
+
 bool frame::dec_enabled()
 {
 	return _dec_enabled;

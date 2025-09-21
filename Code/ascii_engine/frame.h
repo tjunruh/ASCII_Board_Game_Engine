@@ -29,6 +29,7 @@ public:
 	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
 	FRAME_API int get_selection();
 	FRAME_API void enable_dec(bool enable);
+	FRAME_API void use_light_dec_formatting(bool light_formatting);
 	FRAME_API bool dec_enabled();
 	FRAME_API void enable_color(bool enable);
 	FRAME_API bool color_enabled();
