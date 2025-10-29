@@ -102,6 +102,7 @@ public:
 	ASCII_BOARD_API void add_configuration(board_configuration configuration);
 	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character);
 	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
 	ASCII_BOARD_API void activate_configuration(const std::string& name_id, int row, int column);
 	ASCII_BOARD_API void activate_configuration(const std::string& name_id);
 	ASCII_BOARD_API void deactivate_configuration(const std::string& name_id, int row, int column);
@@ -109,6 +110,7 @@ public:
 	ASCII_BOARD_API std::string load_configuration(const std::string& path);
 	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character);
 	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
+	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
 	ASCII_BOARD_API void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API int get_number_of_columns();
 	ASCII_BOARD_API int get_number_of_rows();

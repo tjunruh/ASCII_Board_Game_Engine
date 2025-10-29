@@ -544,6 +544,11 @@ void ascii_board::add_configuration(const std::string& name_id, int row, int col
 	add_configuration(board_config);
 }
 
+void ascii_board::add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces)
+{
+	add_configuration(name_id, row, column, value, ignore_character, format_tools::build_color_for_value(value, ignore_character, foreground_format, background_format, bold, include_spaces));
+}
+
 void ascii_board::activate_configuration(const std::string& name_id, int row, int column)
 {
 	int config_index = get_board_config_index(name_id);
@@ -735,6 +740,12 @@ void ascii_board::load_configuration(const std::string& path, const std::string&
 	}
 	add_configuration(name_id, row, column, value, ignore_character, colors);
 	log.log_end("ascii_board::load_configuration");
+}
+
+void ascii_board::load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces)
+{
+	std::string value = load_configuration(path);
+	add_configuration(name_id, row, column, value, ignore_character, foreground_format, background_format, bold, include_spaces);
 }
 
 void ascii_board::set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors)
