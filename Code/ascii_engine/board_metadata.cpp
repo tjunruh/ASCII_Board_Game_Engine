@@ -1,3 +1,4 @@
+#include "../ascii_engine_dll_files/pch.h"
 #include "board_metadata.h"
 
 int board_metadata::get_int_metadata(int row, int column, const std::string& metadata_name)
