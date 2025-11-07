@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <string>
 #include "../ascii_engine/error_codes.h"
 
 #ifdef _WIN32
