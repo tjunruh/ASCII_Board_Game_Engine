@@ -53,6 +53,7 @@ ASCII_INCLUDE := -I$(BLD_DIR)/headers
 ASCII_ENGINE_OBJS := \
 	ascii_board.o \
 	ascii_io.o \
+	board_metadata.o \
 	dec_formatter.o \
 	format_tools.o \
 	controls.o \
@@ -75,6 +76,7 @@ ALL_OBJS += $(ASCII_ENGINE_OBJS_EXTERNAL)
 ASCII_ENGINE_HEADERS := \
 	ascii_board.h \
 	ascii_io.h \
+	board_metadata.h \
 	controls.h \
 	error_codes.h \
 	dec_formatter.h \

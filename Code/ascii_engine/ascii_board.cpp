@@ -75,11 +75,10 @@ ascii_board::ascii_board(frame* parent, const std::string& path, const std::stri
 		}
 		tile.default_value = translation.action_tile_skeletons[i].default_value;
 		tile.value = translation.action_tile_skeletons[i].default_value;
-		tile.metadata = translation.action_tile_skeletons[i].metadata;
 		action_tiles.push_back(tile);
 	}
 
-	map_metadata = translation.metadata;
+	metadata = translation.metadata;
 
 	set_widget_type(BOARD);
 	set_selectable(true);
@@ -800,117 +799,6 @@ int ascii_board::get_number_of_rows()
 	return max_rows;
 }
 
-int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, int& value)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
-		{
-			auto element = action_tiles[i].metadata.int_data.find(metadata_name);
-			if (element != action_tiles[i].metadata.int_data.end())
-			{
-				status = SUCCESS;
-				value = element->second;
-			}
-			else
-			{
-				status = ELEMENT_NOT_FOUND;
-			}
-			break;
-		}
-	}
-
-	return status;
-}
-
-int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, float& value)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
-		{
-			auto element = action_tiles[i].metadata.float_data.find(metadata_name);
-			if (element != action_tiles[i].metadata.float_data.end())
-			{
-				status = SUCCESS;
-				value = element->second;
-			}
-			else
-			{
-				status = ELEMENT_NOT_FOUND;
-			}
-			break;
-		}
-	}
-
-	return status;
-}
-
-int ascii_board::get_metadata(int row, int column, const std::string& metadata_name, std::string& value)
-{
-	int status = INVALID_INDEX;
-	for (unsigned int i = 0; i < action_tiles.size(); i++)
-	{
-		if (action_tiles[i].array_row == row && action_tiles[i].array_column == column)
-		{
-			auto element = action_tiles[i].metadata.string_data.find(metadata_name);
-			if (element != action_tiles[i].metadata.string_data.end())
-			{
-				status = SUCCESS;
-				value = element->second;
-			}
-			else
-			{
-				status = ELEMENT_NOT_FOUND;
-			}
-			break;
-		}
-	}
-
-	return status;
-}
-
-int ascii_board::get_metadata(const std::string& metadata_name, int& value)
-{
-	int status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.int_data.find(metadata_name);
-	if (element != map_metadata.int_data.end())
-	{
-		status = SUCCESS;
-		value = element->second;
-	}
-
-	return status;
-}
-
-int ascii_board::get_metadata(const std::string& metadata_name, float& value)
-{
-	int status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.float_data.find(metadata_name);
-	if (element != map_metadata.float_data.end())
-	{
-		status = SUCCESS;
-		value = element->second;
-	}
-
-	return status;
-}
-
-int ascii_board::get_metadata(const std::string& metadata_name, std::string& value)
-{
-	int status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.string_data.find(metadata_name);
-	if (element != map_metadata.string_data.end())
-	{
-		status = SUCCESS;
-		value = element->second;
-	}
-
-	return status;
-}
-
 void ascii_board::display()
 {
 	if (frame_stale() && (get_line_subtraction_from_terminal_height() != 0))
@@ -1103,10 +991,6 @@ void ascii_board::use_translation(const std::string& name_id, bool swap_metadata
 						}
 					}
 					action_tiles[j].default_value = translation.action_tile_skeletons[i].default_value;
-					if (swap_metadata)
-					{
-						action_tiles[j].metadata = translation.action_tile_skeletons[i].metadata;
-					}
 				}
 
 				action_tiles[j].edited = true;
@@ -1115,7 +999,7 @@ void ascii_board::use_translation(const std::string& name_id, bool swap_metadata
 
 		if (swap_metadata)
 		{
-			map_metadata = translation.metadata;
+			metadata = translation.metadata;
 		}
 	}
 
@@ -1309,6 +1193,11 @@ void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int
 	}
 }
 
+board_metadata* ascii_board::get_metadata()
+{
+	return &metadata;
+}
+
 void ascii_board::initialize_tiles(int rows, int columns, std::vector<action_tile_skeleton>& action_tile_skeletons)
 {
 	action_tile_skeletons.clear();
@@ -1457,7 +1346,7 @@ void ascii_board::set_map_metadata(const std::string& content, board_translation
 	std::string column = "";
 	std::string key = "";
 	std::string value = "";
-	metadata_container metadata;
+	board_metadata::metadata_container tile_metadata_container;
 	for (unsigned int i = 0; i < content.length(); i++)
 	{
 		if (content[i] == '(')
@@ -1499,11 +1388,11 @@ void ascii_board::set_map_metadata(const std::string& content, board_translation
 
 					if (curly_bracket != '}')
 					{
-						metadata.float_data.insert({ key, float_value });
+						tile_metadata_container.float_data.insert({ key, float_value });
 					}
 					else
 					{
-						translation.metadata.float_data.insert({ key, float_value });
+						translation.metadata.insert_float_metadata(key, float_value);
 					}
 				}
 				else if (validate_board_config::is_integer(value))
@@ -1516,11 +1405,11 @@ void ascii_board::set_map_metadata(const std::string& content, board_translation
 
 					if (curly_bracket != '}')
 					{
-						metadata.int_data.insert({ key, integer_value });
+						tile_metadata_container.int_data.insert({ key, integer_value });
 					}
 					else
 					{
-						translation.metadata.int_data.insert({ key, integer_value });
+						translation.metadata.insert_int_metadata(key, integer_value);
 					}
 				}
 				else if (validate_board_config::is_string(value))
@@ -1530,11 +1419,11 @@ void ascii_board::set_map_metadata(const std::string& content, board_translation
 
 					if (curly_bracket != '}')
 					{
-						metadata.string_data.insert({ key, value });
+						tile_metadata_container.string_data.insert({ key, value });
 					}
 					else
 					{
-						translation.metadata.string_data.insert({ key, value });
+						translation.metadata.insert_string_metadata(key, value);
 					}
 				}
 
@@ -1558,17 +1447,14 @@ void ascii_board::set_map_metadata(const std::string& content, board_translation
 		else if (content[i] == '}')
 		{
 			curly_bracket = '}';
-			for (unsigned int j = 0; j < translation.action_tile_skeletons.size(); j++)
-			{
-				if (translation.action_tile_skeletons[j].array_row == stoi(row) && translation.action_tile_skeletons[j].array_column == stoi(column))
-				{
-					translation.action_tile_skeletons[j].metadata = metadata;
-					break;
-				}
-			}
-			metadata.float_data.clear();
-			metadata.int_data.clear();
-			metadata.string_data.clear();
+			board_metadata::metadata_tile tile_metadata;
+			tile_metadata.row = stoi(row);
+			tile_metadata.column = stoi(column);
+			tile_metadata.metadata = tile_metadata_container;
+			translation.metadata.insert_tile_metadata(tile_metadata);
+			tile_metadata_container.float_data.clear();
+			tile_metadata_container.int_data.clear();
+			tile_metadata_container.string_data.clear();
 			row = "";
 			column = "";
 		}
