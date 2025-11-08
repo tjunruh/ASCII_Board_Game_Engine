@@ -1,15 +1,5 @@
 #pragma once
 
-#ifdef _WIN32
-#ifdef ERROR_CODES_EXPORTS
-#define ERROR_CODES_API __declspec(dllexport)
-#else
-#define ERROR_CODES_API __declspec(dllimport)
-#endif
-#elif __linux__
-#define ERROR_CODES_API
-#endif
-
 #define UNDEFINED -1
 #define SUCCESS 0
 #define INVALID_PATH 1
