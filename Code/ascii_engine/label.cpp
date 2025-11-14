@@ -135,24 +135,24 @@ void label::scroll()
 	do
 	{
 		input = ascii_io::getchar();
-		if (input == _up)
+		if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up))
 		{
 			scroll_up();
 		}
-		else if (input == _down)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && input == _down))
 		{
 			scroll_down();
 		}
-		else if (input == _left)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && input == _left))
 		{
 			scroll_left();
 		}
-		else if (input == _right)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && input == _right))
 		{
 			scroll_right();
 		}
 
-	} while (input != _quit);
+	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit));
 }
 
 void label::scroll_up(unsigned int amount, bool render)
@@ -250,6 +250,39 @@ void label::set_controls(int up, int down, int left, int right, int quit)
 	_left = left;
 	_right = right;
 	_quit = quit;
+}
+
+void label::set_controls(controls* centralized_controls)
+{
+	_centralized_controls = centralized_controls;
+
+	if (_centralized_controls)
+	{
+		if (_centralized_controls->get_key(control_names::up) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::up, _up);
+		}
+
+		if (_centralized_controls->get_key(control_names::down) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::down, _down);
+		}
+
+		if (_centralized_controls->get_key(control_names::left) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::left, _left);
+		}
+
+		if (_centralized_controls->get_key(control_names::right) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::right, _right);
+		}
+
+		if (_centralized_controls->get_key(control_names::quit) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::quit, _quit);
+		}
+	}
 }
 
 void label::get_controls(int& up, int& down, int& left, int& right, int& quit)

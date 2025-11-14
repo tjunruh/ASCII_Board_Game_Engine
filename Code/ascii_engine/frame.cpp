@@ -146,6 +146,44 @@ void frame::set_controls(int select, int quit, int up, int down, int left, int r
 	_left = left;
 }
 
+void frame::set_controls(controls* centralized_controls)
+{
+	_centralized_controls = centralized_controls;
+
+	if (_centralized_controls)
+	{
+		if (_centralized_controls->get_key(control_names::select) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::select, _select);
+		}
+
+		if (_centralized_controls->get_key(control_names::up) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::up, _up);
+		}
+
+		if (_centralized_controls->get_key(control_names::down) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::down, _down);
+		}
+
+		if (_centralized_controls->get_key(control_names::left) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::left, _left);
+		}
+
+		if (_centralized_controls->get_key(control_names::right) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::right, _right);
+		}
+
+		if (_centralized_controls->get_key(control_names::quit) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::quit, _quit);
+		}
+	}
+}
+
 void frame::get_controls(int& select, int& quit, int& up, int& down, int& left, int& right)
 {
 	select = _select;
@@ -181,7 +219,7 @@ int frame::get_selection()
 		last_selected_column = selected_column;
 		last_selected_level = selected_level;
 		input = ascii_io::getchar();
-		if (input == _select)
+		if ((_centralized_controls && input == _centralized_controls->get_key(control_names::select)) || (!_centralized_controls && input == _select))
 		{
 			log.log_comment("select action");
 			widget_info* item = get_widget(selected_row, selected_column, selected_level);
@@ -193,28 +231,28 @@ int frame::get_selection()
 				break;
 			}
 		}
-		else if (input == _up)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up))
 		{
 			log.log_comment("up action");
 			up_handle(selected_row, selected_column, selected_level);
 		}
-		else if (input == _down)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && input == _down))
 		{
 			log.log_comment("down action");
 			down_handle(selected_row, selected_column, selected_level);
 		}
-		else if (input == _right)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && input == _right))
 		{
 			log.log_comment("right action");
 			right_handle(selected_row, selected_column, selected_level);
 		}
-		else if (input == _left)
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && input == _left))
 		{
 			log.log_comment("left action");
 			left_handle(selected_row, selected_column, selected_level);
 		}
 		log.log_comment("Current row: " + std::to_string(selected_row) + " Current column: " + std::to_string(selected_column) + " Current level: " + std::to_string(selected_level));
-	} while (input != _quit);
+	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit));
 
 	log.log_end("frame::get_selection");
 	return selected_id;

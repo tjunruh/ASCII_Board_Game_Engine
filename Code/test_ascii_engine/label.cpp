@@ -8,12 +8,14 @@
 #include "../ascii_engine/error_codes.h"
 #include "../ascii_engine/frame.h"
 #include "../ascii_engine/format_tools.h"
+#include "../ascii_engine/controls.h"
 #elif __linux__
 #include <ascii_engine/label.h>
 #include <ascii_engine/file_manager.h>
 #include <ascii_engine/error_codes.h>
 #include <ascii_engine/frame.h>
 #include <ascii_engine/format_tools.h>
+#include <ascii_engine/controls.h>
 #endif
 
 #include "expected_display_data.h"
@@ -138,8 +140,19 @@ TEST_F(label_test, set_get_controls_test)
 	local_test_label_1.get_controls(up, down, left, right, quit);
 	EXPECT_EQ(up, ascii_io::w);
 	EXPECT_EQ(down, ascii_io::s);
+	EXPECT_EQ(left, ascii_io::a);
+	EXPECT_EQ(right, ascii_io::d);
 	EXPECT_EQ(quit, ascii_io::ESC);
+
+	controls* centralized_controls = new controls();
+	local_test_label_1.set_controls(centralized_controls);
+	EXPECT_EQ(centralized_controls->get_key(control_names::up), ascii_io::w);
+	EXPECT_EQ(centralized_controls->get_key(control_names::down), ascii_io::s);
+	EXPECT_EQ(centralized_controls->get_key(control_names::left), ascii_io::a);
+	EXPECT_EQ(centralized_controls->get_key(control_names::right), ascii_io::d);
+	EXPECT_EQ(centralized_controls->get_key(control_names::quit), ascii_io::ESC);
 	delete(local_test_frame);
+	delete(centralized_controls);
 }
 
 TEST_F(label_test, set_color)

@@ -3,6 +3,7 @@
 #include <vector>
 #include "widget.h"
 #include "frame.h"
+#include "controls.h"
 
 #ifdef _WIN32
 #ifdef MENU_EXPORTS
@@ -37,6 +38,7 @@ public:
 	MENU_API item_structure get_cursor_item_data();
 	MENU_API int get_item_label(const std::string& item, unsigned int column, std::string& label);
 	MENU_API void set_controls(std::vector<int> select, int up, int down, int left, int right, int quit);
+	MENU_API void set_controls(controls* centralized_controls);
 	MENU_API void get_controls(std::vector<int>& select, int& up, int& down, int& left, int& right, int& quit);
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	MENU_API void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
@@ -68,6 +70,7 @@ private:
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
 	bool _heading = false;
+	controls* _centralized_controls = nullptr;
 	std::string build_output();
 	bool item_exists(const std::string& item);
 	bool label_exists();

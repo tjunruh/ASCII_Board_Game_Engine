@@ -447,6 +447,44 @@ void menu::set_controls(std::vector<int> select, int up, int down, int left, int
 	_quit = quit;
 }
 
+void menu::set_controls(controls* centralized_controls)
+{
+	_centralized_controls = centralized_controls;
+
+	if (_centralized_controls)
+	{
+		if (_centralized_controls->get_key(control_names::up) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::up, _up);
+		}
+
+		if (_centralized_controls->get_key(control_names::down) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::down, _down);
+		}
+
+		if (_centralized_controls->get_key(control_names::left) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::left, _left);
+		}
+
+		if (_centralized_controls->get_key(control_names::right) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::right, _right);
+		}
+
+		if (_centralized_controls->get_key(control_names::quit) == ascii_io::undefined)
+		{
+			_centralized_controls->bind(control_names::quit, _quit);
+		}
+
+		if (_centralized_controls->get_select_keys().size() == 0)
+		{
+			_centralized_controls->set_select_keys(_select);
+		}
+	}
+}
+
 void menu::get_controls(std::vector<int>& select, int& up, int& down, int& left, int& right, int& quit)
 {
 	select.clear();
@@ -516,7 +554,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		unsigned int displayed_lines_remainder = 0;
 		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
 
-		if (std::count(_select.begin(), _select.end(), key_stroke) != 0)
+		if ((_centralized_controls && _centralized_controls->key_in_select_keys(key_stroke)) || (!_centralized_controls && std::count(_select.begin(), _select.end(), key_stroke) != 0))
 		{
 			if (menu_items.size() > 0)
 			{
@@ -524,7 +562,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 			}
 			break;
 		}
-		else if (key_stroke == _up)
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && key_stroke == _up))
 		{
 			if (_cursor_index > 0)
 			{
@@ -540,7 +578,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 		}
-		else if (key_stroke == _down)
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && key_stroke == _down))
 		{
 			if (_cursor_index < (menu_items.size() - 1))
 			{
@@ -552,7 +590,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 			}
 		}
-		else if (key_stroke == _left)
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && key_stroke == _left))
 		{
 			unsigned int left_column = get_left_column();
 			if (left_column > 0)
@@ -564,7 +602,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 				set_left_column(0);
 			}
 		}
-		else if (key_stroke == _right)
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && key_stroke == _right))
 		{
 			unsigned int left_column = get_left_column();
 			unsigned int displayed_columns_count = get_displayed_columns_count();
@@ -585,7 +623,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 			top_item = 1;
 		}
 
-	} while ((key_stroke != _quit) || !quit_enabled);
+	} while (((_centralized_controls && key_stroke != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && key_stroke != _quit)) || !quit_enabled);
 }
 
 void menu::display()

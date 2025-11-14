@@ -200,6 +200,45 @@ TEST_F(menu_test, is_selectable)
 	delete(local_test_frame);
 }
 
+TEST_F(menu_test, set_get_controls_test)
+{
+	frame* local_test_frame = new frame();
+	menu local_test_menu_1(local_test_frame);
+	local_test_menu_1.set_controls({ ascii_io::enter, ascii_io::ESC, ascii_io::DEL }, ascii_io::w, ascii_io::s, ascii_io::a, ascii_io::d, ascii_io::ESC);
+	std::vector<int> select_keys;
+	int up = ascii_io::undefined;
+	int down = ascii_io::undefined;
+	int left = ascii_io::undefined;
+	int right = ascii_io::undefined;
+	int quit = ascii_io::undefined;
+	local_test_menu_1.get_controls(select_keys, up, down, left, right, quit);
+	ASSERT_EQ(select_keys.size(), 3);
+	EXPECT_EQ(select_keys[0], ascii_io::enter);
+	EXPECT_EQ(select_keys[1], ascii_io::ESC);
+	EXPECT_EQ(select_keys[2], ascii_io::DEL);
+
+	EXPECT_EQ(up, ascii_io::w);
+	EXPECT_EQ(down, ascii_io::s);
+	EXPECT_EQ(left, ascii_io::a);
+	EXPECT_EQ(right, ascii_io::d);
+	EXPECT_EQ(quit, ascii_io::ESC);
+
+	controls* centralized_controls = new controls();
+	local_test_menu_1.set_controls(centralized_controls);
+	select_keys = centralized_controls->get_select_keys();
+	ASSERT_EQ(select_keys.size(), 3);
+	EXPECT_EQ(select_keys[0], ascii_io::enter);
+	EXPECT_EQ(select_keys[1], ascii_io::ESC);
+	EXPECT_EQ(select_keys[2], ascii_io::DEL);
+	EXPECT_EQ(centralized_controls->get_key(control_names::up), ascii_io::w);
+	EXPECT_EQ(centralized_controls->get_key(control_names::down), ascii_io::s);
+	EXPECT_EQ(centralized_controls->get_key(control_names::left), ascii_io::a);
+	EXPECT_EQ(centralized_controls->get_key(control_names::right), ascii_io::d);
+	EXPECT_EQ(centralized_controls->get_key(control_names::quit), ascii_io::ESC);
+	delete(local_test_frame);
+	delete(centralized_controls);
+}
+
 TEST_F(menu_test, test_append_item_label)
 {
 	frame* local_test_frame = new frame();

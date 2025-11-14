@@ -2,6 +2,7 @@
 #include "controls.h"
 #include "../../external_libraries/json.hpp"
 #include "../file_manager/file_manager.h"
+#include <algorithm>
 
 int controls::bind(const std::string& control_name, const int key)
 {
@@ -12,6 +13,17 @@ int controls::bind(const std::string& control_name, const int key)
 
    control_mapping.insert({control_name, key});
    return SUCCESS;
+}
+
+void controls::force_bind(const std::string& control_name, const int key)
+{
+    auto map = control_mapping.find(control_name);
+    if (map != control_mapping.end())
+    {
+        control_mapping.erase(map);
+    }
+
+    control_mapping.insert({ control_name, key });
 }
 
 int controls::unbind(const std::string& control_name)
@@ -69,7 +81,7 @@ int controls::load_controls(const std::string& file_path)
    {
       case 0:
       {
-         if ( !controls_data.contains("mapping") && !controls_data["mapping"].is_array() )
+         if ( !controls_data.contains("mapping") && !controls_data["mapping"].is_array() && !controls_data.contains("select_keys"))
          {
             return INVALID_PATH;
          }
@@ -106,6 +118,10 @@ int controls::load_controls(const std::string& file_path)
             int key = json_key.template get<int>();
             control_mapping.insert({name, key});
          }
+
+         nlohmann::json select_keys = controls_data["select_keys"];
+         _select_keys = select_keys.template get<std::vector<int>>();
+
          return SUCCESS;
       }
 
@@ -130,6 +146,7 @@ int controls::save_controls(const std::string& file_path)
    }
 
    controls_data["mapping"] = controls;
+   controls_data["select_keys"] = _select_keys;
 
    int status = file_manager::write_file(file_path, controls_data.dump(3));
 
@@ -139,4 +156,25 @@ int controls::save_controls(const std::string& file_path)
    }
 
    return SUCCESS;
+}
+
+void controls::set_select_keys(const std::vector<int>& select_keys)
+{
+    _select_keys = select_keys;
+}
+
+std::vector<int> controls::get_select_keys()
+{
+    return _select_keys;
+}
+
+bool controls::key_in_select_keys(const int key)
+{
+    bool in_select_keys = false;
+    if (std::count(_select_keys.begin(), _select_keys.end(), key) != 0)
+    {
+        in_select_keys = true;
+    }
+
+    return in_select_keys;
 }

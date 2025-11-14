@@ -6,6 +6,7 @@
 #include "format_tools.h"
 #include "logger.h"
 #include "dec_formatter.h"
+#include "controls.h"
 
 #ifdef _WIN32
 #ifdef FRAME_EXPORTS
@@ -26,6 +27,7 @@ public:
 	FRAME_API void display();
 	FRAME_API bool stale();
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
+	FRAME_API void set_controls(controls* centralized_controls);
 	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
 	FRAME_API int get_selection();
 	FRAME_API void enable_dec(bool enable);
@@ -178,4 +180,5 @@ private:
 	int last_selected_column = 0;
 	int selected_level = 0;
 	int last_selected_level = 0;
+	controls* _centralized_controls = nullptr;
 };

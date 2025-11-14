@@ -76,6 +76,13 @@ TEST_F(controls_test, bind)
    EXPECT_EQ(key, BIND_KEY);
 }
 
+TEST_F(controls_test, force_bind)
+{
+    multiple_controls.force_bind(BIND_NAME_D, BIND_KEY_A);
+    int result = multiple_controls.get_key(BIND_NAME_D);
+    EXPECT_EQ(result, BIND_KEY_A);
+}
+
 TEST_F(controls_test, unbind)
 {
    int result = 0;
@@ -101,6 +108,7 @@ TEST_F(controls_test, get_key)
 
 TEST_F(controls_test, save_and_load)
 {
+    multiple_controls.set_select_keys({ ascii_io::enter, ascii_io::DEL });
    int result = multiple_controls.save_controls({FILE_NAME});
    ASSERT_EQ(result, SUCCESS);
 
@@ -114,5 +122,11 @@ TEST_F(controls_test, save_and_load)
       EXPECT_EQ(key, test.second);
    }
 
+   std::vector<int> select_keys = multiple_controls.get_select_keys();
+   EXPECT_EQ(select_keys.size(), 2);
+   EXPECT_EQ(select_keys[0], ascii_io::enter);
+   EXPECT_EQ(select_keys[1], ascii_io::DEL);
+
    file_manager::delete_file(FILE_NAME);
 }
+
