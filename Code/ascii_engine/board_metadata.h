@@ -31,12 +31,12 @@ public:
 		metadata_container metadata;
 	};
 
-	BOARD_METADATA_API int get_int_metadata(int row, int column, const std::string& metadata_name);
-	BOARD_METADATA_API float get_float_metadata(int row, int column, const std::string& metadata_name);
-	BOARD_METADATA_API std::string get_string_metadata(int row, int column, const std::string& metadata_name);
-	BOARD_METADATA_API int get_int_metadata(const std::string& metadata);
-	BOARD_METADATA_API float get_float_metadata(const std::string& metadata);
-	BOARD_METADATA_API std::string get_string_metadata(const std::string& metadata);
+	BOARD_METADATA_API int get_int_metadata(int row, int column, const std::string& name);
+	BOARD_METADATA_API float get_float_metadata(int row, int column, const std::string& name);
+	BOARD_METADATA_API std::string get_string_metadata(int row, int column, const std::string& name);
+	BOARD_METADATA_API int get_int_metadata(const std::string& name);
+	BOARD_METADATA_API float get_float_metadata(const std::string& name);
+	BOARD_METADATA_API std::string get_string_metadata(const std::string& name);
 	BOARD_METADATA_API void insert_int_metadata(int row, int column, const std::string& name, int metadata);
 	BOARD_METADATA_API void insert_float_metadata(int row, int column, const std::string& name, float metadata);
 	BOARD_METADATA_API void insert_string_metadata(int row, int column, const std::string& name, const std::string& metadata);

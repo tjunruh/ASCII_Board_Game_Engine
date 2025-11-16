@@ -1,7 +1,7 @@
 #include "../ascii_engine_dll_files/pch.h"
 #include "board_metadata.h"
 
-int board_metadata::get_int_metadata(int row, int column, const std::string& metadata_name)
+int board_metadata::get_int_metadata(int row, int column, const std::string& name)
 {
 	int value = 0;
 	last_status = ELEMENT_NOT_FOUND;
@@ -9,7 +9,7 @@ int board_metadata::get_int_metadata(int row, int column, const std::string& met
 	{
 		if (tile_metadata[i].row == row && tile_metadata[i].column == column)
 		{
-			auto element = tile_metadata[i].metadata.int_data.find(metadata_name);
+			auto element = tile_metadata[i].metadata.int_data.find(name);
 			if (element != tile_metadata[i].metadata.int_data.end())
 			{
 				last_status = SUCCESS;
@@ -22,7 +22,7 @@ int board_metadata::get_int_metadata(int row, int column, const std::string& met
 	return value;
 }
 
-float board_metadata::get_float_metadata(int row, int column, const std::string& metadata_name)
+float board_metadata::get_float_metadata(int row, int column, const std::string& name)
 {
 	float value = 0.0;
 	last_status = ELEMENT_NOT_FOUND;
@@ -30,7 +30,7 @@ float board_metadata::get_float_metadata(int row, int column, const std::string&
 	{
 		if (tile_metadata[i].row == row && tile_metadata[i].column == column)
 		{
-			auto element = tile_metadata[i].metadata.float_data.find(metadata_name);
+			auto element = tile_metadata[i].metadata.float_data.find(name);
 			if (element != tile_metadata[i].metadata.float_data.end())
 			{
 				last_status = SUCCESS;
@@ -43,7 +43,7 @@ float board_metadata::get_float_metadata(int row, int column, const std::string&
 	return value;
 }
 
-std::string board_metadata::get_string_metadata(int row, int column, const std::string& metadata_name)
+std::string board_metadata::get_string_metadata(int row, int column, const std::string& name)
 {
 	std::string value = "";
 	last_status = ELEMENT_NOT_FOUND;
@@ -51,7 +51,7 @@ std::string board_metadata::get_string_metadata(int row, int column, const std::
 	{
 		if (tile_metadata[i].row == row && tile_metadata[i].column == column)
 		{
-			auto element = tile_metadata[i].metadata.string_data.find(metadata_name);
+			auto element = tile_metadata[i].metadata.string_data.find(name);
 			if (element != tile_metadata[i].metadata.string_data.end())
 			{
 				last_status = SUCCESS;
@@ -64,11 +64,11 @@ std::string board_metadata::get_string_metadata(int row, int column, const std::
 	return value;
 }
 
-int board_metadata::get_int_metadata(const std::string& metadata_name)
+int board_metadata::get_int_metadata(const std::string& name)
 {
 	int value = 0;
 	last_status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.int_data.find(metadata_name);
+	auto element = map_metadata.int_data.find(name);
 	if (element != map_metadata.int_data.end())
 	{
 		last_status = SUCCESS;
@@ -78,11 +78,11 @@ int board_metadata::get_int_metadata(const std::string& metadata_name)
 	return value;
 }
 
-float board_metadata::get_float_metadata(const std::string& metadata_name)
+float board_metadata::get_float_metadata(const std::string& name)
 {
 	float value = 0.0;
 	last_status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.float_data.find(metadata_name);
+	auto element = map_metadata.float_data.find(name);
 	if (element != map_metadata.float_data.end())
 	{
 		last_status = SUCCESS;
@@ -92,11 +92,11 @@ float board_metadata::get_float_metadata(const std::string& metadata_name)
 	return value;
 }
 
-std::string board_metadata::get_string_metadata(const std::string& metadata_name)
+std::string board_metadata::get_string_metadata(const std::string& name)
 {
 	std::string value = "";
 	last_status = ELEMENT_NOT_FOUND;
-	auto element = map_metadata.string_data.find(metadata_name);
+	auto element = map_metadata.string_data.find(name);
 	if (element != map_metadata.string_data.end())
 	{
 		last_status = SUCCESS;
