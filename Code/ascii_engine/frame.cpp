@@ -194,11 +194,29 @@ void frame::get_controls(int& select, int& quit, int& up, int& down, int& left, 
 	right = _right;
 }
 
+void frame::set_selection(int selection)
+{
+	selected_id = selection;
+}
+
 int frame::get_selection()
 {
 	int input = 0;
-	int selected_id = -1;
 	log.log_begin("frame::get_selection");
+
+	if (selected_id >= 0)
+	{
+		for (unsigned int i = 0; i < widgets.size(); i++)
+		{
+			if (widgets[i]->id == selected_id)
+			{
+				selected_row = widgets[i]->row;
+				selected_column = widgets[i]->column;
+				selected_level = widgets[i]->level;
+			}
+		}
+	}
+
 	if (!initialize_selection(selected_row, selected_column, selected_level))
 	{
 		log.log_comment("No selectable widget found.");
