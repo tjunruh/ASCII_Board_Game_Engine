@@ -29,8 +29,11 @@ public:
 	FRAME_API void set_controls(int select, int quit, int up, int down, int left, int right);
 	FRAME_API void set_controls(controls* centralized_controls);
 	FRAME_API void get_controls(int& select, int& quit, int& up, int& down, int& left, int& right);
+	FRAME_API void set_selection_exit_keys(const std::vector<int>& exit_keys);
+	FRAME_API std::vector<int> get_selection_exit_keys();
 	FRAME_API void set_selection(int selection);
 	FRAME_API int get_selection();
+	FRAME_API bool selection_exit_key_used();
 	FRAME_API void enable_dec(bool enable);
 	FRAME_API void use_light_dec_formatting(bool light_formatting);
 	FRAME_API bool dec_enabled();
@@ -183,4 +186,6 @@ private:
 	int last_selected_level = 0;
 	int selected_id = -1;
 	controls* _centralized_controls = nullptr;
+	std::vector<int> selection_exit_keys = {};
+	bool exit_key_used;
 };

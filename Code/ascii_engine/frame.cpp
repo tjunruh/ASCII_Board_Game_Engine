@@ -194,6 +194,16 @@ void frame::get_controls(int& select, int& quit, int& up, int& down, int& left, 
 	right = _right;
 }
 
+void frame::set_selection_exit_keys(const std::vector<int>& exit_keys)
+{
+	selection_exit_keys = exit_keys;
+}
+
+std::vector<int> frame::get_selection_exit_keys()
+{
+	return selection_exit_keys;
+}
+
 void frame::set_selection(int selection)
 {
 	selected_id = selection;
@@ -202,6 +212,7 @@ void frame::set_selection(int selection)
 int frame::get_selection()
 {
 	int input = 0;
+	exit_key_used = false;
 	log.log_begin("frame::get_selection");
 
 	if (selected_id >= 0)
@@ -269,11 +280,25 @@ int frame::get_selection()
 			log.log_comment("left action");
 			left_handle(selected_row, selected_column, selected_level);
 		}
+
+		if (std::count(selection_exit_keys.begin(), selection_exit_keys.end(), input) != 0)
+		{
+			exit_key_used = true;
+			log.log_comment("exit action");
+			log.log_end("frame::get_selection");
+			return input;
+		}
+
 		log.log_comment("Current row: " + std::to_string(selected_row) + " Current column: " + std::to_string(selected_column) + " Current level: " + std::to_string(selected_level));
 	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit));
 
 	log.log_end("frame::get_selection");
 	return selected_id;
+}
+
+bool frame::selection_exit_key_used()
+{
+	return exit_key_used;
 }
 
 void frame::enable_dec(bool enable)
