@@ -234,6 +234,29 @@ protected:
 			EXPECT_EQ(right_multiplier, returned_right_multiplier) << std::to_string(test_num);
 		}
 	}
+
+	void set_get_title(widget& local_test_widget, const std::string& title, const std::string& expected_status_function, int expected_status_code, bool set, int test_num)
+	{
+		std::string log_content = "";
+		if (set)
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			local_test_widget.set_title(title);
+			status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+		}
+		else
+		{
+			local_test_widget.reset_logging("widget.log");
+			int status = file_manager::read_file("widget.log", log_content);
+			ASSERT_EQ(status, 0) << std::to_string(test_num);
+			std::string returned_title = local_test_widget.get_title();
+			EXPECT_EQ(title, returned_title) << std::to_string(test_num);
+		}
+	}
 };
 
 TEST_F(widget_test, set_get_alignment)
@@ -529,5 +552,21 @@ TEST_F(widget_test, selectability)
 	EXPECT_EQ(local_test_widget.is_selectable(), true);
 	local_test_widget.set_selectable(false);
 	EXPECT_EQ(local_test_widget.is_selectable(), false);
+	delete(local_test_frame);
+}
+
+TEST_F(widget_test, set_get_title_test)
+{
+	frame* local_test_frame = new frame();
+	widget local_test_widget(local_test_frame);
+	local_test_widget.start_logging("widget.log");
+	std::string log_content = "";
+	int status = file_manager::read_file("widget.log", log_content);
+	ASSERT_EQ(status, 0);
+	set_get_title(local_test_widget, "", "none", UNDEFINED, false, 0);
+	set_get_title(local_test_widget, "test", "widget::set_title", SUCCESS, true, 1);
+	set_get_title(local_test_widget, "test\n", "widget::set_title", INVALID_VALUE, true, 2);
+	set_get_title(local_test_widget, "test", "none", UNDEFINED, false, 3);
+
 	delete(local_test_frame);
 }

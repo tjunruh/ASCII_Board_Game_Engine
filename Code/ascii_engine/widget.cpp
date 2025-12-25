@@ -244,6 +244,26 @@ void widget::set_border_spacing_width_multipliers(float left_multiplier, float r
 	log.log_status(status, "widget::set_border_spacing_width_multipliers");
 }
 
+void widget::set_title(const std::string& title)
+{
+	int status = SUCCESS;
+	for (unsigned int i = 0; i < title.size(); i++)
+	{
+		if (title[i] == '\n')
+		{
+			status = INVALID_VALUE;
+			break;
+		}
+	}
+
+	if (status == SUCCESS)
+	{
+		item.title = title;
+	}
+
+	log.log_status(status, "widget::set_title");
+}
+
 void widget::add_border(bool border)
 {
 	item.add_border = border;
@@ -322,6 +342,11 @@ void widget::get_border_spacing_width_multipliers(float& left_multiplier, float&
 {
 	left_multiplier = item.left_border_width_multiplier;
 	right_multiplier = item.right_border_width_multiplier;
+}
+
+std::string widget::get_title()
+{
+	return item.title;
 }
 
 unsigned int widget::get_width(bool include_spacing)

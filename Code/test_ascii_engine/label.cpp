@@ -1274,3 +1274,73 @@ TEST_F(label_test, embedded_color_test)
 
 	delete(local_test_frame);
 }
+
+TEST_F(label_test, test_title)
+{
+	const expected_display_data correct_answer =
+	{
+		".title 1-----------------------------------------..title 2-----------------------------------------.\n"
+		"| This is widget 1.                              || This                                           |\n"
+		".------------------------------------------------.| is                                             |\n"
+		"                                                  | widget                                         |\n"
+		"                                                  | 2                                              |\n"
+		"                                                  .------------------------------------------------.\n"
+		".title 3-------------------------------------------------------------------------------------------.\n"
+		"| This is widget                                                                                   |\n"
+		"| 3                                                                                                |\n"
+		".--------------------------------------------------------------------------------------------------.\n"
+		".title 4------------------------..title 5------------------------..title 6------------------------. \n"
+		"| This is                       || This                          || This is widget 6              | \n"
+		"| widget                        || is                            |.-------------------------------. \n"
+		"| 4                             || widget                        |                                  \n"
+		".-------------------------------.| 5                             |                                  \n"
+		"                                 .-------------------------------.                                  ",
+		{ 2, 52, 2, 2, 35, 68 },
+		{ 1, 1, 7, 11, 11, 11 },
+		{ 46, 46, 96, 29, 29, 29 },
+		{ 1, 4, 2, 3, 4, 1 },
+		{ 50, 50, 100, 33, 33, 33 },
+		{ 3, 6, 4, 5, 6, 3 }
+	};
+
+	frame* local_test_frame = new frame();
+	local_test_frame->use_fake_console_dimensions(true);
+	local_test_frame->set_fake_console_height(16);
+	local_test_frame->set_fake_console_width(100);
+	std::vector<label*> labels;
+	label local_test_label_1(local_test_frame);
+	local_test_label_1.set_output("This is widget 1.");
+	local_test_label_1.set_title("title 1");
+	local_test_label_1.add_border(true);
+	labels.push_back(&local_test_label_1);
+	label local_test_label_2(local_test_frame);
+	local_test_label_2.set_output("This\nis\nwidget\n2");
+	local_test_label_2.set_title("title 2");
+	local_test_label_2.add_border(true);
+	labels.push_back(&local_test_label_2);
+	label local_test_label_3(local_test_frame, "new line");
+	local_test_label_3.set_output("This is widget\n3");
+	local_test_label_3.set_title("title 3");
+	local_test_label_3.add_border(true);
+	labels.push_back(&local_test_label_3);
+	label local_test_label_4(local_test_frame, "new line");
+	local_test_label_4.set_output("This is\nwidget\n4");
+	local_test_label_4.set_title("title 4");
+	local_test_label_4.add_border(true);
+	labels.push_back(&local_test_label_4);
+	label local_test_label_5(local_test_frame);
+	local_test_label_5.set_output("This\nis\nwidget\n5");
+	local_test_label_5.set_title("title 5");
+	local_test_label_5.add_border(true);
+	labels.push_back(&local_test_label_5);
+	label local_test_label_6(local_test_frame);
+	local_test_label_6.set_output("This is widget 6");
+	local_test_label_6.set_title("title 6");
+	local_test_label_6.add_border(true);
+	labels.push_back(&local_test_label_6);
+	std::string output = local_test_frame->get_frame_output();
+
+	run_test(output, labels, correct_answer);
+
+	delete(local_test_frame);
+}

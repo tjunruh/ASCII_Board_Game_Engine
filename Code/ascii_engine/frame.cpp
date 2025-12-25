@@ -1835,8 +1835,11 @@ void frame::generate_border(const widget_info* const item, std::vector<std::stri
 			lines[k].insert(lines[k].length() - right_spacing, " " + std::string(1, item->vertical_border));
 		}
 	}
+
 	lines.insert(lines.begin() + top_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item->corner_border) + format_tools::get_spacing(middle_spacing, item->horizontal_border) + std::string(1, item->corner_border) + format_tools::get_spacing(right_spacing, ' '));
 	lines.insert(lines.end() - bottom_spacing, format_tools::get_spacing(left_spacing, ' ') + std::string(1, item->corner_border) + format_tools::get_spacing(middle_spacing, item->horizontal_border) + std::string(1, item->corner_border) + format_tools::get_spacing(right_spacing, ' '));
+
+	add_title(item->title, lines, top_spacing, left_spacing, right_spacing);
 }
 
 bool frame::only_widget_at_coordinate(const widget_info* const item)
@@ -1914,6 +1917,21 @@ void frame::dynamically_adjust_displayed_lines(widget_info* item)
 	{
 		item->displayed_lines_count = 1;
 		bound_top_line(item);
+	}
+}
+
+void frame::add_title(const std::string& title, std::vector<std::string>& lines, int top_spacing, int left_spacing, int right_spacing)
+{
+	for (unsigned int i = 0; i < title.length(); i++)
+	{
+		if (i + left_spacing + 1 < (lines[top_spacing].length() - right_spacing))
+		{
+			lines[top_spacing][i + left_spacing + 1] = title[i];
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 
