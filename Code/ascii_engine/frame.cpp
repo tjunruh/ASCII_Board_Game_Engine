@@ -1924,9 +1924,9 @@ void frame::add_title(const std::string& title, std::vector<std::string>& lines,
 {
 	for (unsigned int i = 0; i < title.length(); i++)
 	{
-		if (i + left_spacing + 1 < (lines[top_spacing].length() - right_spacing))
+		if (i + left_spacing + 2 < (lines[top_spacing].length() - right_spacing))
 		{
-			lines[top_spacing][i + left_spacing + 1] = title[i];
+			lines[top_spacing][i + left_spacing + 2] = title[i];
 		}
 		else
 		{
