@@ -191,19 +191,26 @@ void ascii_board::set_tile(int row, int column, std::string value)
 		{
 			std::vector<format_tools::index_format> colors = format_tools::convert_color_tags(value);
 			unsigned int value_length = get_value_length(action_tiles[action_tile_index]);
+
+			clear_tile(row, column);
+
 			if (value.length() <= value_length)
 			{
-				clear_tile(row, column);
 				value = value + format_tools::get_spacing(value_length - value.length(), ' ');
-				action_tiles[action_tile_index].colors = colors;
-				action_tiles[action_tile_index].value = value;
-				action_tiles[action_tile_index].edited = true;
-				status = SUCCESS;
 			}
 			else
 			{
-				status = INVALID_LENGTH;
+				while (value.length() > value_length)
+				{
+					value.erase(value.length() - 1);
+				}
 			}
+
+			action_tiles[action_tile_index].colors = colors;
+			action_tiles[action_tile_index].value = value;
+			action_tiles[action_tile_index].edited = true;
+
+			status = SUCCESS;
 		}
 		else
 		{
