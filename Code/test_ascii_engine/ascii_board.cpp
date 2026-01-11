@@ -249,6 +249,23 @@ protected:
 		}
 	}
 
+	void set_tile_tester(ascii_board& local_test_board, int row, int column, const std::string& value, const std::string& comparison, const std::string& expected_status_function, int expected_status_code, int test_num)
+	{
+		std::string log_content = "";
+		local_test_board.reset_logging("ascii_board.log");
+		int status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		ASSERT_EQ(log_content.find("ascii_board::add_configuration status: " + std::to_string(SUCCESS)), std::string::npos) << std::to_string(test_num);
+		local_test_board.set_tile(row, column, value);
+		status = file_manager::read_file("ascii_board.log", log_content);
+		ASSERT_EQ(status, 0) << std::to_string(test_num);
+		EXPECT_NE(log_content.find(expected_status_function + " status: " + std::to_string(expected_status_code)), std::string::npos) << "Test Number: " + std::to_string(test_num) + "\nExpected function: " + expected_status_function + "\nExpected code: " + std::to_string(expected_status_code);
+
+		local_test_board.build();
+		std::string board = local_test_board.get_board();
+		EXPECT_EQ(board, comparison) << std::to_string(test_num);
+	}
+
 	void set_lines_count_test(ascii_board& local_test_board, int lines_count, const std::string& comparison, int test_num)
 	{
 		local_test_board.set_lines_count(lines_count);
@@ -1555,6 +1572,22 @@ TEST_F(ascii_board_test, configuration_set_single_line)
 	test_configuration_activated(local_test_board, "cursor", 0, 0, false, "ascii_board::configuration_activated", SUCCESS, 38);
 	test_configuration_activated(local_test_board, "arrow", 0, 0, true, "ascii_board::configuration_activated", SUCCESS, 39);
 	activate_deactivate(local_test_board, "cursor", 0, 0, single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 40);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, set_tile_test)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, single_line_board_definitions::board_config_path, "default", "none", 0, true);
+
+	set_tile_tester(local_test_board, 0, 0, "( )", single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", SUCCESS, 0);
+	set_tile_tester(local_test_board, 0, 10, "( )", single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", INVALID_INDEX, 1);
+	set_tile_tester(local_test_board, 5, 4, "(\n)", single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", INVALID_VALUE, 2);
+	set_tile_tester(local_test_board, 0, 0, "  ", single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, 3);
+	set_tile_tester(local_test_board, 5, 4, "( )******", single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, 4);
+	set_tile_tester(local_test_board, 5, 4, "   ", single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, 5);
+	set_tile_tester(local_test_board, 9, 9, "<blue_foreground>( )", single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, 6);
 
 	delete(local_test_frame);
 }
