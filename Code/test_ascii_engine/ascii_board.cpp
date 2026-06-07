@@ -1632,8 +1632,9 @@ TEST_F(ascii_board_test, set_tile_test)
 	set_tile_tester(local_test_board, 5, 4, "(\n)", single_line_board_definitions::beginning_cursor_board, "ascii_board::set_tile", INVALID_VALUE, 2);
 	set_tile_tester(local_test_board, 0, 0, "  ", single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, 3);
 	set_tile_tester(local_test_board, 5, 4, "( )******", single_line_board_definitions::middle_cursor_board, "ascii_board::set_tile", SUCCESS, 4);
-	set_tile_tester(local_test_board, 5, 4, "   ", single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, 5);
-	set_tile_tester(local_test_board, 9, 9, "<blue_foreground>( )", single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, 6);
+	set_tile_tester(local_test_board, 5, 4, "(", single_line_board_definitions::middle_half_cursor_board, "ascii_board::set_tile", SUCCESS, 5);
+	set_tile_tester(local_test_board, 5, 4, "   ", single_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, 6);
+	set_tile_tester(local_test_board, 9, 9, "<blue_foreground>( )", single_line_board_definitions::end_cursor_board, "ascii_board::set_tile", SUCCESS, 7);
 
 	delete(local_test_frame);
 }

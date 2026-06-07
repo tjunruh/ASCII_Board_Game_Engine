@@ -196,7 +196,10 @@ void ascii_board::set_tile(int row, int column, std::string value)
 
 			if (value.length() <= value_length)
 			{
-				value = value + format_tools::get_spacing(value_length - value.length(), ' ');
+				for (unsigned int i = value_length - (value_length - value.length()); i < action_tiles[action_tile_index].default_value.length(); i++)
+				{
+					value = value + action_tiles[action_tile_index].default_value[i];
+				}
 			}
 			else
 			{
