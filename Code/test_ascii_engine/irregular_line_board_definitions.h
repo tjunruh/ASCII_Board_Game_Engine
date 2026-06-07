@@ -25,21 +25,21 @@ namespace irregular_line_board_definitions
 #endif
 
 	const std::vector<format_tools::index_format> empty_colors;
-	const board_configuration cursor_config_board{ "cursor", {{ -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', empty_colors }} };
+	const board_configuration cursor_config_board{ "cursor", {{ -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', '\0', empty_colors }} };
 
-	const board_configuration x_config_board{ "x", {{ -1, -1, "*\\\\    //*** \\\\  // *****  /  \\  ******  \\  /  ***** //  \\\\ ***//    \\\\*", '*', empty_colors }} };
+	const board_configuration x_config_board{ "x", {{ -1, -1, "*\\\\    //*** \\\\  // *****  /  \\  ******  \\  /  ***** //  \\\\ ***//    \\\\*", '*', '\0', empty_colors }} };
 
-	const board_configuration o_config_board{ "o", {{ -1, -1, "*//````\\\\***||    ||*****||    ||******||    ||*****||    ||***\\\\____//*", '*', empty_colors }} };
+	const board_configuration o_config_board{ "o", {{ -1, -1, "*//````\\\\***||    ||*****||    ||******||    ||*****||    ||***\\\\____//*", '*', '\0', empty_colors }} };
 
-	const board_configuration arrow_config_board{ "arrow", {{ -1, -1, "*********>********** >***********  >***********  >********** >*********>", '*', empty_colors }} };
+	const board_configuration arrow_config_board{ "arrow", {{ -1, -1, "*********>********** >***********  >***********  >********** >*********>", '*', '\0', empty_colors }} };
 
-	const board_configuration duplicate_name_config_board{ "cursor", {{ -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', empty_colors }} };
+	const board_configuration duplicate_name_config_board{ "cursor", {{ -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', '\0', empty_colors }} };
 
-	const board_configuration out_of_bounds_config_board{ "out_of_bounds", {{ 41, 0, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', empty_colors }} };
+	const board_configuration out_of_bounds_config_board{ "out_of_bounds", {{ 41, 0, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', '\0', empty_colors }} };
 
-	const board_configuration overlapping_config_board{ "overlapping", { { -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', empty_colors }, { -1, -1, "*x*", '*', empty_colors } } };
+	const board_configuration overlapping_config_board{ "overlapping", { { -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', '\0', empty_colors }, { -1, -1, "*x*", '*', '\0', empty_colors } } };
 
-	const board_configuration invalid_name_config_board{ "", { { -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', empty_colors } } };
+	const board_configuration invalid_name_config_board{ "", { { -1, -1, "/********\\/ ******** \\/  ********  \\\\  ********  /\\ ******** /\\********/", '*', '\0', empty_colors } } };
 
 	const std::string empty_board =
 		R"(   /========\                /========\   )""\n"

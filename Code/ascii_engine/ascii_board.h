@@ -22,6 +22,7 @@ struct tile_configuration
 	int column = -2;
 	std::string value = "";
 	char ignore_character = '\0';
+	char dynamic_character = '\0';
 	std::vector<format_tools::index_format> colors;
 };
 
@@ -47,6 +48,7 @@ public:
 		std::string name_id = "";
 		std::string value = "";
 		char ignore_character = '\0';
+		char dynamic_character = '\0';
 	};
 
 private:
@@ -91,17 +93,17 @@ public:
 	ASCII_BOARD_API std::vector<format_tools::index_format> get_colors();
 	ASCII_BOARD_API void get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API void add_configuration(board_configuration configuration);
-	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character);
-	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
-	ASCII_BOARD_API void activate_configuration(const std::string& name_id, int row, int column);
-	ASCII_BOARD_API void activate_configuration(const std::string& name_id);
+	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, char dynamic_character = '\0');
+	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors, char dynamic_character = '\0');
+	ASCII_BOARD_API void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0');
+	ASCII_BOARD_API void activate_configuration(const std::string& name_id, int row, int column, const std::string& dynamic_value = "");
+	ASCII_BOARD_API void activate_configuration(const std::string& name_id, const std::string& dynamic_value = "");
 	ASCII_BOARD_API void deactivate_configuration(const std::string& name_id, int row, int column);
 	ASCII_BOARD_API void deactivate_configuration(const std::string& name_id);
 	ASCII_BOARD_API std::string load_configuration(const std::string& path);
-	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character);
-	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors);
-	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false);
+	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, char dynamic_character = '\0');
+	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors, char dynamic_character = '\0');
+	ASCII_BOARD_API void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0');
 	ASCII_BOARD_API void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors);
 	ASCII_BOARD_API int get_number_of_columns();
 	ASCII_BOARD_API int get_number_of_rows();
@@ -150,10 +152,10 @@ private:
 	int get_action_tile_index(int row, int column);
 	int get_board_config_index(const std::string& name_id);
 	int get_tile_config_index(const std::string& name_id, int row, int column);
-	void set_tile(tile_configuration configuration, bool activate, const std::string& name_id);
-	void set_row(tile_configuration configuration, bool activate, const std::string& name_id);
-	void set_column(tile_configuration configuration, bool activate, const std::string& name_id);
-	void set_all(tile_configuration configuration, bool activate, const std::string& name_id);
+	void set_tile(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value = "");
+	void set_row(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value = "");
+	void set_column(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value = "");
+	void set_all(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value = "");
 	std::string fill_default_value_with_ignore_character(std::string config_value, std::string default_value, char ignore_character);
 	void remove_activated_config(std::vector<sub_tile_configuration>& activated_configs, std::string name_id);
 	bool trim_activated_configs(action_tile& tile);
@@ -163,4 +165,5 @@ private:
 	std::string remove_configuration_format_characters(std::string content, char format_character);
 	char get_format_character(const std::string& content);
 	void newline_guard(board_translation& translation);
+	void finalize_dynamic_configuration_region(tile_configuration& configuration, const std::string& dynamic_value, const std::string& default_value);
 };

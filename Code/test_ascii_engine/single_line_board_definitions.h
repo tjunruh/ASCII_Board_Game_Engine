@@ -18,30 +18,34 @@ namespace single_line_board_definitions
 	std::string metadata_config_path = "single_line_metadata_config.txt";
 	std::string cursor_config_path = "single_line_test_cursor_config.txt";
 	std::string x_config_path = "single_line_test_x_config.txt";
+	std::string o_config_path = "single_line_test_o_config.txt";
+	std::string z_config_path = "single_line_test_z_config.txt";
 #elif __linux__
 	std::string board_config_path = "Code/test_ascii_engine/test_configs/single_line_test_board_config.txt";
 	std::string upside_down_board_config_path = "Code/test_ascii_engine/test_configs/single_line_test_board_config_upside_down.txt";
 	std::string metadata_config_path = "Code/test_ascii_engine/test_configs/single_line_metadata_config.txt";
 	std::string cursor_config_path = "Code/test_ascii_engine/test_configs/single_line_test_cursor_config.txt";
 	std::string x_config_path = "Code/test_ascii_engine/test_configs/single_line_test_x_config.txt";
+	std::string o_config_path = "Code/test_ascii_engine/test_configs/single_line_test_o_config.txt";
+	std::string z_config_path = "Code/test_ascii_engine/test_configs/single_line_test_z_config.txt";
 #endif
 
 	const std::vector<format_tools::index_format> empty_colors;
-	const board_configuration cursor_config_board{ "cursor", {{ -1, -1, "(*)", '*', empty_colors }}};
+	const board_configuration cursor_config_board{ "cursor", {{ -1, -1, "(*)", '*', '\0', empty_colors }}};
 
-	const board_configuration x_config_board{ "x", {{ -1, -1, "*x*", '*', empty_colors }} };
+	const board_configuration x_config_board{ "x", {{ -1, -1, "*x*", '*', '\0', empty_colors }} };
 
-	const board_configuration o_config_board{ "o", {{ -1, -1, "*o*", '*', empty_colors }} };
+	const board_configuration o_config_board{ "o", {{ -1, -1, "*o*", '*', '\0', empty_colors }} };
 
-	const board_configuration arrow_config_board{ "arrow", {{ -1, -1, "**>", '*', empty_colors }} };
+	const board_configuration arrow_config_board{ "arrow", {{ -1, -1, "**>", '*', '\0', empty_colors }} };
 
-	const board_configuration duplicate_name_config_board{ "cursor", {{ -1, -1, "*x*", '*', empty_colors }} };
+	const board_configuration duplicate_name_config_board{ "cursor", {{ -1, -1, "*x*", '*', '\0', empty_colors }} };
 
-	const board_configuration out_of_bounds_config_board{ "out_of_bounds", {{ 41, 0, "(*)", '*', empty_colors }} };
+	const board_configuration out_of_bounds_config_board{ "out_of_bounds", {{ 41, 0, "(*)", '*', '\0', empty_colors }} };
 
-	const board_configuration overlapping_config_board{ "overlapping", { { -1, -1, "(*)", '*', empty_colors }, { -1, -1, "*x*", '*', empty_colors } } };
+	const board_configuration overlapping_config_board{ "overlapping", { { -1, -1, "(*)", '*', '\0', empty_colors }, { -1, -1, "*x*", '*', '\0', empty_colors } } };
 
-	const board_configuration invalid_name_config_board{ "", { { -1, -1, "(*)", '*', empty_colors } } };
+	const board_configuration invalid_name_config_board{ "", { { -1, -1, "(*)", '*', '\0', empty_colors } } };
 
 	const std::string empty_board =
 		".---.---.---.---.---.---.---.---.---.---.\n"
