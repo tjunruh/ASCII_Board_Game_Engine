@@ -1,3 +1,4 @@
+#include "../ascii_engine_dll_files/pch.h"
 #include "loop.h"
 #include "error_codes.h"
 #include "widget_types.h"

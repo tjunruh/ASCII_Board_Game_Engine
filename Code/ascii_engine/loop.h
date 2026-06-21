@@ -7,6 +7,16 @@
 #include "logger.h"
 #include <vector>
 
+#ifdef _WIN32
+#ifdef LOOP_EXPORTS
+#define LOOP_API __declspec(dllexport)
+#else
+#define LOOP_API __declspec(dllimport)
+#endif
+#elif __linux__
+#define LOOP_API
+#endif
+
 class loop
 {
 public:
@@ -18,14 +28,14 @@ public:
 		int mouse_y_position = -1;
 	};
 
-	int start_logging(const std::string& file_path);
-	int reset_logging(const std::string& file_path);
-	void stop_logging();
-	int add_widget(label* item);
-	int add_widget(text_box* item);
-	int add_widget(menu* item);
-	int add_widget(ascii_board* item);
-	event run_loop();
+	LOOP_API int start_logging(const std::string& file_path);
+	LOOP_API int reset_logging(const std::string& file_path);
+	LOOP_API void stop_logging();
+	LOOP_API int add_widget(label* item);
+	LOOP_API int add_widget(text_box* item);
+	LOOP_API int add_widget(menu* item);
+	LOOP_API int add_widget(ascii_board* item);
+	LOOP_API event run_loop();
 
 private:
 	void initialize_display();

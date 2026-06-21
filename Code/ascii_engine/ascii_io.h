@@ -158,22 +158,6 @@ namespace ascii_io
 	const int mouse_left_pressed = 405;
 	const int mouse_right_pressed = 406;
 	const int unknown_mouse = 407;
-
-#ifdef _WIN32
-	const int backspace = 8;
-	const int enter = 13;
-	const int right = 301;
-	const int left = 299;
-	const int up = 296;
-	const int down = 304;
-	const int DEL = 307;
-	const int insert = 306;
-	const int end = 303;
-	const int home = 295;
-	const int page_down = 305;
-	const int page_up = 297;
-
-#elif __linux__
 	const int backspace = 263;
 	const int enter = 10;
 	const int right = 261;
@@ -186,7 +170,6 @@ namespace ascii_io
 	const int home = 262;
 	const int page_down = 338;
 	const int page_up = 339;
-#endif
 
 	struct key_string
 	{
