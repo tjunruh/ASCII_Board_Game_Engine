@@ -542,88 +542,71 @@ void menu::enable_quit(bool enable)
 
 void menu::get_selection(std::string& selection, int& key_stroke)
 {
-	key_stroke = ascii_io::undefined;
 	selection = "";
+	int previous_mouse_x_position = mouse_x_position;
 
 	do
 	{
 		display();
-		key_stroke = ascii_io::getchar();
-		unsigned int top_line_remainder = 0;
-		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
-		unsigned int displayed_lines_remainder = 0;
-		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
+		if (!first_key_stroke_initialized)
+		{
+			previous_mouse_x_position = mouse_x_position;
+			key_stroke = ascii_io::getchar(mouse_x_position, mouse_y_position);
+		}
+		else
+		{
+			first_key_stroke_initialized = false;
+		}
 
 		if ((_centralized_controls && _centralized_controls->key_in_select_keys(key_stroke)) || (!_centralized_controls && std::count(_select.begin(), _select.end(), key_stroke) != 0))
 		{
-			if (menu_items.size() > 0)
+			if (key_stroke == ascii_io::mouse_left_pressed && inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				unsigned int selected_line_remainder = 0;
+				_cursor_index = format_tools::compress(mouse_y_position - get_y_origin() + get_top_line(), get_line_compression_amount(), selected_line_remainder);
+				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+				selection = menu_items[_cursor_index].item;
+				_selection = selection;
+				break;
+			}
+			else if (menu_items.size() > 0)
 			{
 				selection = menu_items[_cursor_index].item;
-			}
-			break;
-		}
-		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && key_stroke == _up))
-		{
-			if (_cursor_index > 0)
-			{
-				if (_cursor_index == top_item)
-				{
-					top_item--;
-				}
-				_cursor_index--;
-				if (_heading && _cursor_index == 0)
-				{
-					_cursor_index = 1;
-				}
-				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+				_selection = selection;
+				break;
 			}
 		}
-		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && key_stroke == _down))
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && key_stroke == _up) || (key_stroke == ascii_io::scroll_up))
 		{
-			if (_cursor_index < (menu_items.size() - 1))
+			if ((key_stroke == ascii_io::scroll_up) && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
-				if ((_cursor_index - top_item + 1) == displayed_items)
-				{
-					top_item++;
-				}
-				_cursor_index++;
-				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+				break;
 			}
+			scroll_up();
 		}
-		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && key_stroke == _left))
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && key_stroke == _down) || (key_stroke == ascii_io::scroll_down))
 		{
-			unsigned int left_column = get_left_column();
-			if (left_column > 0)
+			if ((key_stroke == ascii_io::scroll_down) && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
-				set_left_column(left_column - 1);
+				break;
 			}
-			else
-			{
-				set_left_column(0);
-			}
+			scroll_down();
 		}
-		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && key_stroke == _right))
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && key_stroke == _left) || (ascii_io::is_dragging() && mouse_x_position > previous_mouse_x_position))
 		{
-			unsigned int left_column = get_left_column();
-			unsigned int displayed_columns_count = get_displayed_columns_count();
-			unsigned int  total_columns_count = get_total_columns_count();
-			if ((left_column + 1 + displayed_columns_count) < total_columns_count)
-			{
-				set_left_column(left_column + 1);
-			}
-			else if (total_columns_count > displayed_columns_count)
-			{
-				set_left_column(total_columns_count - displayed_columns_count);
-			}
+			scroll_left();
 		}
-
-		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
-		if (_heading && top_item == 0)
+		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && key_stroke == _right) || (ascii_io::is_dragging() && mouse_x_position < previous_mouse_x_position))
 		{
-			top_item = 1;
+			scroll_right();
 		}
 
 	} while (((_centralized_controls && key_stroke != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && key_stroke != _quit)) || !quit_enabled);
+}
+
+std::string menu::get_selection()
+{
+	return _selection;
 }
 
 void menu::display()
@@ -696,6 +679,84 @@ void menu::separate_items(bool separate)
 			_cursor_index = bounded_cursor_item;
 			set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		}
+	}
+}
+
+void menu::scroll_up()
+{
+	if (_cursor_index > 0)
+	{
+		unsigned int top_line_remainder = 0;
+		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+		if (_cursor_index == top_item)
+		{
+			top_item--;
+		}
+		_cursor_index--;
+		if (_heading && _cursor_index == 0)
+		{
+			_cursor_index = 1;
+		}
+		set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
+		if (_heading && top_item == 0)
+		{
+			top_item = 1;
+		}
+
+		_selection = menu_items[_cursor_index].item;
+	}
+}
+
+void menu::scroll_down()
+{
+	if (_cursor_index < (menu_items.size() - 1))
+	{
+		unsigned int top_line_remainder = 0;
+		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
+		unsigned int displayed_lines_remainder = 0;
+		unsigned int displayed_items = format_tools::compress(get_displayed_lines_count(), get_line_compression_amount(), displayed_lines_remainder);
+		if ((_cursor_index - top_item + 1) == displayed_items)
+		{
+			top_item++;
+		}
+		_cursor_index++;
+		set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
+		if (_heading && top_item == 0)
+		{
+			top_item = 1;
+		}
+
+		_selection = menu_items[_cursor_index].item;
+	}
+}
+
+void menu::scroll_left()
+{
+	unsigned int left_column = get_left_column();
+	if (left_column > 0)
+	{
+		set_left_column(left_column - 1);
+	}
+	else
+	{
+		set_left_column(0);
+	}
+}
+
+void menu::scroll_right()
+{
+	unsigned int left_column = get_left_column();
+	unsigned int displayed_columns_count = get_displayed_columns_count();
+	unsigned int  total_columns_count = get_total_columns_count();
+	if ((left_column + 1 + displayed_columns_count) < total_columns_count)
+	{
+		set_left_column(left_column + 1);
+	}
+	else if (total_columns_count > displayed_columns_count)
+	{
+		set_left_column(total_columns_count - displayed_columns_count);
 	}
 }
 

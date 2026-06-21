@@ -20,6 +20,7 @@
 #endif
 
 int console_zoom_amount = 0;
+bool left_mouse_held_down = false;
 
 #ifdef _WIN32
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
@@ -105,7 +106,8 @@ void ascii_io::print(const std::string& output) {
 #endif
 }
 
-int ascii_io::getchar() {
+int ascii_io::getchar()
+{
 	int input = 0;
 #ifdef _WIN32
 	input = _getch();
@@ -115,20 +117,108 @@ int ascii_io::getchar() {
 	}
 #elif __linux__
 	input = getch();
-	if (input == 27) 
+
+	if (input == KEY_MOUSE)
 	{
-		nodelay(stdscr, true);
-		int secondary_input = 0;
-		while (true)
+		MEVENT event;
+		if (getmouse(&event) == OK)
 		{
-			secondary_input = getch();
-			if (secondary_input == ERR)
+			if (event.bstate & BUTTON1_PRESSED)
 			{
-				break;
+				input = mouse_left_pressed;
+				left_mouse_held_down = true;
 			}
-			input = input + secondary_input;
+			else if (event.bstate & BUTTON1_RELEASED)
+			{
+				input = mouse_left_released;
+				left_mouse_held_down = false;
+			}
+			else if (event.bstate & BUTTON2_CLICKED)
+			{
+				input = mouse_middle;
+			}
+			else if (event.bstate & BUTTON3_PRESSED)
+			{
+				input = mouse_right_pressed;
+			}
+			else if (event.bstate & BUTTON3_RELEASED)
+			{
+				input = mouse_right_released;
+			}
+			else if (event.bstate & BUTTON4_PRESSED)
+			{
+				input = scroll_up;
+			}
+			else if (event.bstate & BUTTON5_PRESSED)
+			{
+				input = scroll_down;
+			}
+			else
+			{
+				input = unknown_mouse;
+			}
 		}
-		nodelay(stdscr, false);
+	}
+#endif
+
+	return input;
+}
+
+int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
+{
+	int input = 0;
+#ifdef _WIN32
+	input = _getch();
+	if (input == 224)
+	{
+		input = input + _getch();
+	}
+#elif __linux__
+	input = getch();
+	
+	if (input == KEY_MOUSE)
+	{
+		MEVENT event;
+		if (getmouse(&event) == OK)
+		{
+			if (event.bstate & BUTTON1_PRESSED)
+			{
+				input = mouse_left_pressed;
+				left_mouse_held_down = true;
+			}
+			else if (event.bstate & BUTTON1_RELEASED)
+			{
+				input = mouse_left_released;
+				left_mouse_held_down = false;
+			}
+			else if (event.bstate & BUTTON2_CLICKED)
+			{
+				input = mouse_middle;
+			}
+			else if (event.bstate & BUTTON3_PRESSED)
+			{
+				input = mouse_right_pressed;
+			}
+			else if (event.bstate & BUTTON3_RELEASED)
+			{
+				input = mouse_right_released;
+			}
+			else if (event.bstate & BUTTON4_PRESSED)
+			{
+				input = scroll_up;
+			}
+			else if (event.bstate & BUTTON5_PRESSED)
+			{
+				input = scroll_down;
+			}
+			else
+			{
+				input = unknown_mouse;
+			}
+
+			mouse_x_position = event.x;
+			mouse_y_position = event.y;
+		}
 	}
 #endif
 
@@ -142,6 +232,17 @@ int ascii_io::wait_for_keystroke(std::vector<int> keystroke_options)
 	{
 		input = getchar();
 	} while (std::count(keystroke_options.begin(), keystroke_options.end(), input) == 0);
+
+	return input;
+}
+
+int ascii_io::wait_for_keystroke(std::vector<int> keystroke_options, int& mouse_x_position, int& mouse_y_position)
+{
+	int input = ascii_io::undefined;
+	do
+	{
+		input = getchar(mouse_x_position, mouse_y_position);
+	} while(std::count(keystroke_options.begin(), keystroke_options.end(), input) == 0);
 
 	return input;
 }
@@ -565,6 +666,11 @@ std::string ascii_io::get_key_name(int key)
 	return name;
 }
 
+bool ascii_io::is_dragging()
+{
+	return left_mouse_held_down;
+}
+
 void ascii_io::ascii_engine_init(bool maximize)
 {
 	if (maximize)
@@ -661,6 +767,10 @@ void ascii_io::ncurses_init()
 	noecho();
 	cbreak();
 	colors_init();
+	keypad(stdscr, TRUE);
+	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+	mouseinterval(0);
+	printf("\033[?1003h\n");
 }
 
 void ascii_io::colors_init()
@@ -671,7 +781,8 @@ void ascii_io::colors_init()
 
 void ascii_io::ncurses_end()
 {
-   endwin();
+	printf("\033[?1003l\n");
+	endwin();
 }
 
 int ascii_io::get_color_id(int foreground, int background)

@@ -60,6 +60,7 @@ ASCII_ENGINE_OBJS := \
 	frame.o \
 	label.o \
 	logger.o \
+	loop.o \
 	menu.o \
 	text_box.o \
 	widget.o
@@ -85,6 +86,7 @@ ASCII_ENGINE_HEADERS := \
 	frame.h \
 	label.h \
 	logger.h \
+	loop.h \
 	menu.h \
 	text_box.h \
 	widget.h \

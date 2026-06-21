@@ -18,6 +18,7 @@
 class text_box : public widget
 {
 public:
+	friend class loop;
 	TEXT_BOX_API text_box(frame* parent, std::string special_operation = "none", int lines_count = 1, bool start_logging = false, std::string logging_file_path="text_box.log");
 	TEXT_BOX_API unsigned int write();
 	TEXT_BOX_API void set_max_characters(int characters);
@@ -35,9 +36,14 @@ private:
 	unsigned int get_line_of_position(unsigned int position);
 	void move_cursor_to_linear_position(unsigned int position);
 	void fit_cursor_to_line();
+	void scroll_up();
+	void scroll_down();
 	int x_origin = 0;
 	int y_origin = 0;
 	unsigned int saved_cursor_linear_position = 0;
 	int max_characters = -1;
+	int mouse_x_position = -1;
+	int mouse_y_position = -1;
+	bool first_key_stroke_initialized = false;
 };
 

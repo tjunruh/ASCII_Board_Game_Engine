@@ -52,6 +52,7 @@ public:
 	FRAME_API int start_logging(const std::string& file_path);
 	FRAME_API void stop_logging();
 	FRAME_API int reset_logging(const std::string& file_path);
+	FRAME_API int get_id();
 
 private:
 	dec_formatter dec;
@@ -190,4 +191,6 @@ private:
 	controls* _centralized_controls = nullptr;
 	std::vector<int> selection_exit_keys = {};
 	bool exit_key_used;
+	static int class_count;
+	int id = -1;
 };

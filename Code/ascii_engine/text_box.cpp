@@ -38,7 +38,18 @@ unsigned int text_box::write()
 	x_origin = get_x_origin();
 	y_origin = get_y_origin();
 
-	move_cursor_to_linear_position(saved_cursor_linear_position);
+	if (get_output_length() == 0)
+	{
+		ascii_io::move_cursor_to_position(x_origin, y_origin);
+	}
+	else if (!first_key_stroke_initialized)
+	{
+		move_cursor_to_linear_position(saved_cursor_linear_position);
+	}
+	else
+	{
+		ascii_io::move_cursor_to_position(mouse_x_position, mouse_y_position);
+	}
 
 	if (get_line_of_position(saved_cursor_linear_position) >= (get_displayed_lines_count() + get_top_line()))
 	{
@@ -57,7 +68,7 @@ unsigned int text_box::write()
 	do
 	{
 		saved_cursor_linear_position = get_linear_cursor_position();
-		input = ascii_io::getchar();
+		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
 		if (frame_stale())
 		{
 			display_entire_frame();
@@ -81,9 +92,13 @@ unsigned int text_box::write()
 		unsigned int top_line = get_top_line();
 		unsigned int displayed_lines = get_displayed_lines_count();
 
-		if (input == ascii_io::up)
+		if (input == ascii_io::up || input == ascii_io::scroll_up)
 		{
-			if (cursor_on_top_border())
+			if (input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
+			else if (cursor_on_top_border())
 			{
 				if (top_line > 0)
 				{
@@ -99,9 +114,13 @@ unsigned int text_box::write()
 				fit_cursor_to_line();
 			}
 		}
-		else if (input == ascii_io::down)
+		else if (input == ascii_io::down || input == ascii_io::scroll_down)
 		{
-			if (cursor_on_bottom_border())
+			if (input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
+			else if (cursor_on_bottom_border())
 			{
 				if ((get_cursor_line() + 1) < get_total_lines_count())
 				{
@@ -145,6 +164,30 @@ unsigned int text_box::write()
 				display();
 			}
 		}
+		else if (input == ascii_io::mouse_left_pressed)
+		{
+			if (inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				if (get_output_length() != 0)
+				{
+					unsigned int total_lines_count = get_total_lines_count();
+					if (mouse_y_position - get_y_origin() + get_top_line() > total_lines_count)
+					{
+						mouse_y_position = get_y_origin() + total_lines_count - get_top_line();
+					}
+					ascii_io::move_cursor_to_position(mouse_x_position, mouse_y_position);
+					fit_cursor_to_line();
+				}
+				else
+				{
+					ascii_io::move_cursor_to_position(x_origin, y_origin);
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
 		else if (input == ascii_io::backspace && (get_linear_cursor_position() != 0))
 		{
 			unsigned int position = get_linear_cursor_position();
@@ -171,9 +214,10 @@ unsigned int text_box::write()
 		{
 			break;
 		}
-		else if ((input != ascii_io::backspace) && ((max_characters < 0) || (int(get_output_length()) < max_characters)))
+		else if ((input != ascii_io::backspace) && (input != ascii_io::mouse_left_released) && (input != ascii_io::mouse_right_released) && (input != ascii_io::mouse_middle) && (input != ascii_io::mouse_right_pressed) && (input != ascii_io::unknown_mouse) && ((max_characters < 0) || (int(get_output_length()) < max_characters)))
 		{
 			unsigned int position = get_linear_cursor_position();
+			log.log_comment(std::to_string(input));
 			insert_character_in_output(position, (char)input);
 			update_lines();
 
@@ -189,6 +233,7 @@ unsigned int text_box::write()
 	} while (true);
 	
 	saved_cursor_linear_position = get_linear_cursor_position();
+	ascii_io::hide_cursor();
 	return input;
 }
 
@@ -391,4 +436,42 @@ void text_box::fit_cursor_to_line()
 		x = line_length;
 		ascii_io::move_cursor_to_position(x + x_origin, y + y_origin);
 	}
+}
+
+void text_box::scroll_up()
+{
+	unsigned int top_line = get_top_line();
+	if (1 >= top_line)
+	{
+		top_line = 0;
+	}
+	else
+	{
+		top_line--;
+	}
+	set_top_line(top_line);
+	display();
+}
+
+void text_box::scroll_down()
+{
+	unsigned int top_line = get_top_line();
+	unsigned int displayed_lines_count = get_displayed_lines_count();
+	unsigned int total_lines = get_total_lines_count();
+	unsigned int bottom_line = 0;
+	if (displayed_lines_count < total_lines)
+	{
+		bottom_line = total_lines - displayed_lines_count;
+	}
+
+	if ((top_line + 1) > bottom_line)
+	{
+		top_line = bottom_line;
+	}
+	else
+	{
+		top_line = top_line + 1;
+	}
+	set_top_line(top_line);
+	display();
 }

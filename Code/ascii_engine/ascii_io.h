@@ -16,7 +16,9 @@ namespace ascii_io
 {
 	ASCII_IO_API void print(const std::string& output);
 	ASCII_IO_API int getchar();
+	ASCII_IO_API int getchar(int& mouse_x_position, int& mouse_y_position);
 	ASCII_IO_API int wait_for_keystroke(std::vector<int> keystroke_options);
+	ASCII_IO_API int wait_for_keystroke(std::vector<int> keystroke_options, int& mouse_x_position, int& mouse_y_position);
 	ASCII_IO_API void clear();
 	ASCII_IO_API void get_terminal_size(int& x, int& y);
 	ASCII_IO_API void get_cursor_position(int& x, int& y);
@@ -32,6 +34,7 @@ namespace ascii_io
 	ASCII_IO_API int zoom_to_level(int level, unsigned int wait_milliseconds = 0);
 	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
 	ASCII_IO_API std::string get_key_name(int key);
+	ASCII_IO_API bool is_dragging();
 	ASCII_IO_API void ascii_engine_init(bool maximize=false);
 	ASCII_IO_API void ascii_engine_end();
 	
@@ -49,7 +52,6 @@ namespace ascii_io
    int get_color_id(int foreground, int background);
    void guarantee_clear_on_next_display();
 #endif
-
 	const int undefined = -1;
 	const int TAB = 9;
 	const int ESC = 27;
@@ -148,6 +150,14 @@ namespace ascii_io
 	const int pipe = 124;
 	const int end_curly_bracket = 125;
 	const int tilde = 126;
+	const int mouse_middle = 400;
+	const int scroll_up = 401;
+	const int scroll_down = 402;
+	const int mouse_left_released = 403;
+	const int mouse_right_released = 404;
+	const int mouse_left_pressed = 405;
+	const int mouse_right_pressed = 406;
+	const int unknown_mouse = 407;
 
 #ifdef _WIN32
 	const int backspace = 8;
@@ -164,18 +174,18 @@ namespace ascii_io
 	const int page_up = 297;
 
 #elif __linux__
-	const int backspace = 127;
+	const int backspace = 263;
 	const int enter = 10;
-	const int right = 185;
-	const int left = 186;
-	const int up = 183;
-	const int down = 184;
-	const int DEL = 295;
-	const int insert = 294;
-	const int end = 188;
-	const int home = 190;
-	const int page_down = 298;
-	const int page_up = 297;
+	const int right = 261;
+	const int left = 260;
+	const int up = 259;
+	const int down = 258;
+	const int DEL = 330;
+	const int insert = 331;
+	const int end = 360;
+	const int home = 262;
+	const int page_down = 338;
+	const int page_up = 339;
 #endif
 
 	struct key_string

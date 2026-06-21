@@ -281,6 +281,13 @@ void widget::display_entire_frame()
 	parent_frame->display();
 }
 
+bool widget::inside_widget_space(int x, int y)
+{
+	bool inside_horizontal_bound = (x >= get_x_origin() && x < (get_x_origin() + (int)get_width()));
+	bool inside_vertical_bound = (y >= get_y_origin() && y < (get_y_origin() + (int)get_height()));
+	return inside_horizontal_bound && inside_vertical_bound;
+}
+
 void widget::set_selectable(bool selectable)
 {
 	item.selectable = selectable;
@@ -470,6 +477,16 @@ int widget::reset_logging(const std::string& file_path)
 {
 	int status = log.log_reset(file_path, item.widget_type);
 	return status;
+}
+
+int widget::get_parent_frame_id()
+{
+	return parent_frame->get_id();
+}
+
+int widget::get_id()
+{
+	return item.id;
 }
 
 void widget::widget_display(std::vector<std::string> output_lines, bool can_use_dec, bool can_use_color, const std::vector<format_tools::index_format>& colors)
@@ -771,6 +788,16 @@ void widget::dynamically_adjust_displayed_lines()
 void widget::bound_top_line()
 {
 		parent_frame->bound_top_line(&item);
+}
+
+void widget::highlight()
+{
+	parent_frame->highlight(item.row, item.column, item.level);
+}
+
+void widget::unhighlight()
+{
+	parent_frame->unhighlight(item.row, item.column, item.level);
 }
 
 #ifdef __linux__
