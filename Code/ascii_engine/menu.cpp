@@ -558,9 +558,13 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 			first_key_stroke_initialized = false;
 		}
 
-		if ((_centralized_controls && _centralized_controls->key_in_select_keys(key_stroke)) || (!_centralized_controls && std::count(_select.begin(), _select.end(), key_stroke) != 0))
+		if (in_runtime_loop && key_stroke == ascii_io::mouse_left_pressed && !inside_widget_space(mouse_x_position, mouse_y_position))
 		{
-			if (key_stroke == ascii_io::mouse_left_pressed && inside_widget_space(mouse_x_position, mouse_y_position))
+			break;
+		}
+		else if ((_centralized_controls && _centralized_controls->key_in_select_keys(key_stroke)) || (!_centralized_controls && std::count(_select.begin(), _select.end(), key_stroke) != 0))
+		{
+			if (key_stroke == ascii_io::mouse_left_released && inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				unsigned int selected_line_remainder = 0;
 				_cursor_index = format_tools::compress(mouse_y_position - get_y_origin() + get_top_line(), get_line_compression_amount(), selected_line_remainder);
@@ -578,7 +582,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		}
 		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && key_stroke == _up) || (key_stroke == ascii_io::scroll_up))
 		{
-			if ((key_stroke == ascii_io::scroll_up) && !inside_widget_space(mouse_x_position, mouse_y_position))
+			if (in_runtime_loop && (key_stroke == ascii_io::scroll_up) && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
@@ -586,7 +590,7 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		}
 		else if ((_centralized_controls && key_stroke == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && key_stroke == _down) || (key_stroke == ascii_io::scroll_down))
 		{
-			if ((key_stroke == ascii_io::scroll_down) && !inside_widget_space(mouse_x_position, mouse_y_position))
+			if (in_runtime_loop && (key_stroke == ascii_io::scroll_down) && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}

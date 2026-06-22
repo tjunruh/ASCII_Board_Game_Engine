@@ -60,6 +60,10 @@ public:
 	WIDGET_API int get_id();
 	operator int() { return item.id; }
 protected:
+	int mouse_x_position = -1;
+	int mouse_y_position = -1;
+	bool first_key_stroke_initialized = false;
+	bool in_runtime_loop = false;
 	void set_output_to_frame(const std::string& text, bool mark_stale = true);
 	void set_widget_type(int type);
 	bool frame_stale();

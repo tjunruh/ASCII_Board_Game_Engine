@@ -94,7 +94,7 @@ unsigned int text_box::write()
 
 		if (input == ascii_io::up || input == ascii_io::scroll_up)
 		{
-			if (input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
+			if (in_runtime_loop && input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
@@ -116,7 +116,7 @@ unsigned int text_box::write()
 		}
 		else if (input == ascii_io::down || input == ascii_io::scroll_down)
 		{
-			if (input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
+			if (in_runtime_loop && input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
@@ -183,7 +183,7 @@ unsigned int text_box::write()
 					ascii_io::move_cursor_to_position(x_origin, y_origin);
 				}
 			}
-			else
+			else if (in_runtime_loop)
 			{
 				break;
 			}
@@ -214,7 +214,7 @@ unsigned int text_box::write()
 		{
 			break;
 		}
-		else if ((input != ascii_io::backspace) && (input != ascii_io::mouse_left_released) && (input != ascii_io::mouse_right_released) && (input != ascii_io::mouse_middle) && (input != ascii_io::mouse_right_pressed) && (input != ascii_io::unknown_mouse) && ((max_characters < 0) || (int(get_output_length()) < max_characters)))
+		else if ((input != ascii_io::backspace) && (input != ascii_io::mouse_left_released) && (input != ascii_io::mouse_right_released) && (input != ascii_io::mouse_middle) && (input != ascii_io::mouse_right_pressed) && (input != ascii_io::mouse_moved) && ((max_characters < 0) || (int(get_output_length()) < max_characters)))
 		{
 			unsigned int position = get_linear_cursor_position();
 			log.log_comment(std::to_string(input));

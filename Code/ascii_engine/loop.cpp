@@ -249,10 +249,15 @@ void loop::loop_label_widgets_handle(event& loop_event)
 			if (loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 			{
 				loop_event.widget_id = label_widgets[i]->get_id();
+				label_widgets[i]->in_runtime_loop = true;
 				loop_event.input = label_widgets[i]->scroll();
-				stashed_event.input = loop_event.input;
-				stashed_event.mouse_x_position = label_widgets[i]->mouse_x_position;
-				stashed_event.mouse_y_position = label_widgets[i]->mouse_y_position;
+				label_widgets[i]->in_runtime_loop = false;
+				if (!label_widgets[i]->inside_widget_space(label_widgets[i]->mouse_x_position, label_widgets[i]->mouse_y_position))
+				{
+					stashed_event.input = loop_event.input;
+					stashed_event.mouse_x_position = label_widgets[i]->mouse_x_position;
+					stashed_event.mouse_y_position = label_widgets[i]->mouse_y_position;
+				}
 				exit = true;
 			}
 
@@ -271,12 +276,17 @@ void loop::loop_text_box_widgets_handle(event& loop_event)
 			{
 				loop_event.widget_id = text_box_widgets[i]->get_id();
 				text_box_widgets[i]->first_key_stroke_initialized = true;
+				text_box_widgets[i]->in_runtime_loop = true;
 				text_box_widgets[i]->mouse_x_position = loop_event.mouse_x_position;
 				text_box_widgets[i]->mouse_y_position = loop_event.mouse_y_position;
 				loop_event.input = text_box_widgets[i]->write();
-				stashed_event.input = loop_event.input;
-				stashed_event.mouse_x_position = text_box_widgets[i]->mouse_x_position;
-				stashed_event.mouse_y_position = text_box_widgets[i]->mouse_y_position;
+				text_box_widgets[i]->in_runtime_loop = false;
+				if (!text_box_widgets[i]->inside_widget_space(text_box_widgets[i]->mouse_x_position, text_box_widgets[i]->mouse_y_position))
+				{
+					stashed_event.input = loop_event.input;
+					stashed_event.mouse_x_position = text_box_widgets[i]->mouse_x_position;
+					stashed_event.mouse_y_position = text_box_widgets[i]->mouse_y_position;
+				}
 				exit = true;
 			}
 
@@ -296,10 +306,12 @@ void loop::loop_menu_widgets_handle(event& loop_event)
 				loop_event.widget_id = menu_widgets[i]->get_id();
 				std::string discarded_selection = "";
 				menu_widgets[i]->first_key_stroke_initialized = true;
+				menu_widgets[i]->in_runtime_loop = true;
 				menu_widgets[i]->mouse_x_position = loop_event.mouse_x_position;
 				menu_widgets[i]->mouse_y_position = loop_event.mouse_y_position;
 				menu_widgets[i]->get_selection(discarded_selection, loop_event.input);
-				if ((loop_event.mouse_x_position != menu_widgets[i]->mouse_x_position) && (loop_event.mouse_y_position != menu_widgets[i]->mouse_y_position))
+				menu_widgets[i]->in_runtime_loop = false;
+				if (!menu_widgets[i]->inside_widget_space(menu_widgets[i]->mouse_x_position, menu_widgets[i]->mouse_y_position))
 				{
 					stashed_event.input = loop_event.input;
 					stashed_event.mouse_x_position = menu_widgets[i]->mouse_x_position;

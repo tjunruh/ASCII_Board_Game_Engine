@@ -20,7 +20,6 @@
 class label : public widget
 {
 public:
-	friend class loop;
 	LABEL_API label(frame* parent, const std::string& special_operation = "none", int lines_count = 0, bool start_logging=false, const std::string& logging_file_path="label.log");
 	LABEL_API void set_output(std::string output);
 	LABEL_API void set_colors(std::vector<format_tools::index_format> colors);
@@ -43,8 +42,5 @@ private:
 	int _left = ascii_io::left;
 	int _right = ascii_io::right;
 	int _quit = ascii_io::q;
-	int mouse_x_position = -1;
-	int mouse_y_position = -1;
-	bool first_key_stroke_initialized = false;
 	controls* _centralized_controls = nullptr;
 };

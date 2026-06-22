@@ -18,7 +18,6 @@
 class menu : public widget
 {
 public:
-	friend class loop;
 	struct item_structure
 	{
 		std::string item = "";
@@ -63,7 +62,7 @@ private:
 	std::vector<int> _select =
 	{
 		ascii_io::enter,
-		ascii_io::mouse_left_pressed
+		ascii_io::mouse_left_released
 	};
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
@@ -77,9 +76,6 @@ private:
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
 	bool _heading = false;
-	int mouse_x_position = -1;
-	int mouse_y_position = -1;
-	bool first_key_stroke_initialized = false;
 	std::string _selection = "";
 	controls* _centralized_controls = nullptr;
 	std::string build_output();

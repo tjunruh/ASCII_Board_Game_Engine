@@ -139,9 +139,18 @@ int label::scroll()
 		previous_mouse_x_position = mouse_x_position;
 		previous_mouse_y_position = mouse_y_position;
 		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
-		if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up) || (input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
+
+		if (in_runtime_loop && (input == ascii_io::mouse_left_released) && inside_widget_space(mouse_x_position, mouse_y_position))
 		{
-			if (input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
+			break;
+		}
+		else if (in_runtime_loop && (input == ascii_io::mouse_left_pressed) && !inside_widget_space(mouse_x_position, mouse_y_position))
+		{
+			break;
+		}
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up) || (input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
+		{
+			if (in_runtime_loop && input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
@@ -149,7 +158,7 @@ int label::scroll()
 		}
 		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && input == _down) || (input == ascii_io::scroll_down) || (ascii_io::is_dragging() && mouse_y_position < previous_mouse_y_position))
 		{
-			if (input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
+			if (in_runtime_loop && input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
@@ -163,12 +172,8 @@ int label::scroll()
 		{
 			scroll_right();
 		}
-		else if (input == ascii_io::mouse_left_pressed && !inside_widget_space(mouse_x_position, mouse_y_position))
-		{
-			break;
-		}
 
-	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit) || (input == ascii_io::mouse_left_released));
+	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit));
 
 	return input;
 }
