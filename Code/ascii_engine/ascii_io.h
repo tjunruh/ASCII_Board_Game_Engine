@@ -157,7 +157,7 @@ namespace ascii_io
 	const int mouse_right_released = 404;
 	const int mouse_left_pressed = 405;
 	const int mouse_right_pressed = 406;
-	const int unknown_mouse = 407;
+	const int mouse_moved = 407;
 	const int backspace = 263;
 	const int enter = 10;
 	const int right = 261;

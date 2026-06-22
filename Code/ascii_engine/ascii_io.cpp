@@ -300,7 +300,7 @@ int ascii_io::getchar()
 				}
 				else
 				{
-					input = unknown_mouse;
+					input = undefined;
 				}
 			}
 			else if (irec.Event.MouseEvent.dwEventFlags == 0)
@@ -329,61 +329,72 @@ int ascii_io::getchar()
 				{
 					input = mouse_middle;
 				}
+				else if (left_mouse_held_down)
+				{
+					input = mouse_moved;
+				}
 				else
 				{
-					input = unknown_mouse;
+					input = undefined;
 				}
 			}
 			else
 			{
-				input = unknown_mouse;
+				input = undefined;
 			}
 		}
 	} while (input == undefined);
 #elif __linux__
-	input = getch();
-
-	if (input == KEY_MOUSE)
+	do
 	{
-		MEVENT event;
-		if (getmouse(&event) == OK)
+		input = getch();
+
+		if (input == KEY_MOUSE)
 		{
-			if (event.bstate & BUTTON1_PRESSED)
+			MEVENT event;
+			if (getmouse(&event) == OK)
 			{
-				input = mouse_left_pressed;
-				left_mouse_held_down = true;
-			}
-			else if (event.bstate & BUTTON1_RELEASED)
-			{
-				input = mouse_left_released;
-				left_mouse_held_down = false;
-			}
-			else if (event.bstate & BUTTON2_CLICKED)
-			{
-				input = mouse_middle;
-			}
-			else if (event.bstate & BUTTON3_PRESSED)
-			{
-				input = mouse_right_pressed;
-			}
-			else if (event.bstate & BUTTON3_RELEASED)
-			{
-				input = mouse_right_released;
-			}
-			else if (event.bstate & BUTTON4_PRESSED)
-			{
-				input = scroll_up;
-			}
-			else if (event.bstate & BUTTON5_PRESSED)
-			{
-				input = scroll_down;
-			}
-			else
-			{
-				input = unknown_mouse;
+				if (event.bstate & BUTTON1_PRESSED)
+				{
+					input = mouse_left_pressed;
+					left_mouse_held_down = true;
+				}
+				else if (event.bstate & BUTTON1_RELEASED)
+				{
+					input = mouse_left_released;
+					left_mouse_held_down = false;
+				}
+				else if (event.bstate & BUTTON2_CLICKED)
+				{
+					input = mouse_middle;
+				}
+				else if (event.bstate & BUTTON3_PRESSED)
+				{
+					input = mouse_right_pressed;
+				}
+				else if (event.bstate & BUTTON3_RELEASED)
+				{
+					input = mouse_right_released;
+				}
+				else if (event.bstate & BUTTON4_PRESSED)
+				{
+					input = scroll_up;
+				}
+				else if (event.bstate & BUTTON5_PRESSED)
+				{
+					input = scroll_down;
+				}
+				else if (left_mouse_held_down && (event.bstate & REPORT_MOUSE_POSITION))
+				{
+					input = mouse_moved;
+				}
+				else
+				{
+					input = undefined;
+				}
 			}
 		}
-	}
+	} while (input == undefined);
 #endif
 
 	return input;
@@ -391,7 +402,7 @@ int ascii_io::getchar()
 
 int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 {
-	int input = 0;
+	int input = undefined;
 #ifdef _WIN32
 	DWORD cc;
 	INPUT_RECORD irec;
@@ -457,7 +468,7 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 				}
 				else
 				{
-					input = unknown_mouse;
+					input = undefined;
 				}
 			}
 			else if (irec.Event.MouseEvent.dwEventFlags == 0)
@@ -486,67 +497,78 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 				{
 					input = mouse_middle;
 				}
+				else if (left_mouse_held_down)
+				{
+					input = mouse_moved;
+				}
 				else
 				{
-					input = unknown_mouse;
+					input = undefined;
 				}
 			}
 			else
 			{
-				input = unknown_mouse;
+				input = undefined;
 			}
 
 			mouse_x_position = irec.Event.MouseEvent.dwMousePosition.X;
 			mouse_y_position = irec.Event.MouseEvent.dwMousePosition.Y;
 		}
-	} while (input == 0);
+	} while (input == undefined);
 #elif __linux__
-	input = getch();
-	
-	if (input == KEY_MOUSE)
+	do
 	{
-		MEVENT event;
-		if (getmouse(&event) == OK)
-		{
-			if (event.bstate & BUTTON1_PRESSED)
-			{
-				input = mouse_left_pressed;
-				left_mouse_held_down = true;
-			}
-			else if (event.bstate & BUTTON1_RELEASED)
-			{
-				input = mouse_left_released;
-				left_mouse_held_down = false;
-			}
-			else if (event.bstate & BUTTON2_CLICKED)
-			{
-				input = mouse_middle;
-			}
-			else if (event.bstate & BUTTON3_PRESSED)
-			{
-				input = mouse_right_pressed;
-			}
-			else if (event.bstate & BUTTON3_RELEASED)
-			{
-				input = mouse_right_released;
-			}
-			else if (event.bstate & BUTTON4_PRESSED)
-			{
-				input = scroll_up;
-			}
-			else if (event.bstate & BUTTON5_PRESSED)
-			{
-				input = scroll_down;
-			}
-			else
-			{
-				input = unknown_mouse;
-			}
+		input = getch();
 
-			mouse_x_position = event.x;
-			mouse_y_position = event.y;
+		if (input == KEY_MOUSE)
+		{
+			MEVENT event;
+			if (getmouse(&event) == OK)
+			{
+				if (event.bstate & BUTTON1_PRESSED)
+				{
+					input = mouse_left_pressed;
+					left_mouse_held_down = true;
+				}
+				else if (event.bstate & BUTTON1_RELEASED)
+				{
+					input = mouse_left_released;
+					left_mouse_held_down = false;
+				}
+				else if (event.bstate & BUTTON2_CLICKED)
+				{
+					input = mouse_middle;
+				}
+				else if (event.bstate & BUTTON3_PRESSED)
+				{
+					input = mouse_right_pressed;
+				}
+				else if (event.bstate & BUTTON3_RELEASED)
+				{
+					input = mouse_right_released;
+				}
+				else if (event.bstate & BUTTON4_PRESSED)
+				{
+					input = scroll_up;
+				}
+				else if (event.bstate & BUTTON5_PRESSED)
+				{
+					input = scroll_down;
+				}
+				else if (left_mouse_held_down && (event.bstate & REPORT_MOUSE_POSITION))
+				{
+					input = mouse_moved;
+				}
+				else
+				{
+					input = undefined;
+				}
+
+				mouse_x_position = event.x;
+				mouse_y_position = event.y;
+			}
 		}
-	}
+	} while (input == undefined);
 #endif
 
 	return input;
