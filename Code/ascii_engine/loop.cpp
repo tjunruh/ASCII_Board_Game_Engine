@@ -3,6 +3,10 @@
 #include "error_codes.h"
 #include "widget_types.h"
 
+#ifdef __linux__
+#include <algorithm>
+#endif
+
 int loop::start_logging(const std::string& file_path)
 {
 	int status = log.start_widget_logging(file_path, LOOP);
@@ -242,37 +246,47 @@ void loop::initialize_display()
 
 void loop::loop_label_widgets_handle(event& loop_event)
 {
-	for (unsigned int i = 0; i < label_widgets.size(); i++)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
-		if (label_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+		for (unsigned int i = 0; i < label_widgets.size(); i++)
 		{
-			if (loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
+			if (label_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = label_widgets[i]->get_id();
 				label_widgets[i]->in_runtime_loop = true;
 				loop_event.input = label_widgets[i]->scroll();
 				label_widgets[i]->in_runtime_loop = false;
-				if (!label_widgets[i]->inside_widget_space(label_widgets[i]->mouse_x_position, label_widgets[i]->mouse_y_position))
+				loop_event.mouse_x_position = label_widgets[i]->mouse_x_position;
+				loop_event.mouse_y_position = label_widgets[i]->mouse_y_position;
+				if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), loop_event.input) != 0)
 				{
-					stashed_event.input = loop_event.input;
-					stashed_event.mouse_x_position = label_widgets[i]->mouse_x_position;
-					stashed_event.mouse_y_position = label_widgets[i]->mouse_y_position;
+					loop_event.widget_id = get_widget_id_at_coordinate(label_widgets[i]->mouse_x_position, label_widgets[i]->mouse_y_position);
+					if (loop_event.widget_id != -1)
+					{
+						if (loop_event.widget_id != label_widgets[i]->get_id())
+						{
+							stashed_event = loop_event;
+						}
+						exit = true;
+					}
 				}
-				exit = true;
-			}
 
-			break;
+				if (exit)
+				{
+					break;
+				}
+			}
 		}
 	}
 }
 
 void loop::loop_text_box_widgets_handle(event& loop_event)
 {
-	for (unsigned int i = 0; i < text_box_widgets.size(); i++)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
-		if (text_box_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+		for (unsigned int i = 0; i < text_box_widgets.size(); i++)
 		{
-			if (loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
+			if (text_box_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = text_box_widgets[i]->get_id();
 				text_box_widgets[i]->first_key_stroke_initialized = true;
@@ -281,27 +295,43 @@ void loop::loop_text_box_widgets_handle(event& loop_event)
 				text_box_widgets[i]->mouse_y_position = loop_event.mouse_y_position;
 				loop_event.input = text_box_widgets[i]->write();
 				text_box_widgets[i]->in_runtime_loop = false;
-				if (!text_box_widgets[i]->inside_widget_space(text_box_widgets[i]->mouse_x_position, text_box_widgets[i]->mouse_y_position))
+				loop_event.mouse_x_position = text_box_widgets[i]->mouse_x_position;
+				loop_event.mouse_y_position = text_box_widgets[i]->mouse_y_position;
+				if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), loop_event.input) != 0)
 				{
-					stashed_event.input = loop_event.input;
-					stashed_event.mouse_x_position = text_box_widgets[i]->mouse_x_position;
-					stashed_event.mouse_y_position = text_box_widgets[i]->mouse_y_position;
+					loop_event.widget_id = get_widget_id_at_coordinate(text_box_widgets[i]->mouse_x_position, text_box_widgets[i]->mouse_y_position);
+					if (loop_event.widget_id != -1)
+					{
+						if (loop_event.widget_id != text_box_widgets[i]->get_id())
+						{
+							stashed_event = loop_event;
+						}
+						exit = true;
+					}
 				}
-				exit = true;
-			}
+				else
+				{
+					stashed_event = loop_event;
+					stashed_event.input = ascii_io::undefined;
+					exit = true;
+				}
 
-			break;
+				if (exit)
+				{
+					break;
+				}
+			}
 		}
 	}
 }
 
 void loop::loop_menu_widgets_handle(event& loop_event)
 {
-	for (unsigned int i = 0; i < menu_widgets.size(); i++)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
-		if (menu_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+		for (unsigned int i = 0; i < menu_widgets.size(); i++)
 		{
-			if (loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
+			if (menu_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = menu_widgets[i]->get_id();
 				std::string discarded_selection = "";
@@ -311,28 +341,45 @@ void loop::loop_menu_widgets_handle(event& loop_event)
 				menu_widgets[i]->mouse_y_position = loop_event.mouse_y_position;
 				menu_widgets[i]->get_selection(discarded_selection, loop_event.input);
 				menu_widgets[i]->in_runtime_loop = false;
-				if (!menu_widgets[i]->inside_widget_space(menu_widgets[i]->mouse_x_position, menu_widgets[i]->mouse_y_position))
+				loop_event.mouse_x_position = menu_widgets[i]->mouse_x_position;
+				loop_event.mouse_y_position = menu_widgets[i]->mouse_y_position;
+				if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), loop_event.input) != 0)
 				{
-					stashed_event.input = loop_event.input;
-					stashed_event.mouse_x_position = menu_widgets[i]->mouse_x_position;
-					stashed_event.mouse_y_position = menu_widgets[i]->mouse_y_position;
+					loop_event.widget_id = get_widget_id_at_coordinate(menu_widgets[i]->mouse_x_position, menu_widgets[i]->mouse_y_position);
+					if (loop_event.widget_id != -1)
+					{
+						if (loop_event.widget_id != menu_widgets[i]->get_id())
+						{
+							stashed_event = loop_event;
+						}
+						exit = true;
+					}
 				}
-				menu_widgets[i]->display();
-			}
+				else
+				{
+					stashed_event = loop_event;
+					stashed_event.input = ascii_io::undefined;
+					exit = true;
+				}
 
-			exit = true;
-			break;
+				menu_widgets[i]->display();
+
+				if (exit)
+				{
+					break;
+				}
+			}
 		}
 	}
 }
 
 void loop::loop_ascii_board_widgets_handle(event& loop_event)
 {
-	for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed)
 	{
-		if (ascii_board_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+		for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
 		{
-			if (loop_event.input == ascii_io::mouse_left_pressed)
+			if (ascii_board_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = ascii_board_widgets[i]->get_id();
 				exit = true;
@@ -340,4 +387,42 @@ void loop::loop_ascii_board_widgets_handle(event& loop_event)
 			}
 		}
 	}
+}
+
+int loop::get_widget_id_at_coordinate(int x, int y)
+{
+	int id = -1;
+	for (unsigned int i = 0; i < label_widgets.size(); i++)
+	{
+		if (label_widgets[i]->inside_widget_space(x, y))
+		{
+			return label_widgets[i]->get_id();
+		}
+	}
+
+	for (unsigned int i = 0; i < text_box_widgets.size(); i++)
+	{
+		if (text_box_widgets[i]->inside_widget_space(x, y))
+		{
+			return text_box_widgets[i]->get_id();
+		}
+	}
+
+	for (unsigned int i = 0; i < menu_widgets.size(); i++)
+	{
+		if (menu_widgets[i]->inside_widget_space(x, y))
+		{
+			return menu_widgets[i]->get_id();
+		}
+	}
+
+	for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
+	{
+		if (ascii_board_widgets[i]->inside_widget_space(x, y))
+		{
+			return ascii_board_widgets[i]->inside_widget_space(x, y);
+		}
+	}
+
+	return id;
 }

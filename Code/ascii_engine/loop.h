@@ -43,6 +43,7 @@ private:
 	void loop_text_box_widgets_handle(event& loop_event);
 	void loop_menu_widgets_handle(event& loop_event);
 	void loop_ascii_board_widgets_handle(event& loop_event);
+	int get_widget_id_at_coordinate(int x, int y);
 	std::vector<label*> label_widgets;
 	std::vector<text_box*> text_box_widgets;
 	std::vector<menu*> menu_widgets;

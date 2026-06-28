@@ -177,6 +177,18 @@ namespace ascii_io
 		std::string name = "";
 	};
 
+	const std::vector<int> mouse_keys =
+	{
+		mouse_middle,
+		scroll_up,
+		scroll_down,
+		mouse_left_released,
+		mouse_right_released,
+		mouse_left_pressed,
+		mouse_right_pressed,
+		mouse_moved
+	};
+
 	const std::vector<key_string> key_string_map
 	{
 		{undefined, "undefined"},
