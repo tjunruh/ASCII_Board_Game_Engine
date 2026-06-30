@@ -288,6 +288,11 @@ bool widget::inside_widget_space(int x, int y)
 	return inside_horizontal_bound && inside_vertical_bound;
 }
 
+int widget::get_left_alignment_space()
+{
+	return item.left_alignment_space;
+}
+
 void widget::set_selectable(bool selectable)
 {
 	item.selectable = selectable;

@@ -375,7 +375,7 @@ void loop::loop_menu_widgets_handle(event& loop_event)
 
 void loop::loop_ascii_board_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_released)
 	{
 		for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
 		{

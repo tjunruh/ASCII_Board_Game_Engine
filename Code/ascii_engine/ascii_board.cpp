@@ -1266,6 +1266,38 @@ void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int
 	}
 }
 
+int ascii_board::get_tile_coordinate_from_mouse_position(int mouse_x_position, int mouse_y_position, int& tile_row, int& tile_column)
+{
+	int x_origin = get_x_origin();
+	int y_origin = get_y_origin();
+	int left_column = get_left_column();
+	int top_line = get_top_line();
+	int left_alignment_space = get_left_alignment_space();
+	for (unsigned int i = 0; i < action_tiles.size(); i++)
+	{
+		for (unsigned int j = 0; j < action_tiles[i].board_section.size(); j++)
+		{
+			bool x_inside = false;
+			if (mouse_x_position >= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_start_column - left_column) && mouse_x_position <= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_stop_column - left_column))
+			{
+				x_inside = true;
+			}
+
+			if (x_inside)
+			{
+				if (mouse_y_position >= (y_origin + action_tiles[i].board_section[j].board_start_row - top_line) && mouse_y_position <= (y_origin + action_tiles[i].board_section[j].board_stop_row - top_line))
+				{
+					tile_row = action_tiles[i].array_row;
+					tile_column = action_tiles[i].array_column;
+					return SUCCESS;
+				}
+			}
+		}
+	}
+
+	return ELEMENT_NOT_FOUND;
+}
+
 board_metadata* ascii_board::get_metadata()
 {
 	return &metadata;

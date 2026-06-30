@@ -1188,6 +1188,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 	if (!item->column_constraint)
 	{
 		widget_lines = format_tools::fill_lines(widget_lines, width, item->alignment);
+		item->left_alignment_space = format_tools::get_left_alignment_space_from_last_fill_line_action();
 	}
 	else
 	{
@@ -1200,6 +1201,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 			}
 		}
 		widget_lines = format_tools::fill_lines(widget_lines, longest_line_length, item->alignment);
+		item->left_alignment_space = format_tools::get_left_alignment_space_from_last_fill_line_action();
 	}
 
 	if (_color_enabled)

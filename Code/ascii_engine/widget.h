@@ -104,6 +104,7 @@ protected:
 	void bound_top_line();
 	void display_entire_frame();
 	bool inside_widget_space(int x, int y);
+	int get_left_alignment_space();
 
 #ifdef __linux__
 	void dec_print(const std::string& input);

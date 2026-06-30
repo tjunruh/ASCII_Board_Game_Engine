@@ -2,6 +2,7 @@
 #include "format_tools.h"
 #include <algorithm>
 
+int left_alignment_space = 0;
 
 std::vector<std::string> format_tools::split_string(std::string str, char split_character)
 {
@@ -64,6 +65,7 @@ std::string format_tools::get_spacing(unsigned int length, char space_char)
 
 std::string format_tools::fill_line(std::string input, unsigned int length, std::string alignment)
 {
+	left_alignment_space = 0;
 	if (alignment == left_alignment_keyword)
 	{
 		while (input.length() < length)
@@ -80,6 +82,7 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 			{
 				input = input + " ";
 				begin = false;
+				left_alignment_space++;
 			}
 			else
 			{
@@ -93,6 +96,7 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 		while (input.length() < length)
 		{
 			input.insert(0, " ");
+			left_alignment_space++;
 		}
 	}
 
@@ -102,6 +106,7 @@ std::string format_tools::fill_line(std::string input, unsigned int length, std:
 std::vector<std::string> format_tools::fill_lines(std::vector<std::string> input, unsigned int length, std::string alignment)
 {
 	unsigned int largest_width = 0;
+	left_alignment_space = 0;
 	if (alignment == center_block_alignment_keyword)
 	{
 		for (unsigned int i = 0; i < input.size(); i++)
@@ -143,6 +148,11 @@ std::vector<std::string> format_tools::fill_lines(std::vector<std::string> input
 		}
 	}
 	return input;
+}
+
+int format_tools::get_left_alignment_space_from_last_fill_line_action()
+{
+	return left_alignment_space;
 }
 
 std::vector<std::string> format_tools::add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length)
