@@ -1150,15 +1150,18 @@ void ascii_board::scroll_up(unsigned int amount)
 
 void ascii_board::scroll_down(unsigned int amount)
 {
-	unsigned int top_line = get_top_line();
-	unsigned int displayed_lines_count = get_displayed_lines_count();
-	if ((top_line + amount + displayed_lines_count) <= board_lines_count)
+	if (get_line_constraint())
 	{
-		set_top_line(top_line + amount);
-	}
-	else if(board_lines_count > displayed_lines_count)
-	{
-		set_top_line(board_lines_count - displayed_lines_count);
+		unsigned int top_line = get_top_line();
+		unsigned int displayed_lines_count = get_displayed_lines_count();
+		if ((top_line + amount + displayed_lines_count) <= board_lines_count)
+		{
+			set_top_line(top_line + amount);
+		}
+		else if(board_lines_count > displayed_lines_count)
+		{
+			set_top_line(board_lines_count - displayed_lines_count);
+		}
 	}
 }
 
@@ -1187,6 +1190,62 @@ void ascii_board::scroll_right(unsigned int amount)
 	{
 		set_left_column(board_characters_in_line - displayed_columns_count);
 	}
+}
+
+int ascii_board::get_selection(int& tile_row, int& tile_column, int& input)
+{
+	input = ascii_io::undefined;
+	int previous_mouse_x_position = mouse_x_position;
+	int previous_mouse_y_position = mouse_y_position;
+	display();
+	do
+	{
+		previous_mouse_x_position = mouse_x_position;
+		previous_mouse_y_position = mouse_y_position;
+		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
+		if (input == ascii_io::mouse_left_pressed)
+		{
+			if (in_runtime_loop && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
+		}
+		else if ((input == ascii_io::up) || (input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
+		{
+			if (in_runtime_loop && input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
+			scroll_up();
+			display();
+		}
+		else if ((input == ascii_io::down) || (input == ascii_io::scroll_down) || (ascii_io::is_dragging() && mouse_y_position < previous_mouse_y_position))
+		{
+			if (in_runtime_loop && input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
+			scroll_down();
+			display();
+		}
+		else if ((input == ascii_io::left) || (ascii_io::is_dragging() && mouse_x_position > previous_mouse_x_position))
+		{
+			scroll_left();
+			display();
+		}
+		else if ((input == ascii_io::right) || (ascii_io::is_dragging() && mouse_x_position < previous_mouse_x_position))
+		{
+			scroll_right();
+			display();
+		}
+		else if (input != ascii_io::mouse_moved && input != ascii_io::mouse_left_pressed)
+		{
+			break;
+		}
+
+	} while (input != ascii_io::q);
+
+	return get_tile_coordinate_from_mouse_position(mouse_x_position, mouse_y_position, tile_row, tile_column);
 }
 
 void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int bottom_padding, int left_padding, int right_padding)
@@ -1266,7 +1325,7 @@ void ascii_board::bring_tile_into_view(int row, int column, int top_padding, int
 	}
 }
 
-int ascii_board::get_tile_coordinate_from_mouse_position(int mouse_x_position, int mouse_y_position, int& tile_row, int& tile_column)
+int ascii_board::get_tile_coordinate_from_mouse_position(int mouse_x_position_input, int mouse_y_position_input, int& tile_row, int& tile_column)
 {
 	int x_origin = get_x_origin();
 	int y_origin = get_y_origin();
@@ -1278,14 +1337,14 @@ int ascii_board::get_tile_coordinate_from_mouse_position(int mouse_x_position, i
 		for (unsigned int j = 0; j < action_tiles[i].board_section.size(); j++)
 		{
 			bool x_inside = false;
-			if (mouse_x_position >= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_start_column - left_column) && mouse_x_position <= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_stop_column - left_column))
+			if (mouse_x_position_input >= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_start_column - left_column) && mouse_x_position_input <= (x_origin + left_alignment_space + action_tiles[i].board_section[j].board_stop_column - left_column))
 			{
 				x_inside = true;
 			}
 
 			if (x_inside)
 			{
-				if (mouse_y_position >= (y_origin + action_tiles[i].board_section[j].board_start_row - top_line) && mouse_y_position <= (y_origin + action_tiles[i].board_section[j].board_stop_row - top_line))
+				if (mouse_y_position_input >= (y_origin + action_tiles[i].board_section[j].board_start_row - top_line) && mouse_y_position_input <= (y_origin + action_tiles[i].board_section[j].board_stop_row - top_line))
 				{
 					tile_row = action_tiles[i].array_row;
 					tile_column = action_tiles[i].array_column;

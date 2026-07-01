@@ -375,15 +375,47 @@ void loop::loop_menu_widgets_handle(event& loop_event)
 
 void loop::loop_ascii_board_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_released)
+	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
 		for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
 		{
 			if (ascii_board_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = ascii_board_widgets[i]->get_id();
-				exit = true;
-				break;
+				int discarded_tile_row = 0;
+				int discarded_tile_column = 0;
+				ascii_board_widgets[i]->in_runtime_loop = true;
+				ascii_board_widgets[i]->mouse_x_position = loop_event.mouse_x_position;
+				ascii_board_widgets[i]->mouse_y_position = loop_event.mouse_y_position;
+				ascii_board_widgets[i]->get_selection(discarded_tile_row, discarded_tile_column, loop_event.input);
+				ascii_board_widgets[i]->in_runtime_loop = false;
+				loop_event.mouse_x_position = ascii_board_widgets[i]->mouse_x_position;
+				loop_event.mouse_y_position = ascii_board_widgets[i]->mouse_y_position;
+				if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), loop_event.input) != 0)
+				{
+					loop_event.widget_id = get_widget_id_at_coordinate(ascii_board_widgets[i]->mouse_x_position, ascii_board_widgets[i]->mouse_y_position);
+					if (loop_event.widget_id != -1)
+					{
+						if (loop_event.widget_id != ascii_board_widgets[i]->get_id())
+						{
+							stashed_event = loop_event;
+						}
+						exit = true;
+					}
+				}
+				else
+				{
+					stashed_event = loop_event;
+					stashed_event.input = ascii_io::undefined;
+					exit = true;
+				}
+
+				ascii_board_widgets[i]->display();
+
+				if (exit)
+				{
+					break;
+				}
 			}
 		}
 	}
