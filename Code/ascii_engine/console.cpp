@@ -1,5 +1,5 @@
 #include "../ascii_engine_dll_files/pch.h"
-#include "loop.h"
+#include "console.h"
 #include "error_codes.h"
 #include "widget_types.h"
 
@@ -7,24 +7,24 @@
 #include <algorithm>
 #endif
 
-int loop::start_logging(const std::string& file_path)
+int console::start_logging(const std::string& file_path)
 {
 	int status = log.start_widget_logging(file_path, LOOP);
 	return status;
 }
 
-int loop::reset_logging(const std::string& file_path)
+int console::reset_logging(const std::string& file_path)
 {
 	int status = log.log_reset(file_path, LOOP);
 	return status;
 }
 
-void loop::stop_logging()
+void console::stop_logging()
 {
 	log.stop_widget_logging();
 }
 
-int loop::add_widget(label* item)
+int console::register_widget(label* item)
 {
 	int status = UNDEFINED;
 
@@ -57,7 +57,7 @@ int loop::add_widget(label* item)
 	return status;
 }
 
-int loop::add_widget(text_box* item)
+int console::register_widget(text_box* item)
 {
 	int status = UNDEFINED;
 
@@ -90,7 +90,7 @@ int loop::add_widget(text_box* item)
 	return status;
 }
 
-int loop::add_widget(menu* item)
+int console::register_widget(menu* item)
 {
 	int status = UNDEFINED;
 
@@ -123,7 +123,7 @@ int loop::add_widget(menu* item)
 	return status;
 }
 
-int loop::add_widget(ascii_board* item)
+int console::register_widget(ascii_board* item)
 {
 	int status = UNDEFINED;
 
@@ -156,7 +156,7 @@ int loop::add_widget(ascii_board* item)
 	return status;
 }
 
-loop::event loop::run_loop()
+console::event console::run()
 {
 	event loop_event;
 	initialize_display();
@@ -172,25 +172,25 @@ loop::event loop::run_loop()
 			stashed_event.input = ascii_io::undefined;
 		}
 
-		loop_label_widgets_handle(loop_event);
+		label_widgets_handle(loop_event);
 		if (exit)
 		{
 			break;
 		}
 
-		loop_text_box_widgets_handle(loop_event);
+		text_box_widgets_handle(loop_event);
 		if (exit)
 		{
 			break;
 		}
 
-		loop_menu_widgets_handle(loop_event);
+		menu_widgets_handle(loop_event);
 		if (exit)
 		{
 			break;
 		}
 
-		loop_ascii_board_widgets_handle(loop_event);
+		ascii_board_widgets_handle(loop_event);
 		if (exit)
 		{
 			break;
@@ -206,7 +206,7 @@ loop::event loop::run_loop()
 	return loop_event;
 }
 
-void loop::initialize_display()
+void console::initialize_display()
 {
 	if (label_widgets.size() > 0)
 	{
@@ -244,7 +244,7 @@ void loop::initialize_display()
 	}
 }
 
-void loop::loop_label_widgets_handle(event& loop_event)
+void console::label_widgets_handle(event& loop_event)
 {
 	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
@@ -280,7 +280,7 @@ void loop::loop_label_widgets_handle(event& loop_event)
 	}
 }
 
-void loop::loop_text_box_widgets_handle(event& loop_event)
+void console::text_box_widgets_handle(event& loop_event)
 {
 	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
@@ -325,7 +325,7 @@ void loop::loop_text_box_widgets_handle(event& loop_event)
 	}
 }
 
-void loop::loop_menu_widgets_handle(event& loop_event)
+void console::menu_widgets_handle(event& loop_event)
 {
 	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
@@ -373,7 +373,7 @@ void loop::loop_menu_widgets_handle(event& loop_event)
 	}
 }
 
-void loop::loop_ascii_board_widgets_handle(event& loop_event)
+void console::ascii_board_widgets_handle(event& loop_event)
 {
 	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
@@ -421,7 +421,7 @@ void loop::loop_ascii_board_widgets_handle(event& loop_event)
 	}
 }
 
-int loop::get_widget_id_at_coordinate(int x, int y)
+int console::get_widget_id_at_coordinate(int x, int y)
 {
 	int id = -1;
 	for (unsigned int i = 0; i < label_widgets.size(); i++)

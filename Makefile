@@ -56,11 +56,11 @@ ASCII_ENGINE_OBJS := \
 	board_metadata.o \
 	dec_formatter.o \
 	format_tools.o \
+	console.o \
 	controls.o \
 	frame.o \
 	label.o \
 	logger.o \
-	loop.o \
 	menu.o \
 	text_box.o \
 	widget.o
@@ -78,6 +78,7 @@ ASCII_ENGINE_HEADERS := \
 	ascii_board.h \
 	ascii_io.h \
 	board_metadata.h \
+	console.h \
 	controls.h \
 	error_codes.h \
 	dec_formatter.h \
@@ -86,7 +87,6 @@ ASCII_ENGINE_HEADERS := \
 	frame.h \
 	label.h \
 	logger.h \
-	loop.h \
 	menu.h \
 	text_box.h \
 	widget.h \

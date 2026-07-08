@@ -18,7 +18,7 @@
 class widget
 {
 public:
-	friend class loop;
+	friend class console;
 	WIDGET_API widget(frame* parent, std::string special_operation="none");
 	WIDGET_API void set_alignment(std::string alignment);
 	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
