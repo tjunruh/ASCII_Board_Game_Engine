@@ -4,7 +4,6 @@
 #include "text_box.h"
 #include "menu.h"
 #include "ascii_board.h"
-#include "logger.h"
 #include <vector>
 
 #ifdef _WIN32
@@ -28,9 +27,6 @@ public:
 		int mouse_y_position = -1;
 	};
 
-	CONSOLE_API int start_logging(const std::string& file_path);
-	CONSOLE_API int reset_logging(const std::string& file_path);
-	CONSOLE_API void stop_logging();
 	CONSOLE_API int register_widget(label* item);
 	CONSOLE_API int register_widget(text_box* item);
 	CONSOLE_API int register_widget(menu* item);

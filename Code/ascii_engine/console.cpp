@@ -7,23 +7,6 @@
 #include <algorithm>
 #endif
 
-int console::start_logging(const std::string& file_path)
-{
-	int status = log.start_widget_logging(file_path, LOOP);
-	return status;
-}
-
-int console::reset_logging(const std::string& file_path)
-{
-	int status = log.log_reset(file_path, LOOP);
-	return status;
-}
-
-void console::stop_logging()
-{
-	log.stop_widget_logging();
-}
-
 int console::register_widget(label* item)
 {
 	int status = UNDEFINED;
