@@ -339,14 +339,14 @@ int ascii_io::getchar()
 				{
 					input = mouse_middle;
 				}
-				else if (left_mouse_held_down)
-				{
-					input = mouse_moved;
-				}
 				else
 				{
 					input = undefined;
 				}
+			}
+			else if (left_mouse_held_down)
+			{
+				input = mouse_moved;
 			}
 			else
 			{
@@ -507,14 +507,14 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 				{
 					input = mouse_middle;
 				}
-				else if (left_mouse_held_down)
-				{
-					input = mouse_moved;
-				}
 				else
 				{
 					input = undefined;
 				}
+			}
+			else if (left_mouse_held_down)
+			{
+				input = mouse_moved;
 			}
 			else
 			{
