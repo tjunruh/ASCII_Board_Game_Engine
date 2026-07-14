@@ -351,6 +351,18 @@ protected:
 		EXPECT_EQ(board, comparison) << std::to_string(test_num);
 	}
 
+	void get_tile_coordinate_from_mouse_position_test(ascii_board& local_test_board, int mouse_x_position, int mouse_y_position, int expected_tile_row, int expected_tile_column, int expected_status_code, int test_num)
+	{
+		int tile_row = expected_tile_row;
+		int tile_column = expected_tile_column;
+
+		int status = local_test_board.get_tile_coordinate_from_mouse_position(mouse_x_position, mouse_y_position, tile_row, tile_column);
+
+		EXPECT_EQ(tile_row, expected_tile_row) << std::to_string(test_num);
+		EXPECT_EQ(tile_column, expected_tile_column) << std::to_string(test_num);
+		EXPECT_EQ(status, expected_status_code) << "Test Number: " + std::to_string(test_num) + "\nExpected code: " + std::to_string(expected_status_code);
+	}
+
 	void clear(ascii_board& local_test_board, int row, int column, const std::string& comparison, std::string expected_status_function, int expected_status_code, int test_num)
 	{
 		std::string log_content = "";
@@ -2190,6 +2202,44 @@ TEST_F(ascii_board_test, test_bring_tile_into_view)
 	bring_tile_into_view_test(local_test_board, 6, 0, 0, 1, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns_scrolled_down_five, "ascii_board::bring_tile_into_view", SUCCESS, 8);
 	bring_tile_into_view_test(local_test_board, 0, 0, 1, 0, 0, 0, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", SUCCESS, 9);
 	bring_tile_into_view_test(local_test_board, 0, 10, 1, 1, 1, 1, single_line_board_definitions::empty_board_ten_lines_twenty_columns, "ascii_board::bring_tile_into_view", ELEMENT_NOT_FOUND, 10);
+
+	delete(local_test_frame);
+}
+
+TEST_F(ascii_board_test, test_get_tile_coordinate_from_mouse_position)
+{
+	frame* local_test_frame = new frame();
+	ascii_board local_test_board(local_test_frame, irregular_line_board_definitions::board_config_path, "default", "none");
+	local_test_frame->use_fake_console_dimensions(true);
+	local_test_frame->set_fake_console_width(42);
+	local_test_frame->set_fake_console_height(36);
+	EXPECT_EQ(irregular_line_board_definitions::empty_board, local_test_frame->get_frame_output());
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 0, 0, -1, -1, ELEMENT_NOT_FOUND, 0);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 0, 4, -1, -1, ELEMENT_NOT_FOUND, 1);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 3, 1, 0, 0, SUCCESS, 2);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 1, 3, 0, 0, SUCCESS, 3);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 14, 3, 0, 0, SUCCESS, 4);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 15, 13, -1, -1, ELEMENT_NOT_FOUND, 5);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 16, 13, 1, 1, SUCCESS, 6);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 28, 30, -1, -1, ELEMENT_NOT_FOUND, 7);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 29, 30, 3, 2, SUCCESS, 8);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 38, 30, 3, 2, SUCCESS, 9);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 39, 30, -1, -1, ELEMENT_NOT_FOUND, 10);
+
+	local_test_frame->set_fake_console_width(84);
+	local_test_board.set_alignment("center");
+	local_test_frame->get_frame_output();
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 21, 0, -1, -1, ELEMENT_NOT_FOUND, 11);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 21, 4, -1, -1, ELEMENT_NOT_FOUND, 12);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 24, 1, 0, 0, SUCCESS, 13);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 22, 3, 0, 0, SUCCESS, 14);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 35, 3, 0, 0, SUCCESS, 15);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 36, 13, -1, -1, ELEMENT_NOT_FOUND, 16);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 37, 13, 1, 1, SUCCESS, 17);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 49, 30, -1, -1, ELEMENT_NOT_FOUND, 18);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 50, 30, 3, 2, SUCCESS, 19);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 59, 30, 3, 2, SUCCESS, 20);
+	get_tile_coordinate_from_mouse_position_test(local_test_board, 60, 30, -1, -1, ELEMENT_NOT_FOUND, 21);
 
 	delete(local_test_frame);
 }

@@ -35,6 +35,8 @@ private:
 	unsigned int get_line_of_position(unsigned int position);
 	void move_cursor_to_linear_position(unsigned int position);
 	void fit_cursor_to_line();
+	void scroll_up();
+	void scroll_down();
 	int x_origin = 0;
 	int y_origin = 0;
 	unsigned int saved_cursor_linear_position = 0;

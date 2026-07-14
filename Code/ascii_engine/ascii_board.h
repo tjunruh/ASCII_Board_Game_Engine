@@ -121,7 +121,9 @@ public:
 	ASCII_BOARD_API void scroll_down(unsigned int amount = 1);
 	ASCII_BOARD_API void scroll_left(unsigned int amount = 1);
 	ASCII_BOARD_API void scroll_right(unsigned int amount = 1);
+	ASCII_BOARD_API int get_selection(int& tile_row, int& tile_column, int& input);
 	ASCII_BOARD_API void bring_tile_into_view(int row, int column, int top_padding = 0, int bottom_padding = 0, int left_padding = 0, int right_padding = 0);
+	ASCII_BOARD_API int get_tile_coordinate_from_mouse_position(int mouse_x_position_input, int mouse_y_position_input, int& tile_row, int& tile_column);
 	ASCII_BOARD_API board_metadata* get_metadata();
 
 private:

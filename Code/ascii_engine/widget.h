@@ -18,6 +18,7 @@
 class widget
 {
 public:
+	friend class console;
 	WIDGET_API widget(frame* parent, std::string special_operation="none");
 	WIDGET_API void set_alignment(std::string alignment);
 	WIDGET_API void set_spacing(int top, int bottom, int left, int right);
@@ -55,8 +56,14 @@ public:
 	WIDGET_API int start_logging(const std::string& file_path);
 	WIDGET_API void stop_logging();
 	WIDGET_API int reset_logging(const std::string& file_path);
+	WIDGET_API int get_parent_frame_id();
+	WIDGET_API int get_id();
 	operator int() { return item.id; }
 protected:
+	int mouse_x_position = -1;
+	int mouse_y_position = -1;
+	bool first_key_stroke_initialized = false;
+	bool in_runtime_loop = false;
 	void set_output_to_frame(const std::string& text, bool mark_stale = true);
 	void set_widget_type(int type);
 	bool frame_stale();
@@ -96,12 +103,16 @@ protected:
 	void dynamically_adjust_displayed_lines();
 	void bound_top_line();
 	void display_entire_frame();
+	bool inside_widget_space(int x, int y);
+	int get_left_alignment_space();
 
 #ifdef __linux__
 	void dec_print(const std::string& input);
 #endif
 	logger log;
 private:
+	void highlight();
+	void unhighlight();
 	frame *parent_frame;
 	frame::widget_info item;
 };

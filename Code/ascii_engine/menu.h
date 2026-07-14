@@ -43,10 +43,15 @@ public:
 	MENU_API void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char);
 	MENU_API void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char);
 	MENU_API void get_selection(std::string& selection, int& key_stroke);
+	MENU_API std::string get_selection();
 	MENU_API void enable_quit(bool enable);
 	MENU_API void display();
 	MENU_API void build();
 	MENU_API void separate_items(bool separate);
+	MENU_API void scroll_up();
+	MENU_API void scroll_down();
+	MENU_API void scroll_left();
+	MENU_API void scroll_right();
 	MENU_API std::vector<item_structure> get_menu_item_data();
 private:
 	std::vector<item_structure> menu_items;
@@ -56,7 +61,8 @@ private:
 	unsigned int last_cursor_line_remainder = 0;
 	std::vector<int> _select =
 	{
-		ascii_io::enter
+		ascii_io::enter,
+		ascii_io::mouse_left_released
 	};
 	int _up = ascii_io::up;
 	int _down = ascii_io::down;
@@ -70,6 +76,7 @@ private:
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
 	bool _heading = false;
+	std::string _selection = "";
 	controls* _centralized_controls = nullptr;
 	std::string build_output();
 	bool item_exists(const std::string& item);

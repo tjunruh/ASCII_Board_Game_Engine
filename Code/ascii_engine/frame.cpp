@@ -4,6 +4,7 @@
 #include <cmath>
 #include <algorithm>
 
+int frame::class_count = 0;
 
 frame::frame(bool start_logger, const std::string& logging_file_path)
 {
@@ -19,6 +20,8 @@ frame::frame(bool start_logger, const std::string& logging_file_path)
 	}
 
 	ascii_io::get_terminal_size(terminal_x, terminal_y);
+	id = class_count;
+	class_count++;
 }
 
 frame::~frame()
@@ -248,6 +251,7 @@ int frame::get_selection()
 		last_selected_column = selected_column;
 		last_selected_level = selected_level;
 		input = ascii_io::getchar();
+
 		if ((_centralized_controls && input == _centralized_controls->get_key(control_names::select)) || (!_centralized_controls && input == _select))
 		{
 			log.log_comment("select action");
@@ -1184,6 +1188,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 	if (!item->column_constraint)
 	{
 		widget_lines = format_tools::fill_lines(widget_lines, width, item->alignment);
+		item->left_alignment_space = format_tools::get_left_alignment_space_from_last_fill_line_action();
 	}
 	else
 	{
@@ -1196,6 +1201,7 @@ std::vector<std::string> frame::build_core_widget_lines(widget_info* item)
 			}
 		}
 		widget_lines = format_tools::fill_lines(widget_lines, longest_line_length, item->alignment);
+		item->left_alignment_space = format_tools::get_left_alignment_space_from_last_fill_line_action();
 	}
 
 	if (_color_enabled)
@@ -1933,6 +1939,11 @@ void frame::add_title(const std::string& title, std::vector<std::string>& lines,
 			break;
 		}
 	}
+}
+
+int frame::get_id()
+{
+	return id;
 }
 
 #ifdef __linux__

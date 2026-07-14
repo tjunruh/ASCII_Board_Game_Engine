@@ -151,6 +151,7 @@ namespace format_tools
 	FORMAT_TOOLS_API std::string get_spacing(unsigned int length, char space_char);
 	FORMAT_TOOLS_API std::string fill_line(std::string input, unsigned int length, std::string alignment);
 	FORMAT_TOOLS_API std::vector<std::string> fill_lines(std::vector<std::string> input, unsigned int length, std::string alignment);
+	FORMAT_TOOLS_API int get_left_alignment_space_from_last_fill_line_action();
 	FORMAT_TOOLS_API std::vector<std::string> add_lines(std::vector<std::string> lines, unsigned int number_of_added_lines, unsigned int line_length);
 	FORMAT_TOOLS_API std::string fuse_columns_into_row(text_column data, unsigned int& lines);
 	FORMAT_TOOLS_API std::vector<std::string> get_lines(const std::string& output_string);

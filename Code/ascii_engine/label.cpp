@@ -129,30 +129,53 @@ void label::display()
 	widget_display(displayed_output, true, true, colors);
 }
 
-void label::scroll()
+int label::scroll()
 {
 	int input = ascii_io::undefined;
+	int previous_mouse_x_position = mouse_x_position;
+	int previous_mouse_y_position = mouse_y_position;
 	do
 	{
-		input = ascii_io::getchar();
-		if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up))
+		previous_mouse_x_position = mouse_x_position;
+		previous_mouse_y_position = mouse_y_position;
+		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
+
+		if (in_runtime_loop && (input == ascii_io::mouse_left_released) && inside_widget_space(mouse_x_position, mouse_y_position))
 		{
+			break;
+		}
+		else if (in_runtime_loop && (input == ascii_io::mouse_left_pressed) && !inside_widget_space(mouse_x_position, mouse_y_position))
+		{
+			break;
+		}
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::up)) || (!_centralized_controls && input == _up) || (input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
+		{
+			if (in_runtime_loop && input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
 			scroll_up();
 		}
-		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && input == _down))
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::down)) || (!_centralized_controls && input == _down) || (input == ascii_io::scroll_down) || (ascii_io::is_dragging() && mouse_y_position < previous_mouse_y_position))
 		{
+			if (in_runtime_loop && input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
+			{
+				break;
+			}
 			scroll_down();
 		}
-		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && input == _left))
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::left)) || (!_centralized_controls && input == _left) || (ascii_io::is_dragging() && mouse_x_position > previous_mouse_x_position))
 		{
 			scroll_left();
 		}
-		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && input == _right))
+		else if ((_centralized_controls && input == _centralized_controls->get_key(control_names::right)) || (!_centralized_controls && input == _right) || (ascii_io::is_dragging() && mouse_x_position < previous_mouse_x_position))
 		{
 			scroll_right();
 		}
 
 	} while ((_centralized_controls && input != _centralized_controls->get_key(control_names::quit)) || (!_centralized_controls && input != _quit));
+
+	return input;
 }
 
 void label::scroll_up(unsigned int amount, bool render)

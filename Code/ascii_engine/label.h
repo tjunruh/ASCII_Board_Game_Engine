@@ -26,7 +26,7 @@ public:
 	LABEL_API std::vector<format_tools::index_format> get_colors();
 	LABEL_API std::vector<format_tools::index_format> get_displayed_colors();
 	LABEL_API void display();
-	LABEL_API void scroll();
+	LABEL_API int scroll();
 	LABEL_API void scroll_up(unsigned int amount = 1, bool render=true);
 	LABEL_API void scroll_down(unsigned int amount = 1, bool render=true);
 	LABEL_API void scroll_left(unsigned int amount = 1, bool render=true);
