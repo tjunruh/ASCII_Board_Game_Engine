@@ -435,7 +435,7 @@ int console::get_widget_id_at_coordinate(int x, int y)
 	{
 		if (ascii_board_widgets[i]->inside_widget_space(x, y))
 		{
-			return ascii_board_widgets[i]->inside_widget_space(x, y);
+			return ascii_board_widgets[i]->get_id();
 		}
 	}
 
