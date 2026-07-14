@@ -29,9 +29,9 @@ bool shift_held_down = false;
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
+bool keep_cursor_shown = false;
 DWORD original_console_mode;
 
-#ifdef _WIN32
 const std::unordered_map<int, const int> key_mapping =
 {
 	{8, ascii_io::backspace},
@@ -161,7 +161,6 @@ const std::unordered_map<int, const int> key_mapping_with_shift =
 	{220, ascii_io::backslash},
 	{222, ascii_io::double_quotation}
 };
-#endif
 
 std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 {
@@ -252,7 +251,15 @@ int ascii_io::getchar()
 	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(h, mode);
-	hide_cursor();
+	if (keep_cursor_shown)
+	{
+		keep_cursor_shown = false;
+	}
+	else
+	{
+		hide_cursor();
+	}
+
 	do
 	{
 		ReadConsoleInput(h, &irec, 1, &cc);
@@ -421,7 +428,15 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(h, mode);
-	hide_cursor();
+	if (keep_cursor_shown)
+	{
+		keep_cursor_shown = false;
+	}
+	else
+	{
+		hide_cursor();
+	}
+
 	do
 	{
 		ReadConsoleInput(h, &irec, 1, &cc);
@@ -1127,6 +1142,11 @@ void ascii_io::fit_console_buffer_to_screen()
 		success = SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffer_info.dwSize);
 		buffer_info.dwSize.Y++;
 	} while (!success);
+}
+
+void ascii_io::keep_cursor_shown_in_getchar()
+{
+	keep_cursor_shown = true;
 }
 #endif
 

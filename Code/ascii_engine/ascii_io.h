@@ -42,6 +42,7 @@ namespace ascii_io
 	void enable_dec();
 	void disable_dec();
 	void fit_console_buffer_to_screen();
+	ASCII_IO_API void keep_cursor_shown_in_getchar();
 #endif
 
 #ifdef __linux__
