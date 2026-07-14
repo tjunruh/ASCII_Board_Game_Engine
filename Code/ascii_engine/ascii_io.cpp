@@ -245,12 +245,10 @@ int ascii_io::getchar()
 {
 	int input = undefined;
 #ifdef _WIN32
-	DWORD cc;
-	INPUT_RECORD irec;
-	HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
-	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
-	mode &= ~ENABLE_QUICK_EDIT_MODE;
-	SetConsoleMode(h, mode);
+	INPUT_RECORD input_record;
+	DWORD unused_number_of_events_read;
+	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+	SetConsoleMode(h, ENABLE_MOUSE_INPUT);
 	if (keep_cursor_shown)
 	{
 		keep_cursor_shown = false;
@@ -262,18 +260,18 @@ int ascii_io::getchar()
 
 	do
 	{
-		ReadConsoleInput(h, &irec, 1, &cc);
-		if (irec.EventType == KEY_EVENT)
+		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
+		if (input_record.EventType == KEY_EVENT)
 		{
-			if (((KEY_EVENT_RECORD&)irec.Event).bKeyDown)
+			if (((KEY_EVENT_RECORD&)input_record.Event).bKeyDown)
 			{
-				if (irec.Event.KeyEvent.wVirtualKeyCode == 16)
+				if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
 				{
 					shift_held_down = true;
 				}
 				else
 				{
-					input = irec.Event.KeyEvent.wVirtualKeyCode;
+					input = input_record.Event.KeyEvent.wVirtualKeyCode;
 					if (shift_held_down)
 					{
 						auto map = key_mapping_with_shift.find(input);
@@ -300,16 +298,16 @@ int ascii_io::getchar()
 					}
 				}
 			}
-			else if (irec.Event.KeyEvent.wVirtualKeyCode == 16)
+			else if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
 			{
 				shift_held_down = false;
 			}
 		}
-		else if (irec.EventType == MOUSE_EVENT)
+		else if (input_record.EventType == MOUSE_EVENT)
 		{
-			if (irec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+			if (input_record.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
 			{
-				short scrollDelta = HIWORD(irec.Event.MouseEvent.dwButtonState);
+				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
 				if (scrollDelta > 0) {
 					input = scroll_up;
 				}
@@ -321,29 +319,29 @@ int ascii_io::getchar()
 					input = undefined;
 				}
 			}
-			else if (irec.Event.MouseEvent.dwEventFlags == 0)
+			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
 			{
-				if (!left_mouse_held_down && irec.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 				{
 					input = mouse_left_pressed;
 					left_mouse_held_down = true;
 				}
-				else if (left_mouse_held_down && irec.Event.MouseEvent.dwButtonState == 0)
+				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					input = mouse_left_released;
 					left_mouse_held_down = false;
 				}
-				else if (!right_mouse_held_down && irec.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 				{
 					input = mouse_right_pressed;
 					right_mouse_held_down = true;
 				}
-				else if (right_mouse_held_down && irec.Event.MouseEvent.dwButtonState == 0)
+				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					input = mouse_right_released;
 					right_mouse_held_down = false;
 				}
-				else if (irec.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
+				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 				{
 					input = mouse_middle;
 				}
@@ -422,12 +420,10 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 {
 	int input = undefined;
 #ifdef _WIN32
-	DWORD cc;
-	INPUT_RECORD irec;
-	HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
-	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
-	mode &= ~ENABLE_QUICK_EDIT_MODE;
-	SetConsoleMode(h, mode);
+	INPUT_RECORD input_record;
+	DWORD unused_number_of_events_read;
+	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
 	if (keep_cursor_shown)
 	{
 		keep_cursor_shown = false;
@@ -439,18 +435,18 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 
 	do
 	{
-		ReadConsoleInput(h, &irec, 1, &cc);
-		if (irec.EventType == KEY_EVENT)
+		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
+		if (input_record.EventType == KEY_EVENT)
 		{
-			if (((KEY_EVENT_RECORD&)irec.Event).bKeyDown)
+			if (((KEY_EVENT_RECORD&)input_record.Event).bKeyDown)
 			{
-				if (irec.Event.KeyEvent.wVirtualKeyCode == 16)
+				if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
 				{
 					shift_held_down = true;
 				}
 				else
 				{
-					input = irec.Event.KeyEvent.wVirtualKeyCode;
+					input = input_record.Event.KeyEvent.wVirtualKeyCode;
 					if (shift_held_down)
 					{
 						auto map = key_mapping_with_shift.find(input);
@@ -477,16 +473,16 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 					}
 				}
 			}
-			else if (irec.Event.KeyEvent.wVirtualKeyCode == 16)
+			else if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
 			{
 				shift_held_down = false;
 			}
 		}
-		else if (irec.EventType == MOUSE_EVENT)
+		else if (input_record.EventType == MOUSE_EVENT)
 		{
-			if (irec.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+			if (input_record.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
 			{
-				short scrollDelta = HIWORD(irec.Event.MouseEvent.dwButtonState);
+				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
 				if (scrollDelta > 0) {
 					input = scroll_up;
 				}
@@ -498,29 +494,29 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 					input = undefined;
 				}
 			}
-			else if (irec.Event.MouseEvent.dwEventFlags == 0)
+			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
 			{
-				if (!left_mouse_held_down && irec.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 				{
 					input = mouse_left_pressed;
 					left_mouse_held_down = true;
 				}
-				else if (left_mouse_held_down && irec.Event.MouseEvent.dwButtonState == 0)
+				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					input = mouse_left_released;
 					left_mouse_held_down = false;
 				}
-				else if (!right_mouse_held_down && irec.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 				{
 					input = mouse_right_pressed;
 					right_mouse_held_down = true;
 				}
-				else if (right_mouse_held_down && irec.Event.MouseEvent.dwButtonState == 0)
+				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					input = mouse_right_released;
 					right_mouse_held_down = false;
 				}
-				else if (irec.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
+				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 				{
 					input = mouse_middle;
 				}
@@ -538,8 +534,8 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 				input = undefined;
 			}
 
-			mouse_x_position = irec.Event.MouseEvent.dwMousePosition.X;
-			mouse_y_position = irec.Event.MouseEvent.dwMousePosition.Y;
+			mouse_x_position = input_record.Event.MouseEvent.dwMousePosition.X;
+			mouse_y_position = input_record.Event.MouseEvent.dwMousePosition.Y;
 		}
 	} while (input == undefined);
 #elif __linux__
