@@ -38,7 +38,10 @@ void widget::set_alignment(std::string alignment)
 void widget::set_output_to_frame(const std::string& text, bool mark_stale)
 {
 	item.output = text;
-	parent_frame->display_stale = mark_stale;
+	if (mark_stale)
+	{
+		mark_frame_as_stale();
+	}
 	item.line_edited = false;
 }
 
