@@ -248,7 +248,7 @@ int ascii_io::getchar()
 	INPUT_RECORD input_record;
 	DWORD unused_number_of_events_read;
 	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-	SetConsoleMode(h, ENABLE_MOUSE_INPUT);
+	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
 	if (keep_cursor_shown)
 	{
 		keep_cursor_shown = false;
