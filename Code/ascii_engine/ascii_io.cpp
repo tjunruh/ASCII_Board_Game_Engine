@@ -252,6 +252,7 @@ int ascii_io::getchar()
 	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(h, mode);
+	hide_cursor();
 	do
 	{
 		ReadConsoleInput(h, &irec, 1, &cc);
@@ -420,6 +421,7 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(h, mode);
+	hide_cursor();
 	do
 	{
 		ReadConsoleInput(h, &irec, 1, &cc);
@@ -1049,6 +1051,7 @@ void ascii_io::ascii_engine_init(bool maximize)
 #elif __linux__
 	ncurses_init();
 #endif
+	hide_cursor();
 }
 
 void ascii_io::ascii_engine_end()
@@ -1099,6 +1102,7 @@ void ascii_io::ascii_engine_end()
 	}
 	ncurses_end();
 #endif
+	show_cursor();
 }
 
 #ifdef _WIN32
