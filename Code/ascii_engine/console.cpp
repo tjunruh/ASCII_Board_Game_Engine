@@ -179,13 +179,18 @@ console::event console::run()
 			break;
 		}
 
-		if (loop_event.input != ascii_io::mouse_left_pressed && loop_event.input != ascii_io::scroll_up && loop_event.input != ascii_io::scroll_down)
+		if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), loop_event.input) == 0)
 		{
+			if (loop_event.widget_id == -1)
+			{
+				loop_event.widget_id = last_widget_id;
+			}
 			break;
 		}
 	}
 
 	exit = false;
+	last_widget_id = loop_event.widget_id;
 	return loop_event;
 }
 

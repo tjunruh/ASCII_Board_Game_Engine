@@ -48,4 +48,5 @@ private:
 	bool exit = false;
 	event stashed_event;
 	logger log;
+	int last_widget_id = 0;
 };
