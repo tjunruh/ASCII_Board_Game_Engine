@@ -1,8 +1,10 @@
-#include <ascii_io.h>
-#include <frame.h>
-#include <label.h>
-#include <text_box.h>
-#include <menu.h>
+#include <ascii_engine/ascii_io.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/label.h>
+#include <ascii_engine/text_box.h>
+#include <ascii_engine/menu.h>
+#include <ascii_engine/console.h>
+#include <string>
 
 int main()
 {
@@ -43,39 +45,40 @@ int main()
 	my_menu.enable_quit(true); // can exit menu with 'q' without selecting item
 	my_menu.build();
 
-	ascii_io::hide_cursor();
+	// register the widgets in the console for mouse interaction
+	console my_console;
 
-	my_frame->display();
+	my_console.register_widget(&my_label);
+	my_console.register_widget(&label_over_text_box);
+	my_console.register_widget(&my_text_box);
+	my_console.register_widget(&my_menu);
+
 	while (1)
 	{
-		int selection = my_frame->get_selection();
+		// console will run and only return when a key or mouse event occurs
+		console::event selection = my_console.run();
 
-		if (selection == my_label)
+		if (selection.widget_id == my_label)
 		{
 			my_label.set_output("\n\nGo and make a game with ascii engine!\n\n");
 		}
-		else if (selection == my_text_box)
+		else if (selection.widget_id == my_text_box)
 		{
-			int exit_key = my_text_box.write();
-			ascii_io::hide_cursor(); // cursor will be shown after writing in the text box
-			// by default, exit key from text box could be enter or escape
-			if (exit_key == ascii_io::ESC)
+			if (selection.input == ascii_io::ESC)
 			{
 				my_text_box.clear();
 			}
-			else if (exit_key == ascii_io::enter)
+			else if (selection.input == ascii_io::enter)
 			{
 				std::string user_writing = my_text_box.get_text();
 				my_label.set_output(user_writing);
 			}
 		}
-		else if (selection == my_menu)
+		else if (selection.widget_id == my_menu)
 		{
-			std::string menu_selection = "";
-			int menu_exit_key = ascii_io::undefined;
-			my_menu.get_selection(menu_selection, menu_exit_key);
-			if (menu_exit_key == ascii_io::enter)
+			if (selection.input == ascii_io::enter || selection.input == ascii_io::mouse_left_released)
 			{
+				std::string menu_selection = my_menu.get_selection();
 				if (menu_selection == "play")
 				{
 					my_label.set_output("\n\nLet's play!\n\n");
@@ -95,8 +98,6 @@ int main()
 			}
 		}
 	}
-
-	ascii_io::show_cursor();
 	
 	delete(my_frame);
 	ascii_io::ascii_engine_end(); // This function should always be called at the end of the program to properly shut ascii engine down

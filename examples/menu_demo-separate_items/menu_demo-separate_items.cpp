@@ -1,7 +1,7 @@
-#include <ascii_io.h>
-#include <frame.h>
-#include <menu.h>
-#include <label.h>
+#include <ascii_engine/ascii_io.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/menu.h>
+#include <ascii_engine/label.h>
 #include <string>
 
 int main()
@@ -36,8 +36,6 @@ int main()
 	my_label.set_alignment("center");
 	my_label.set_output("Select an Item.");
 
-	ascii_io::hide_cursor();
-
 	my_menu.set_lines_count(-6); // set the number of lines displayed in the menu 
 		                         // (negative number will cause menu to use all lines available in frame minus the parameter)
 		                         // (positive number will cause menu to always use number of lines specified by the parameter
@@ -46,7 +44,6 @@ int main()
 	my_menu.separate_items(true); // Causes menu items to be separated by lines inside menu
 	my_menu.build();
 
-	my_frame->display();
 	while (1)
 	{
 		std::string selection = "";
@@ -64,8 +61,6 @@ int main()
 
 	}
 
-	ascii_io::show_cursor();
-	
 	delete(my_frame);
 	ascii_io::ascii_engine_end();
 }

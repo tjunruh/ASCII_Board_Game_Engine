@@ -1,9 +1,11 @@
-#include <ascii_io.h>
-#include <frame.h>
-#include <label.h>
-#include <ascii_board.h>
-#include <menu.h>
-#include <format_tools.h>
+#include <ascii_engine/ascii_io.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/label.h>
+#include <ascii_engine/ascii_board.h>
+#include <ascii_engine/menu.h>
+#include <ascii_engine/console.h>
+#include <ascii_engine/error_codes.h>
+#include <ascii_engine/format_tools.h>
 #include <vector>
 
 int main()
@@ -120,72 +122,73 @@ int main()
 	my_menu.enable_quit(true);
 	my_menu.build();
 
-	ascii_io::hide_cursor();
+	// register the widgets in the console for mouse interaction
+	console my_console;
 
-	my_frame->display();
+	my_console.register_widget(&my_board);
+	my_console.register_widget(&my_menu);
 
 	std::string player = "player 1";
 
 	while (1)
 	{
-		int widget_id = my_frame->get_selection();
-		if (widget_id == my_board)
+		console::event event = my_console.run();
+		if (event.widget_id == my_board)
 		{
-			while (1)
+			my_board.deactivate_configuration("cursor", cursor_row, cursor_column);
+			if (event.input == ascii_io::mouse_left_released)
 			{
-				int input = ascii_io::getchar();
-				my_board.deactivate_configuration("cursor", cursor_row, cursor_column);
-				if (input == ascii_io::enter)
+				int new_cursor_row;
+				int new_cursor_column;
+				int status = my_board.get_tile_coordinate_from_mouse_position(event.mouse_x_position, event.mouse_y_position, new_cursor_row, new_cursor_column);
+				if (status == SUCCESS)
 				{
-					my_board.activate_configuration(player, cursor_row, cursor_column);
+					cursor_row = new_cursor_row;
+					cursor_column = new_cursor_column;
 				}
-				else if (input == ascii_io::up)
-				{
-					if (cursor_row - 1 >= 0)
-					{
-						cursor_row--;
-					}
-				}
-				else if (input == ascii_io::down)
-				{
-					if (cursor_row + 1 < my_board.get_number_of_rows())
-					{
-						cursor_row++;
-					}
-				}
-				else if (input == ascii_io::right)
-				{
-					if (cursor_column + 1 < my_board.get_number_of_columns())
-					{
-						cursor_column++;
-					}
-				}
-				else if (input == ascii_io::left)
-				{
-					if (cursor_column - 1 >= 0)
-					{
-						cursor_column--;
-					}
-				}
-				else if (input == ascii_io::q)
-				{
-					my_board.activate_configuration("cursor", cursor_row, cursor_column);
-					my_board.build();
-					break;
-				}
-
-				my_board.activate_configuration("cursor", cursor_row, cursor_column);
-				my_board.build();
-				my_board.display();
 			}
-		}
-		else if (widget_id == my_menu)
-		{
-			std::string selection = "";
-			int exit_key_stroke = ascii_io::undefined;
-			my_menu.get_selection(selection, exit_key_stroke);
-			if (exit_key_stroke == ascii_io::enter)
+			else if (event.input == ascii_io::enter)
 			{
+				my_board.activate_configuration(player, cursor_row, cursor_column);
+			}
+			else if (event.input == ascii_io::up)
+			{
+				if (cursor_row - 1 >= 0)
+				{
+					cursor_row--;
+				}
+			}
+			else if (event.input == ascii_io::down)
+			{
+				if (cursor_row + 1 < my_board.get_number_of_rows())
+				{
+					cursor_row++;
+				}
+			}
+			else if (event.input == ascii_io::right)
+			{
+				if (cursor_column + 1 < my_board.get_number_of_columns())
+				{
+					cursor_column++;
+				}
+			}
+			else if (event.input == ascii_io::left)
+			{
+				if (cursor_column - 1 >= 0)
+				{
+					cursor_column--;
+				}
+			}
+
+			my_board.activate_configuration("cursor", cursor_row, cursor_column);
+			my_board.build();
+			my_board.display();
+		}
+		else if (event.widget_id == my_menu)
+		{
+			if (event.input == ascii_io::enter || event.input == ascii_io::mouse_left_released)
+			{
+				std::string selection = my_menu.get_selection();
 				if (selection != "exit")
 				{
 					player = selection;
@@ -197,8 +200,6 @@ int main()
 			}
 		}
 	}
-
-	ascii_io::show_cursor();
 
 	delete(my_frame);
 	ascii_io::ascii_engine_end();

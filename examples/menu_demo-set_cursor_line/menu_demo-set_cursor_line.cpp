@@ -1,7 +1,7 @@
-#include <ascii_io.h>
-#include <frame.h>
-#include <menu.h>
-#include <label.h>
+#include <ascii_engine/ascii_io.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/menu.h>
+#include <ascii_engine/label.h>
 #include <string>
 
 int main()
@@ -37,10 +37,8 @@ int main()
 	my_label.set_alignment("center");
 	my_label.set_output("Select an Item.");
 
-	ascii_io::hide_cursor();
 	my_menu.build();
 
-	my_frame->display();
 	while (1)
 	{
 		std::string selection = "";
@@ -59,8 +57,6 @@ int main()
 
 	}
 
-	ascii_io::show_cursor();
-	
 	delete(my_frame);
 	ascii_io::ascii_engine_end();
 }

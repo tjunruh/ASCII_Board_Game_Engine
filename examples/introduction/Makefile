@@ -13,7 +13,7 @@ DEPS := $(OCJS:.o=.d)
 
 LDFLAGS := -lncurses -L $(ASCII_ENGINE_DIR) -lascii_engine
 INC_FLAGS := $(addprefix -I,$(INC_DIR))
-CXXFLAGS := -std=c++17 $(LDFLAGS) -O2 $(INC_FLAGS) -Wall -MMD -MP -I $(ASCII_ENGINE_DIR)/headers/ascii_engine
+CXXFLAGS := -std=c++17 $(LDFLAGS) -O2 $(INC_FLAGS) -Wall -MMD -MP -I $(ASCII_ENGINE_DIR)/headers
 
 .PHONY: all clean
 

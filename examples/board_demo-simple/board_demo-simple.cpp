@@ -1,8 +1,8 @@
-#include <ascii_io.h>
-#include <frame.h>
-#include <label.h>
-#include <ascii_board.h>
-#include <menu.h>
+#include <ascii_engine/ascii_io.h>
+#include <ascii_engine/frame.h>
+#include <ascii_engine/label.h>
+#include <ascii_engine/ascii_board.h>
+#include <ascii_engine/menu.h>
 
 
 int main()
@@ -36,8 +36,6 @@ int main()
 	my_menu.set_alignment("center");
 	my_menu.enable_quit(true);
 	my_menu.build();
-
-	ascii_io::hide_cursor();
 
 	my_frame->display();
 
@@ -114,8 +112,6 @@ int main()
 			}
 		}
 	}
-
-	ascii_io::show_cursor();
 
 	delete(my_frame);
 	ascii_io::ascii_engine_end();
