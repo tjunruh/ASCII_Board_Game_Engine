@@ -232,6 +232,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, cons
 {
 	int status = UNDEFINED;
 	int action_tile_index = get_action_tile_index(configuration.row, configuration.column);
+	std::string value_before_dynamic_finalization = configuration.value;
 	if (action_tile_index != -1)
 	{
 		if (get_value_length(action_tiles[action_tile_index]) == configuration.value.length())
@@ -244,7 +245,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, cons
 
 			for (unsigned int i = 0; i < get_value_length(action_tiles[action_tile_index]); i++)
 			{
-				if (((configuration.value[i] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
+				if ((configuration.value[i] != configuration.ignore_character) || (configuration.ignore_character == '\0') || (value_before_dynamic_finalization[i] == configuration.dynamic_character))
 				{
 					if (activate)
 					{
@@ -294,6 +295,7 @@ void ascii_board::set_tile(tile_configuration configuration, bool activate, cons
 void ascii_board::set_row(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value)
 {
 	int status = INVALID_INDEX;
+	std::string value_before_dynamic_finalization = configuration.value;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		if (action_tiles[i].array_row == configuration.row)
@@ -308,7 +310,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, const
 			{
 				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
-					if (((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0')))
+					if ((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0') || (value_before_dynamic_finalization[j] == configuration.dynamic_character))
 					{
 						if (activate)
 						{
@@ -355,6 +357,7 @@ void ascii_board::set_row(tile_configuration configuration, bool activate, const
 void ascii_board::set_column(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value)
 {
 	int status = INVALID_INDEX;
+	std::string value_before_dynamic_finalization = configuration.value;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		if (action_tiles[i].array_column == configuration.column)
@@ -369,7 +372,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, co
 			{
 				for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 				{
-					if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
+					if ((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0') || (value_before_dynamic_finalization[j] == configuration.dynamic_character))
 					{
 						if (activate)
 						{
@@ -415,6 +418,7 @@ void ascii_board::set_column(tile_configuration configuration, bool activate, co
 
 void ascii_board::set_all(tile_configuration configuration, bool activate, const std::string& name_id, const std::string& dynamic_value)
 {
+	std::string value_before_dynamic_finalization = configuration.value;
 	for (unsigned int i = 0; i < action_tiles.size(); i++)
 	{
 		if (activate)
@@ -426,7 +430,7 @@ void ascii_board::set_all(tile_configuration configuration, bool activate, const
 		{
 			for (unsigned int j = 0; j < get_value_length(action_tiles[i]); j++)
 			{
-				if (((configuration.value)[j] != configuration.ignore_character) || (configuration.ignore_character == '\0'))
+				if ((configuration.value[j] != configuration.ignore_character) || (configuration.ignore_character == '\0') || (value_before_dynamic_finalization[j] == configuration.dynamic_character))
 				{
 					if (activate)
 					{

@@ -1116,12 +1116,13 @@ TEST_F(ascii_board_test, activate_deactivate_configuration_by_coordinate_multi_l
 	activate_deactivate(local_test_board, "x_dynamic", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board, "ascii_board::set_tile", SUCCESS, true, 32, "1");
 	activate_deactivate(local_test_board, "x_dynamic", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 33);
 	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board_2, "ascii_board::set_tile", SUCCESS, true, 34, "12345");
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 35);
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board_2, "ascii_board::set_tile", SUCCESS, true, 36, "123456");
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 37);
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board, "ascii_board::set_tile", SUCCESS, true, 38, "  1");
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 39);
-	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_VALUE, true, 40, "12345\n");
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board_2_empty, "ascii_board::set_tile", SUCCESS, true, 35);
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 36);
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board_2, "ascii_board::set_tile", SUCCESS, true, 37, "123456");
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 38);
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::beginning_x_dynamic_board, "ascii_board::set_tile", SUCCESS, true, 39, "  1");
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::set_tile", SUCCESS, false, 40);
+	activate_deactivate(local_test_board, "x_dynamic_2", 0, 0, multi_line_board_definitions::empty_board, "ascii_board::activate_configuration", INVALID_VALUE, true, 41, "12345\n");
 
 	delete(local_test_frame);
 }
