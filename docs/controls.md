@@ -1,7 +1,8 @@
 # controls API
 
-controls is an object that maps a control name to an ascii code and can save a controls configuration to file or load controls configuration from file. ascii_io contains ascii codes. Public member functions of controls include:
+controls is an object that maps a control name to an ascii code and can save a controls configuration to file or load controls configuration from file. ascii_io contains ascii codes.
 
+# Functions
 - [int bind(const std::string& control_name, const int key)](#bind)
 - [void force_bind(const std::string& control_name, const int key)](#force_bind)
 - [int unbind(const std::string& control_name)](#unbind)
