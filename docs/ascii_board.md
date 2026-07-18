@@ -12,11 +12,11 @@ ascii_board is a widget that loads a board configuration and can be customized t
 - [void set_tile(int row, int column, std::string value)](#set_tile)
 - [char get_tile_character(int row, int column, unsigned int character_index)](#get_tile_character)
 - [std::string get_board()](#get_board)
-- [std::vector<format_tools::index_format> get_colors()](#get_colors)
-- [void get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors)](#get_board_and_colors)
+- [std::vector\<format_tools::index_format\> get_colors()](#get_colors)
+- [void get_board_and_colors(std::string& game_board, std::vector\<format_tools::index_format\>& colors)](#get_board_and_colors)
 - [void add_configuration(board_configuration configuration)](#add_configuration)
 - [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character)](#add_configuration-1)
-- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)](#add_configuration-2)
+- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors)](#add_configuration-2)
 - [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)](#add_configuration-3)
 - [void activate_configuration(const std::string& name_id, int row, int column)](#activate_configuration)
 - [void activate_configuration(const std::string& name_id)](#activate_configuration)
@@ -24,9 +24,9 @@ ascii_board is a widget that loads a board configuration and can be customized t
 - [void deactivate_configuration(const std::string& name_id)](#deactivate_configuration-1)
 - [std::string load_configuration(const std::string& path)](#load_configuration)
 - [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character)](#load_configuration-1)
-- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)](#load_configuration-2)
+- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors)](#load_configuration-2)
 - [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)](#load_configuration-3)
-- [void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors)](#set_sub_configuration_color)
+- [void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector\<format_tools::index_format\>& colors)](#set_sub_configuration_color)
 - [int get_number_of_columns()](#get_number_of_columns)
 - [int get_number_of_rows()](#get_number_of_rows)
 - [void display()](#display)
@@ -177,7 +177,7 @@ std::string - the board
 
 ---
 ## get_colors
-**std::vector<format_tools::index_format> get_colors()**
+**std::vector\<format_tools::index_format\> get_colors()**
 
 **Description:**
 
@@ -185,11 +185,11 @@ returns colors currently applied to the board
 
 **Return value:**
 
-std::vector<format_tools::index_format> - vector of all colors currently displayed on the board (look at format_tools for reference to index_format structure)
+std::vector\<format_tools::index_format\> - vector of all colors currently displayed on the board (look at format_tools for reference to index_format structure)
 
 ---
 ## get_board_and_colors
-**void get_board_and_colors(std::string& game_board, std::vector<format_tools::index_format>& colors)**
+**void get_board_and_colors(std::string& game_board, std::vector\<format_tools::index_format\>& colors)**
 
 **Description:**
 
@@ -197,7 +197,7 @@ retrieves the board and colors at the same time
 
 **Parameters:**
 1. std::string& **game_board** - value to hold the returned board
-2. std::vector<format_tools::index_format>& **colors** - value to hold the returned colors currently applied to the board
+2. std::vector\<format_tools::index_format\>& **colors** - value to hold the returned colors currently applied to the board
 
 ---
 ## add_configuration
@@ -227,7 +227,7 @@ adds board configuration as parameters to ascii_board's data
 
 ---
 ## add_configuration
-**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector<format_tools::index_format>& colors)**
+**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors)**
 
 **Description:**
 
@@ -240,7 +240,7 @@ adds board configuration as parameters to ascii_board's data and includes colors
 3. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
 4. const std::string& **value** - value that board tile should be set to when configuration is activated
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
-6. const std::vector<format_tools::index_format& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+6. const std::vector\<format_tools::index_format& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
 
 ---
 ## add_configuration
@@ -341,7 +341,7 @@ loads a configuration's value from a file at specified path and immediatly adds 
 
 ---
 ## load_configuration
-**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector<format_tools::index_format>& colors)**
+**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors)**
 
 **Description:**
 
@@ -353,7 +353,7 @@ loads a configuration's value from a file at specified path and immediatly adds 
 3. int **row** - row on the board where the configuration should apply (setting to -1 makes configuration apply to all rows)
 4. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
-6. const std::vector<format_tools::index_format>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+6. const std::vector\<format_tools::index_format\>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
 
 ---
 ## load_configuration
@@ -376,7 +376,7 @@ loads a configuration's value from a file at specified path and immediatly adds 
 
 ---
 ## set_sub_configuration_color
-**void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector<format_tools::index_format>& colors)**
+**void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector\<format_tools::index_format\>& colors)**
 
 **Description:**
 
@@ -385,7 +385,7 @@ set color on the portion of a configuration identified by name_id and with a val
 **Parameters:**
 1. const std::string& **name_id** - the name identifying the configuration to have its color set
 2. const std::string& **value_math** - only portions of the configuration that have this value match will have their color set
-3. const std::vector<format_tools::index_format>& **colors** - colors to be set
+3. const std::vector\<format_tools::index_format\>& **colors** - colors to be set
 
 ---
 ## get_number_of_columns
@@ -620,7 +620,7 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 2. int **column** = -2;
 3. std::string **value** = "";
 4. char **ignore_character** = '\0';
-5. std::vector<format_tools::index_format> **colors**;
+5. std::vector\<format_tools::index_format\> **colors**;
 
 **Value descriptions:**
 
@@ -628,7 +628,7 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 2. int **column** - column coordinate where the tile should be set to desired value
 3. std::string **value** - value that the tile should be set to
 4. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
-5. const std::vector<format_tools::index_format>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+5. const std::vector\<format_tools::index_format\>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
 
 ---
 ## struct board_configuration
@@ -636,12 +636,12 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 **Values:**
 
 1. std::string **name_id**
-2. std::vector<tile_configuration> **tile_configurations**
+2. std::vector\<tile_configuration\> **tile_configurations**
 
 **Value descriptions:**
 
 1. std::string **name_id** - name that also acts as the id of the configuration
-2. std::vector<tile_configuration> **tile_configurations** - vector of tile configurations that should all be identified with the same name_id
+2. std::vector\<tile_configuration\> **tile_configurations** - vector of tile configurations that should all be identified with the same name_id
 
 ---
 # Member Structure Descriptions
@@ -684,18 +684,18 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 
 1. int **array_row** = -1;
 2. int **array_column** = -1;
-3. std::vector<action_tile_board_section> **board_section**;
+3. std::vector\<action_tile_board_section\> **board_section**;
 4. std::string **default_value** = "";
 5. std::string **value** = "";
-6. std::vector<format_tools::index_format> **colors**;
-7. std::vector<sub_tile_configuration> **activated_configs**;
+6. std::vector\<format_tools::index_format\> **colors**;
+7. std::vector\<sub_tile_configuration\> **activated_configs**;
 
 **Value descriptions:**
 
 1. int **array_row** - row index defining the position of the tile in the board
 2. int **array_column** - column index defining the position of the tile in the board
-3. std::vector<action_tile_board_section> **board_section** - vector of structures defining where the tile is located in the board string
+3. std::vector\<action_tile_board_section\> **board_section** - vector of structures defining where the tile is located in the board string
 4. std::string **default_value** - the value of the tile when the board was first loaded from the configuration file
 5. std::string **value** - value that the tile is currently set to
-6. std::vector<format_tools::index_format> **colors** - vector of index_format structures defining the current foreground and background colors of tile
-7. std::vector<sub_tile_configuration> **activated_configs** - vector of structures stating what configurations are activated on the tile
+6. std::vector\<format_tools::index_format\> **colors** - vector of index_format structures defining the current foreground and background colors of tile
+7. std::vector\<sub_tile_configuration\> **activated_configs** - vector of structures stating what configurations are activated on the tile
