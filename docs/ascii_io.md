@@ -2,275 +2,280 @@
 
 ascii_io includes functions providing the ability to perform input and output operations involving Windows and Linux consoles. Functions in the ascii_io namespace include:
 
-```
-void ascii_engine_init(bool maximize = false)
-void ascii_engine_end()
-void print(const std::string& output)
-int getchar()
-int wait_for_keystroke(std::vector<int> keystroke_options)
-void clear()
-void get_terminal_size(int& x, int& y)
-void get_cursor_position(int& x, int& y)
-void hide_cursor()
-void show_cursor()
-void move_cursor_up(unsigned int amount=1)
-void move_cursor_down(unsigned int amount=1)
-void move_cursor_right(unsigned int amount=1)
-void move_cursor_left(unsigned int amount=1)
-void move_cursor_to_position(unsigned int x, unsigned int y)
-int zoom_in(unsigned int amount=1, unsigned int wait_milliseconds = 0)
-int zoom_out(unsigned int amount=1, unsigned int wait_milliseconds = 0)
-int zoom_to_level(int level, unsigned int wait_milliseconds = 0)
-void set_color(int foreground, int background, bool bold = false)
-std::string get_key_name(int key)
-```
+# Functions
+- [void ascii_engine_init(bool maximize = false)](#ascii_engine_init)
+- [void ascii_engine_end()](#ascii_engine_end)
+- [void print(const std::string& output)](#print)
+- [int getchar()](#getchar)
+- [int wait_for_keystroke(std::vector<int> keystroke_options)](#wait_for_keystroke)
+- [void clear()](#clear)
+- [void get_terminal_size(int& x, int& y)](#get_terminal_size)
+- [void get_cursor_position(int& x, int& y)](#get_cursor_position)
+- [void hide_cursor()](#hide_cursor)
+- [void show_cursor()](#show_cursor)
+- [void move_cursor_up(unsigned int amount=1)](#move_cursor_up)
+- [void move_cursor_down(unsigned int amount=1)](#move_cursor_down)
+- [void move_cursor_right(unsigned int amount=1)](#move_cursor_right)
+- [void move_cursor_left(unsigned int amount=1)](#move_cursor_left)
+- [void move_cursor_to_position(unsigned int x, unsigned int y)](#move_cursor_to_position)
+- [int zoom_in(unsigned int amount=1, unsigned int wait_milliseconds = 0)](#zoom_in)
+- [int zoom_out(unsigned int amount=1, unsigned int wait_milliseconds = 0)](#zoom_out)
+- [int zoom_to_level(int level, unsigned int wait_milliseconds = 0)](#zoom_to_level)
+- [void set_color(int foreground, int background, bool bold = false)](#set_color)
+- [std::string get_key_name(int key)](#get_key_name)
 
-Linux specific functions:
+# Linux specific functions
 
-```
-void guarantee_clear_on_next_display()
-```
+- [void guarantee_clear_on_next_display()](#guarantee_clear_on_next_display)
+
 
 ---
 ## ascii_engine_init
 **void ascii_engine_init(bool maximize = false)**
-```
-Description:
+
+**Description:**
+
 This function must be called at the beginning of the program to initialize ascii engine
 
-Parameters:
-bool maximize - maximizes the terminal to fill the whole screen (wmctrl (sudo apt install wmctrl) or xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
-```
+**Parameters:**
+1. bool **maximize** - maximizes the terminal to fill the whole screen (wmctrl (sudo apt install wmctrl) or xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
 
 ---
 ## ascii_engine_end
 **void ascii_engine_end()**
-```
-Description:
+
+**Description:**
+
 This function must be called at the end of the program to properly shutdown ascii engine
-```
 
 ---
 ## print
 **void print(const std::string& output)**
-```
-Description:
+
+**Description:**
+
 prints to the terminal at whatever position the cursor is at
 
-Parameters:
-const std::string& output - string to be printed
-```
+**Parameters:**
+
+1. const std::string& **output** - string to be printed
 
 ---
 ## getchar
 **int getchar()**
-```
-Description:
+
+**Description:**
+
 blocks until user presses a key and returns the ascii value of the key pressed
 
-return value:
+**return value:**
+
 int - ascii value of the key pressed
-```
 
 ---
 ## wait_for_keystroke
 **int wait_for_keystroke(std::vector<int> keystroke_options)**
-```
-Description:
+
+**Description:**
+
 blocks until user presses a key specified in keystroke_options
 
-Parameters:
-std::vector<int> keystroke_options - group of keystrokes that will break out of the block
+**Parameters:**
 
-Return value:
+1. std::vector<int> **keystroke_options** - group of keystrokes that will break out of the block
+
+**Return value:**
+
 int - ascii value of the key that broke out of the block
-```
 
 ---
 ## clear
 **void clear()**
-```
-Description:
+
+**Description:**
+
 clears the console
-```
 
 ---
 ## get_terminal_size
 **void get_terminal_size(int& x, int& y)**
-```
-Description:
+
+**Description:**
+
 retrieves the terminal's height and width
 
-Parameters:
-int& x - value populated with the width of the terminal
-int& y - value populated with the height of the terminal
-```
+**Parameters:**
+
+1. int& **x** - value populated with the width of the terminal
+2. int& **y** - value populated with the height of the terminal
 
 ---
 ## get_cursor_position
 **void get_cursor_position(int& x, int& y)**
-```
-Description:
+
+**Description:**
+
 retrieves the cursor's x and y position
 
-Parameters:
-int& x - value populated with the x position of the cursor
-int& y - value populated with the y position of the cursor
-```
+**Parameters:**
+1. int& **x** - value populated with the x position of the cursor
+2. int& **y** - value populated with the y position of the cursor
 
 ---
 ## hide_cursor
 **void hide_cursor()**
-```
-Description:
+
+**Description:**
+
 hides the cursor from view on the terminal
-```
 
 ---
 ## show_cursor
 **void show_cursor()**
-```
-Description:
+
+**Description:**
+
 make the cursor visible on the terminal
-```
 
 ---
 ## move_cursor_up
 **void move_cursor_up(unsigned int amount=1)**
-```
-Description:
+
+**Description:**
+
 moves the cursor up by specified amount
 
-Parameters:
-unsigned int amount - number of positions the cursor should move up (defaults to one if no parameter included)
-```
+**Parameters:**
+1. unsigned int **amount** - number of positions the cursor should move up (defaults to one if no parameter included)
 
 ---
 ## move_cursor_down
 **void move_cursor_down(unsigned int amount=1)**
-```
-Description:
+
+**Description:**
+
 moves the cursor down by specified amount
 
-Parameters:
-unsigned int amount - number of positions the cursor should move down (defaults to one if no parameter included)
-```
+**Parameters:**
+1. unsigned int **amount** - number of positions the cursor should move down (defaults to one if no parameter included)
 
 ---
 ## move_cursor_right
 **void move_cursor_right(unsigned int amount=1)**
-```
-Description:
+
+**Description:**
+
 moves the cursor right by specified amount
 
-Parameters:
-unsigned int amount - number of positions the cursor should move right (defaults to one if no parameter included)
-```
+**Parameters:**
+1. unsigned int **amount** - number of positions the cursor should move right (defaults to one if no parameter included)
 
 ---
 ## move_cursor_left
 **void move_cursor_left(unsigned int amount=1)**
-```
-Description:
+
+**Description:**
+
 moves the cursor left by specified amount
 
-Parameters:
-unsigned int amount - number of positions the cursor should move left (defaults to one if no parameter included)
-```
+**Parameters:**
+1. unsigned int **amount** - number of positions the cursor should move left (defaults to one if no parameter included)
 
 ---
 ## move_cursor_to_position
 **void move_cursor_to_position(unsigned int x, unsigned int y)**
-```
-Description:
+
+**Description:**
+
 moves the cursor to specified position on the terminal
 
-Parameters:
-int x - x position where the cursor should be moved
-int y - y position where the cursor should be moved
-```
+**Parameters:**
+1. int **x** - x position where the cursor should be moved
+2. int **y** - y position where the cursor should be moved
 
 ---
 ## zoom_in
 **int zoom_in(unsigned int amount=1, unsigned int wait_milliseconds = 0)**
-```
-Description:
+
+**Description:**
+
 makes characters in the terminal larger (xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
 
-Parameters:
-unsigned int amount - controls how much larger the characters will get
-unsigned int wait_milliseconds - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
+**Parameters:**
+1. unsigned int **amount** - controls how much larger the characters will get
+2. unsigned int **wait_milliseconds** - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
 
-Return value:
+**Return value:**
+
 int - 0 upon success and a different number upon failure
-```
 
 ---
 ## zoom_out
 **int zoom_out(unsigned int amount=1, unsigned int wait_milliseconds = 0)**
-```
-Description:
+
+**Description:**
+
 makes characters in the terminal smaller (xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
 
-Parameters:
-unsigned int amount - controls how much smaller the characters will get
-unsigned int wait_milliseconds - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
+**Parameters:**
+1. unsigned int **amount** - controls how much smaller the characters will get
+2. unsigned int **wait_milliseconds** - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
 
-Return value:
+**Return value:**
+
 int - 0 upon success and a different number upon failure
-```
 
 ---
 ## zoom_to_level
 **int zoom_to_level(int level, unsigned int wait_milliseconds = 0)**
-```
-Description:
+
+**Description:**
+
 zooms to desired level (0 is default, positive is zoomed in (larger characters), and negative is zoomed out (smaller characters))
 
-Parameters:
-int level - level to zoom to
-unsigned int wait_milliseconds - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
+**Parameters:**
+1. int **level** - level to zoom to
+2. unsigned int **wait_milliseconds** - specifies amount of time in milliseconds to wait before moving on so as to allow the terminal some time to make the font size change
 
-Return value:
+**Return value:**
+
 int - 0 upon success and a different number upon failure
-```
 
 ---
 ## set_color
 **void set_color(int foreground, int background, bool bold = false)**
-```
-Description:
+
+**Description:**
+
 sets the foreground and background of the terminal for any printing to the terminal that follows (setting bold to true will cause the foreground to become brighter)
 
-Parameters:
-int foreground - integer code defining the foreground color (format_tools has values containing the color codes i.e. format_tools::black)
-int background - integer code defining the background color (format_tools has values containing the color codes i.e. format_tools::black)
-bool bold - makes the foreground brighter when set to true
-```
+**Parameters:**
+1. int **foreground** - integer code defining the foreground color (format_tools has values containing the color codes i.e. format_tools::black)
+2. int **background** - integer code defining the background color (format_tools has values containing the color codes i.e. format_tools::black)
+3. bool **bold** - makes the foreground brighter when set to true
 
 ---
 ## get_key_name
 **std::string get_key_name(int key)**
-```
-Description:
+
+**Description:**
+
 returns a string that is the name of the key represented by ascii code
 
-Parameters:
-int key - The ascii code of the key (it is best to use the ascii key codes defined in ascii_io)
+**Parameters:**
+1. int **key** - The ascii code of the key (it is best to use the ascii key codes defined in ascii_io)
 
-Return value:
+**Return value:**
+
 std::string - name of the ascii key
-```
-
-Linux specific functions:
 
 ---
 ## guarantee_clear_on_next_display
 **void guarantee_clear_on_next_display()**
-```
-Description:
-Use this function in cases (most likely where the terminal is zoomed out and a lot of text is being displayed) when a display call does not overwrite all of the previous frame
-```
+
+**Description:**
+
+(Only for Linux) Use this function in cases (most likely where the terminal is zoomed out and a lot of text is being displayed) when a display call does not overwrite all of the previous frame
 
 ---
 # Keyboard Codes
