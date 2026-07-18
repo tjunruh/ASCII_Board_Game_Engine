@@ -7,7 +7,7 @@ ascii_io includes functions providing the ability to perform input and output op
 - [void ascii_engine_end()](#ascii_engine_end)
 - [void print(const std::string& output)](#print)
 - [int getchar()](#getchar)
-- [int wait_for_keystroke(std::vector<int> keystroke_options)](#wait_for_keystroke)
+- [int wait_for_keystroke(std::vector\<int\> keystroke_options)](#wait_for_keystroke)
 - [void clear()](#clear)
 - [void get_terminal_size(int& x, int& y)](#get_terminal_size)
 - [void get_cursor_position(int& x, int& y)](#get_cursor_position)
@@ -74,7 +74,7 @@ int - ascii value of the key pressed
 
 ---
 ## wait_for_keystroke
-**int wait_for_keystroke(std::vector<int> keystroke_options)**
+**int wait_for_keystroke(std::vector\<int\> keystroke_options)**
 
 **Description:**
 
@@ -82,7 +82,7 @@ blocks until user presses a key specified in keystroke_options
 
 **Parameters:**
 
-1. std::vector<int> **keystroke_options** - group of keystrokes that will break out of the block
+1. std::vector\<int\> **keystroke_options** - group of keystrokes that will break out of the block
 
 **Return value:**
 
