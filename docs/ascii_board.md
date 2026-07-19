@@ -15,17 +15,17 @@ ascii_board is a widget that loads a board configuration and can be customized t
 - [std::vector\<format_tools::index_format\> get_colors()](#get_colors)
 - [void get_board_and_colors(std::string& game_board, std::vector\<format_tools::index_format\>& colors)](#get_board_and_colors)
 - [void add_configuration(board_configuration configuration)](#add_configuration)
-- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character)](#add_configuration-1)
-- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors)](#add_configuration-2)
-- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)](#add_configuration-3)
-- [void activate_configuration(const std::string& name_id, int row, int column)](#activate_configuration)
-- [void activate_configuration(const std::string& name_id)](#activate_configuration)
+- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, char dynamic_character = '\0')](#add_configuration-1)
+- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors, char dynamic_character = '\0')](#add_configuration-2)
+- [void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0')](#add_configuration-3)
+- [void activate_configuration(const std::string& name_id, int row, int column, const std::string& dynamic_value = "")](#activate_configuration)
+- [void activate_configuration(const std::string& name_id, const std::string& dynamic_value = "")](#activate_configuration)
 - [void deactivate_configuration(const std::string& name_id, int row, int column)](#deactivate_configuration)
 - [void deactivate_configuration(const std::string& name_id)](#deactivate_configuration-1)
 - [std::string load_configuration(const std::string& path)](#load_configuration)
-- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character)](#load_configuration-1)
-- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors)](#load_configuration-2)
-- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)](#load_configuration-3)
+- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, char dynamic_character = '\0')](#load_configuration-1)
+- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors, char dynamic_character = '\0')](#load_configuration-2)
+- [void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0')](#load_configuration-3)
 - [void set_sub_configuration_color(const std::string& name_id, const std::string& value_match, const std::vector\<format_tools::index_format\>& colors)](#set_sub_configuration_color)
 - [int get_number_of_columns()](#get_number_of_columns)
 - [int get_number_of_rows()](#get_number_of_rows)
@@ -212,7 +212,7 @@ adds board configuration as a structure to ascii_board's data
 
 ---
 ## add_configuration
-**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character)**
+**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -224,10 +224,11 @@ adds board configuration as parameters to ascii_board's data
 3. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
 4. const std::string& **value** - value that board tile should be set to when configuration is activated
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
+6. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## add_configuration
-**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors)**
+**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, const std::vector\<format_tools::index_format\>& colors, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -241,10 +242,11 @@ adds board configuration as parameters to ascii_board's data and includes colors
 4. const std::string& **value** - value that board tile should be set to when configuration is activated
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
 6. const std::vector\<format_tools::index_format& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+7. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## add_configuration
-**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)**
+**void add_configuration(const std::string& name_id, int row, int column, const std::string& value, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -260,10 +262,11 @@ adds board configuration as parameters to ascii_board's data and includes an uni
 7. int **background_format** - color code defining the color to be applied to the background
 8. bool **bold** - makes the foreground be brighter if set to true
 9. bool **include_spaces** - will apply the color to spaces if set to true
+10. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## activate_configuration
-**void activate_configuration(const std::string& name_id, int row, int column)**
+**void activate_configuration(const std::string& name_id, int row, int column, const std::string& dynamic_value = "")**
 
 **Description:**
 
@@ -273,10 +276,11 @@ sets the board tile at specified row and column to value of configuration define
 1. const std::string& **name_id** - name that also acts as the id of the configuration
 2. int **row** - row on the board where the configuration should apply (setting to -1 makes configuration apply to all rows)
 3. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
+4. const std::string& **dynamic_value** - value used to fill in any dynamic spaces in the configuration that was designated by ignore characters when the configuration was added or loaded (optional parameter)
 
 ---
 ## activate_configuration
-**void activate_configuration(const std::string& name_id)**
+**void activate_configuration(const std::string& name_id, const std::string& dynamic_value = "")**
 
 **Description:**
 
@@ -284,6 +288,7 @@ sets the board tiles everywhere where the configuration applies to value of conf
 
 **Parameters:**
 1. const std::string& **name_id** - name that also acts as the id of the configuration
+2. const std::string& **dynamic_value** - value used to fill in any dynamic spaces in the configuration that was designated by ignore characters when the configuration was added or loaded (optional parameter)
 
 ---
 ## deactivate_configuration
@@ -326,7 +331,7 @@ std::string - configuration's value loaded from file
 
 ---
 ## load_configuration
-**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character)**
+**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -338,10 +343,11 @@ loads a configuration's value from a file at specified path and immediatly adds 
 3. int **row** - row on the board where the configuration should apply (setting to -1 makes configuration apply to all rows)
 4. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
+6. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## load_configuration
-**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors)**
+**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, const std::vector\<format_tools::index_format\>& colors, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -354,10 +360,11 @@ loads a configuration's value from a file at specified path and immediatly adds 
 4. int **column** - column on the board where the configuration should apply (setting to -1 makes configuration apply to all columns)
 5. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
 6. const std::vector\<format_tools::index_format\>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+7. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## load_configuration
-**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false)**
+**void load_configuration(const std::string& path, const std::string& name_id, int row, int column, char ignore_character, int foreground_format, int background_format, bool bold, bool include_spaces = false, char dynamic_character = '\0')**
 
 **Description:**
 
@@ -373,6 +380,7 @@ loads a configuration's value from a file at specified path and immediatly adds 
 7. int **background_format** - color code defining the color to be applied to the background
 8. bool **bold** - makes the foreground be brighter if set to true
 9. bool **include_spaces** - will apply the color to spaces if set to true
+10. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated (optional parameter)
 
 ---
 ## set_sub_configuration_color
@@ -620,7 +628,8 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 2. int **column** = -2;
 3. std::string **value** = "";
 4. char **ignore_character** = '\0';
-5. std::vector\<format_tools::index_format\> **colors**;
+5. char **dynamic_character** = '\0';
+6. std::vector\<format_tools::index_format\> **colors**;
 
 **Value descriptions:**
 
@@ -628,7 +637,8 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 2. int **column** - column coordinate where the tile should be set to desired value
 3. std::string **value** - value that the tile should be set to
 4. char **ignore_character** - defines character in value that should be ignored: whatever is in the tile already at the indexes of ignore characters should remain unchanged
-5. const std::vector\<format_tools::index_format\>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
+5. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated
+6. const std::vector\<format_tools::index_format\>& **colors** - vector of index_format structures providing the ability to change the foreground and background colors of tile beginning at specified index of the tile's string
 
 ---
 ## struct board_configuration
@@ -670,12 +680,14 @@ board_metadata* - board metadata object containing all metadata loaded from boar
 1. std::string **name_id** = "";
 2. std::string **value** = "";
 3. char **ignore_character** = '\0';
+4. char **dynamic_character** = '\0';
 
 **Value descriptions:**
 
 1. std::string **name_id** - name of the configuration
 2. std::string **value** - actual string value of the configuration
 3. char **ignore_character** - character indicating locations in the value that are not set in the configuration
+4. char **dynamic_character** - defines character in value that designates areas in the configuration that will only be defined when the configuration is activated
 
 ---
 ## struct action_tile
