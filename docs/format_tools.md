@@ -8,6 +8,7 @@ format_tools includes functions providing the ability to perform formatting oper
 - [std::string get_spacing(unsigned int length, char space_char)](#get_spacing)
 - [std::string fill_line(std::string input, unsigned int length, std::string alignment)](#fill_line)
 - [std::vector\<std::string\> fill_lines(std::vector\<std::string\> input, unsigned int length, std::string alignment)](#fill_lines)
+- [int get_left_alignment_space_from_last_fill_line_action()](#get_left_alignment_space_from_last_fill_line_action)
 - [std::vector\<std::string\> add_lines(std::vector\<std::string\> lines, unsigned int number_of_added_lines, unsigned int line_length)](#add_lines)
 - [std::string fuse_columns_into_row(text_column data, unsigned int& lines)](#fuse_columns_into_row)
 - [std::vector\<std::string\> get_lines(const std::string& output_string)](#get_lines)
@@ -125,6 +126,18 @@ fills multiple lines with spaces either at beginning of strings, end of strings,
 **Return value:**
 
 std::vector\<std::string\> - filled lines according to length and alignment
+
+---
+## get_left_alignment_space_from_last_fill_line_action
+**int get_left_alignment_space_from_last_fill_line_action()**
+
+**Description**
+
+returns the number of spaces that were added on the left side the last time fill_line was called (it would be the last line of the fill_lines function if that function was the last one called)
+
+**Return value:**
+
+int - number of spaces that were added on the left side the last time fill_line was called (it would be the last line of the fill_lines function if that function was the last one called)
 
 ---
 ## add_lines

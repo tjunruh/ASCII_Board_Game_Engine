@@ -9,4 +9,5 @@ MENU = 2
 BOARD = 3
 LABEL = 4
 FRAME = 5
+CONSOLE = 6
 ```

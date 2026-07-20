@@ -37,6 +37,8 @@ widget is the base class that all widget objects are derived from. Objects deriv
 - [std::string get_output()](#get_output)
 - [std::string get_displayed_output()](#get_displayed_output)
 - [std::string get_alignment()](#get_alignment)
+- [int get_parent_frame_id()](#get_parent_frame_id)
+- [int get_id()](#get_id)
 - [int start_logging(const std::string& file_path)](#start_logging)
 - [void stop_logging()](#stop_logging)
 - [int reset_logging(const std::string& file_path)](#reset_logging)
@@ -454,6 +456,30 @@ returns the alignment of the widget used to align the widget's text
 **Return value:**
 
 std::string - alginment of the widget's text ("left", "right", "center" or "center block")
+
+---
+## get_parent_frame_id
+**int get_parent_frame_id()**
+
+**Description:**
+
+returns the id of the widget's parent frame
+
+**Return value:**
+
+int - id of the widget's parent frame
+
+---
+## get_id
+**int get_id()**
+
+**Description:**
+
+returns the id of the widget
+
+**Return value:**
+
+int id of the widget
 
 ---
 ## start_logging

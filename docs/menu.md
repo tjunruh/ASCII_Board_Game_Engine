@@ -23,11 +23,16 @@ menu is a widget that displays options/items that can be selected by the user. N
 - [void set_separater_characters(char horizontal_char, char vertical_char, char intersection_char, char endpoint_char)](#set_separater_characters)
 - [void get_separater_characters(char& horizontal_char, char& vertical_char, char& intersection_char, char& endpoint_char)](#get_separater_characters)
 - [void get_selection(std::string& selection, int& key_stroke)](#get_selection)
+- [std::string get_selection()](#get_selection-1)
 - [void enable_quit(bool enable)](#enable_quit)
 - [void display()](#display)
 - [void build()](#build)
 - [void separate_items(bool separate)](#separate_items)
 - [std::vector\<menu::item_structure\> get_menu_item_data()](#get_menu_item_data)
+- [void scroll_up()](#scroll_up)
+- [void scroll_down()](#scroll_down)
+- [void scroll_left()](#scroll_left)
+- [void scroll_right()](#scroll_right)
 
 # Member structures
 - [item_structure](#struct-item_structure)
@@ -301,6 +306,18 @@ blocking function that allows the user to select a menu item and then reports th
 2. int& **key_stroke** - keystroke used to select item
 
 ---
+## get_selection
+**std::string get_selection()**
+
+**Description:**
+
+returns the item that last had a select action applied to it (useful for determining what item was selected when a related event is returned from console)
+
+**Return value:**
+
+std::string - item that last had a select action applied to it
+
+---
 ## enable_quit
 **void enable_quit(bool enable)**
 
@@ -349,6 +366,38 @@ returns all data in the menu
 **Return value:**
 
 std::vector\<menu::item_structure\> - vector containing menu data per row of menu
+
+---
+## scroll_up
+**void scroll_up()**
+
+**Description:**
+
+programmatically moves the menu up (does so by moving the cursor up one item)
+
+---
+## scroll_down
+**void scroll_down()**
+
+**Description:**
+
+programmatically moves the menu down (does so by moving the cursor down one item)
+
+---
+## scroll_left
+**void scroll_left()**
+
+**Description:**
+
+programmatically moves the label left one column
+
+---
+## scroll_right
+**void scroll_right()**
+
+**Description:**
+
+programmatically moves the menu right one column
 
 ---
 # Member Structure Descriptions

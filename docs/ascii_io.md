@@ -7,7 +7,10 @@ ascii_io includes functions providing the ability to perform input and output op
 - [void ascii_engine_end()](#ascii_engine_end)
 - [void print(const std::string& output)](#print)
 - [int getchar()](#getchar)
+- [int getchar(int& mouse_x_position, int& mouse_y_position)](#getchar-1)
 - [int wait_for_keystroke(std::vector\<int\> keystroke_options)](#wait_for_keystroke)
+- [int wait_for_keystroke(std::vector\<int\> keystroke_options, int& mouse_x_position, int& mouse_y_position)](#wait_for_keystroke-1)
+- [bool is_dragging()](#is_dragging)
 - [void clear()](#clear)
 - [void get_terminal_size(int& x, int& y)](#get_terminal_size)
 - [void get_cursor_position(int& x, int& y)](#get_cursor_position)
@@ -73,6 +76,22 @@ blocks until user presses a key and returns the ascii value of the key pressed
 int - ascii value of the key pressed
 
 ---
+## getchar
+**int getchar(int& mouse_x_position, int& mouse_y_position)**
+
+**Description:**
+
+blocks until user presses a key and returns the ascii value of the key pressed
+
+**Parameters:**
+1. int& **mouse_x_position** - x position of the mouse when the key action occured
+2. int& **mouse_y_position** - y position of the mouse when the key action occured
+
+**return value:**
+
+int - ascii value of the key pressed
+
+---
 ## wait_for_keystroke
 **int wait_for_keystroke(std::vector\<int\> keystroke_options)**
 
@@ -87,6 +106,36 @@ blocks until user presses a key specified in keystroke_options
 **Return value:**
 
 int - ascii value of the key that broke out of the block
+
+---
+## wait_for_keystroke
+**int wait_for_keystroke(std::vector\<int\> keystroke_options, int& mouse_x_position, int& mouse_y_position)**
+
+**Description:**
+
+blocks until user presses a key specified in keystroke_options
+
+**Parameters:**
+
+1. std::vector\<int\> **keystroke_options** - group of keystrokes that will break out of the block
+2. int& **mouse_x_position** - x position of the mouse when the key action occured
+3. int& **mouse_y_position** - y position of the mouse when the key action occured
+
+**Return value:**
+
+int - ascii value of the key that broke out of the block
+
+---
+## is_dragging
+**bool is_dragging()**
+
+**Description:**
+
+returns true if left mouse is currently being held down and false if not
+
+**Return value:**
+
+bool - true if left mouse is held down and false if not
 
 ---
 ## clear
@@ -287,7 +336,7 @@ const int TAB = 9;
 const int ESC = 27;
 const int space = 32;
 const int exclamation = 33;
-const int double_quoatation = 34;
+const int double_quotation = 34;
 const int pound = 35;
 const int dollar = 36;
 const int percent = 37;
@@ -380,32 +429,24 @@ const int begin_curly_bracket = 123;
 const int pipe = 124;
 const int end_curly_bracket = 125;
 const int tilde = 126;
-
-Windows:
-const int backspace = 8;
-const int enter = 13;
-const int right = 301;
-const int left = 299;
-const int up = 296;
-const int down = 304;
-const int DEL = 307;
-const int insert = 306;
-const int end = 303;
-const int home = 295;
-const int page_down = 305;
-const int page_up = 297;
-
-Linux:
-const int backspace = 127;
+const int mouse_middle = 400;
+const int scroll_up = 401;
+const int scroll_down = 402;
+const int mouse_left_released = 403;
+const int mouse_right_released = 404;
+const int mouse_left_pressed = 405;
+const int mouse_right_pressed = 406;
+const int mouse_moved = 407;
+const int backspace = 263;
 const int enter = 10;
-const int right = 185;
-const int left = 186;
-const int up = 183;
-const int down = 184;
-const int DEL = 295;
-const int insert = 294;
-const int end = 188;
-const int home = 190;
-const int page_down = 298;
-const int page_up = 297;
+const int right = 261;
+const int left = 260;
+const int up = 259;
+const int down = 258;
+const int DEL = 330;
+const int insert = 331;
+const int end = 360;
+const int home = 262;
+const int page_down = 338;
+const int page_up = 339;
 ```

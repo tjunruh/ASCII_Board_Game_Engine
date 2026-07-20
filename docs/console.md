@@ -11,7 +11,7 @@ console is responsible for monitoring user input and reporting events. It handle
 
 # Member structures
 
-- [event](#event)
+- [event](#struct-event)
 
 ---
 # Function Descriptions

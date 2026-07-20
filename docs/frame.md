@@ -4,6 +4,7 @@ frame is responsible for spacing widgets on the terminal and managing the data o
 
 # Functions
 - [frame(bool start_logger=false, const std::string& logging_file_path="frame.log")](#frame)
+- [int get_id()](#get_id)
 - [void display()](#display)
 - [bool stale()](#stale)
 - [void set_controls(int select, int quit, int up, int down, int left, int right)](#set_controls)
@@ -46,6 +47,18 @@ the constructor of the class where debug logging can be started if desired
 **Parameters:**
 1. bool **start_logger** - starts debug logging if set to true
 2. const std::string& **logging_file_path** - absolute or relative path to file that should hold logging content
+
+---
+## get_id
+**int get_id()**
+
+**Description**
+
+returns the id of the frame
+
+**Return value:**
+
+int - id of the frame
 
 ---
 ## display

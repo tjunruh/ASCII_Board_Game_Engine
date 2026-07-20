@@ -9,7 +9,7 @@ label is a widget that displays non-editable text that can be formatted and posi
 - [std::vector<format_tools::index_format> get_colors()](#get_colors)
 - [std::vector<format_tools::index_format> get_displayed_colors()](#get_displayed_colors)
 - [void display()](#display)
-- [void scroll()](#scroll)
+- [int scroll()](#scroll)
 - [void scroll_up(unsigned int amount = 1, bool render = true)](#scroll_up)
 - [void scroll_down(unsigned int amount = 1, bool render = true)](#scroll_down)
 - [void scroll_left(unsigned int amount = 1, bool render = true)](#scroll_left)
@@ -93,11 +93,15 @@ displays the latest state of the label on the frame by only updating the label a
 
 ---
 ## scroll
-**void scroll()**
+**int scroll()**
 
 **Description:**
 
 enables the user to have the label scroll up and down using the up and down keys
+
+**Return value**
+
+int - last keystroke before the function exited
 
 ---
 ## scroll_up
