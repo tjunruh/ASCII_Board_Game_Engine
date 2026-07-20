@@ -1,6 +1,6 @@
 # ASCII_Board_Game_Engine
 
-This respository contains software to generate ascii graphics in a terminal specifically for board game creation. Look at the repository's wiki on the top bar for the detailed API description. Examples are provided in the examples folder.
+This respository contains software for creating a tui in c++. It is specially designed to create board games since it has a board widget, but it could be used for other purposes as well. Look at the repository's documentation either in the docs folder or under deployments located on the right column. Examples are provided in the examples folder.
 
 ## Windows
 Build ASCII_Board_Game_Engine as a dll and link to your project. Also build the build_board_config and validate_board_config binaries. For the build to succeed, make sure msbuild is installed on your system and add msbuild.exe to your path environment variable. Then the build can be completed by running:
@@ -34,7 +34,7 @@ sudo apt-get install libncurses5-dev libncursesw5-dev
 
 If you would prefer to not build everything, binaries are available in releases.
 
-## Current Games Using ASCII_Board_Game_Engine (Add Yours in Pull Request):
+## Example Games Using ASCII_Board_Game_Engine:
 
 Developer: tjunruh
 - [Stratego](https://github.com/tjunruh/Stratego)
