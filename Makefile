@@ -112,6 +112,7 @@ TEST_ASCII_ENGINE_OBJS := \
 	ascii_board.o \
 	ascii_io.o \
 	controls.o \
+	console.o \
 	format_tools.o \
 	frame.o \
 	label.o \

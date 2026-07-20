@@ -37,6 +37,11 @@ int console::register_widget(label* item)
 		}
 	}
 
+	if (status == UNDEFINED)
+	{
+		status = SUCCESS;
+	}
+
 	return status;
 }
 
@@ -68,6 +73,11 @@ int console::register_widget(text_box* item)
 		{
 			text_box_widgets.push_back(item);
 		}
+	}
+
+	if (status == UNDEFINED)
+	{
+		status = SUCCESS;
 	}
 
 	return status;
@@ -103,6 +113,11 @@ int console::register_widget(menu* item)
 		}
 	}
 
+	if (status == UNDEFINED)
+	{
+		status = SUCCESS;
+	}
+
 	return status;
 }
 
@@ -134,6 +149,11 @@ int console::register_widget(ascii_board* item)
 		{
 			ascii_board_widgets.push_back(item);
 		}
+	}
+
+	if (status == UNDEFINED)
+	{
+		status = SUCCESS;
 	}
 
 	return status;
