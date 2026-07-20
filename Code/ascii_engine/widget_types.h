@@ -17,7 +17,7 @@
 #define BOARD 3
 #define LABEL 4
 #define FRAME 5
-#define LOOP 6
+#define CONSOLE 6
 
 namespace widget_types
 {
