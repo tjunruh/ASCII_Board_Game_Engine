@@ -30,3 +30,18 @@ ASCII_Board_Game_Engine can be built as a dll on Windows or a shared object on L
 # Codes
 - [error_codes](error_codes.md)
 - [widget_types](widget_types.md)
+
+# Examples
+- [board_demo-irregular_line](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/board_demo-irregular_line)
+- [board_demo-multi_color](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/board_demo-multi_color)
+- [board_demo-multi_line](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/board_demo-multi_line)
+- [board_demo-simple](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/board_demo-simple)
+- [introduction](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/introduction)
+- [label_demo](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/label_demo)
+- [menu_demo-adding_labels](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/menu_demo-adding_labels)
+- [menu_demo-separate_items](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/menu_demo-separate_items)
+- [menu_demo-separate_items_with_label](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/menu_demo-separate_items_with_label)
+- [menu_demo-set_cursor_line](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/menu_demo-set_cursor_line)
+- [menu_demo-set_line_count](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/menu_demo-set_line_count)
+- [text_box_demo](https://github.com/tjunruh/ASCII_Board_Game_Engine/tree/main/examples/text_box_demo)
+
