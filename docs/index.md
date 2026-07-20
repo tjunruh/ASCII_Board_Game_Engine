@@ -1,35 +1,32 @@
-# Welcome to the ASCII_Board_Game_Engine wiki!
+# Welcome to the ASCII_Board_Game_Engine!
 
 ASCII_Board_Game_Engine can be built as a dll on Windows or a shared object on Linux. Once built and included in a project, use the provided API to handle ascii graphics for your board game.
 
-[action_tile_pattern_maker](action_tile_pattern_maker.md)
+# Layout
+- [frame](frame.md)
 
-[ascii_board](ascii_board.md)
+# Interaction
+- [console](console.md)
 
-[ascii_io](ascii_io.md)
+# Widgets
+- [ascii_board](ascii_board.md)
+- [label](label.md)
+- [menu](menu.md)
+- [text_box](text_box.md)
+- [widget](widget.md)
 
-[board_metadata](board_metadata.md)
+# Creating a Board
+- [action_tile_pattern_maker](action_tile_pattern_maker.md)
+- [build_board_config](build_board_config.md)
+- [validate_board_config](validate_board_config.md)
 
-[build_board_config](build_board_config.md)
+# Utilities
+- [ascii_io](ascii_io.md)
+- [board_metadata](board_metadata.md)
+- [controls](controls.md)
+- [file_manager](file_manager.md)
+- [format_tools](format_tools.md)
 
-[controls](controls.md)
-
-[error_codes](error_codes.md)
-
-[file_manager](file_manager.md)
-
-[format_tools](format_tools.md)
-
-[frame](frame.md)
-
-[label](label.md)
-
-[menu](menu.md)
-
-[text_box](text_box.md)
-
-[validate_board_config](validate_board_config.md)
-
-[widget_types](widget_types.md)
-
-[widget](widget.md)
+# Codes
+- [error_codes](error_codes.md)
+- [widget_types](widget_types.md)
