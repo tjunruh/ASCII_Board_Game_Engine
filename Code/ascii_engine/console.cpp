@@ -258,7 +258,7 @@ void console::label_widgets_handle(event& loop_event)
 	{
 		for (unsigned int i = 0; i < label_widgets.size(); i++)
 		{
-			if (label_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+			if (label_widgets[i]->is_selectable() && label_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = label_widgets[i]->get_id();
 				label_widgets[i]->in_runtime_loop = true;
@@ -294,7 +294,7 @@ void console::text_box_widgets_handle(event& loop_event)
 	{
 		for (unsigned int i = 0; i < text_box_widgets.size(); i++)
 		{
-			if (text_box_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+			if (text_box_widgets[i]->is_selectable() && text_box_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = text_box_widgets[i]->get_id();
 				text_box_widgets[i]->first_key_stroke_initialized = true;
@@ -339,7 +339,7 @@ void console::menu_widgets_handle(event& loop_event)
 	{
 		for (unsigned int i = 0; i < menu_widgets.size(); i++)
 		{
-			if (menu_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+			if (menu_widgets[i]->is_selectable() && menu_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = menu_widgets[i]->get_id();
 				std::string discarded_selection = "";
@@ -387,7 +387,7 @@ void console::ascii_board_widgets_handle(event& loop_event)
 	{
 		for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
 		{
-			if (ascii_board_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
+			if (ascii_board_widgets[i]->is_selectable() && ascii_board_widgets[i]->inside_widget_space(loop_event.mouse_x_position, loop_event.mouse_y_position))
 			{
 				loop_event.widget_id = ascii_board_widgets[i]->get_id();
 				int discarded_tile_row = 0;
