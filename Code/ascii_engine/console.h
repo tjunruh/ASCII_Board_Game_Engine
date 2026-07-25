@@ -31,6 +31,7 @@ public:
 	CONSOLE_API int register_widget(text_box* item);
 	CONSOLE_API int register_widget(menu* item);
 	CONSOLE_API int register_widget(ascii_board* item);
+	CONSOLE_API int set_focus(int widget_id);
 	CONSOLE_API event run();
 
 private:
@@ -47,6 +48,7 @@ private:
 	int frame_id = -1;
 	bool exit = false;
 	event stashed_event;
+	event immediate_return_event;
 	logger log;
 	int last_widget_id = 0;
 };

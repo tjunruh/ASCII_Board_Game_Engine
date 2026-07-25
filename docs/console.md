@@ -7,6 +7,7 @@ console is responsible for monitoring user input and reporting events. It handle
 - [int register_widget(text_box\* item)](#register_widget-1)
 - [int register_widget(menu\* item)](#register_widget-2)
 - [int register_widget(ascii_board\* item)](#register_widget-3)
+- [int set_focus(int widget_id)](#set_focus)
 - [event run()](#run)
 
 # Member structures
@@ -86,6 +87,23 @@ int - status that will be:\
       SUCCESS if registered successfully\
       INVALID_VALUE if the widget's parent frame is not the same as the parent frame of other widgets already registerd\
       DUPLICATE_ELEMENT if the widget was already registered
+
+---
+## set_focus
+**int set_focus(int widget_id)**
+
+**Description:**
+
+sets focus to widget with specified id so that the widget is immediately interactive next time console's run function is called
+
+**Parameters:**
+1. int widget_id - id of the widget that should be given focus
+
+**Return value:**
+
+int - status that will be:\
+      SUCCESS if widget is found\
+      ELEMENT_NOT_FOUND if widget is not found
 
 ---
 ## run

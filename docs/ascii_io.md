@@ -449,4 +449,5 @@ const int end = 360;
 const int home = 262;
 const int page_down = 338;
 const int page_up = 339;
+const int exited_widget = 500;
 ```

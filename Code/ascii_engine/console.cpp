@@ -159,17 +159,76 @@ int console::register_widget(ascii_board* item)
 	return status;
 }
 
+int console::set_focus(int widget_id)
+{
+	for (unsigned int i = 0; i < label_widgets.size(); i++)
+	{
+		if (label_widgets[i]->get_id() == widget_id)
+		{
+			stashed_event.input = ascii_io::mouse_left_pressed;
+			stashed_event.widget_id = widget_id;
+			stashed_event.mouse_x_position = label_widgets[i]->get_x_origin();
+			stashed_event.mouse_y_position = label_widgets[i]->get_y_origin();
+			return SUCCESS;
+		}
+	}
+
+	for (unsigned int i = 0; i < text_box_widgets.size(); i++)
+	{
+		if (text_box_widgets[i]->get_id() == widget_id)
+		{
+			stashed_event.input = ascii_io::mouse_left_pressed;
+			stashed_event.widget_id = widget_id;
+			stashed_event.mouse_x_position = text_box_widgets[i]->get_x_origin();
+			stashed_event.mouse_y_position = text_box_widgets[i]->get_y_origin();
+			return SUCCESS;
+		}
+	}
+
+	for (unsigned int i = 0; i < menu_widgets.size(); i++)
+	{
+		if (menu_widgets[i]->get_id() == widget_id)
+		{
+			stashed_event.input = ascii_io::mouse_left_pressed;
+			stashed_event.widget_id = widget_id;
+			stashed_event.mouse_x_position = menu_widgets[i]->get_x_origin();
+			stashed_event.mouse_y_position = menu_widgets[i]->get_y_origin();
+			return SUCCESS;
+		}
+	}
+
+	for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
+	{
+		if (ascii_board_widgets[i]->get_id() == widget_id)
+		{
+			stashed_event.input = ascii_io::mouse_left_pressed;
+			stashed_event.widget_id = widget_id;
+			stashed_event.mouse_x_position = ascii_board_widgets[i]->get_x_origin();
+			stashed_event.mouse_y_position = ascii_board_widgets[i]->get_y_origin();
+			return SUCCESS;
+		}
+	}
+
+	return ELEMENT_NOT_FOUND;
+}
+
 console::event console::run()
 {
 	event loop_event;
 	initialize_display();
 	while (true)
 	{
-		if (stashed_event.input == ascii_io::undefined)
+		if (stashed_event.input == ascii_io::undefined && immediate_return_event.input == ascii_io::undefined)
 		{
 			loop_event.input = ascii_io::getchar(loop_event.mouse_x_position, loop_event.mouse_y_position);
 		}
-		else
+		else if (immediate_return_event.input != ascii_io::undefined)
+		{
+			loop_event = immediate_return_event;
+			immediate_return_event.input = ascii_io::undefined;
+			break;
+		}
+		else if (stashed_event.input != ascii_io::undefined)
 		{
 			loop_event = stashed_event;
 			stashed_event.input = ascii_io::undefined;
@@ -254,7 +313,7 @@ void console::initialize_display()
 
 void console::label_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
+	if (loop_event.input == ascii_io::exited_widget || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
 		for (unsigned int i = 0; i < label_widgets.size(); i++)
 		{
@@ -273,16 +332,22 @@ void console::label_widgets_handle(event& loop_event)
 					{
 						if (loop_event.widget_id != label_widgets[i]->get_id())
 						{
+							immediate_return_event = loop_event;
 							stashed_event = loop_event;
+							loop_event.widget_id = label_widgets[i]->get_id();
+							loop_event.input = ascii_io::exited_widget;
 						}
-						exit = true;
+					}
+					else
+					{
+						immediate_return_event = loop_event;
+						loop_event.widget_id = label_widgets[i]->get_id();
+						loop_event.input = ascii_io::exited_widget;
 					}
 				}
 
-				if (exit)
-				{
-					break;
-				}
+				exit = true;
+				break;
 			}
 		}
 	}
@@ -290,7 +355,7 @@ void console::label_widgets_handle(event& loop_event)
 
 void console::text_box_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
+	if (loop_event.input == ascii_io::exited_widget || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down)
 	{
 		for (unsigned int i = 0; i < text_box_widgets.size(); i++)
 		{
@@ -312,22 +377,27 @@ void console::text_box_widgets_handle(event& loop_event)
 					{
 						if (loop_event.widget_id != text_box_widgets[i]->get_id())
 						{
+							immediate_return_event = loop_event;
 							stashed_event = loop_event;
+							loop_event.widget_id = text_box_widgets[i]->get_id();
+							loop_event.input = ascii_io::exited_widget;
 						}
-						exit = true;
+					}
+					else
+					{
+						immediate_return_event = loop_event;
+						loop_event.widget_id = text_box_widgets[i]->get_id();
+						loop_event.input = ascii_io::exited_widget;
 					}
 				}
 				else
 				{
 					stashed_event = loop_event;
-					stashed_event.input = ascii_io::undefined;
-					exit = true;
+					stashed_event.input = ascii_io::exited_widget;
 				}
 
-				if (exit)
-				{
-					break;
-				}
+				exit = true;
+				break;
 			}
 		}
 	}
@@ -335,7 +405,7 @@ void console::text_box_widgets_handle(event& loop_event)
 
 void console::menu_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
+	if (loop_event.input == ascii_io::exited_widget || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
 		for (unsigned int i = 0; i < menu_widgets.size(); i++)
 		{
@@ -358,24 +428,29 @@ void console::menu_widgets_handle(event& loop_event)
 					{
 						if (loop_event.widget_id != menu_widgets[i]->get_id())
 						{
+							immediate_return_event = loop_event;
 							stashed_event = loop_event;
+							loop_event.widget_id = menu_widgets[i]->get_id();
+							loop_event.input = ascii_io::exited_widget;
 						}
-						exit = true;
+					}
+					else
+					{
+						immediate_return_event = loop_event;
+						loop_event.widget_id = menu_widgets[i]->get_id();
+						loop_event.input = ascii_io::exited_widget;
 					}
 				}
 				else
 				{
 					stashed_event = loop_event;
-					stashed_event.input = ascii_io::undefined;
-					exit = true;
+					stashed_event.input = ascii_io::exited_widget;
 				}
 
 				menu_widgets[i]->display();
 
-				if (exit)
-				{
-					break;
-				}
+				exit = true;
+				break;
 			}
 		}
 	}
@@ -383,7 +458,7 @@ void console::menu_widgets_handle(event& loop_event)
 
 void console::ascii_board_widgets_handle(event& loop_event)
 {
-	if (loop_event.input == ascii_io::undefined || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
+	if (loop_event.input == ascii_io::exited_widget || loop_event.input == ascii_io::mouse_left_pressed || loop_event.input == ascii_io::scroll_up || loop_event.input == ascii_io::scroll_down || ascii_io::is_dragging())
 	{
 		for (unsigned int i = 0; i < ascii_board_widgets.size(); i++)
 		{
@@ -406,24 +481,29 @@ void console::ascii_board_widgets_handle(event& loop_event)
 					{
 						if (loop_event.widget_id != ascii_board_widgets[i]->get_id())
 						{
+							immediate_return_event = loop_event;
 							stashed_event = loop_event;
+							loop_event.widget_id = ascii_board_widgets[i]->get_id();
+							loop_event.input = ascii_io::exited_widget;
 						}
-						exit = true;
+					}
+					else
+					{
+						immediate_return_event = loop_event;
+						loop_event.widget_id = ascii_board_widgets[i]->get_id();
+						loop_event.input = ascii_io::exited_widget;
 					}
 				}
 				else
 				{
 					stashed_event = loop_event;
-					stashed_event.input = ascii_io::undefined;
-					exit = true;
+					stashed_event.input = ascii_io::exited_widget;
 				}
 
 				ascii_board_widgets[i]->display();
 
-				if (exit)
-				{
-					break;
-				}
+				exit = true;
+				break;
 			}
 		}
 	}
