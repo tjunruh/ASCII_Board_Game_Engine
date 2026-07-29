@@ -1201,48 +1201,84 @@ int ascii_board::get_selection(int& tile_row, int& tile_column, int& input)
 	input = ascii_io::undefined;
 	int previous_mouse_x_position = mouse_x_position;
 	int previous_mouse_y_position = mouse_y_position;
+	int zoom_level = ascii_io::get_zoom_level();
+	int vertical_scroll_speed = -2 * zoom_level;
+	if (vertical_scroll_speed < 1)
+	{
+		vertical_scroll_speed = 1;
+	}
+
 	display();
+
 	do
 	{
 		previous_mouse_x_position = mouse_x_position;
 		previous_mouse_y_position = mouse_y_position;
 		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
+		bool action_taken = false;
 		if (input == ascii_io::mouse_left_pressed)
 		{
 			if (in_runtime_loop && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
+
+			action_taken = true;
 		}
-		else if ((input == ascii_io::up) || (input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
+
+		if ((input == ascii_io::scroll_up) || (ascii_io::is_dragging() && mouse_y_position > previous_mouse_y_position))
 		{
 			if (in_runtime_loop && input == ascii_io::scroll_up && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
-			scroll_up();
+
+			if (ascii_io::is_dragging())
+			{
+				scroll_up(mouse_y_position - previous_mouse_y_position);
+			}
+			else
+			{
+				scroll_up(vertical_scroll_speed);
+			}
+
 			display();
+			action_taken = true;
 		}
-		else if ((input == ascii_io::down) || (input == ascii_io::scroll_down) || (ascii_io::is_dragging() && mouse_y_position < previous_mouse_y_position))
+		else if ((input == ascii_io::scroll_down) || (ascii_io::is_dragging() && mouse_y_position < previous_mouse_y_position))
 		{
 			if (in_runtime_loop && input == ascii_io::scroll_down && !inside_widget_space(mouse_x_position, mouse_y_position))
 			{
 				break;
 			}
-			scroll_down();
+
+			if (ascii_io::is_dragging())
+			{
+				scroll_down(previous_mouse_y_position - mouse_y_position);
+			}
+			else
+			{
+				scroll_down(vertical_scroll_speed);
+			}
+
 			display();
+			action_taken = true;
 		}
-		else if ((input == ascii_io::left) || (ascii_io::is_dragging() && mouse_x_position > previous_mouse_x_position))
+
+		if (ascii_io::is_dragging() && mouse_x_position > previous_mouse_x_position)
 		{
-			scroll_left();
+			scroll_left(mouse_x_position - previous_mouse_x_position);
 			display();
+			action_taken = true;
 		}
-		else if ((input == ascii_io::right) || (ascii_io::is_dragging() && mouse_x_position < previous_mouse_x_position))
+		else if (ascii_io::is_dragging() && mouse_x_position < previous_mouse_x_position)
 		{
-			scroll_right();
+			scroll_right(previous_mouse_x_position - mouse_x_position);
 			display();
+			action_taken = true;
 		}
-		else if (input != ascii_io::mouse_moved && input != ascii_io::mouse_left_pressed)
+
+		if (!action_taken)
 		{
 			break;
 		}

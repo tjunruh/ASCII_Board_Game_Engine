@@ -999,6 +999,11 @@ int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 	return status;
 }
 
+int ascii_io::get_zoom_level()
+{
+	return console_zoom_amount;
+}
+
 void ascii_io::set_color(int foreground, int background, bool bold)
 {
 #ifdef _WIN32

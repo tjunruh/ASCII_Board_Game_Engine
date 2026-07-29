@@ -44,6 +44,7 @@ ascii_board is a widget that loads a board configuration and can be customized t
 - [void scroll_left(unsigned int amount=1)](#scroll_left)
 - [void scroll_right(unsigned int amount=1)](#scroll_right)
 - [void bring_tile_into_view(int row, int column, int top_padding = 0, int bottom_padding = 0, int left_padding = 0, int right_padding = 0)](#bring_tile_into_view)
+- [int get_tile_coordinate_from_mouse_position(int mouse_x_position_input, int mouse_y_position_input, int& tile_row, int& tile_column)](#get_tile_coordinate_from_mouse_position)
 - [board_metadata* get_metadata()](#get_metadata)
 
 # Non-member structures
@@ -604,6 +605,26 @@ Ensures that the tile specified by row and column will be visible next time the 
 4. int **bottom_padding** - minimum number of lines that should be shown below the tile
 5. int **left_padding** - minimum number of columns (characters) that should be displayed to the left of the tile
 6. int **right_padding** - minimum number of columns (characters) that should be displayed to the right of the tile
+
+---
+## get_tile_coordinate_from_mouse_position
+**int get_tile_coordinate_from_mouse_position(int mouse_x_position_input, int mouse_y_position_input, int& tile_row, int& tile_column)**
+
+**Description:**
+
+finds tile coordinates of tile that is located at mouse position
+
+**Parameters:**
+1. int **mouse_x_position_input** - x mouse position
+2. int **mouse_y_position_input** - y mouse position
+3. int& **tile_row** - returned tile row at location of given mouse position
+4. int& **tile_column** - returned tile column at location of given mouse position
+
+**Return value:**
+
+int - status that will be:\
+      SUCCESS if the tile is found\
+      ELEMENT_NOT_FOUND if there is no tile at mouse position
 
 ---
 ## get_metadata

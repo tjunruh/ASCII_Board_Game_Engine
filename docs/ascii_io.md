@@ -24,6 +24,7 @@ ascii_io includes functions providing the ability to perform input and output op
 - [int zoom_in(unsigned int amount=1, unsigned int wait_milliseconds = 0)](#zoom_in)
 - [int zoom_out(unsigned int amount=1, unsigned int wait_milliseconds = 0)](#zoom_out)
 - [int zoom_to_level(int level, unsigned int wait_milliseconds = 0)](#zoom_to_level)
+- [int get_zoom_level()](#get_zoom_level)
 - [void set_color(int foreground, int background, bool bold = false)](#set_color)
 - [std::string get_key_name(int key)](#get_key_name)
 
@@ -289,6 +290,18 @@ zooms to desired level (0 is default, positive is zoomed in (larger characters),
 **Return value:**
 
 int - 0 upon success and a different number upon failure
+
+---
+## get_zoom_level
+**int get_zoom_level()**
+
+**Description:**
+
+returns the zoom level (0 is default, positive is zoomed in (larger characters), and negative is zoomed out (smaller characters))
+
+**Return value:**
+
+int - level that console is zoomed to
 
 ---
 ## set_color
