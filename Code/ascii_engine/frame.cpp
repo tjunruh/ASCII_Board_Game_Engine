@@ -5,6 +5,7 @@
 #include <algorithm>
 
 int frame::class_count = 0;
+int frame::last_frame_to_display = -1;
 
 frame::frame(bool start_logger, const std::string& logging_file_path)
 {
@@ -86,24 +87,16 @@ void frame::display()
 
 			if (regions[i].format.dec)
 			{
-#ifdef _WIN32
 				ascii_io::enable_dec();
 				ascii_io::print(regions[i].content);
-#elif __linux__
-				dec.print_dec_string(regions[i].content);
-#endif
 			}
 			else
 			{
-#ifdef _WIN32
 				ascii_io::disable_dec();
-#endif
 				ascii_io::print(regions[i].content);
 			}
 		}
-#ifdef _WIN32
 		ascii_io::disable_dec();
-#endif
 	}
 	else
 	{
@@ -113,6 +106,7 @@ void frame::display()
 	previous_x = terminal_x;
 	previous_y = terminal_y;
 	display_stale = false;
+	last_frame_to_display = id;
 }
 
 bool frame::stale()
@@ -132,6 +126,11 @@ bool frame::stale()
 		}
 
 		if ((x != previous_x) || (y != previous_y))
+		{
+			display_stale = true;
+		}
+
+		if (last_frame_to_display != id)
 		{
 			display_stale = true;
 		}
@@ -562,12 +561,8 @@ void frame::unhighlight(int row, int column, int level)
 			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
-#ifdef _WIN32
 				ascii_io::enable_dec();
 				ascii_io::print(std::string(1, dec.top_left_corner));
-#elif __linux__
-				dec.print_dec_string(std::string(1, dec.top_left_corner));
-#endif
 			}
 			else
 			{
@@ -580,11 +575,7 @@ void frame::unhighlight(int row, int column, int level)
 			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
-#ifdef _WIN32
 				ascii_io::print(std::string(1, dec.top_right_corner));
-#elif __linux__
-				dec.print_dec_string(std::string(1, dec.top_right_corner));
-#endif
 			}
 			else
 			{
@@ -597,11 +588,7 @@ void frame::unhighlight(int row, int column, int level)
 			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
-#ifdef _WIN32
 				ascii_io::print(std::string(1, dec.bottom_left_corner));
-#elif __linux__
-				dec.print_dec_string(std::string(1, dec.bottom_left_corner));
-#endif
 			}
 			else
 			{
@@ -614,22 +601,18 @@ void frame::unhighlight(int row, int column, int level)
 			ascii_io::move_cursor_to_position(x, y);
 			if (_dec_enabled && widgets[i]->add_border && (widgets[i]->corner_border == dec.get_endpoint_char()))
 			{
-#ifdef _WIN32
 				ascii_io::print(std::string(1, dec.bottom_right_corner));
-#elif __linux__
-				dec.print_dec_string(std::string(1, dec.bottom_right_corner));
-#endif
 			}
 			else
 			{
 				ascii_io::print(std::string(1, corner_character));
 			}
-#ifdef _WIN32
+
 			if (_dec_enabled)
 			{
 				ascii_io::disable_dec();
 			}
-#endif
+
 			status = SUCCESS;
 			break;
 		}
@@ -1945,10 +1928,3 @@ int frame::get_id()
 {
 	return id;
 }
-
-#ifdef __linux__
-void frame::dec_print(const std::string& input)
-{
-	dec.print_dec_string(input);
-}
-#endif

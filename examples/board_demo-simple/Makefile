@@ -11,7 +11,7 @@ SRCS := $(shell find $(SRC_DIR) -name *.cpp)
 OBJS := $(SRCS:%=$(BLD_DIR)/%.o)
 DEPS := $(OCJS:.o=.d)
 
-LDFLAGS := -lncurses -L $(ASCII_ENGINE_DIR) -lascii_engine
+LDFLAGS := -pthread -L $(ASCII_ENGINE_DIR) -lascii_engine
 INC_FLAGS := $(addprefix -I,$(INC_DIR))
 CXXFLAGS := -std=c++17 $(LDFLAGS) -O2 $(INC_FLAGS) -Wall -MMD -MP -I $(ASCII_ENGINE_DIR)/headers
 

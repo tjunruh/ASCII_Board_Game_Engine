@@ -13,109 +13,107 @@
 
 TEST(ascii_io, set_cursor)
 {
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
+   int original_x = 0;
+   int original_y = 0;
+   ascii_io::get_cursor_position(original_x, original_y);
    int x = 5, y = 10;
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
-
    ascii_io::move_cursor_to_position(x, y);
   
    int getx = 0, gety = 0;
    ascii_io::get_cursor_position(getx, gety);
-#ifdef __linux
-   ascii_io::ncurses_end();
-#endif
+   ascii_io::move_cursor_to_position(original_x, original_y);
 
    EXPECT_EQ(x, getx);
    EXPECT_EQ(y, gety);
-
+   ascii_io::ascii_engine_end();
 }
 
 TEST(ascii_io, move_cursor_down)
 {
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
+   int original_x = 0;
+   int original_y = 0;
+   ascii_io::get_cursor_position(original_x, original_y);
    ascii_io::move_cursor_to_position(1, 1);
    ascii_io::move_cursor_down(1);
 
    int getx = 0, gety = 0;
    ascii_io::get_cursor_position(getx, gety);
-#ifdef __linux__
-   ascii_io::ncurses_end();
-#endif
+   ascii_io::move_cursor_to_position(original_x, original_y);
 
    EXPECT_EQ(1, getx);
    EXPECT_EQ(2, gety);
-   
+   ascii_io::ascii_engine_end();
 }
 
 TEST(ascii_io, move_cursor_up)
 {
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
+   int original_x = 0;
+   int original_y = 0;
+   ascii_io::get_cursor_position(original_x, original_y);
    ascii_io::move_cursor_to_position(1, 1);
    ascii_io::move_cursor_up(1);
 
    int getx = 0, gety = 0;
    ascii_io::get_cursor_position(getx, gety);
-#ifdef __linux__
-   ascii_io::ncurses_end();
-#endif
+   ascii_io::move_cursor_to_position(original_x, original_y);
 
    EXPECT_EQ(1, getx);
    EXPECT_EQ(0, gety);
+   ascii_io::ascii_engine_end();
 }
 
 TEST(ascii_io, move_cursor_left)
 {
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
+   int original_x = 0;
+   int original_y = 0;
+   ascii_io::get_cursor_position(original_x, original_y);
    ascii_io::move_cursor_to_position(1, 1);
    ascii_io::move_cursor_left(1);
 
    int getx = 0, gety = 0;
    ascii_io::get_cursor_position(getx, gety);
-#ifdef __linux__
-   ascii_io::ncurses_end();
-#endif
+   ascii_io::move_cursor_to_position(original_x, original_y);
    
    EXPECT_EQ(0, getx); 
    EXPECT_EQ(1, gety);
+   ascii_io::ascii_engine_end();
 }
 
 TEST(ascii_io, move_cursor_right)
 {
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
+   int original_x = 0;
+   int original_y = 0;
+   ascii_io::get_cursor_position(original_x, original_y);
    ascii_io::move_cursor_to_position(1, 1);
    ascii_io::move_cursor_right(1);
 
    int getx = 0, gety = 0;
    ascii_io::get_cursor_position(getx, gety);
-#ifdef __linux__
-   ascii_io::ncurses_end();
-#endif
+   ascii_io::move_cursor_to_position(original_x, original_y);
 
    EXPECT_EQ(2, getx);
    EXPECT_EQ(1, gety);
+   ascii_io::ascii_engine_end();
 }
 
 TEST(ascii_io, terminal_size_nonzero)
 {
-#ifdef __linux__
-   ascii_io::ncurses_init();
-#endif
-
+   ascii_io::clear_screen_on_init_and_end(false);
+   ascii_io::ascii_engine_init();
    int max_x = 0, max_y = 0;
    ascii_io::get_terminal_size(max_x, max_y);
-#ifdef __linux__
-   ascii_io::ncurses_end();
-#endif
 
    EXPECT_NE(0, max_x);
    EXPECT_NE(0, max_y);
+   ascii_io::ascii_engine_end();
 }

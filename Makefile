@@ -20,7 +20,6 @@ TREE_DIRS := $(addprefix $(BLD_DIR)/, $(TREE_DIRS))
 #DEBUG := -g
 DEBUG :=
 
-LIBS := -lncurses
 CXXFLAGS := -Wall -O2 $(DEBUG) -Iexternal_libraries -MMD
 
 TEST_ASCII_ENGINE := test_ascii_engine.out
@@ -103,7 +102,7 @@ $(BLD_DIR)/ascii_engine/%.o: $(SRC_DIR)/ascii_engine/%.cpp | $(addprefix $(BLD_D
 	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
 
 $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY): $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL)
-	$(CXX) $(CXXFLAGS) -shared -o $@ $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(LIBS)
+	$(CXX) $(CXXFLAGS) -shared -o $@ $(ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL)
 ### End ASCII Engine
 
 ### ASCII Engine Test
@@ -125,7 +124,7 @@ $(BLD_DIR)/test_ascii_engine/%.o: $(SRC_DIR)/test_ascii_engine/%.cpp $(ASCII_ENG
 	$(CXX) $(CXXFLAGS) $(ASCII_INCLUDE) -c $< -o $@
 
 $(BLD_DIR)/test_ascii_engine.out: $(TEST_ASCII_ENGINE_OBJS) $(BLD_DIR)/$(ASCII_ENGINE_LIBRARY) $(ASCII_ENGINE_OBJS_EXTERNAL) | $(BLD_DIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(ASCII_LIB) $(LIBS) -pthread -lgtest
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ASCII_ENGINE_OBJS) $(ASCII_ENGINE_OBJS_EXTERNAL) $(ASCII_LIB) -pthread -lgtest
 ### End ASCII Engine Test
 
 

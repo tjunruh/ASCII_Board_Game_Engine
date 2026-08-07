@@ -153,10 +153,6 @@ private:
 	std::vector<format_tools::index_format> dec_format(std::string& format_content, unsigned int line_length=0);
 	void add_title(const std::string& title, std::vector<std::string>& lines, int top_spacing, int left_spacing, int right_spacing);
 
-#ifdef __linux__
-	void dec_print(const std::string& input);
-#endif
-
 	std::vector<widget_info*> widgets;
 	int _select = ascii_io::enter;
 	int _up = ascii_io::up;
@@ -193,5 +189,6 @@ private:
 	std::vector<int> selection_exit_keys = {};
 	bool exit_key_used;
 	static int class_count;
+	static int last_frame_to_display;
 	int id = -1;
 };

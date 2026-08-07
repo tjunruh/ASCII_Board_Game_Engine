@@ -36,24 +36,16 @@ namespace ascii_io
 	ASCII_IO_API void set_color(int foreground, int background, bool bold = false);
 	ASCII_IO_API std::string get_key_name(int key);
 	ASCII_IO_API bool is_dragging();
+	ASCII_IO_API void clear_screen_on_init_and_end(bool clear_screen);
 	ASCII_IO_API void ascii_engine_init(bool maximize=false);
 	ASCII_IO_API void ascii_engine_end();
-	
-#ifdef _WIN32
 	void enable_dec();
 	void disable_dec();
+
+#ifdef _WIN32
 	void fit_console_buffer_to_screen();
-	ASCII_IO_API void keep_cursor_shown_in_getchar();
 #endif
 
-#ifdef __linux__
-   void ncurses_init();
-   void colors_init();
-   void ncurses_end();
-   void initialize_colors();
-   int get_color_id(int foreground, int background);
-   void guarantee_clear_on_next_display();
-#endif
 	const int undefined = -1;
 	const int TAB = 9;
 	const int ESC = 27;

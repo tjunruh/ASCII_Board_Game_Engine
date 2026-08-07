@@ -376,29 +376,23 @@ unsigned int widget::get_height(bool include_spacing)
 
 int widget::get_x_origin()
 {
-	int status = UNDEFINED;
 	int x_origin = 0;
 	if (item.x_origin != -1)
 	{
 		x_origin = item.x_origin;
-		status = SUCCESS;
 	}
 
-	log.log_status(status, "widget::get_x_origin");
 	return x_origin;
 }
 
 int widget::get_y_origin()
 {
-	int status = UNDEFINED;
 	int y_origin = 0;
 	if (item.y_origin != -1)
 	{
 		y_origin = item.y_origin;
-		status = SUCCESS;
 	}
 
-	log.log_status(status, "widget::get_y_origin");
 	return y_origin;
 }
 
@@ -557,18 +551,12 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 
 			if (regions[i].format.dec)
 			{
-#ifdef _WIN32
 				ascii_io::enable_dec();
 				ascii_io::print(regions[i].content);
-#elif __linux__
-				dec_print(regions[i].content);
-#endif
 			}
 			else
 			{
-#ifdef _WIN32
 				ascii_io::disable_dec();
-#endif
 				ascii_io::print(regions[i].content);
 			}
 			line_length = line_length + regions[i].content.length();
@@ -580,9 +568,7 @@ void widget::widget_display(std::vector<std::string> output_lines, bool can_use_
 			}
 		}
 		ascii_io::set_color(parent_frame->get_default_foreground_color(), parent_frame->get_default_background_color());
-#ifdef _WIN32
 		ascii_io::disable_dec();
-#endif
 	}
 	else
 	{
@@ -807,10 +793,3 @@ void widget::unhighlight()
 {
 	parent_frame->unhighlight(item.row, item.column, item.level);
 }
-
-#ifdef __linux__
-void widget::dec_print(const std::string& input)
-{
-	parent_frame->dec_print(input);
-}
-#endif

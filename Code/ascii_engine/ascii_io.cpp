@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <chrono>
 #include <thread>
+#include <atomic>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -13,23 +14,36 @@
 #include "../file_manager/file_manager.h"
 #include <unordered_map>
 #elif __linux__
-#include <ncurses.h>
 #include <memory>
 #include "format_tools.h"
 #include <termios.h>
 #include <sys/ioctl.h>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/select.h>
 #endif
 
 int console_zoom_amount = 0;
-bool left_mouse_held_down = false;
-bool right_mouse_held_down = false;
+std::atomic<int> shared_input(ascii_io::undefined);
+std::atomic<int> shared_mouse_x_position(0);
+std::atomic<int> shared_mouse_y_position(0);
+std::atomic<bool> shared_input_read(false);
+std::atomic<bool> shared_cursor_position_read(false);
+std::atomic<bool> shared_cursor_position_read_failed(false);
+std::atomic<int> shared_cursor_x(0);
+std::atomic<int> shared_cursor_y(0);
+std::atomic<bool> shared_left_mouse_held_down(false);
+std::atomic<bool> shared_right_mouse_held_down(false);
+std::thread input_thread;
+
+struct termios orig_termios;
+
+bool _clear_screen = true;
 
 #ifdef _WIN32
-bool shift_held_down = false;
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
-bool keep_cursor_shown = false;
 DWORD original_console_mode;
 
 const std::unordered_map<int, const int> key_mapping =
@@ -195,6 +209,330 @@ std::string system_call_with_feedback(const char* command)
 }
 #endif
 
+void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_position, std::atomic<int>& mouse_y_position, std::atomic<int>& cursor_x_position, std::atomic<int>& cursor_y_position, std::atomic<bool>& left_mouse_held_down, std::atomic<bool>& right_mouse_held_down, std::atomic<bool>& input_read, std::atomic<bool>& cursor_position_read, std::atomic<bool>& cursor_position_read_failed)
+{
+#ifdef _WIN32
+	INPUT_RECORD input_record;
+	DWORD unused_number_of_events_read;
+	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
+	hide_cursor();
+	bool shift_held_down = false;
+
+	do
+	{
+		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
+		if (input_record.EventType == KEY_EVENT)
+		{
+			if (((KEY_EVENT_RECORD&)input_record.Event).bKeyDown)
+			{
+				if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
+				{
+					shift_held_down = true;
+				}
+				else
+				{
+					input.store(input_record.Event.KeyEvent.wVirtualKeyCode);
+					if (shift_held_down)
+					{
+						auto map = key_mapping_with_shift.find(input.load());
+						if (map == key_mapping_with_shift.end())
+						{
+							input.store(ascii_io::undefined);
+						}
+						else
+						{
+							input.store(map->second);
+						}
+					}
+					else
+					{
+						auto map = key_mapping.find(input.load());
+						if (map == key_mapping.end())
+						{
+							input.store(ascii_io::undefined);
+						}
+						else
+						{
+							input.store(map->second);
+						}
+					}
+				}
+			}
+			else if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
+			{
+				shift_held_down = false;
+			}
+		}
+		else if (input_record.EventType == MOUSE_EVENT)
+		{
+			if (input_record.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
+			{
+				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
+				if (scrollDelta > 0)
+				{
+					input.store(ascii_io::scroll_up);
+				}
+				else if (scrollDelta < 0)
+				{
+					input.store(ascii_io::scroll_down);
+				}
+				else
+				{
+					input.store(ascii_io::undefined);
+				}
+			}
+			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
+			{
+				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+				{
+					input.store(ascii_io::mouse_left_pressed);
+					left_mouse_held_down.store(true);
+				}
+				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
+				{
+					input.store(ascii_io::mouse_left_released);
+					left_mouse_held_down.store(false);
+				}
+				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+				{
+					input.store(ascii_io::mouse_right_pressed);
+					right_mouse_held_down.store(true);
+				}
+				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
+				{
+					input.store(ascii_io::mouse_right_released);
+					right_mouse_held_down.store(false);
+				}
+				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
+				{
+					input.store(ascii_io::mouse_middle);
+				}
+				else
+				{
+					input.store(ascii_io::undefined);
+				}
+			}
+			else if (left_mouse_held_down)
+			{
+				input.store(ascii_io::mouse_moved);
+			}
+			else
+			{
+				input.store(ascii_io::undefined);
+			}
+
+			mouse_x_position.store(input_record.Event.MouseEvent.dwMousePosition.X);
+			mouse_y_position.store(input_record.Event.MouseEvent.dwMousePosition.Y);
+
+			if (input.load() != ascii_io::undefined)
+			{
+				input_read.store(true);
+			}
+		}
+	} while (true);
+#elif __linux__
+	do
+	{
+		std::string temp_input = "";
+		char buf[256];
+		ssize_t bytes_read = read(STDIN_FILENO, buf, sizeof(buf) - 1);
+		
+		if (bytes_read > 0)
+		{
+			buf[bytes_read] = '\0';
+			temp_input = std::string(buf, bytes_read);
+		}
+
+		if (!temp_input.empty())
+		{
+			if (temp_input.length() >= 4 && temp_input[0] == '\033' && temp_input[1] == '[' && temp_input[2] == '<')
+			{
+				bool parse_successful = true;
+				int button = -1;
+				int x = -1;
+				int y = -1;
+				char press_state = '\0';
+				std::string field = "";
+				int field_index = 0;
+
+				for (unsigned int i = 3; i < temp_input.length() - 1; i++)
+				{
+					if (temp_input[i] == ';')
+					{
+						if (field_index == 0)
+						{
+							button = stoi(field);
+						}
+						else if (field_index == 1)
+						{
+							x = stoi(field);
+						}
+						else
+						{
+							break;
+							parse_successful = false;
+						}
+
+						field_index++;
+						field = "";
+					}
+					else if (isdigit(temp_input[i]))
+					{
+						field += temp_input[i];
+					}
+				}
+
+				if (field.length() == 0)
+				{
+					parse_successful = false;
+				}
+
+				if (parse_successful)
+				{
+					y = stoi(field);
+					press_state = temp_input[temp_input.length() - 1];
+					switch (button)
+					{
+						case 0:
+							switch (press_state)
+							{
+								case 'M':
+									input.store(ascii_io::mouse_left_pressed);
+									left_mouse_held_down.store(true);
+									break;
+								default:
+									input.store(ascii_io::mouse_left_released);
+									left_mouse_held_down.store(false);
+									break;
+							}
+							break;
+						case 1:
+							input.store(ascii_io::mouse_middle);
+							break;
+						case 2:
+							switch (press_state)
+							{
+								case 'M':
+									input.store(ascii_io::mouse_right_pressed);
+									right_mouse_held_down.store(true);
+									break;
+								default:
+									input.store(ascii_io::mouse_right_released);
+									right_mouse_held_down.store(false);
+									break;
+							}
+							break;
+						case 35:
+							input.store(ascii_io::mouse_moved);
+							break;
+						case 64:
+							input.store(ascii_io::scroll_up);
+							break;
+						case 65:
+							input.store(ascii_io::scroll_down);
+							break;
+					}
+
+					mouse_x_position.store(x);
+					mouse_y_position.store(y - 1);
+				}
+			}
+			else if (temp_input.length() >= 3 && temp_input[temp_input.size() - 1] == 'R' && temp_input[0] == '\033' && temp_input[1] == '[')
+			{
+				int row = -1;
+				int column = -1;
+				int index = 0;
+				std::string field = "";
+				bool parse_successful = true;
+				for (unsigned int i = 2; i < temp_input.length(); i++)
+				{
+					if (temp_input[i] == ';')
+					{
+						if (index == 0)
+						{
+							row = stoi(field);
+						}
+						else
+						{
+							parse_successful = false;
+							break;
+						}
+
+						index++;
+						field = "";
+					}
+					else if (isdigit(temp_input[i]))
+					{
+						field += temp_input[i];
+					}
+				}
+
+				if (field.length() == 0)
+				{
+					parse_successful = false;
+				}
+
+				if (parse_successful)
+				{
+					column = stoi(field);
+					cursor_x_position.store(column - 1);
+					cursor_y_position.store(row - 1);
+					cursor_position_read.store(true);
+				}
+				else
+				{
+					cursor_position_read_failed.store(true);
+				}
+			}
+			else
+			{
+				for (unsigned int i = 0; i < temp_input.size(); ++i)
+				{
+					char c = temp_input[i];
+					if (c == 27)
+					{
+						if (i + 2 < temp_input.size() && temp_input[i + 1] == '[')
+						{
+							switch (temp_input[i + 2])
+							{
+								case 'A': input.store(ascii_io::up); break;
+								case 'B': input.store(ascii_io::down); break;
+								case 'C': input.store(ascii_io::right); break;
+								case 'D': input.store(ascii_io::left); break;
+							}
+							i += 2;
+						}
+						else
+						{
+							input.store(ascii_io::ESC);
+						}
+					}
+					else if (c == 127 || c == 8)
+					{
+						input.store(ascii_io::backspace);
+					}
+					else if (c == '\r' || c == '\n')
+					{
+						input.store(ascii_io::enter);
+					}
+					else
+					{
+						input.store((int)c);
+					}
+				}
+			}
+		}
+
+		if (input.load() != ascii_io::undefined)
+		{
+			input_read.store(true);
+		}
+
+	} while (true);
+#endif
+}
+
 int maximize_terminal()
 {
 	int status = 0;
@@ -233,185 +571,25 @@ int maximize_terminal()
 }
 
 void ascii_io::print(const std::string& output) {
-#ifdef _WIN32
-	std::cout << output;
-#elif __linux__
-	addstr(output.c_str());
-	refresh();
-#endif
+	std::cout << output << std::flush;
 }
 
 int ascii_io::getchar()
 {
 	int input = undefined;
-#ifdef _WIN32
-	INPUT_RECORD input_record;
-	DWORD unused_number_of_events_read;
-	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
-	if (keep_cursor_shown)
+	shared_input_read.store(false);
+	while (true)
 	{
-		keep_cursor_shown = false;
-	}
-	else
-	{
-		hide_cursor();
-	}
-
-	do
-	{
-		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
-		if (input_record.EventType == KEY_EVENT)
+		if (shared_input_read.load())
 		{
-			if (((KEY_EVENT_RECORD&)input_record.Event).bKeyDown)
-			{
-				if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
-				{
-					shift_held_down = true;
-				}
-				else
-				{
-					input = input_record.Event.KeyEvent.wVirtualKeyCode;
-					if (shift_held_down)
-					{
-						auto map = key_mapping_with_shift.find(input);
-						if (map == key_mapping_with_shift.end())
-						{
-							input = undefined;
-						}
-						else
-						{
-							input = map->second;
-						}
-					}
-					else
-					{
-						auto map = key_mapping.find(input);
-						if (map == key_mapping.end())
-						{
-							input = undefined;
-						}
-						else
-						{
-							input = map->second;
-						}
-					}
-				}
-			}
-			else if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
-			{
-				shift_held_down = false;
-			}
+			input = shared_input.load();
+			break;
 		}
-		else if (input_record.EventType == MOUSE_EVENT)
+		else
 		{
-			if (input_record.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
-			{
-				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
-				if (scrollDelta > 0) {
-					input = scroll_up;
-				}
-				else if (scrollDelta < 0) {
-					input = scroll_down;
-				}
-				else
-				{
-					input = undefined;
-				}
-			}
-			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
-			{
-				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-				{
-					input = mouse_left_pressed;
-					left_mouse_held_down = true;
-				}
-				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
-				{
-					input = mouse_left_released;
-					left_mouse_held_down = false;
-				}
-				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-				{
-					input = mouse_right_pressed;
-					right_mouse_held_down = true;
-				}
-				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
-				{
-					input = mouse_right_released;
-					right_mouse_held_down = false;
-				}
-				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
-				{
-					input = mouse_middle;
-				}
-				else
-				{
-					input = undefined;
-				}
-			}
-			else if (left_mouse_held_down)
-			{
-				input = mouse_moved;
-			}
-			else
-			{
-				input = undefined;
-			}
+			std::this_thread::sleep_for(std::chrono::microseconds(10));
 		}
-	} while (input == undefined);
-#elif __linux__
-	do
-	{
-		input = getch();
-
-		if (input == KEY_MOUSE)
-		{
-			MEVENT event;
-			if (getmouse(&event) == OK)
-			{
-				if (event.bstate & BUTTON1_PRESSED)
-				{
-					input = mouse_left_pressed;
-					left_mouse_held_down = true;
-				}
-				else if (event.bstate & BUTTON1_RELEASED)
-				{
-					input = mouse_left_released;
-					left_mouse_held_down = false;
-				}
-				else if (event.bstate & BUTTON2_CLICKED)
-				{
-					input = mouse_middle;
-				}
-				else if (event.bstate & BUTTON3_PRESSED)
-				{
-					input = mouse_right_pressed;
-				}
-				else if (event.bstate & BUTTON3_RELEASED)
-				{
-					input = mouse_right_released;
-				}
-				else if (event.bstate & BUTTON4_PRESSED)
-				{
-					input = scroll_up;
-				}
-				else if (event.bstate & BUTTON5_PRESSED)
-				{
-					input = scroll_down;
-				}
-				else if (left_mouse_held_down && (event.bstate & REPORT_MOUSE_POSITION))
-				{
-					input = mouse_moved;
-				}
-				else
-				{
-					input = undefined;
-				}
-			}
-		}
-	} while (input == undefined);
-#endif
+	} 
 
 	return input;
 }
@@ -419,180 +597,21 @@ int ascii_io::getchar()
 int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 {
 	int input = undefined;
-#ifdef _WIN32
-	INPUT_RECORD input_record;
-	DWORD unused_number_of_events_read;
-	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
-	if (keep_cursor_shown)
+	shared_input_read.store(false);
+	while (true)
 	{
-		keep_cursor_shown = false;
-	}
-	else
-	{
-		hide_cursor();
-	}
-
-	do
-	{
-		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
-		if (input_record.EventType == KEY_EVENT)
+		if (shared_input_read.load())
 		{
-			if (((KEY_EVENT_RECORD&)input_record.Event).bKeyDown)
-			{
-				if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
-				{
-					shift_held_down = true;
-				}
-				else
-				{
-					input = input_record.Event.KeyEvent.wVirtualKeyCode;
-					if (shift_held_down)
-					{
-						auto map = key_mapping_with_shift.find(input);
-						if (map == key_mapping_with_shift.end())
-						{
-							input = undefined;
-						}
-						else
-						{
-							input = map->second;
-						}
-					}
-					else
-					{
-						auto map = key_mapping.find(input);
-						if (map == key_mapping.end())
-						{
-							input = undefined;
-						}
-						else
-						{
-							input = map->second;
-						}
-					}
-				}
-			}
-			else if (input_record.Event.KeyEvent.wVirtualKeyCode == 16)
-			{
-				shift_held_down = false;
-			}
+			input = shared_input.load();
+			mouse_x_position = shared_mouse_x_position.load();
+			mouse_y_position = shared_mouse_y_position.load();
+			break;
 		}
-		else if (input_record.EventType == MOUSE_EVENT)
+		else
 		{
-			if (input_record.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED)
-			{
-				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
-				if (scrollDelta > 0) {
-					input = scroll_up;
-				}
-				else if (scrollDelta < 0) {
-					input = scroll_down;
-				}
-				else
-				{
-					input = undefined;
-				}
-			}
-			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
-			{
-				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-				{
-					input = mouse_left_pressed;
-					left_mouse_held_down = true;
-				}
-				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
-				{
-					input = mouse_left_released;
-					left_mouse_held_down = false;
-				}
-				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-				{
-					input = mouse_right_pressed;
-					right_mouse_held_down = true;
-				}
-				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
-				{
-					input = mouse_right_released;
-					right_mouse_held_down = false;
-				}
-				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
-				{
-					input = mouse_middle;
-				}
-				else
-				{
-					input = undefined;
-				}
-			}
-			else if (left_mouse_held_down)
-			{
-				input = mouse_moved;
-			}
-			else
-			{
-				input = undefined;
-			}
-
-			mouse_x_position = input_record.Event.MouseEvent.dwMousePosition.X;
-			mouse_y_position = input_record.Event.MouseEvent.dwMousePosition.Y;
+			std::this_thread::sleep_for(std::chrono::microseconds(10));
 		}
-	} while (input == undefined);
-#elif __linux__
-	do
-	{
-		input = getch();
-
-		if (input == KEY_MOUSE)
-		{
-			MEVENT event;
-			if (getmouse(&event) == OK)
-			{
-				if (event.bstate & BUTTON1_PRESSED)
-				{
-					input = mouse_left_pressed;
-					left_mouse_held_down = true;
-				}
-				else if (event.bstate & BUTTON1_RELEASED)
-				{
-					input = mouse_left_released;
-					left_mouse_held_down = false;
-				}
-				else if (event.bstate & BUTTON2_CLICKED)
-				{
-					input = mouse_middle;
-				}
-				else if (event.bstate & BUTTON3_PRESSED)
-				{
-					input = mouse_right_pressed;
-				}
-				else if (event.bstate & BUTTON3_RELEASED)
-				{
-					input = mouse_right_released;
-				}
-				else if (event.bstate & BUTTON4_PRESSED)
-				{
-					input = scroll_up;
-				}
-				else if (event.bstate & BUTTON5_PRESSED)
-				{
-					input = scroll_down;
-				}
-				else if (left_mouse_held_down && (event.bstate & REPORT_MOUSE_POSITION))
-				{
-					input = mouse_moved;
-				}
-				else
-				{
-					input = undefined;
-				}
-
-				mouse_x_position = event.x;
-				mouse_y_position = event.y;
-			}
-		}
-	} while (input == undefined);
-#endif
+	} 
 
 	return input;
 }
@@ -623,7 +642,8 @@ void ascii_io::clear() {
 #ifdef _WIN32
 	system("cls");
 #elif __linux__
-	erase();
+	int status = system("clear");
+	(void)status;
 #endif
 }
 
@@ -635,9 +655,10 @@ void ascii_io::get_terminal_size(int &x, int &y)
 	x = size_info.dwSize.X;
 	y = size_info.dwSize.Y;
 #elif __linux__
-	getmaxyx(stdscr, y, x);
-	y = y - 1;
-	x = x - 1;
+	struct winsize w;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	y = w.ws_row;
+	x = w.ws_col;
 #endif
 }
 
@@ -649,121 +670,60 @@ void ascii_io::get_cursor_position(int& x, int& y)
 	x = position_info.dwCursorPosition.X;
 	y = position_info.dwCursorPosition.Y;
 #elif __linux__
-	getyx(stdscr, y, x);
+	shared_cursor_position_read.store(false);
+	print("\033[6n");
+	while(true)
+	{
+		if (shared_cursor_position_read.load())
+		{
+			x = shared_cursor_x.load();
+			y = shared_cursor_y.load();
+			break;
+		}
+		else if (shared_cursor_position_read_failed.load())
+		{
+			print("\033[6n");
+			shared_cursor_position_read_failed.store(false);
+		}
+	}
 #endif
 }
 
 void ascii_io::hide_cursor()
 {
-#ifdef _WIN32
 	print("\x1b[?25l");
-#elif __linux__
-	curs_set(0);
-#endif
 }
 
 void ascii_io::show_cursor()
 {
-#ifdef _WIN32
 	print("\x1b[?25h");
-#elif __linux__
-	curs_set(1);
-#endif
 }
 
 void ascii_io::move_cursor_up(unsigned int amount)
 {
-#ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "A");
-#elif __linux__
-	int x = 0, y = 0;
-	get_cursor_position(x, y);
-	y -= amount;
-
-	if ( y < 0 )
-	{
-		y = 0;
-	}
-
-	move(y, x);
-	refresh();
-#endif
 }
 
 void ascii_io::move_cursor_down(unsigned int amount)
 {
-#ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "B");
-#elif __linux__
-	int max_x = 0, max_y = 0;
-	get_terminal_size(max_x, max_y);
-
-	int x = 0, y = 0;
-	get_cursor_position(x, y);
-
-	y += amount;
-
-	if ( y >= max_y )
-	{
-		y = max_y - 1;
-	}
-
-	move(y, x);
-	refresh();
-#endif
 }
 
 void ascii_io::move_cursor_right(unsigned int amount)
 {
-#ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "C");
-#elif __linux__
-	int max_x = 0, max_y = 0;
-	get_terminal_size(max_x, max_y);
-
-	int x = 0, y = 0;
-	get_cursor_position(x, y);
-	x += amount;
-
-	if ( x >= max_x )
-	{
-		x = max_x - 1;
-	}
-
-	move(y, x);
-	refresh();
-#endif
 }
 
 void ascii_io::move_cursor_left(unsigned int amount)
 {
-#ifdef _WIN32
 	print("\x1b[" + std::to_string(amount) + "D");
-#elif __linux__
-	int x = 0, y = 0;
-	get_cursor_position(x, y);
-	x -= amount;
-
-	if ( x < 0 )
-	{
-		x = 0;
-	}
-
-	move(y, x);
-	refresh();
-#endif
 }
 
 void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
 {
-#ifdef _WIN32
 	x = x + 1;
 	y = y + 1;
 	print("\x1b[" + std::to_string(y) + ";" + std::to_string(x) + "H");
-#elif __linux__
-	move(y, x);
-	refresh();
-#endif
 }
 
 int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
@@ -835,11 +795,7 @@ int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
-#ifdef __linux__
-	winsize ws;
-	ioctl(0, TIOCGWINSZ, &ws);
-	resizeterm(ws.ws_row, ws.ws_col);
-#endif
+
 	return status;
 }
 
@@ -926,11 +882,7 @@ int ascii_io::zoom_out(unsigned int amount, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
-#ifdef __linux__
-	winsize ws;
-	ioctl(0, TIOCGWINSZ, &ws);
-	resizeterm(ws.ws_row, ws.ws_col);
-#endif
+
 	return status;
 }
 
@@ -991,11 +943,7 @@ int ascii_io::zoom_to_level(int level, unsigned int wait_milliseconds)
 	}
 #endif
 	std::this_thread::sleep_for(std::chrono::milliseconds(wait_milliseconds));
-#ifdef __linux__
-	winsize ws;
-	ioctl(0, TIOCGWINSZ, &ws);
-	resizeterm(ws.ws_row, ws.ws_col);
-#endif
+
 	return status;
 }
 
@@ -1006,7 +954,6 @@ int ascii_io::get_zoom_level()
 
 void ascii_io::set_color(int foreground, int background, bool bold)
 {
-#ifdef _WIN32
 	if (bold)
 	{
 		print("\x1b[1m");
@@ -1015,19 +962,9 @@ void ascii_io::set_color(int foreground, int background, bool bold)
 	{
 		print("\x1b[22m");
 	}
+
 	print("\x1b[" + std::to_string(foreground) + "m");
 	print("\x1b[" + std::to_string(background + 10) + "m");
-#elif __linux__
-	if (bold)
-	{
-		attron(A_BOLD);
-	}
-	else
-	{
-		attroff(A_BOLD);
-	}
-	attron(COLOR_PAIR(get_color_id(foreground, background)));
-#endif
 }
 
 std::string ascii_io::get_key_name(int key)
@@ -1045,7 +982,12 @@ std::string ascii_io::get_key_name(int key)
 
 bool ascii_io::is_dragging()
 {
-	return left_mouse_held_down;
+	return shared_left_mouse_held_down.load();
+}
+
+void ascii_io::clear_screen_on_init_and_end(bool clear_screen)
+{
+	_clear_screen = clear_screen;
 }
 
 void ascii_io::ascii_engine_init(bool maximize)
@@ -1065,8 +1007,19 @@ void ascii_io::ascii_engine_init(bool maximize)
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(hInput, mode);
 #elif __linux__
-	ncurses_init();
+	if (_clear_screen)
+	{
+		clear();
+	}
+	tcgetattr(STDIN_FILENO, &orig_termios);
+	struct termios raw = orig_termios;
+	raw.c_lflag &= ~(ICANON | ECHO);
+	raw.c_cc[VMIN] = 1;
+	raw.c_cc[VTIME] = 0;
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+	print("\033[?1000h\033[?1006h\033[?1003h");
 #endif
+	input_thread = std::thread(input_thread_handler, std::ref(shared_input), std::ref(shared_mouse_x_position), std::ref(shared_mouse_y_position), std::ref(shared_cursor_x), std::ref(shared_cursor_y), std::ref(shared_left_mouse_held_down), std::ref(shared_right_mouse_held_down), std::ref(shared_input_read), std::ref(shared_cursor_position_read), std::ref(shared_cursor_position_read_failed));
 	hide_cursor();
 }
 
@@ -1104,9 +1057,6 @@ void ascii_io::ascii_engine_end()
 		}
 		free(raw_home_directory);
 	}
-
-	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-	SetConsoleMode(hInput, original_console_mode);
 #elif __linux__
 	if (console_zoom_amount > 0)
 	{
@@ -1116,12 +1066,30 @@ void ascii_io::ascii_engine_end()
 	{
 		zoom_in(console_zoom_amount * -1);
 	}
-	ncurses_end();
 #endif
+
+#ifdef _WIN32
+	TerminateThread(my_thread.native_handle(), 0);
+#elif __linux__
+	pthread_cancel(input_thread.native_handle());
+#endif
+
+	input_thread.join();
+
+#ifdef _WIN32
+	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), original_console_mode);
+#elif __linux__
+	print("\033[?1000l\033[?1006l\033[?1003l\033[0m");
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+#endif
+	if (_clear_screen)
+	{
+		clear();
+	}
+
 	show_cursor();
 }
 
-#ifdef _WIN32
 void ascii_io::enable_dec()
 {
 	print("\x1b(0");
@@ -1132,6 +1100,7 @@ void ascii_io::disable_dec()
 	print("\x1b(B");
 }
 
+#ifdef _WIN32
 void ascii_io::fit_console_buffer_to_screen()
 {
 	bool success = false;
@@ -1143,65 +1112,5 @@ void ascii_io::fit_console_buffer_to_screen()
 		success = SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffer_info.dwSize);
 		buffer_info.dwSize.Y++;
 	} while (!success);
-}
-
-void ascii_io::keep_cursor_shown_in_getchar()
-{
-	keep_cursor_shown = true;
-}
-#endif
-
-#ifdef __linux__
-void ascii_io::ncurses_init()
-{
-	initscr();
-	raw();
-	noecho();
-	cbreak();
-	colors_init();
-	keypad(stdscr, TRUE);
-	mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
-	mouseinterval(0);
-	printf("\033[?1003h\n");
-}
-
-void ascii_io::colors_init()
-{
-	start_color();
-	initialize_colors();
-}
-
-void ascii_io::ncurses_end()
-{
-	printf("\033[?1003l\n");
-	endwin();
-}
-
-int ascii_io::get_color_id(int foreground, int background)
-{
-	int most_significant_bit = 1 << 7;
-	int background_bits = (7 & background) << 4;
-	int foreground_bits = 7 & foreground;
-
-	return (most_significant_bit | background_bits | foreground_bits);
-}
-
-void ascii_io::initialize_colors()
-{
-	int color_id = 0;
-
-	for (unsigned int background = 0; background < format_tools::colors.size(); background++) 
-	{
-		for (unsigned int foreground = 0; foreground < format_tools::colors.size(); foreground++) 
-		{
-			color_id = get_color_id((int)format_tools::colors[foreground], (int)format_tools::colors[background]);
-			init_pair(color_id, (int)format_tools::colors[foreground], (int)format_tools::colors[background]);
-		}
-	}
-}
-
-void ascii_io::guarantee_clear_on_next_display()
-{
-	clearok(stdscr, true);
 }
 #endif

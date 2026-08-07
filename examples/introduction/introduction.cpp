@@ -52,6 +52,7 @@ int main()
 	my_console.register_widget(&label_over_text_box);
 	my_console.register_widget(&my_text_box);
 	my_console.register_widget(&my_menu);
+	//my_text_box.start_logging("text_box.log");
 
 	while (1)
 	{

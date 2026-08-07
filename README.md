@@ -27,11 +27,6 @@ To build both, run:
 make all
 ```
 
-Note that you must have ncurses installed. If not installed, run:
-```
-sudo apt-get install libncurses5-dev libncursesw5-dev
-```
-
 If you would prefer to not build everything, binaries are available in releases.
 
 ## Example Games Using ASCII_Board_Game_Engine:
