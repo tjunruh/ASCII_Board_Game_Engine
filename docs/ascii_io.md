@@ -5,6 +5,7 @@ ascii_io includes functions providing the ability to perform input and output op
 # Functions
 - [void ascii_engine_init(bool maximize = false)](#ascii_engine_init)
 - [void ascii_engine_end()](#ascii_engine_end)
+- [void clear_screen_on_init_and_end(bool clear_screen)](#clear_screen_on_init_and_end)
 - [void print(const std::string& output)](#print)
 - [int getchar()](#getchar)
 - [int getchar(int& mouse_x_position, int& mouse_y_position)](#getchar-1)
@@ -28,11 +29,6 @@ ascii_io includes functions providing the ability to perform input and output op
 - [void set_color(int foreground, int background, bool bold = false)](#set_color)
 - [std::string get_key_name(int key)](#get_key_name)
 
-# Linux specific functions
-
-- [void guarantee_clear_on_next_display()](#guarantee_clear_on_next_display)
-
-
 ---
 ## ascii_engine_init
 **void ascii_engine_init(bool maximize = false)**
@@ -51,6 +47,18 @@ This function must be called at the beginning of the program to initialize ascii
 **Description:**
 
 This function must be called at the end of the program to properly shutdown ascii engine
+
+---
+## clear_screen_on_init_and_end
+**void clear_screen_on_init_and_end(bool clear_screen)**
+
+**Description:**
+
+This function can be used to specify if the terminal should be cleared when calling ascii_engine_init and ascii_engine_end (default value is true)
+
+**Parameters:**
+
+1. bool **clear_screen** - the terminal will be cleared when ascii_engine_init and ascii_engine_end are called when set to true, otherwise, the terminal will not be cleared when set to false
 
 ---
 ## print
@@ -330,14 +338,6 @@ returns a string that is the name of the key represented by ascii code
 **Return value:**
 
 std::string - name of the ascii key
-
----
-## guarantee_clear_on_next_display
-**void guarantee_clear_on_next_display()**
-
-**Description:**
-
-(Only for Linux) Use this function in cases (most likely where the terminal is zoomed out and a lot of text is being displayed) when a display call does not overwrite all of the previous frame
 
 ---
 # Keyboard Codes

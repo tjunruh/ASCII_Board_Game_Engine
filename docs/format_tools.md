@@ -652,7 +652,6 @@ unsigned int - expanded value (input value multiplied by expansion and added to 
 ---
 # Color codes
 ```
-Windows:
 const int black = 30
 const int red = 31
 const int green = 32
@@ -662,17 +661,6 @@ const int magenta = 35
 const int cyan = 36
 const int white = 37
 const int none = 38
-
-Linux:
-const int black = 0
-const int red = 1
-const int green = 2
-const int yellow = 3
-const int blue = 4
-const int magenta = 5
-const int cyan = 6
-const int white = 7
-const int none = 8
 ```
 
 ---
