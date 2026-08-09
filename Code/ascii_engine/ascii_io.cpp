@@ -688,6 +688,8 @@ void ascii_io::get_cursor_position(int& x, int& y)
 			print("\033[6n");
 			shared_cursor_position_read_failed.store(false);
 		}
+
+		std::this_thread::sleep_for(std::chrono::microseconds(10));
 	}
 #endif
 }
