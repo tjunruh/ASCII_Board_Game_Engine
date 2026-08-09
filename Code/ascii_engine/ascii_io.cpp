@@ -576,11 +576,7 @@ int ascii_io::getchar()
 	int input = undefined;
 #ifdef _WIN32
 	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_MOUSE_INPUT);
-	if (keep_cursor_shown)
-	{
-		keep_cursor_shown = false;
-	}
-	else
+	if (!keep_cursor_shown)
 	{
 		ascii_io::hide_cursor();
 	}
@@ -607,11 +603,7 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 	int input = undefined;
 #ifdef _WIN32
 	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_MOUSE_INPUT);
-	if (keep_cursor_shown)
-	{
-		keep_cursor_shown = false;
-	}
-	else
+	if (!keep_cursor_shown)
 	{
 		ascii_io::hide_cursor();
 	}
@@ -713,11 +705,17 @@ void ascii_io::get_cursor_position(int& x, int& y)
 void ascii_io::hide_cursor()
 {
 	print("\x1b[?25l");
+#ifdef _WIN32
+	keep_cursor_shown = false;
+#endif
 }
 
 void ascii_io::show_cursor()
 {
 	print("\x1b[?25h");
+#ifdef _WIN32
+	keep_cursor_shown = true;
+#endif
 }
 
 void ascii_io::move_cursor_up(unsigned int amount)
@@ -1133,10 +1131,5 @@ void ascii_io::fit_console_buffer_to_screen()
 		success = SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffer_info.dwSize);
 		buffer_info.dwSize.Y++;
 	} while (!success);
-}
-
-void ascii_io::keep_cursor_shown_in_getchar()
-{
-	keep_cursor_shown = true;
 }
 #endif

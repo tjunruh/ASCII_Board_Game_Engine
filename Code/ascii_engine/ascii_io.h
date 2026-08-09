@@ -44,7 +44,6 @@ namespace ascii_io
 
 #ifdef _WIN32
 	void fit_console_buffer_to_screen();
-	ASCII_IO_API void keep_cursor_shown_in_getchar();
 #endif
 
 	const int undefined = -1;
