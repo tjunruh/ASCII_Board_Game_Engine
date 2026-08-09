@@ -11,6 +11,8 @@ jobs:
       runs-on: ubuntu-latest
       steps:
          - uses: actions/checkout@v4
+         - name: install external library dependencies
+           run: sudo apt-get install -y libgtest-dev
          - name: compile
            run: make
          - name: test
