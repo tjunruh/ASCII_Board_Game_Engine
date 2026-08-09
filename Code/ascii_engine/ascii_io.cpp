@@ -299,7 +299,7 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 			}
 			else if (left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == MOUSE_MOVED)
 			{
-				input.store(ascii_io::mouse_moved);
+				temp_input = ascii_io::mouse_moved;
 			}
 
 			mouse_x_position.store(input_record.Event.MouseEvent.dwMousePosition.X);
@@ -405,6 +405,9 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 									break;
 							}
 							break;
+						case 32:
+						case 33:
+						case 34:
 						case 35:
 							if (left_mouse_held_down.load())
 							{
