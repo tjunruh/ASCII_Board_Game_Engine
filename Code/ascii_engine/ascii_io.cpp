@@ -36,14 +36,13 @@ std::atomic<bool> shared_left_mouse_held_down(false);
 std::atomic<bool> shared_right_mouse_held_down(false);
 std::thread input_thread;
 
-struct termios orig_termios;
-
 bool _clear_screen = true;
 
 #ifdef _WIN32
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
+bool keep_cursor_shown = false;
 DWORD original_console_mode;
 
 const std::unordered_map<int, const int> key_mapping =
@@ -193,6 +192,8 @@ std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 #endif
 }
 #elif __linux__
+struct termios orig_termios;
+
 std::string system_call_with_feedback(const char* command)
 {
 	char buffer[128];
@@ -214,13 +215,13 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 #ifdef _WIN32
 	INPUT_RECORD input_record;
 	DWORD unused_number_of_events_read;
-	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-	SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
-	hide_cursor();
 	bool shift_held_down = false;
 
 	do
 	{
+		int temp_input = ascii_io::undefined;
+		HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+		SetConsoleMode(handle, ENABLE_MOUSE_INPUT);
 		ReadConsoleInput(handle, &input_record, 1, &unused_number_of_events_read);
 		if (input_record.EventType == KEY_EVENT)
 		{
@@ -232,29 +233,20 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 				}
 				else
 				{
-					input.store(input_record.Event.KeyEvent.wVirtualKeyCode);
 					if (shift_held_down)
 					{
-						auto map = key_mapping_with_shift.find(input.load());
-						if (map == key_mapping_with_shift.end())
+						auto map = key_mapping_with_shift.find(input_record.Event.KeyEvent.wVirtualKeyCode);
+						if (map != key_mapping_with_shift.end())
 						{
-							input.store(ascii_io::undefined);
-						}
-						else
-						{
-							input.store(map->second);
+							temp_input = map->second;
 						}
 					}
 					else
 					{
-						auto map = key_mapping.find(input.load());
-						if (map == key_mapping.end())
+						auto map = key_mapping.find(input_record.Event.KeyEvent.wVirtualKeyCode);
+						if (map != key_mapping.end())
 						{
-							input.store(ascii_io::undefined);
-						}
-						else
-						{
-							input.store(map->second);
+							temp_input = map->second;
 						}
 					}
 				}
@@ -271,64 +263,53 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 				short scrollDelta = HIWORD(input_record.Event.MouseEvent.dwButtonState);
 				if (scrollDelta > 0)
 				{
-					input.store(ascii_io::scroll_up);
+					temp_input = ascii_io::scroll_up;
 				}
 				else if (scrollDelta < 0)
 				{
-					input.store(ascii_io::scroll_down);
-				}
-				else
-				{
-					input.store(ascii_io::undefined);
+					temp_input = ascii_io::scroll_down;
 				}
 			}
 			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
 			{
-				if (!left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+				if (!left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 				{
-					input.store(ascii_io::mouse_left_pressed);
+					temp_input = ascii_io::mouse_left_pressed;
 					left_mouse_held_down.store(true);
 				}
-				else if (left_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
+				else if (left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
-					input.store(ascii_io::mouse_left_released);
+					temp_input = ascii_io::mouse_left_released;
 					left_mouse_held_down.store(false);
 				}
-				else if (!right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+				else if (!right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 				{
-					input.store(ascii_io::mouse_right_pressed);
+					temp_input = ascii_io::mouse_right_pressed;
 					right_mouse_held_down.store(true);
 				}
-				else if (right_mouse_held_down && input_record.Event.MouseEvent.dwButtonState == 0)
+				else if (right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
-					input.store(ascii_io::mouse_right_released);
+					temp_input = ascii_io::mouse_right_released;
 					right_mouse_held_down.store(false);
 				}
 				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 				{
-					input.store(ascii_io::mouse_middle);
-				}
-				else
-				{
-					input.store(ascii_io::undefined);
+					temp_input = ascii_io::mouse_middle;
 				}
 			}
-			else if (left_mouse_held_down)
+			else if (left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == MOUSE_MOVED)
 			{
 				input.store(ascii_io::mouse_moved);
-			}
-			else
-			{
-				input.store(ascii_io::undefined);
 			}
 
 			mouse_x_position.store(input_record.Event.MouseEvent.dwMousePosition.X);
 			mouse_y_position.store(input_record.Event.MouseEvent.dwMousePosition.Y);
+		}
 
-			if (input.load() != ascii_io::undefined)
-			{
-				input_read.store(true);
-			}
+		if (temp_input != ascii_io::undefined)
+		{
+			input.store(temp_input);
+			input_read.store(true);
 		}
 	} while (true);
 #elif __linux__
@@ -577,6 +558,17 @@ void ascii_io::print(const std::string& output) {
 int ascii_io::getchar()
 {
 	int input = undefined;
+#ifdef _WIN32
+	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_MOUSE_INPUT);
+	if (keep_cursor_shown)
+	{
+		keep_cursor_shown = false;
+	}
+	else
+	{
+		ascii_io::hide_cursor();
+	}
+#endif
 	shared_input_read.store(false);
 	while (true)
 	{
@@ -597,6 +589,17 @@ int ascii_io::getchar()
 int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 {
 	int input = undefined;
+#ifdef _WIN32
+	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), ENABLE_MOUSE_INPUT);
+	if (keep_cursor_shown)
+	{
+		keep_cursor_shown = false;
+	}
+	else
+	{
+		ascii_io::hide_cursor();
+	}
+#endif
 	shared_input_read.store(false);
 	while (true)
 	{
@@ -1069,7 +1072,7 @@ void ascii_io::ascii_engine_end()
 #endif
 
 #ifdef _WIN32
-	TerminateThread(my_thread.native_handle(), 0);
+	TerminateThread(input_thread.native_handle(), 0);
 #elif __linux__
 	pthread_cancel(input_thread.native_handle());
 #endif
@@ -1112,5 +1115,10 @@ void ascii_io::fit_console_buffer_to_screen()
 		success = SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffer_info.dwSize);
 		buffer_info.dwSize.Y++;
 	} while (!success);
+}
+
+void ascii_io::keep_cursor_shown_in_getchar()
+{
+	keep_cursor_shown = true;
 }
 #endif

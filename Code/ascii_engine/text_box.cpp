@@ -68,6 +68,9 @@ unsigned int text_box::write()
 	do
 	{
 		saved_cursor_linear_position = get_linear_cursor_position();
+#ifdef _WIN32
+		ascii_io::keep_cursor_shown_in_getchar();
+#endif
 		input = ascii_io::getchar(mouse_x_position, mouse_y_position);
 		if (frame_stale())
 		{
