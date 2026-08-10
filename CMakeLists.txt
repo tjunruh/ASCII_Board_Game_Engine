@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(ascii_engine)
 
 option(BUILD_TESTS "Build tests" ON)
-option(BUILD_EXAMPLES "Build examples programs" OFF)
+option(BUILD_EXAMPLES "Build examples programs" ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,5 +28,5 @@ if(BUILD_TESTS)
 endif()
 
 if (BUILD_EXAMPLES)
-   # TODO: add examples
+   add_subdirectory(examples/board_demo-irregular_line)
 endif()
