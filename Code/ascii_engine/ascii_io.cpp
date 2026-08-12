@@ -5,6 +5,8 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
+#include <mutex>
+#include <condition_variable>
 
 #ifdef _WIN32
 #include <conio.h>
@@ -27,9 +29,12 @@ int console_zoom_amount = 0;
 std::atomic<int> shared_input(ascii_io::undefined);
 std::atomic<int> shared_mouse_x_position(0);
 std::atomic<int> shared_mouse_y_position(0);
-std::atomic<bool> shared_input_read(false);
-std::atomic<bool> shared_cursor_position_read(false);
-std::atomic<bool> shared_cursor_position_read_failed(false);
+bool input_read = false;
+std::mutex input_read_mutex;
+std::condition_variable input_read_condition;
+bool cursor_position_read = true;
+std::mutex cursor_position_read_mutex;
+std::condition_variable cursor_position_read_condition;
 std::atomic<int> shared_cursor_x(0);
 std::atomic<int> shared_cursor_y(0);
 std::atomic<bool> shared_left_mouse_held_down(false);
@@ -210,7 +215,7 @@ std::string system_call_with_feedback(const char* command)
 }
 #endif
 
-void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_position, std::atomic<int>& mouse_y_position, std::atomic<int>& cursor_x_position, std::atomic<int>& cursor_y_position, std::atomic<bool>& left_mouse_held_down, std::atomic<bool>& right_mouse_held_down, std::atomic<bool>& input_read, std::atomic<bool>& cursor_position_read, std::atomic<bool>& cursor_position_read_failed)
+void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_position, std::atomic<int>& mouse_y_position, std::atomic<int>& cursor_x_position, std::atomic<int>& cursor_y_position, std::atomic<bool>& left_mouse_held_down, std::atomic<bool>& right_mouse_held_down)
 {
 #ifdef _WIN32
 	INPUT_RECORD input_record;
@@ -309,221 +314,255 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 		if (temp_input != ascii_io::undefined)
 		{
 			input.store(temp_input);
-			input_read.store(true);
+			{
+				std::lock_guard<std::mutex> lock(input_read_mutex);
+				input_read = true;
+				input_read_condition.notify_one();
+			}
 		}
 	} while (true);
 #elif __linux__
 	do
 	{
 		std::string raw_input = "";
-		int temp_input = ascii_io::undefined;
 		char buf[256];
+		std::vector<std::string> sequences;
 		ssize_t bytes_read = read(STDIN_FILENO, buf, sizeof(buf) - 1);
-		
+
 		if (bytes_read > 0)
 		{
 			buf[bytes_read] = '\0';
 			raw_input = std::string(buf, bytes_read);
-		}
-
-		if (!raw_input.empty())
-		{
-			if (raw_input.length() >= 4 && raw_input[0] == '\033' && raw_input[1] == '[' && raw_input[2] == '<')
+			bool in_escape_sequence = false;
+			std::string sequence = "";
+			for (unsigned int i = 0; i < raw_input.length(); i++)
 			{
-				bool parse_successful = true;
-				int button = -1;
-				int x = -1;
-				int y = -1;
-				char press_state = '\0';
-				std::string field = "";
-				int field_index = 0;
-
-				for (unsigned int i = 3; i < raw_input.length() - 1; i++)
+				sequence += raw_input[i];
+				if (raw_input[i] == '\033')
 				{
-					if (raw_input[i] == ';')
-					{
-						if (field_index == 0)
-						{
-							button = stoi(field);
-						}
-						else if (field_index == 1)
-						{
-							x = stoi(field);
-						}
-						else
-						{
-							break;
-							parse_successful = false;
-						}
-
-						field_index++;
-						field = "";
-					}
-					else if (isdigit(raw_input[i]))
-					{
-						field += raw_input[i];
-					}
+					in_escape_sequence = true;
 				}
-
-				if (field.length() == 0)
+				else if (raw_input[i] > '@' && raw_input[i] != '[')
 				{
-					parse_successful = false;
+					in_escape_sequence = false;
+					sequences.push_back(sequence);
+					sequence = "";
 				}
-
-				if (parse_successful)
+				else if (!in_escape_sequence)
 				{
-					y = stoi(field);
-					press_state = raw_input[raw_input.length() - 1];
-					switch (button)
-					{
-						case 0:
-							switch (press_state)
-							{
-								case 'M':
-									temp_input = ascii_io::mouse_left_pressed;
-									left_mouse_held_down.store(true);
-									break;
-								default:
-									temp_input = ascii_io::mouse_left_released;
-									left_mouse_held_down.store(false);
-									break;
-							}
-							break;
-						case 1:
-							temp_input = ascii_io::mouse_middle;
-							break;
-						case 2:
-							switch (press_state)
-							{
-								case 'M':
-									temp_input = ascii_io::mouse_right_pressed;
-									right_mouse_held_down.store(true);
-									break;
-								default:
-									temp_input = ascii_io::mouse_right_released;
-									right_mouse_held_down.store(false);
-									break;
-							}
-							break;
-						case 32:
-						case 33:
-						case 34:
-						case 35:
-							if (left_mouse_held_down.load())
-							{
-								temp_input = ascii_io::mouse_moved;
-							}
-							break;
-						case 64:
-							temp_input = ascii_io::scroll_up;
-							break;
-						case 65:
-							temp_input = ascii_io::scroll_down;
-							break;
-					}
-
-					mouse_x_position.store(x);
-					mouse_y_position.store(y - 1);
+					sequences.push_back(sequence);
+					sequence = "";
 				}
 			}
-			else if (raw_input.length() >= 3 && raw_input[raw_input.size() - 1] == 'R' && raw_input[0] == '\033' && raw_input[1] == '[')
+		}
+
+		if (sequences.size() != 0)
+		{
+			for (unsigned int i = 0; i < sequences.size(); i++)
 			{
-				int row = -1;
-				int column = -1;
-				int index = 0;
-				std::string field = "";
-				bool parse_successful = true;
-				for (unsigned int i = 2; i < raw_input.length(); i++)
+				int temp_input = ascii_io::undefined;
+				if (sequences[i].length() >= 4 && (sequences[i])[0] == '\033' && (sequences[i])[1] == '[' && (sequences[i])[2] == '<')
 				{
-					if (raw_input[i] == ';')
+					bool parse_successful = true;
+					int button = -1;
+					int x = -1;
+					int y = -1;
+					char press_state = '\0';
+					std::string field = "";
+					int field_index = 0;
+
+					for (unsigned int j = 3; j < sequences[i].length() - 1; j++)
 					{
-						if (index == 0)
+						if ((sequences[i])[j] == ';')
 						{
-							row = stoi(field);
+							if (field_index == 0)
+							{
+								button = stoi(field);
+							}
+							else if (field_index == 1)
+							{
+								x = stoi(field);
+							}
+							else
+							{
+								break;
+								parse_successful = false;
+							}
+
+							field_index++;
+							field = "";
 						}
-						else
+						else if (isdigit((sequences[i])[j]))
 						{
-							parse_successful = false;
-							break;
+							field += (sequences[i])[j];
+						}
+					}
+
+					if (field.length() == 0)
+					{
+						parse_successful = false;
+					}
+
+					if (parse_successful)
+					{
+						y = stoi(field);
+						press_state = (sequences[i])[sequences[i].length() - 1];
+						switch (button)
+						{
+							case 0:
+								switch (press_state)
+								{
+									case 'M':
+										temp_input = ascii_io::mouse_left_pressed;
+										left_mouse_held_down.store(true, std::memory_order_relaxed);
+										break;
+									default:
+										temp_input = ascii_io::mouse_left_released;
+										left_mouse_held_down.store(false, std::memory_order_relaxed);
+										break;
+								}
+								break;
+							case 1:
+								temp_input = ascii_io::mouse_middle;
+								break;
+							case 2:
+								switch (press_state)
+								{
+									case 'M':
+										temp_input = ascii_io::mouse_right_pressed;
+										right_mouse_held_down.store(true, std::memory_order_relaxed);
+										break;
+									default:
+										temp_input = ascii_io::mouse_right_released;
+										right_mouse_held_down.store(false, std::memory_order_relaxed);
+										break;
+								}
+								break;
+							case 32:
+							case 33:
+							case 34:
+							case 35:
+								if (left_mouse_held_down.load())
+								{
+									temp_input = ascii_io::mouse_moved;
+								}
+								break;
+							case 64:
+								temp_input = ascii_io::scroll_up;
+								break;
+							case 65:
+								temp_input = ascii_io::scroll_down;
+								break;
 						}
 
-						index++;
-						field = "";
-					}
-					else if (isdigit(raw_input[i]))
-					{
-						field += raw_input[i];
+						mouse_x_position.store(x, std::memory_order_relaxed);
+						mouse_y_position.store(y - 1, std::memory_order_relaxed);
 					}
 				}
-
-				if (field.length() == 0)
+				else if (sequences[i].length() >= 3 && (sequences[i])[sequences[i].size() - 1] == 'R' && (sequences[i])[0] == '\033' && (sequences[i])[1] == '[')
 				{
-					parse_successful = false;
-				}
+					int row = -1;
+					int column = -1;
+					int index = 0;
+					std::string field = "";
+					bool parse_successful = true;
+					for (unsigned int j = 2; j < sequences[i].length(); j++)
+					{
+						if ((sequences[i])[j] == ';')
+						{
+							if (index == 0)
+							{
+								row = stoi(field);
+							}
+							else
+							{
+								parse_successful = false;
+								break;
+							}
 
-				if (parse_successful)
-				{
-					column = stoi(field);
-					cursor_x_position.store(column - 1);
-					cursor_y_position.store(row - 1);
-					cursor_position_read.store(true);
+							index++;
+							field = "";
+						}
+						else if (isdigit((sequences[i])[j]))
+						{
+							field += (sequences[i])[j];
+						}
+					}
+
+					if (field.length() == 0)
+					{
+						parse_successful = false;
+					}
+
+					if (parse_successful)
+					{
+						column = stoi(field);
+						cursor_x_position.store(column - 1, std::memory_order_relaxed);
+						cursor_y_position.store(row - 1, std::memory_order_relaxed);
+						{
+							std::lock_guard<std::mutex> lock(cursor_position_read_mutex);
+							cursor_position_read = true;
+							cursor_position_read_condition.notify_one();
+						}
+					}
 				}
 				else
 				{
-					cursor_position_read_failed.store(true);
-				}
-			}
-			else
-			{
-				for (unsigned int i = 0; i < raw_input.size(); ++i)
-				{
-					char c = raw_input[i];
-					if (c == 27)
+					for (unsigned int j = 0; i < (sequences[i]).size(); j++)
 					{
-						if (i + 2 < raw_input.size() && raw_input[i + 1] == '[')
+						char c = (sequences[i])[j];
+						if (c == 27)
 						{
-							switch (raw_input[i + 2])
+							if (i + 2 < sequences[i].size() && (sequences[i])[j + 1] == '[')
 							{
-								case 'A':
-									temp_input = ascii_io::up;
-									break;
-								case 'B':
-									temp_input = ascii_io::down;
-									break;
-								case 'C':
-									temp_input = ascii_io::right;
-									break;
-								case 'D':
-									temp_input = ascii_io::left;
-									break;
+								switch ((sequences[i])[j + 2])
+								{
+									case 'A':
+										temp_input = ascii_io::up;
+										break;
+									case 'B':
+										temp_input = ascii_io::down;
+										break;
+									case 'C':
+										temp_input = ascii_io::right;
+										break;
+									case 'D':
+										temp_input = ascii_io::left;
+										break;
+								}
+								i += 2;
 							}
-							i += 2;
+							else
+							{
+								temp_input = ascii_io::ESC;
+							}
+						}
+						else if (c == 127 || c == 8)
+						{
+							temp_input = ascii_io::backspace;
+						}
+						else if (c == '\r' || c == '\n')
+						{
+							temp_input = ascii_io::enter;
 						}
 						else
 						{
-							temp_input = ascii_io::ESC;
+							temp_input = (int)c;
 						}
+						break;
 					}
-					else if (c == 127 || c == 8)
+				}
+
+				if (temp_input != ascii_io::undefined)
+				{
+					input.store(temp_input, std::memory_order_relaxed);
 					{
-						temp_input = ascii_io::backspace;
-					}
-					else if (c == '\r' || c == '\n')
-					{
-						temp_input = ascii_io::enter;
-					}
-					else
-					{
-						temp_input = (int)c;
+						std::lock_guard<std::mutex> lock(input_read_mutex);
+						input_read = true;
+						input_read_condition.notify_one();
 					}
 				}
 			}
-		}
-
-		if (temp_input != ascii_io::undefined)
-		{
-			input.store(temp_input);
-			input_read.store(true);
 		}
 
 	} while (true);
@@ -581,19 +620,11 @@ int ascii_io::getchar()
 		ascii_io::hide_cursor();
 	}
 #endif
-	shared_input_read.store(false);
-	while (true)
-	{
-		if (shared_input_read.load())
-		{
-			input = shared_input.load();
-			break;
-		}
-		else
-		{
-			std::this_thread::sleep_for(std::chrono::microseconds(10));
-		}
-	} 
+	std::unique_lock<std::mutex> lock(input_read_mutex);
+	input_read = false;
+
+	input_read_condition.wait(lock, [] { return input_read; });
+	input = shared_input.load();
 
 	return input;
 }
@@ -608,21 +639,13 @@ int ascii_io::getchar(int& mouse_x_position, int& mouse_y_position)
 		ascii_io::hide_cursor();
 	}
 #endif
-	shared_input_read.store(false);
-	while (true)
-	{
-		if (shared_input_read.load())
-		{
-			input = shared_input.load();
-			mouse_x_position = shared_mouse_x_position.load();
-			mouse_y_position = shared_mouse_y_position.load();
-			break;
-		}
-		else
-		{
-			std::this_thread::sleep_for(std::chrono::microseconds(10));
-		}
-	} 
+	std::unique_lock<std::mutex> lock(input_read_mutex);
+	input_read = false;
+
+	input_read_condition.wait(lock, [] { return input_read; });
+	input = shared_input.load();
+	mouse_x_position = shared_mouse_x_position.load();
+	mouse_y_position = shared_mouse_y_position.load();
 
 	return input;
 }
@@ -681,24 +704,17 @@ void ascii_io::get_cursor_position(int& x, int& y)
 	x = position_info.dwCursorPosition.X;
 	y = position_info.dwCursorPosition.Y;
 #elif __linux__
-	shared_cursor_position_read.store(false);
-	print("\033[6n");
-	while(true)
+	std::unique_lock<std::mutex> lock(cursor_position_read_mutex);
+	cursor_position_read = false;
+	bool read_success = false;
+	do
 	{
-		if (shared_cursor_position_read.load())
-		{
-			x = shared_cursor_x.load();
-			y = shared_cursor_y.load();
-			break;
-		}
-		else if (shared_cursor_position_read_failed.load())
-		{
-			print("\033[6n");
-			shared_cursor_position_read_failed.store(false);
-		}
+		print("\033[6n");
+		read_success = cursor_position_read_condition.wait_for(lock, std::chrono::seconds(1), [] { return cursor_position_read; });
+	} while (!read_success);
 
-		std::this_thread::sleep_for(std::chrono::microseconds(1));
-	}
+	x = shared_cursor_x.load();
+	y = shared_cursor_y.load();
 #endif
 }
 
@@ -1038,7 +1054,7 @@ void ascii_io::ascii_engine_init(bool maximize)
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 	print("\033[?1000h\033[?1006h\033[?1003h");
 #endif
-	input_thread = std::thread(input_thread_handler, std::ref(shared_input), std::ref(shared_mouse_x_position), std::ref(shared_mouse_y_position), std::ref(shared_cursor_x), std::ref(shared_cursor_y), std::ref(shared_left_mouse_held_down), std::ref(shared_right_mouse_held_down), std::ref(shared_input_read), std::ref(shared_cursor_position_read), std::ref(shared_cursor_position_read_failed));
+	input_thread = std::thread(input_thread_handler, std::ref(shared_input), std::ref(shared_mouse_x_position), std::ref(shared_mouse_y_position), std::ref(shared_cursor_x), std::ref(shared_cursor_y), std::ref(shared_left_mouse_held_down), std::ref(shared_right_mouse_held_down));
 	hide_cursor();
 }
 
