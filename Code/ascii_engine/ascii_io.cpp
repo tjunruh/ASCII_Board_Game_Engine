@@ -48,6 +48,7 @@ bool _clear_screen = true;
 const std::string console_settings_path = "\\AppData\\Local\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\";
 const std::string console_settings_file = "settings.json";
 const int default_font_size = 12;
+bool ctrl_exit_enabled = true;
 bool keep_cursor_shown = false;
 DWORD original_console_mode;
 
@@ -203,6 +204,12 @@ BOOL WINAPI console_ctrl_handler(DWORD dwCtrlType)
 	switch (dwCtrlType)
 	{
 		case CTRL_C_EVENT:
+		case CTRL_BREAK_EVENT:
+			if (!ctrl_exit_enabled)
+			{
+				return TRUE;
+			}
+
 		case CTRL_CLOSE_EVENT:
 			ascii_io::ascii_engine_end();
 	}
@@ -1064,14 +1071,9 @@ void ascii_io::ascii_engine_init(bool maximize, bool allow_ctrl_c)
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(hInput, mode);
 
-	if (allow_ctrl_c)
-	{
-		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
-	}
-	else
-	{
-		SetConsoleCtrlHandler(NULL, TRUE);
-	}
+	ctrl_exit_enabled = allow_ctrl_c;
+
+	SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
 
 #elif __linux__
 	if (_clear_screen)

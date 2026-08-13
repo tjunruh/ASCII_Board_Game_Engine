@@ -39,7 +39,7 @@ This function must be called at the beginning of the program to initialize ascii
 
 **Parameters:**
 1. bool **maximize** - maximizes the terminal to fill the whole screen (wmctrl (sudo apt install wmctrl) or xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
-2. bool **allow_ctrl_c** - allows ctrl c to kill the program when true and prevents ctrl c from killing the program when false
+2. bool **allow_ctrl_c** - allows ctrl c to kill the program when true and prevents ctrl c from killing the program when false (also applies to ctrl break and closing the terminal on windows)
 
 ---
 ## ascii_engine_end
