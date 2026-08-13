@@ -23,6 +23,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/select.h>
+#include <csignal>
 #endif
 
 int console_zoom_amount = 0;
@@ -196,8 +197,22 @@ std::string convert_LPTSTR_to_string(LPTSTR lptstr)
 	return std::string(lptstr);
 #endif
 }
+
+BOOL WINAPI console_ctrl_handler(DWORD dwCtrlType)
+{
+	switch (dwCtrlType)
+	{
+		case CTRL_C_EVENT:
+		case CTRL_CLOSE_EVENT:
+			ascii_io::ascii_engine_end();
+	}
+
+	return FALSE;
+}
+
 #elif __linux__
 struct termios orig_termios;
+struct sigaction sig_handler;
 
 std::string system_call_with_feedback(const char* command)
 {
@@ -212,6 +227,13 @@ std::string system_call_with_feedback(const char* command)
 		}
 	}
 	return result;
+}
+
+void ctrl_c_handler(int signal)
+{
+	ascii_io::ascii_engine_end();
+	std::signal(SIGINT, SIG_DFL);
+	std::raise(SIGINT);
 }
 #endif
 
@@ -1025,7 +1047,7 @@ void ascii_io::clear_screen_on_init_and_end(bool clear_screen)
 	_clear_screen = clear_screen;
 }
 
-void ascii_io::ascii_engine_init(bool maximize)
+void ascii_io::ascii_engine_init(bool maximize, bool allow_ctrl_c)
 {
 	if (maximize)
 	{
@@ -1041,6 +1063,16 @@ void ascii_io::ascii_engine_init(bool maximize)
 	DWORD mode = ENABLE_EXTENDED_FLAGS | ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT;
 	mode &= ~ENABLE_QUICK_EDIT_MODE;
 	SetConsoleMode(hInput, mode);
+
+	if (allow_ctrl_c)
+	{
+		SetConsoleCtrlHandler(console_ctrl_handler, TRUE);
+	}
+	else
+	{
+		SetConsoleCtrlHandler(NULL, TRUE);
+	}
+
 #elif __linux__
 	if (_clear_screen)
 	{
@@ -1053,9 +1085,24 @@ void ascii_io::ascii_engine_init(bool maximize)
 	raw.c_cc[VTIME] = 0;
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 	print("\033[?1000h\033[?1006h\033[?1003h");
+
+	if (allow_ctrl_c)
+	{
+		sig_handler.sa_handler = ctrl_c_handler;
+		sigemptyset(&sig_handler.sa_mask);
+		sig_handler.sa_flags = 0;
+
+		sigaction(SIGINT, &sig_handler, nullptr);
+	}
+	else
+	{
+		std::signal(SIGINT, SIG_IGN);
+	}
+
 #endif
 	input_thread = std::thread(input_thread_handler, std::ref(shared_input), std::ref(shared_mouse_x_position), std::ref(shared_mouse_y_position), std::ref(shared_cursor_x), std::ref(shared_cursor_y), std::ref(shared_left_mouse_held_down), std::ref(shared_right_mouse_held_down));
 	hide_cursor();
+
 }
 
 void ascii_io::ascii_engine_end()

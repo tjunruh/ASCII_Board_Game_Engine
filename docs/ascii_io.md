@@ -3,7 +3,7 @@
 ascii_io includes functions providing the ability to perform input and output operations involving Windows and Linux consoles. Functions in the ascii_io namespace include:
 
 # Functions
-- [void ascii_engine_init(bool maximize = false)](#ascii_engine_init)
+- [void ascii_engine_init(bool maximize = false, bool allow_ctrl_c = true)](#ascii_engine_init)
 - [void ascii_engine_end()](#ascii_engine_end)
 - [void clear_screen_on_init_and_end(bool clear_screen)](#clear_screen_on_init_and_end)
 - [void print(const std::string& output)](#print)
@@ -31,7 +31,7 @@ ascii_io includes functions providing the ability to perform input and output op
 
 ---
 ## ascii_engine_init
-**void ascii_engine_init(bool maximize = false)**
+**void ascii_engine_init(bool maximize = false, bool allow_ctrl_c = true)**
 
 **Description:**
 
@@ -39,6 +39,7 @@ This function must be called at the beginning of the program to initialize ascii
 
 **Parameters:**
 1. bool **maximize** - maximizes the terminal to fill the whole screen (wmctrl (sudo apt install wmctrl) or xdotool (sudo apt install xdotool) must be installed for it to work on Linux systems)
+2. bool **allow_ctrl_c** - allows ctrl c to kill the program when true and prevents ctrl c from killing the program when false
 
 ---
 ## ascii_engine_end

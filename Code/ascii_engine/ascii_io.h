@@ -37,7 +37,7 @@ namespace ascii_io
 	ASCII_IO_API std::string get_key_name(int key);
 	ASCII_IO_API bool is_dragging();
 	ASCII_IO_API void clear_screen_on_init_and_end(bool clear_screen);
-	ASCII_IO_API void ascii_engine_init(bool maximize=false);
+	ASCII_IO_API void ascii_engine_init(bool maximize=false, bool allow_ctrl_c=true);
 	ASCII_IO_API void ascii_engine_end();
 	void enable_dec();
 	void disable_dec();
