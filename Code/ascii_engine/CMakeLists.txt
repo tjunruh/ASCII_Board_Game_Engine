@@ -1,5 +1,5 @@
-add_library(libascii_engine SHARED)
-target_sources(libascii_engine
+add_library(ascii_engine SHARED)
+target_sources(ascii_engine
    # Files to compile
    PRIVATE
       ascii_board.cpp
@@ -18,7 +18,7 @@ target_sources(libascii_engine
 
    # Files to include in the creation of library
    PUBLIC
-      FILE_SET libascii_engine_headers
+      FILE_SET ascii_engine_headers
       TYPE HEADERS
       BASE_DIRS ..
       FILES
@@ -41,25 +41,25 @@ target_sources(libascii_engine
 
 )
 
-target_include_directories(libascii_engine
+target_include_directories(ascii_engine
    PRIVATE
       ${PROJECT_ROOT}/external_libraries
 )
 
-target_link_libraries(libascii_engine
+target_link_libraries(ascii_engine
    PUBLIC
    libfile_manager
    libboard_config_field_parser
    libvalidate_board_config
 )
 
-target_precompile_headers(libascii_engine
+target_precompile_headers(ascii_engine
    PRIVATE ../ascii_engine_dll_files/pch.h
 )
 
 install(
-   TARGETS libascii_engine
+   TARGETS ascii_engine
 
    FILE_SET HEADERS
-   FILE_SET libascii_engine_headers
+   FILE_SET ascii_engine_headers
 )

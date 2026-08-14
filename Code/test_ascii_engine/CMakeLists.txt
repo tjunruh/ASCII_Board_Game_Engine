@@ -33,7 +33,7 @@ target_precompile_headers(test_ascii_engine
 
 target_link_libraries(test_ascii_engine
    PRIVATE
-      libascii_engine
+      ascii_engine
       Threads::Threads
       GTest::gtest
 )
