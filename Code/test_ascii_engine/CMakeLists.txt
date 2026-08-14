@@ -16,14 +16,11 @@ target_sources(test_ascii_engine
       pch.cpp
       widget.cpp
 
-   PRIVATE
-      FILE_SET test_ascii_engine_headers
-      TYPE HEADERS
-      FILES
-         expected_display_data.h
-         irregular_line_board_definitions.h
-         multi_line_board_definitions.h
-         single_line_board_definitions.h
+)
+
+target_include_directories(test_ascii_engine
+   PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIRECTORY}
 )
 
 target_precompile_headers(test_ascii_engine
@@ -35,7 +32,7 @@ target_link_libraries(test_ascii_engine
    PRIVATE
       ascii_engine
       Threads::Threads
-      GTest::gtest
+      gtest
 )
 
 add_custom_command(

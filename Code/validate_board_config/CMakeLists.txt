@@ -2,18 +2,17 @@ add_library(libvalidate_board_config STATIC)
 target_sources(libvalidate_board_config
    PRIVATE
       validate_board_config.cpp
-
-   PUBLIC
-      FILE_SET libvalidate_board_config_headers
-      TYPE HEADERS
-      FILES
-         validate_board_config.h
 )
 
 add_executable(validate_board_config)
 target_sources(validate_board_config
    PRIVATE
       main.cpp
+)
+
+target_include_directories(libvalidate_board_config
+   PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIRECTORY}
 )
 
 target_link_libraries(validate_board_config PRIVATE
@@ -26,3 +25,4 @@ set_target_properties(libvalidate_board_config
    PROPERTIES
       POSITION_INDEPENDENT_CODE ON
 )
+
