@@ -42,7 +42,7 @@ target_sources(libascii_engine
 )
 
 target_include_directories(libascii_engine
-   PUBLIC
+   PRIVATE
       ${PROJECT_ROOT}/external_libraries
 )
 
@@ -55,4 +55,11 @@ target_link_libraries(libascii_engine
 
 target_precompile_headers(libascii_engine
    PRIVATE ../ascii_engine_dll_files/pch.h
+)
+
+install(
+   TARGETS libascii_engine
+
+   FILE_SET HEADERS
+   FILE_SET libascii_engine_headers
 )

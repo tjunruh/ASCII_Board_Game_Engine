@@ -15,7 +15,7 @@ else()
    target_compile_options(board_demo-irregular_line PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-add_custom_command(
+add_custom_command(POST_BUILD
    TARGET board_demo-irregular_line
    COMMAND ${CMAKE_COMMAND} -E copy_directory
    ${CMAKE_CURRENT_SOURCE_DIR}/board_configs

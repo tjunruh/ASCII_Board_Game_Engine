@@ -26,7 +26,3 @@ if(BUILD_TESTS)
    enable_testing()
    add_subdirectory(Code/test_ascii_engine)
 endif()
-
-if (BUILD_EXAMPLES)
-   add_subdirectory(examples/board_demo-irregular_line)
-endif()

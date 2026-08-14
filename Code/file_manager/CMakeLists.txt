@@ -1,4 +1,4 @@
-add_library(libfile_manager STATIC)
+add_library(libfile_manager OBJECT)
 target_sources(libfile_manager
    PRIVATE
       file_manager.cpp
