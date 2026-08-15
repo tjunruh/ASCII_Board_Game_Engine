@@ -1,4 +1,4 @@
-add_library(libboard_config_field_parser STATIC)
+add_library(libboard_config_field_parser OBJECT)
 target_sources(libboard_config_field_parser
    PRIVATE
       board_config_field_parser.cpp

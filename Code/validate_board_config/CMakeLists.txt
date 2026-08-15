@@ -1,4 +1,4 @@
-add_library(libvalidate_board_config STATIC)
+add_library(libvalidate_board_config OBJECT)
 target_sources(libvalidate_board_config
    PRIVATE
       validate_board_config.cpp
