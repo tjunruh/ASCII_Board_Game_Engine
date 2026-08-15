@@ -49,5 +49,7 @@ add_test(
 )
 
 set_tests_properties(test_ascii_engine PROPERTIES
+   ENVIRONMENT "LB_LIBRARY_PATH=${CMAKE_BINARY_DIR}"
    WORKING_DIRECTORY ${PROJECT_ROOT}
+   TIMEOUT 60
 )
