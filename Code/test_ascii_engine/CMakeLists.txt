@@ -39,11 +39,15 @@ add_custom_command(
    TARGET test_ascii_engine POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_directory
    ${CMAKE_CURRENT_SOURCE_DIR}/test_configs
-   $<TARGET_FILE_DIR:test_ascii_engine>/test_configs
+   $<TARGET_FILE_DIR:test_ascii_engine>/Code/build/test_configs
    COMMENT "Copying test configs to build directory"
 )
 
 add_test(
    NAME test_ascii_engine
    COMMAND test_ascii_engine --gtest_filter=-ascii_io.*
+)
+
+set_tests_properties(test_ascii_engine PROPERTIES
+   WORKING_DIRECTORY ${PROJECT_ROOT}
 )
