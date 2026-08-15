@@ -18,4 +18,4 @@ jobs:
          - name: compile
            run: cd build && ninja
          - name: run tests
-           run: cd build && ctest
+           run: cd build && ctest -VV
