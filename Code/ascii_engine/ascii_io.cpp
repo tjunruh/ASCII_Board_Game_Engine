@@ -36,10 +36,11 @@ std::condition_variable input_read_condition;
 bool cursor_position_read = true;
 std::mutex cursor_position_read_mutex;
 std::condition_variable cursor_position_read_condition;
-std::atomic<int> shared_cursor_x(0);
-std::atomic<int> shared_cursor_y(0);
+std::atomic<int> shared_cursor_x_position(0);
+std::atomic<int> shared_cursor_y_position(0);
 std::atomic<bool> shared_left_mouse_held_down(false);
 std::atomic<bool> shared_right_mouse_held_down(false);
+std::atomic<bool> terminal_resized(false);
 std::thread input_thread;
 
 bool _clear_screen = true;
@@ -218,6 +219,8 @@ BOOL WINAPI console_ctrl_handler(DWORD dwCtrlType)
 }
 
 #elif __linux__
+int cursor_x_position = 0;
+int cursor_y_position = 0;
 struct termios orig_termios;
 struct sigaction sig_handler;
 
@@ -242,9 +245,14 @@ void ctrl_c_handler(int signal)
 	std::signal(SIGINT, SIG_DFL);
 	std::raise(SIGINT);
 }
+
+void handle_resize(int signal)
+{
+	terminal_resized.store(true);
+}
 #endif
 
-void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_position, std::atomic<int>& mouse_y_position, std::atomic<int>& cursor_x_position, std::atomic<int>& cursor_y_position, std::atomic<bool>& left_mouse_held_down, std::atomic<bool>& right_mouse_held_down)
+void input_thread_handler()
 {
 #ifdef _WIN32
 	INPUT_RECORD input_record;
@@ -306,43 +314,43 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 			}
 			else if (input_record.Event.MouseEvent.dwEventFlags == 0)
 			{
-				if (!left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+				if (!shared_left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 				{
 					temp_input = ascii_io::mouse_left_pressed;
-					left_mouse_held_down.store(true);
+					shared_left_mouse_held_down.store(true);
 				}
-				else if (left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
+				else if (shared_left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					temp_input = ascii_io::mouse_left_released;
-					left_mouse_held_down.store(false);
+					shared_left_mouse_held_down.store(false);
 				}
-				else if (!right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+				else if (!shared_right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 				{
 					temp_input = ascii_io::mouse_right_pressed;
-					right_mouse_held_down.store(true);
+					shared_right_mouse_held_down.store(true);
 				}
-				else if (right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
+				else if (shared_right_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == 0)
 				{
 					temp_input = ascii_io::mouse_right_released;
-					right_mouse_held_down.store(false);
+					shared_right_mouse_held_down.store(false);
 				}
 				else if (input_record.Event.MouseEvent.dwButtonState == FROM_LEFT_2ND_BUTTON_PRESSED)
 				{
 					temp_input = ascii_io::mouse_middle;
 				}
 			}
-			else if (left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == MOUSE_MOVED)
+			else if (shared_left_mouse_held_down.load() && input_record.Event.MouseEvent.dwButtonState == MOUSE_MOVED)
 			{
 				temp_input = ascii_io::mouse_moved;
 			}
 
-			mouse_x_position.store(input_record.Event.MouseEvent.dwMousePosition.X);
-			mouse_y_position.store(input_record.Event.MouseEvent.dwMousePosition.Y);
+			shared_mouse_x_position.store(input_record.Event.MouseEvent.dwMousePosition.X);
+			shared_mouse_y_position.store(input_record.Event.MouseEvent.dwMousePosition.Y);
 		}
 
 		if (temp_input != ascii_io::undefined)
 		{
-			input.store(temp_input);
+			shared_input.store(temp_input);
 			{
 				std::lock_guard<std::mutex> lock(input_read_mutex);
 				input_read = true;
@@ -443,11 +451,11 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 								{
 									case 'M':
 										temp_input = ascii_io::mouse_left_pressed;
-										left_mouse_held_down.store(true, std::memory_order_relaxed);
+										shared_left_mouse_held_down.store(true, std::memory_order_relaxed);
 										break;
 									default:
 										temp_input = ascii_io::mouse_left_released;
-										left_mouse_held_down.store(false, std::memory_order_relaxed);
+										shared_left_mouse_held_down.store(false, std::memory_order_relaxed);
 										break;
 								}
 								break;
@@ -459,11 +467,11 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 								{
 									case 'M':
 										temp_input = ascii_io::mouse_right_pressed;
-										right_mouse_held_down.store(true, std::memory_order_relaxed);
+										shared_right_mouse_held_down.store(true, std::memory_order_relaxed);
 										break;
 									default:
 										temp_input = ascii_io::mouse_right_released;
-										right_mouse_held_down.store(false, std::memory_order_relaxed);
+										shared_right_mouse_held_down.store(false, std::memory_order_relaxed);
 										break;
 								}
 								break;
@@ -471,7 +479,7 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 							case 33:
 							case 34:
 							case 35:
-								if (left_mouse_held_down.load())
+								if (shared_left_mouse_held_down.load())
 								{
 									temp_input = ascii_io::mouse_moved;
 								}
@@ -484,8 +492,8 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 								break;
 						}
 
-						mouse_x_position.store(x, std::memory_order_relaxed);
-						mouse_y_position.store(y - 1, std::memory_order_relaxed);
+						shared_mouse_x_position.store(x, std::memory_order_relaxed);
+						shared_mouse_y_position.store(y - 1, std::memory_order_relaxed);
 					}
 				}
 				else if (sequences[i].length() >= 3 && (sequences[i])[sequences[i].size() - 1] == 'R' && (sequences[i])[0] == '\033' && (sequences[i])[1] == '[')
@@ -526,8 +534,8 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 					if (parse_successful)
 					{
 						column = stoi(field);
-						cursor_x_position.store(column - 1, std::memory_order_relaxed);
-						cursor_y_position.store(row - 1, std::memory_order_relaxed);
+						shared_cursor_x_position.store(column - 1, std::memory_order_relaxed);
+						shared_cursor_y_position.store(row - 1, std::memory_order_relaxed);
 						{
 							std::lock_guard<std::mutex> lock(cursor_position_read_mutex);
 							cursor_position_read = true;
@@ -584,7 +592,7 @@ void input_thread_handler(std::atomic<int>& input, std::atomic<int>& mouse_x_pos
 
 				if (temp_input != ascii_io::undefined)
 				{
-					input.store(temp_input, std::memory_order_relaxed);
+					shared_input.store(temp_input, std::memory_order_relaxed);
 					{
 						std::lock_guard<std::mutex> lock(input_read_mutex);
 						input_read = true;
@@ -733,17 +741,28 @@ void ascii_io::get_cursor_position(int& x, int& y)
 	x = position_info.dwCursorPosition.X;
 	y = position_info.dwCursorPosition.Y;
 #elif __linux__
-	std::unique_lock<std::mutex> lock(cursor_position_read_mutex);
-	cursor_position_read = false;
-	bool read_success = false;
-	do
+	if (terminal_resized.load())
 	{
-		print("\033[6n");
-		read_success = cursor_position_read_condition.wait_for(lock, std::chrono::seconds(1), [] { return cursor_position_read; });
-	} while (!read_success);
+		std::unique_lock<std::mutex> lock(cursor_position_read_mutex);
+		cursor_position_read = false;
+		bool read_success = false;
+		do
+		{
+			print("\033[6n");
+			read_success = cursor_position_read_condition.wait_for(lock, std::chrono::seconds(1), [] { return cursor_position_read; });
+		} while (!read_success);
 
-	x = shared_cursor_x.load();
-	y = shared_cursor_y.load();
+		x = shared_cursor_x_position.load();
+		y = shared_cursor_y_position.load();
+		cursor_x_position = x;
+		cursor_y_position = y;
+		terminal_resized.store(false);
+	}
+	else
+	{
+		x = cursor_x_position;
+		y = cursor_y_position;
+	}
 #endif
 }
 
@@ -766,21 +785,55 @@ void ascii_io::show_cursor()
 void ascii_io::move_cursor_up(unsigned int amount)
 {
 	print("\x1b[" + std::to_string(amount) + "A");
+
+#ifdef __linux__
+	if (cursor_y_position > 0)
+	{
+		cursor_y_position--;
+	}
+#endif
 }
 
 void ascii_io::move_cursor_down(unsigned int amount)
 {
 	print("\x1b[" + std::to_string(amount) + "B");
+
+#ifdef __linux__
+	int terminal_width = 0;
+	int terminal_height = 0;
+	get_terminal_size(terminal_width, terminal_height);
+	if (cursor_y_position + 1 < terminal_height)
+	{
+		cursor_y_position++;
+	}
+#endif
 }
 
 void ascii_io::move_cursor_right(unsigned int amount)
 {
 	print("\x1b[" + std::to_string(amount) + "C");
+
+#ifdef __linux__
+	int terminal_width = 0;
+	int terminal_height = 0;
+	get_terminal_size(terminal_width, terminal_height);
+	if (cursor_x_position + 1 < terminal_width)
+	{
+		cursor_x_position++;
+	}
+#endif
 }
 
 void ascii_io::move_cursor_left(unsigned int amount)
 {
 	print("\x1b[" + std::to_string(amount) + "D");
+
+#ifdef __linux__
+	if (cursor_x_position > 0)
+	{
+		cursor_x_position--;
+	}
+#endif
 }
 
 void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
@@ -788,6 +841,19 @@ void ascii_io::move_cursor_to_position(unsigned int x, unsigned int y)
 	x = x + 1;
 	y = y + 1;
 	print("\x1b[" + std::to_string(y) + ";" + std::to_string(x) + "H");
+
+#ifdef __linux__
+	x = x - 1;
+	y = y - 1;
+	int terminal_width = 0;
+	int terminal_height = 0;
+	get_terminal_size(terminal_width, terminal_height);
+	if ((int)x < terminal_width && (int)y < terminal_height)
+	{
+		cursor_x_position = x;
+		cursor_y_position = y;
+	}
+#endif
 }
 
 int ascii_io::zoom_in(unsigned int amount, unsigned int wait_milliseconds)
@@ -1101,8 +1167,10 @@ void ascii_io::ascii_engine_init(bool maximize, bool allow_ctrl_c)
 		std::signal(SIGINT, SIG_IGN);
 	}
 
+	std::signal(SIGWINCH, handle_resize);
+
 #endif
-	input_thread = std::thread(input_thread_handler, std::ref(shared_input), std::ref(shared_mouse_x_position), std::ref(shared_mouse_y_position), std::ref(shared_cursor_x), std::ref(shared_cursor_y), std::ref(shared_left_mouse_held_down), std::ref(shared_right_mouse_held_down));
+	input_thread = std::thread(input_thread_handler);
 	hide_cursor();
 
 }
