@@ -12,7 +12,7 @@ jobs:
       steps:
          - uses: actions/checkout@v4
          - name: cmake setup
-           run: cmake -B build -G Ninja
+           run: cmake -B build -G Ninja -DBUILD_TESTS=ON
          - name: compile
            run: cd build && ninja
          - name: run tests
