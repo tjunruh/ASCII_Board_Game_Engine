@@ -26,3 +26,6 @@ set_target_properties(libvalidate_board_config
       POSITION_INDEPENDENT_CODE ON
 )
 
+if(WIN32)
+   target_compile_definitions(validate_board_config PRIVATE FILE_MANAGER_EXPORTS)
+endif()

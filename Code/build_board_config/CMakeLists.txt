@@ -9,3 +9,7 @@ target_link_libraries(build_board_config
    PRIVATE
    libfile_manager
 )
+
+if(WIN32)
+   target_compile_definitions(build_board_config PRIVATE FILE_MANAGER_EXPORTS)
+endif()

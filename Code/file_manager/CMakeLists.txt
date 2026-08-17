@@ -10,3 +10,7 @@ target_include_directories(libfile_manager
 )
 
 set_property(TARGET libfile_manager PROPERTY POSITION_INEPENDENT_CODE ON)
+
+if(WIN32)
+   target_compile_definitions(libfile_manager PRIVATE FILE_MANAGER_EXPORTS)
+endif()
