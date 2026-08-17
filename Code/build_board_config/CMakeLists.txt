@@ -16,3 +16,7 @@ install(
    LIBRARY DESTINATION lib
    ARCHIVE DESTINATION lib
 )
+
+if(WIN32)
+   target_compile_definitions(build_board_config PRIVATE FILE_MANAGER_EXPORTS)
+endif()

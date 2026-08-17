@@ -64,3 +64,19 @@ install(FILES
    file_manager.h
    DESTINATION include/ascii_engine
 )
+
+if(WIN32)
+   target_compile_definitions(ascii_engine PRIVATE ASCII_BOARD_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE ASCII_IO_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE BOARD_METADATA_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE CONSOLE_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE CONTROLS_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE FILE_MANAGER_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE FORMAT_TOOLS_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE FRAME_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE LABEL_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE LOGGER_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE MENU_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE TEXT_BOX_EXPORTS)
+   target_compile_definitions(ascii_engine PRIVATE WIDGET_EXPORTS)
+endif()

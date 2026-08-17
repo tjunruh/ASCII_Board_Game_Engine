@@ -1,4 +1,5 @@
 add_executable(action_tile_pattern_maker)
+
 target_sources(action_tile_pattern_maker
    PRIVATE
    main.cpp
@@ -18,3 +19,7 @@ install(
    LIBRARY DESTINATION lib
    ARCHIVE DESTINATION lib
 )
+
+if(WIN32)
+   target_compile_definitions(action_tile_pattern_maker PRIVATE FILE_MANAGER_EXPORTS)
+endif()
