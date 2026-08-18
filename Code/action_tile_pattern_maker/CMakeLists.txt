@@ -11,3 +11,10 @@ target_link_libraries(action_tile_pattern_maker
       libboard_config_field_parser
       libvalidate_board_config
 )
+
+install(
+   TARGETS action_tile_pattern_maker
+   RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+)

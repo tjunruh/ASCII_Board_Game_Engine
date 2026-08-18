@@ -9,3 +9,10 @@ target_link_libraries(build_board_config
    PRIVATE
    libfile_manager
 )
+
+install(
+   TARGETS build_board_config
+   RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+)

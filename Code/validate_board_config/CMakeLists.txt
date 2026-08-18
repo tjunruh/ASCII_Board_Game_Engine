@@ -26,3 +26,9 @@ set_target_properties(libvalidate_board_config
       POSITION_INDEPENDENT_CODE ON
 )
 
+install(
+   TARGETS validate_board_config
+   RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+)
