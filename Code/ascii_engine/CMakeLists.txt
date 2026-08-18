@@ -1,3 +1,5 @@
+find_package(Threads REQUIRED)
+
 add_library(ascii_engine SHARED)
 target_sources(ascii_engine
    # Files to compile
@@ -25,10 +27,12 @@ target_include_directories(ascii_engine
 )
 
 target_link_libraries(ascii_engine
+   PRIVATE
+      Threads::Threads
    PUBLIC
-   libfile_manager
-   libboard_config_field_parser
-   libvalidate_board_config
+      libfile_manager
+      libboard_config_field_parser
+      libvalidate_board_config
 )
 
 target_precompile_headers(ascii_engine

@@ -1,5 +1,3 @@
-find_package(Threads REQUIRED)
-
 include(FetchContent)
 FetchContent_Declare(
    googletest
@@ -42,7 +40,6 @@ target_precompile_headers(test_ascii_engine
 target_link_libraries(test_ascii_engine
    PRIVATE
       ascii_engine
-      Threads::Threads
       gtest
 )
 
