@@ -391,6 +391,11 @@ void input_thread_handler()
 					sequence = "";
 				}
 			}
+
+			if (sequence == "\033")
+			{
+				sequences.push_back(sequence);
+			}
 		}
 
 		if (sequences.size() != 0)
@@ -543,50 +548,69 @@ void input_thread_handler()
 						}
 					}
 				}
-				else
+				else if (sequences[i].size() > 0)
 				{
-					for (unsigned int j = 0; i < (sequences[i]).size(); j++)
+					char c = (sequences[i])[0];
+					if (c == 27)
 					{
-						char c = (sequences[i])[j];
-						if (c == 27)
+						if ((sequences[i].size() == 4) && (sequences[i])[1] == '[' && (sequences[i])[3] == '~')
 						{
-							if (i + 2 < sequences[i].size() && (sequences[i])[j + 1] == '[')
+							switch ((sequences[i])[2])
 							{
-								switch ((sequences[i])[j + 2])
-								{
-									case 'A':
-										temp_input = ascii_io::up;
-										break;
-									case 'B':
-										temp_input = ascii_io::down;
-										break;
-									case 'C':
-										temp_input = ascii_io::right;
-										break;
-									case 'D':
-										temp_input = ascii_io::left;
-										break;
-								}
-								i += 2;
-							}
-							else
-							{
-								temp_input = ascii_io::ESC;
+								case '2':
+									temp_input = ascii_io::insert;
+									break;
+								case '3':
+									temp_input = ascii_io::DEL;
+									break;
+								case '5':
+									temp_input = ascii_io::page_down;
+									break;
+								case '6':
+									temp_input = ascii_io::page_up;
+									break;
 							}
 						}
-						else if (c == 127 || c == 8)
+						else if ((sequences[i].size() == 3) && (sequences[i])[1] == '[')
 						{
-							temp_input = ascii_io::backspace;
-						}
-						else if (c == '\r' || c == '\n')
-						{
-							temp_input = ascii_io::enter;
+							switch ((sequences[i])[2])
+							{
+								case 'A':
+									temp_input = ascii_io::up;
+									break;
+								case 'B':
+									temp_input = ascii_io::down;
+									break;
+								case 'C':
+									temp_input = ascii_io::right;
+									break;
+								case 'D':
+									temp_input = ascii_io::left;
+									break;
+								case 'F':
+									temp_input = ascii_io::end;
+									break;
+								case 'H':
+									temp_input = ascii_io::home;
+									break;
+							}
 						}
 						else
 						{
-							temp_input = (int)c;
+							temp_input = ascii_io::ESC;
 						}
-						break;
+					}
+					else if (c == 127 || c == 8)
+					{
+						temp_input = ascii_io::backspace;
+					}
+					else if (c == '\r' || c == '\n')
+					{
+						temp_input = ascii_io::enter;
+					}
+					else
+					{
+						temp_input = (int)c;
 					}
 				}
 
