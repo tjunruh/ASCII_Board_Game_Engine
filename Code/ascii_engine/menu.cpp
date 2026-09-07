@@ -564,16 +564,28 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 		}
 		else if ((_centralized_controls && _centralized_controls->key_in_select_keys(key_stroke)) || (!_centralized_controls && std::count(_select.begin(), _select.end(), key_stroke) != 0))
 		{
-			if (key_stroke == ascii_io::mouse_left_released && inside_widget_space(mouse_x_position, mouse_y_position))
+			if (std::count(ascii_io::mouse_keys.begin(), ascii_io::mouse_keys.end(), key_stroke) != 0)
 			{
-				unsigned int selected_line_remainder = 0;
-				_cursor_index = format_tools::compress(mouse_y_position - get_y_origin() + get_top_line(), get_line_compression_amount(), selected_line_remainder);
-				set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
-				selection = menu_items[_cursor_index].item;
-				_selection = selection;
-				break;
+				if (inside_widget_space(mouse_x_position, mouse_y_position))
+				{
+					unsigned int selected_line_remainder = 0;
+					unsigned int temp_cursor_index = format_tools::compress(mouse_y_position - get_y_origin() + get_top_line(), get_line_compression_amount(), selected_line_remainder);
+					if (_heading && temp_cursor_index == 0)
+					{
+						temp_cursor_index = 1;
+					}
+
+					if (temp_cursor_index < menu_items.size())
+					{
+						_cursor_index = temp_cursor_index;
+						set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
+						selection = menu_items[_cursor_index].item;
+						_selection = selection;
+						break;
+					}
+				}
 			}
-			else if (menu_items.size() > 0)
+			else if (_cursor_index < menu_items.size())
 			{
 				selection = menu_items[_cursor_index].item;
 				_selection = selection;
@@ -708,13 +720,20 @@ void menu::scroll_up()
 			top_item = 1;
 		}
 
-		_selection = menu_items[_cursor_index].item;
+		if (_cursor_index < menu_items.size())
+		{
+			_selection = menu_items[_cursor_index].item;
+		}
+		else
+		{
+			_selection = "";
+		}
 	}
 }
 
 void menu::scroll_down()
 {
-	if (_cursor_index < (menu_items.size() - 1))
+	if ((_cursor_index + 1) < menu_items.size())
 	{
 		unsigned int top_line_remainder = 0;
 		unsigned int top_item = format_tools::compress(get_top_line(), get_line_compression_amount(), top_line_remainder);
@@ -727,10 +746,6 @@ void menu::scroll_down()
 		_cursor_index++;
 		set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
-		if (_heading && top_item == 0)
-		{
-			top_item = 1;
-		}
 
 		_selection = menu_items[_cursor_index].item;
 	}
