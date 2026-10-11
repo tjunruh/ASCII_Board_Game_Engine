@@ -580,7 +580,6 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 						_cursor_index = temp_cursor_index;
 						set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 						selection = menu_items[_cursor_index].item;
-						_selection = selection;
 						break;
 					}
 				}
@@ -588,7 +587,6 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 			else if (_cursor_index < menu_items.size())
 			{
 				selection = menu_items[_cursor_index].item;
-				_selection = selection;
 				break;
 			}
 		}
@@ -622,7 +620,13 @@ void menu::get_selection(std::string& selection, int& key_stroke)
 
 std::string menu::get_selection()
 {
-	return _selection;
+	std::string selection = "";
+	if (_cursor_index < menu_items.size())
+	{
+		selection = menu_items[_cursor_index].item;
+	}
+
+	return selection;
 }
 
 void menu::display()
@@ -719,15 +723,6 @@ void menu::scroll_up()
 		{
 			top_item = 1;
 		}
-
-		if (_cursor_index < menu_items.size())
-		{
-			_selection = menu_items[_cursor_index].item;
-		}
-		else
-		{
-			_selection = "";
-		}
 	}
 }
 
@@ -746,8 +741,6 @@ void menu::scroll_down()
 		_cursor_index++;
 		set_cursor_line(format_tools::expand(_cursor_index, get_line_compression_amount(), 1));
 		set_top_line(format_tools::expand(top_item, get_line_compression_amount(), top_line_remainder));
-
-		_selection = menu_items[_cursor_index].item;
 	}
 }
 

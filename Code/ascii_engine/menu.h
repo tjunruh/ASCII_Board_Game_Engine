@@ -76,7 +76,6 @@ private:
 	char _intersection_char = '+';
 	char _endpoint_char = '.';
 	bool _heading = false;
-	std::string _selection = "";
 	controls* _centralized_controls = nullptr;
 	std::string build_output();
 	bool item_exists(const std::string& item);
